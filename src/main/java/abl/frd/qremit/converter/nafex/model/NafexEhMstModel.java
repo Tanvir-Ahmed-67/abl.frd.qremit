@@ -49,10 +49,10 @@ public class NafexEhMstModel {
     @Column(name = "type_flag")
     private String typeFlag;
 
-    @Column(name = "extra_a")
-    private String extraA;
-    @Column(name = "extra_b")
-    private String extraB;
+    @Column(name = "processed_by")
+    private String processedBy;
+    @Column(name = "processed_date")
+    private String processedDate;
     @Column(name = "extra_c")
     private String extraC;
 
@@ -84,13 +84,13 @@ public class NafexEhMstModel {
                 ", remitterMobile='" + remitterMobile + '\'' +
                 ", processFlag='" + processFlag + '\'' +
                 ", typeFlag='" + typeFlag + '\'' +
-                ", extraA='" + extraA + '\'' +
-                ", extraB='" + extraB + '\'' +
+                ", processedBy='" + processedBy + '\'' +
+                ", processedDate='" + processedDate + '\'' +
                 ", extraC='" + extraC + '\'' +
                 '}';
     }
 
-    public NafexEhMstModel(long id, String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String extraA, String extraB, String extraC) {
+    public NafexEhMstModel(long id, String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC) {
         this.id = id;
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
@@ -112,8 +112,8 @@ public class NafexEhMstModel {
         this.remitterMobile = remitterMobile;
         this.processFlag = processFlag;
         this.typeFlag = typeFlag;
-        this.extraA = extraA;
-        this.extraB = extraB;
+        this.processedBy = processedBy;
+        this.processedDate = processedDate;
         this.extraC = extraC;
     }
 
@@ -285,20 +285,20 @@ public class NafexEhMstModel {
         this.typeFlag = typeFlag;
     }
 
-    public String getExtraA() {
-        return extraA;
+    public String getProcessedBy() {
+        return processedBy;
     }
 
-    public void setExtraA(String extraA) {
-        this.extraA = extraA;
+    public void setProcessedBy(String extraA) {
+        this.processedBy = extraA;
     }
 
-    public String getExtraB() {
-        return extraB;
+    public String getProcessedDate() {
+        return processedDate;
     }
 
-    public void setExtraB(String extraB) {
-        this.extraB = extraB;
+    public void setProcessedDate(String processedDate) {
+        this.processedDate = processedDate;
     }
 
     public String getExtraC() {
