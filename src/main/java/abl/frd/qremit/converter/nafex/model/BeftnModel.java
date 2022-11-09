@@ -1,9 +1,10 @@
-package abl.frd.qremit.nafex.model;
+package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+
 @Entity
-@Table(name="converted_data_coc")
-public class CocModel {
+@Table(name="converted_data_beftn")
+public class BeftnModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -12,34 +13,28 @@ public class CocModel {
     private long ehMstId;
     @Column(name = "transaction_no")
     private String transactionNo;
-    @Column(name = "credit_mark")
-    private String creditMark;
-    @Column(name = "entered_date")
-    private String enteredDate;
-    @Column(name = "currency")
-    private String currency;
+    @Column(name = "org_customer_no")
+    private String orgCustomerNo;
+    @Column(name = "org_name")
+    private String orgName;
+    @Column(name = "org_account_no")
+    private String orgAccountNo;
+    @Column(name = "org_account_type")
+    private String orgAccountType;
     @Column(name = "amount")
     private Double amount;
     @Column(name = "beneficiary_name")
     private String beneficiaryName;
+    @Column(name = "beneficiary_account")
+    private String beneficiaryAccount;
+    @Column(name = "beneficiary_account_type")
+    private String beneficiaryAccountType;
     @Column(name = "exchange_code")
     private String exchangeCode;
-    @Column(name = "bank_name")
-    private String bankName;
-    @Column(name = "bank_code")
-    private String bankCode;
-    @Column(name = "branch_name")
-    private String branchName;
-    @Column(name = "branch_code")
-    private String branchCode;
-    @Column(name = "beneficiary_account_no")
-    private String beneficiaryAccount;
-    @Column(name = "remitter_name")
-    private String remitterName;
+    @Column(name = "routing_no")
+    private String routingNo;
     @Column(name = "incentive")
     private Double incentive;
-    @Column(name = "coc_code")
-    private String cocCode;
     @Column(name = "extra_a")
     private String extraA;
     @Column(name = "extra_b")
@@ -52,7 +47,7 @@ public class CocModel {
     private String extraE;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
+    @JoinColumn(name = "ehMstId", referencedColumnName = "id")
     private NafexEhMstModel nafexEhMstModel;
 
     public NafexEhMstModel getNafexEhMstModel() {
@@ -63,7 +58,7 @@ public class CocModel {
         this.nafexEhMstModel = nafexEhMstModel;
     }
 
-    public CocModel() {
+    public BeftnModel() {
 
     }
 
@@ -91,28 +86,36 @@ public class CocModel {
         this.transactionNo = transactionNo;
     }
 
-    public String getCreditMark() {
-        return creditMark;
+    public String getOrgCustomerNo() {
+        return orgCustomerNo;
     }
 
-    public void setCreditMark(String creditMark) {
-        this.creditMark = creditMark;
+    public void setOrgCustomerNo(String orgCustomerNo) {
+        this.orgCustomerNo = orgCustomerNo;
     }
 
-    public String getEnteredDate() {
-        return enteredDate;
+    public String getOrgName() {
+        return orgName;
     }
 
-    public void setEnteredDate(String enteredDate) {
-        this.enteredDate = enteredDate;
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 
-    public String getCurrency() {
-        return currency;
+    public String getOrgAccountNo() {
+        return orgAccountNo;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setOrgAccountNo(String orgAccountNo) {
+        this.orgAccountNo = orgAccountNo;
+    }
+
+    public String getOrgAccountType() {
+        return orgAccountType;
+    }
+
+    public void setOrgAccountType(String orgAccountType) {
+        this.orgAccountType = orgAccountType;
     }
 
     public Double getAmount() {
@@ -131,46 +134,6 @@ public class CocModel {
         this.beneficiaryName = beneficiaryName;
     }
 
-    public String getExchangeCode() {
-        return exchangeCode;
-    }
-
-    public void setExchangeCode(String exchangeCode) {
-        this.exchangeCode = exchangeCode;
-    }
-
-    public String getBankName() {
-        return bankName;
-    }
-
-    public void setBankName(String bankName) {
-        this.bankName = bankName;
-    }
-
-    public String getBankCode() {
-        return bankCode;
-    }
-
-    public void setBankCode(String bankCode) {
-        this.bankCode = bankCode;
-    }
-
-    public String getBranchName() {
-        return branchName;
-    }
-
-    public void setBranchName(String branchName) {
-        this.branchName = branchName;
-    }
-
-    public String getBranchCode() {
-        return branchCode;
-    }
-
-    public void setBranchCode(String branchCode) {
-        this.branchCode = branchCode;
-    }
-
     public String getBeneficiaryAccount() {
         return beneficiaryAccount;
     }
@@ -179,12 +142,28 @@ public class CocModel {
         this.beneficiaryAccount = beneficiaryAccount;
     }
 
-    public String getRemitterName() {
-        return remitterName;
+    public String getBeneficiaryAccountType() {
+        return beneficiaryAccountType;
     }
 
-    public void setRemitterName(String remitterName) {
-        this.remitterName = remitterName;
+    public void setBeneficiaryAccountType(String beneficiaryAccountType) {
+        this.beneficiaryAccountType = beneficiaryAccountType;
+    }
+
+    public String getExchangeCode() {
+        return exchangeCode;
+    }
+
+    public void setExchangeCode(String exchangeCode) {
+        this.exchangeCode = exchangeCode;
+    }
+
+    public String getRoutingNo() {
+        return routingNo;
+    }
+
+    public void setRoutingNo(String routingNo) {
+        this.routingNo = routingNo;
     }
 
     public Double getIncentive() {
@@ -193,14 +172,6 @@ public class CocModel {
 
     public void setIncentive(Double incentive) {
         this.incentive = incentive;
-    }
-
-    public String getCocCode() {
-        return cocCode;
-    }
-
-    public void setCocCode(String cocCode) {
-        this.cocCode = cocCode;
     }
 
     public String getExtraA() {
@@ -243,24 +214,21 @@ public class CocModel {
         this.extraE = extraE;
     }
 
-    public CocModel(long id, long ehMstId, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public BeftnModel(long id, long ehMstId, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, String extraD, String extraE) {
         this.id = id;
         this.ehMstId = ehMstId;
         this.transactionNo = transactionNo;
-        this.creditMark = creditMark;
-        this.enteredDate = enteredDate;
-        this.currency = currency;
+        this.orgCustomerNo = orgCustomerNo;
+        this.orgName = orgName;
+        this.orgAccountNo = orgAccountNo;
+        this.orgAccountType = orgAccountType;
         this.amount = amount;
         this.beneficiaryName = beneficiaryName;
-        this.exchangeCode = exchangeCode;
-        this.bankName = bankName;
-        this.bankCode = bankCode;
-        this.branchName = branchName;
-        this.branchCode = branchCode;
         this.beneficiaryAccount = beneficiaryAccount;
-        this.remitterName = remitterName;
+        this.beneficiaryAccountType = beneficiaryAccountType;
+        this.exchangeCode = exchangeCode;
+        this.routingNo = routingNo;
         this.incentive = incentive;
-        this.cocCode = cocCode;
         this.extraA = extraA;
         this.extraB = extraB;
         this.extraC = extraC;
@@ -270,24 +238,21 @@ public class CocModel {
 
     @Override
     public String toString() {
-        return "CocModel{" +
+        return "BeftnModel{" +
                 "id=" + id +
                 ", ehMstId=" + ehMstId +
                 ", transactionNo='" + transactionNo + '\'' +
-                ", creditMark='" + creditMark + '\'' +
-                ", enteredDate='" + enteredDate + '\'' +
-                ", currency='" + currency + '\'' +
+                ", orgCustomerNo='" + orgCustomerNo + '\'' +
+                ", orgName='" + orgName + '\'' +
+                ", orgAccountNo='" + orgAccountNo + '\'' +
+                ", orgAccountType='" + orgAccountType + '\'' +
                 ", amount=" + amount +
                 ", beneficiaryName='" + beneficiaryName + '\'' +
-                ", exchangeCode='" + exchangeCode + '\'' +
-                ", bankName='" + bankName + '\'' +
-                ", bankCode='" + bankCode + '\'' +
-                ", branchName='" + branchName + '\'' +
-                ", branchCode='" + branchCode + '\'' +
                 ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
-                ", remitterName='" + remitterName + '\'' +
+                ", beneficiaryAccountType='" + beneficiaryAccountType + '\'' +
+                ", exchangeCode='" + exchangeCode + '\'' +
+                ", routingNo='" + routingNo + '\'' +
                 ", incentive=" + incentive +
-                ", cocCode='" + cocCode + '\'' +
                 ", extraA='" + extraA + '\'' +
                 ", extraB='" + extraB + '\'' +
                 ", extraC='" + extraC + '\'' +

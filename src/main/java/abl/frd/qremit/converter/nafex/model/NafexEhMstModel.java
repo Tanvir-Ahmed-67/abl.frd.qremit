@@ -1,5 +1,4 @@
-package abl.frd.qremit.nafex.model;
-
+package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
 
 @Entity
@@ -310,3 +309,4 @@ public class NafexEhMstModel {
         this.extraC = extraC;
     }
 }
+

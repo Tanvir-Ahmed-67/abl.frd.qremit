@@ -1,10 +1,9 @@
-package abl.frd.qremit.nafex.model;
+package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
-
 @Entity
-@Table(name="converted_data_account_payee")
-public class AccountPayeeModel {
+@Table(name="converted_data_coc")
+public class CocModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -39,8 +38,8 @@ public class AccountPayeeModel {
     private String remitterName;
     @Column(name = "incentive")
     private Double incentive;
-    @Column(name = "account_payee_code")
-    private String accountPayeeCode;
+    @Column(name = "coc_code")
+    private String cocCode;
     @Column(name = "extra_a")
     private String extraA;
     @Column(name = "extra_b")
@@ -52,9 +51,8 @@ public class AccountPayeeModel {
     @Column(name = "extra_e")
     private String extraE;
 
-
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
+    @JoinColumn(name = "ehMstId", referencedColumnName = "id")
     private NafexEhMstModel nafexEhMstModel;
 
     public NafexEhMstModel getNafexEhMstModel() {
@@ -65,7 +63,7 @@ public class AccountPayeeModel {
         this.nafexEhMstModel = nafexEhMstModel;
     }
 
-    public AccountPayeeModel() {
+    public CocModel() {
 
     }
 
@@ -197,12 +195,12 @@ public class AccountPayeeModel {
         this.incentive = incentive;
     }
 
-    public String getAccountPayeeCode() {
-        return accountPayeeCode;
+    public String getCocCode() {
+        return cocCode;
     }
 
-    public void setAccountPayeeCode(String accountPayeeCode) {
-        this.accountPayeeCode = accountPayeeCode;
+    public void setCocCode(String cocCode) {
+        this.cocCode = cocCode;
     }
 
     public String getExtraA() {
@@ -245,7 +243,7 @@ public class AccountPayeeModel {
         this.extraE = extraE;
     }
 
-    public AccountPayeeModel(long id, long ehMstId, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public CocModel(long id, long ehMstId, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, String extraA, String extraB, String extraC, String extraD, String extraE) {
         this.id = id;
         this.ehMstId = ehMstId;
         this.transactionNo = transactionNo;
@@ -262,7 +260,7 @@ public class AccountPayeeModel {
         this.beneficiaryAccount = beneficiaryAccount;
         this.remitterName = remitterName;
         this.incentive = incentive;
-        this.accountPayeeCode = accountPayeeCode;
+        this.cocCode = cocCode;
         this.extraA = extraA;
         this.extraB = extraB;
         this.extraC = extraC;
@@ -272,7 +270,7 @@ public class AccountPayeeModel {
 
     @Override
     public String toString() {
-        return "AccountPayeeModel{" +
+        return "CocModel{" +
                 "id=" + id +
                 ", ehMstId=" + ehMstId +
                 ", transactionNo='" + transactionNo + '\'' +
@@ -289,7 +287,7 @@ public class AccountPayeeModel {
                 ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
                 ", remitterName='" + remitterName + '\'' +
                 ", incentive=" + incentive +
-                ", accountPayeeCode='" + accountPayeeCode + '\'' +
+                ", cocCode='" + cocCode + '\'' +
                 ", extraA='" + extraA + '\'' +
                 ", extraB='" + extraB + '\'' +
                 ", extraC='" + extraC + '\'' +
@@ -297,5 +295,4 @@ public class AccountPayeeModel {
                 ", extraE='" + extraE + '\'' +
                 '}';
     }
-
 }

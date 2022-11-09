@@ -1,4 +1,4 @@
-package abl.frd.qremit.nafex.model;
+package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
 
@@ -35,7 +35,7 @@ public class OnlineModel {
     private String extraE;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
+    @JoinColumn(name = "ehMstId", referencedColumnName = "id")
     private NafexEhMstModel nafexEhMstModel;
 
     public NafexEhMstModel getNafexEhMstModel() {
