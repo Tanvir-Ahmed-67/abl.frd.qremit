@@ -9,8 +9,6 @@ public class BeftnModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
-    @Column(name = "eh_mst_id")
-    private long ehMstId;
     @Column(name = "transaction_no")
     private String transactionNo;
     @Column(name = "org_customer_no")
@@ -47,7 +45,7 @@ public class BeftnModel {
     private String extraE;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ehMstId", referencedColumnName = "id")
+    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
     private NafexEhMstModel nafexEhMstModel;
 
     public NafexEhMstModel getNafexEhMstModel() {
@@ -68,14 +66,6 @@ public class BeftnModel {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public long getEhMstId() {
-        return ehMstId;
-    }
-
-    public void setEhMstId(long ehMstId) {
-        this.ehMstId = ehMstId;
     }
 
     public String getTransactionNo() {
@@ -214,9 +204,8 @@ public class BeftnModel {
         this.extraE = extraE;
     }
 
-    public BeftnModel(long id, long ehMstId, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public BeftnModel(long id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, String extraD, String extraE) {
         this.id = id;
-        this.ehMstId = ehMstId;
         this.transactionNo = transactionNo;
         this.orgCustomerNo = orgCustomerNo;
         this.orgName = orgName;
@@ -240,7 +229,6 @@ public class BeftnModel {
     public String toString() {
         return "BeftnModel{" +
                 "id=" + id +
-                ", ehMstId=" + ehMstId +
                 ", transactionNo='" + transactionNo + '\'' +
                 ", orgCustomerNo='" + orgCustomerNo + '\'' +
                 ", orgName='" + orgName + '\'' +

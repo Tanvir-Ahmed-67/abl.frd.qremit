@@ -9,8 +9,6 @@ public class OnlineModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
-    @Column(name = "eh_mst_id")
-    private long ehMstId;
     @Column(name = "transaction_no")
     private String transactionNo;
     @Column(name = "exchange_code")
@@ -35,7 +33,7 @@ public class OnlineModel {
     private String extraE;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ehMstId", referencedColumnName = "id")
+    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
     private NafexEhMstModel nafexEhMstModel;
 
     public NafexEhMstModel getNafexEhMstModel() {
@@ -56,14 +54,6 @@ public class OnlineModel {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public long getEhMstId() {
-        return ehMstId;
-    }
-
-    public void setEhMstId(long ehMstId) {
-        this.ehMstId = ehMstId;
     }
 
     public String getTransactionNo() {
@@ -154,9 +144,8 @@ public class OnlineModel {
         this.extraE = extraE;
     }
 
-    public OnlineModel(long id, long ehMstId, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public OnlineModel(long id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, String extraC, String extraD, String extraE) {
         this.id = id;
-        this.ehMstId = ehMstId;
         this.transactionNo = transactionNo;
         this.exchangeCode = exchangeCode;
         this.beneficiaryName = beneficiaryName;
@@ -174,7 +163,6 @@ public class OnlineModel {
     public String toString() {
         return "OnlineModel{" +
                 "id=" + id +
-                ", ehMstId=" + ehMstId +
                 ", transactionNo='" + transactionNo + '\'' +
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", beneficiaryName='" + beneficiaryName + '\'' +

@@ -8,8 +8,6 @@ public class CocModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
-    @Column(name = "eh_mst_id")
-    private long ehMstId;
     @Column(name = "transaction_no")
     private String transactionNo;
     @Column(name = "credit_mark")
@@ -52,7 +50,7 @@ public class CocModel {
     private String extraE;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ehMstId", referencedColumnName = "id")
+    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
     private NafexEhMstModel nafexEhMstModel;
 
     public NafexEhMstModel getNafexEhMstModel() {
@@ -73,14 +71,6 @@ public class CocModel {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public long getEhMstId() {
-        return ehMstId;
-    }
-
-    public void setEhMstId(long ehMstId) {
-        this.ehMstId = ehMstId;
     }
 
     public String getTransactionNo() {
@@ -243,9 +233,8 @@ public class CocModel {
         this.extraE = extraE;
     }
 
-    public CocModel(long id, long ehMstId, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public CocModel(long id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, String extraA, String extraB, String extraC, String extraD, String extraE) {
         this.id = id;
-        this.ehMstId = ehMstId;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;
         this.enteredDate = enteredDate;
@@ -272,7 +261,6 @@ public class CocModel {
     public String toString() {
         return "CocModel{" +
                 "id=" + id +
-                ", ehMstId=" + ehMstId +
                 ", transactionNo='" + transactionNo + '\'' +
                 ", creditMark='" + creditMark + '\'' +
                 ", enteredDate='" + enteredDate + '\'' +
