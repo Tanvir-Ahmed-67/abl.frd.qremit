@@ -48,7 +48,6 @@ public class NafexEhMstModel {
     private String processFlag;
     @Column(name = "type_flag")
     private String typeFlag;
-
     @Column(name = "processed_by")
     private String processedBy;
     @Column(name = "processed_date")
@@ -56,65 +55,49 @@ public class NafexEhMstModel {
     @Column(name = "extra_c")
     private String extraC;
 
+    @Column(name = "check_t24")
+    private String checkT24;
+    @Column(name = "check_coc")
+    private String checkCoc;
+    @Column(name = "check_account_payee")
+    private String checkAccPayee;
+    @Column(name = "check_beftn")
+    private String checkBeftn;
+
+    public String getCheckT24() {
+        return checkT24;
+    }
+
+    public void setCheckT24(String checkT24) {
+        this.checkT24 = checkT24;
+    }
+
+    public String getCheckCoc() {
+        return checkCoc;
+    }
+
+    public void setCheckCoc(String checkCoc) {
+        this.checkCoc = checkCoc;
+    }
+
+    public String getCheckAccPayee() {
+        return checkAccPayee;
+    }
+
+    public void setCheckAccPayee(String checkAccPayee) {
+        this.checkAccPayee = checkAccPayee;
+    }
+
+    public String getCheckBeftn() {
+        return checkBeftn;
+    }
+
+    public void setCheckBeftn(String checkBeftn) {
+        this.checkBeftn = checkBeftn;
+    }
+
     public NafexEhMstModel() {
 
-    }
-
-    @Override
-    public String toString() {
-        return "NafexEhMstModel{" +
-                "id=" + id +
-                ", exchangeCode='" + exchangeCode + '\'' +
-                ", transactionNo='" + transactionNo + '\'' +
-                ", currency='" + currency + '\'' +
-                ", amount=" + amount +
-                ", enteredDate='" + enteredDate + '\'' +
-                ", remitterName='" + remitterName + '\'' +
-                ", beneficiaryName='" + beneficiaryName + '\'' +
-                ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
-                ", beneficiaryMobile='" + beneficiaryMobile + '\'' +
-                ", bankName='" + bankName + '\'' +
-                ", bankCode='" + bankCode + '\'' +
-                ", branchName='" + branchName + '\'' +
-                ", branchCode='" + branchCode + '\'' +
-                ", draweeBranchName='" + draweeBranchName + '\'' +
-                ", draweeBranchCode='" + draweeBranchCode + '\'' +
-                ", purposeOfRemittance='" + purposeOfRemittance + '\'' +
-                ", sourceOfIncome='" + sourceOfIncome + '\'' +
-                ", remitterMobile='" + remitterMobile + '\'' +
-                ", processFlag='" + processFlag + '\'' +
-                ", typeFlag='" + typeFlag + '\'' +
-                ", processedBy='" + processedBy + '\'' +
-                ", processedDate='" + processedDate + '\'' +
-                ", extraC='" + extraC + '\'' +
-                '}';
-    }
-
-    public NafexEhMstModel(long id, String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC) {
-        this.id = id;
-        this.exchangeCode = exchangeCode;
-        this.transactionNo = transactionNo;
-        this.currency = currency;
-        this.amount = amount;
-        this.enteredDate = enteredDate;
-        this.remitterName = remitterName;
-        this.beneficiaryName = beneficiaryName;
-        this.beneficiaryAccount = beneficiaryAccount;
-        this.beneficiaryMobile = beneficiaryMobile;
-        this.bankName = bankName;
-        this.bankCode = bankCode;
-        this.branchName = branchName;
-        this.branchCode = branchCode;
-        this.draweeBranchName = draweeBranchName;
-        this.draweeBranchCode = draweeBranchCode;
-        this.purposeOfRemittance = purposeOfRemittance;
-        this.sourceOfIncome = sourceOfIncome;
-        this.remitterMobile = remitterMobile;
-        this.processFlag = processFlag;
-        this.typeFlag = typeFlag;
-        this.processedBy = processedBy;
-        this.processedDate = processedDate;
-        this.extraC = extraC;
     }
 
     public long getId() {
@@ -307,6 +290,70 @@ public class NafexEhMstModel {
 
     public void setExtraC(String extraC) {
         this.extraC = extraC;
+    }
+
+    public NafexEhMstModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+        this.exchangeCode = exchangeCode;
+        this.transactionNo = transactionNo;
+        this.currency = currency;
+        this.amount = amount;
+        this.enteredDate = enteredDate;
+        this.remitterName = remitterName;
+        this.beneficiaryName = beneficiaryName;
+        this.beneficiaryAccount = beneficiaryAccount;
+        this.beneficiaryMobile = beneficiaryMobile;
+        this.bankName = bankName;
+        this.bankCode = bankCode;
+        this.branchName = branchName;
+        this.branchCode = branchCode;
+        this.draweeBranchName = draweeBranchName;
+        this.draweeBranchCode = draweeBranchCode;
+        this.purposeOfRemittance = purposeOfRemittance;
+        this.sourceOfIncome = sourceOfIncome;
+        this.remitterMobile = remitterMobile;
+        this.processFlag = processFlag;
+        this.typeFlag = typeFlag;
+        this.processedBy = processedBy;
+        this.processedDate = processedDate;
+        this.extraC = extraC;
+        this.checkT24 = checkT24;
+        this.checkCoc = checkCoc;
+        this.checkAccPayee = checkAccPayee;
+        this.checkBeftn = checkBeftn;
+    }
+
+    @Override
+    public String toString() {
+        return "NafexEhMstModel{" +
+                "id=" + id +
+                ", exchangeCode='" + exchangeCode + '\'' +
+                ", transactionNo='" + transactionNo + '\'' +
+                ", currency='" + currency + '\'' +
+                ", amount=" + amount +
+                ", enteredDate='" + enteredDate + '\'' +
+                ", remitterName='" + remitterName + '\'' +
+                ", beneficiaryName='" + beneficiaryName + '\'' +
+                ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
+                ", beneficiaryMobile='" + beneficiaryMobile + '\'' +
+                ", bankName='" + bankName + '\'' +
+                ", bankCode='" + bankCode + '\'' +
+                ", branchName='" + branchName + '\'' +
+                ", branchCode='" + branchCode + '\'' +
+                ", draweeBranchName='" + draweeBranchName + '\'' +
+                ", draweeBranchCode='" + draweeBranchCode + '\'' +
+                ", purposeOfRemittance='" + purposeOfRemittance + '\'' +
+                ", sourceOfIncome='" + sourceOfIncome + '\'' +
+                ", remitterMobile='" + remitterMobile + '\'' +
+                ", processFlag='" + processFlag + '\'' +
+                ", typeFlag='" + typeFlag + '\'' +
+                ", processedBy='" + processedBy + '\'' +
+                ", processedDate='" + processedDate + '\'' +
+                ", extraC='" + extraC + '\'' +
+                ", checkT24='" + checkT24 + '\'' +
+                ", checkCoc='" + checkCoc + '\'' +
+                ", checkAccPayee='" + checkAccPayee + '\'' +
+                ", checkBeftn='" + checkBeftn + '\'' +
+                '}';
     }
 }
 
