@@ -1,20 +1,27 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.NafexModelServiceHelper;
-import abl.frd.qremit.converter.nafex.model.NafexEhMstModel;
-import abl.frd.qremit.converter.nafex.repository.NafexModelRepository;
+import abl.frd.qremit.converter.nafex.model.*;
+import abl.frd.qremit.converter.nafex.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class NafexModelService {
     @Autowired
     NafexModelRepository nafexModelRepository;
+    @Autowired
+    OnlineModelRepository onlineModelRepository;
+    @Autowired
+    CocModelRepository cocModelRepository;
+    @Autowired
+    AccountPayeeModelRepository accountPayeeModelRepository;
+    @Autowired
+    BeftnModelRepository beftnModelRepository;
     public String save(MultipartFile file) {
         String numberOfRows=null;
         try
@@ -24,9 +31,20 @@ public class NafexModelService {
                 nafexModel.setExchangeCode("7010234");
             }
 
-            Map<String, List<NafexEhMstModel>> listOfModelHavingOnlineAccount = NafexModelServiceHelper.segregateDifferentTypesOfModel(nafexModels);
-            System.out.println("........"+listOfModelHavingOnlineAccount);
+            //Map<String, List<Object>> differentTypesOfModels = NafexModelServiceHelper.segregateDifferentTypesOfModel(nafexModels);
+
+            List<OnlineModel> onlineModelList = NafexModelServiceHelper.generateOnlineModelList(nafexModels);
+            List<CocModel> cocModelList = NafexModelServiceHelper.generateCocModelList(nafexModels);
+            List<AccountPayeeModel> accountPayeeModelList = NafexModelServiceHelper.generateAccountPayeeModelList(nafexModels);
+            List<BeftnModel> beftnModelList = NafexModelServiceHelper.generateBeftnModelList(nafexModels);
+
+            System.out.println("........"+onlineModelList);
+
             nafexModelRepository.saveAll(nafexModels);
+            onlineModelRepository.saveAll(onlineModelList);
+            cocModelRepository.saveAll(cocModelList);
+            accountPayeeModelRepository.saveAll(accountPayeeModelList);
+            beftnModelRepository.saveAll(beftnModelList);
 
             numberOfRows = String.valueOf(nafexModelRepository.count());
             return numberOfRows;
