@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NafexModelService {
@@ -22,7 +23,11 @@ public class NafexModelService {
             for(NafexEhMstModel nafexModel : nafexModels){
                 nafexModel.setExchangeCode("7010234");
             }
+
+            Map<String, List<NafexEhMstModel>> listOfModelHavingOnlineAccount = NafexModelServiceHelper.segregateDifferentTypesOfModel(nafexModels);
+            System.out.println("........"+listOfModelHavingOnlineAccount);
             nafexModelRepository.saveAll(nafexModels);
+
             numberOfRows = String.valueOf(nafexModelRepository.count());
             return numberOfRows;
         } catch (IOException e) {

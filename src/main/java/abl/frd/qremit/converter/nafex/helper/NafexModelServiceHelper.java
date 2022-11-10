@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,6 +72,38 @@ public class NafexModelServiceHelper {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
     }
+
+    public static Map<String, List<NafexEhMstModel>> segregateDifferentTypesOfModel(List<NafexEhMstModel> nafexEhMstModel){
+        HashMap<String, List<NafexEhMstModel>> differentTypesOfModel = new HashMap<String, List<NafexEhMstModel>>();
+        List<NafexEhMstModel> onlineList = new ArrayList<>();
+        List<NafexEhMstModel> cocList = new ArrayList<>();
+        List<NafexEhMstModel> beftnList = new ArrayList<>();
+        List<NafexEhMstModel> accountPayeeList = new ArrayList<>();
+        List<NafexEhMstModel> nonProcessed = new ArrayList<>();
+        for (NafexEhMstModel singleModel : nafexEhMstModel){
+            if(singleModel.getCheckT24().equals("1")){
+                onlineList.add(singleModel);
+            } else if (singleModel.getCheckCoc().equals("1")) {
+                cocList.add(singleModel);
+            } else if (singleModel.getCheckBeftn().equals("1")) {
+                beftnList.add(singleModel);
+            }
+            else if (singleModel.getCheckAccPayee().equals("1")){
+                accountPayeeList.add(singleModel);
+            }
+            else{
+                nonProcessed.add(singleModel);
+            }
+        }
+        differentTypesOfModel.put("online", onlineList);
+        differentTypesOfModel.put("coc", cocList);
+        differentTypesOfModel.put("beftn", beftnList);
+        differentTypesOfModel.put("accountPayee", accountPayeeList);
+        differentTypesOfModel.put("nonProcessed", nonProcessed);
+        return  differentTypesOfModel;
+    }
+
+
 
     public static String putCocFlag(String accountNumber){
         if(isOnlineAccoutNumberFound(accountNumber)){
