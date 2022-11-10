@@ -233,13 +233,19 @@ public class NafexModelServiceHelper {
         if(isOnlineAccoutNumberFound(accountNumber)){
             return "0";
         }
-        else{
-            if(accountNumber.contains("coc") || accountNumber.contains("COC") ){
-                return "1";
-            }
-            else {
-                return "0";
-            }
+        else if(accountNumber.contains("coc") || accountNumber.contains("COC")){
+            return "1";
+        }
+        else {
+            return "0";
+        }
+    }
+    public static boolean isCocFound(String accountNumber){
+        if(accountNumber.toLowerCase().contains("coc")){
+            return true;
+        }
+        else {
+            return false;
         }
     }
     public static String getOnlineAccountNumber(String accountNumber){
@@ -272,16 +278,11 @@ public class NafexModelServiceHelper {
             return false;
         }
     }
-    public static boolean isCocFound(String accountNumber){
-        if(accountNumber.toLowerCase().contains("coc")){
-            return true;
-        }
-        else {
+    public static boolean isBeftnFound(String bankName, String accountNumber){
+        if(isOnlineAccoutNumberFound(accountNumber)){
             return false;
         }
-    }
-    public static boolean isBeftnFound(String bankName, String accountNumber){
-        if(isCocFound(accountNumber)){
+        else if(isCocFound(accountNumber)){
             return false;
         }
         else if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")) {
@@ -323,5 +324,4 @@ public class NafexModelServiceHelper {
             return "0";
         }
     }
-
 }

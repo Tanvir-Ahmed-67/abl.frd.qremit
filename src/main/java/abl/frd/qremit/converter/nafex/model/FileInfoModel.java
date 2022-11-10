@@ -27,10 +27,8 @@ public class FileInfoModel {
     private String unprocessedCount;
     @Column(name = "processed_count")
     private String processedCount;
-
-    public FileInfoModel() {
-
-    }
+    @Column(name = "total_count")
+    private String totalCount;
 
     @Override
     public String toString() {
@@ -45,11 +43,11 @@ public class FileInfoModel {
                 ", accountPayeeCount='" + accountPayeeCount + '\'' +
                 ", unprocessedCount='" + unprocessedCount + '\'' +
                 ", processedCount='" + processedCount + '\'' +
+                ", totalCount='" + totalCount + '\'' +
                 '}';
     }
 
-    public FileInfoModel(long id, String exchangeCode, String uploadDate, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount) {
-        this.id = id;
+    public FileInfoModel(String exchangeCode, String uploadDate, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount) {
         this.exchangeCode = exchangeCode;
         this.uploadDate = uploadDate;
         this.fileName = fileName;
@@ -59,6 +57,19 @@ public class FileInfoModel {
         this.accountPayeeCount = accountPayeeCount;
         this.unprocessedCount = unprocessedCount;
         this.processedCount = processedCount;
+        this.totalCount = totalCount;
+    }
+
+    public String getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(String totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public FileInfoModel() {
+
     }
 
     public long getId() {
