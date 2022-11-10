@@ -28,7 +28,7 @@ public class NafexModelServiceHelper {
     }
     public static List<NafexEhMstModel> csvToNafexModels(InputStream is) {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter('|').withIgnoreHeaderCase().withTrim())) {
+             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withIgnoreHeaderCase().withTrim())) {
             List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
@@ -104,7 +104,6 @@ public class NafexModelServiceHelper {
         }
     }
     public static boolean isOnlineAccoutNumberFound(String accountNumber){
-        System.out.println(accountNumber);
         Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
         Matcher m = p.matcher(accountNumber);
         if (m.find())
