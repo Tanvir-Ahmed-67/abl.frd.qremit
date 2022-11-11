@@ -49,7 +49,7 @@ public class CocModel {
     @Column(name = "extra_e")
     private String extraE;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
     private NafexEhMstModel nafexEhMstModel;
 

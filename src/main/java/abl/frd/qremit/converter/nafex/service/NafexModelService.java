@@ -24,7 +24,7 @@ public class NafexModelService {
     BeftnModelRepository beftnModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
-    public String save(MultipartFile file) {
+    public FileInfoModel save(MultipartFile file) {
         String numberOfRows=null;
         try
         {
@@ -65,7 +65,7 @@ public class NafexModelService {
             fileInfoModelRepository.save(fileInfoModel);
 
             numberOfRows = String.valueOf(nafexModelRepository.count());
-            return numberOfRows;
+            return fileInfoModel;
         } catch (IOException e) {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }

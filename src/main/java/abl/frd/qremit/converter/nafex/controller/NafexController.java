@@ -1,11 +1,13 @@
 package abl.frd.qremit.converter.nafex.controller;
 import abl.frd.qremit.converter.ResponseMessage;
 import abl.frd.qremit.converter.nafex.helper.NafexModelServiceHelper;
+import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,29 +31,35 @@ public class NafexController {
         return "nafex";
     }
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
+    public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
         String message = "";
         String count ="";
+        FileInfoModel fileInfoModelObject;
         if (NafexModelServiceHelper.hasCSVFormat(file)) {
             int extensionIndex = file.getOriginalFilename().lastIndexOf(".");
             String fileNameWithoutExtension = file.getOriginalFilename().substring(0,extensionIndex);
             try {
-                count = nafexModelService.save(file);
+                fileInfoModelObject = nafexModelService.save(file);
+                model.addAttribute("fileInfo", fileInfoModelObject);
                 //message ="Uploaded the file successfully: " + file.getOriginalFilename();
                 String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                         .path("/qremit/download/")
                         .path(fileNameWithoutExtension+".txt")
                         .toUriString();
 
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message,fileDownloadUri));
+                return "newPage";
+
+                //return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message,fileDownloadUri));
             } catch (Exception e) {
                 e.printStackTrace();
                 message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(count,""));
+                return "newPage";
+                //return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(count,""));
             }
         }
         message = "Please upload a csv file!";
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message,""));
+        return "newPage";
+        //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message,""));
     }
 
 }

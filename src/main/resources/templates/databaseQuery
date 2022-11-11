@@ -4,3 +4,11 @@ truncate table converted_data_beftn;
 truncate table converted_data_account_payee;
 truncate TABLE upload_file_info;
 truncate TABLE base_data_table_nafex;
+
+
+drop TABLE converted_data_online;
+drop table converted_data_coc;
+drop table converted_data_beftn;
+drop table converted_data_account_payee;
+drop TABLE upload_file_info;
+drop TABLE base_data_table_nafex;

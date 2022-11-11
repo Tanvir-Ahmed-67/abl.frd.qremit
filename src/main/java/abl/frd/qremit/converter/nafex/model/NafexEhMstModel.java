@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="base_data_table_nafex")
@@ -63,6 +64,19 @@ public class NafexEhMstModel {
     private String checkAccPayee;
     @Column(name = "check_beftn")
     private String checkBeftn;
+
+    //@OneToMany(mappedBy="nafexEhMstModel")
+    @OneToMany(cascade=CascadeType.ALL)
+    @JoinColumn(name="eh_mst_id ")
+    private List<CocModel> cocModelList;
+
+    public List<CocModel> getCocModelList() {
+        return cocModelList;
+    }
+
+    public void setCocModelList(List<CocModel> cocModelList) {
+        this.cocModelList = cocModelList;
+    }
 
     public String getCheckT24() {
         return checkT24;
