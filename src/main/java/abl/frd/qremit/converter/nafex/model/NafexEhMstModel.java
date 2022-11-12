@@ -66,16 +66,29 @@ public class NafexEhMstModel {
     private String checkBeftn;
 
     //@OneToMany(mappedBy="nafexEhMstModel")
-    @OneToMany(cascade=CascadeType.ALL)
-    @JoinColumn(name="eh_mst_id ")
-    private List<CocModel> cocModelList;
+    //@ManyToOne(cascade=CascadeType.ALL)
+    //@JoinColumn(name="file_info_model_id ")
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="file_info_model_id")
+    private FileInfoModel fileInfoModel;
 
-    public List<CocModel> getCocModelList() {
-        return cocModelList;
+//    @OneToOne(cascade=CascadeType.ALL, mappedBy = "nafexEhMstModel")
+//    private CocModel cocModel;
+
+//    public CocModel getCocModel() {
+//        return cocModel;
+//    }
+//
+//    public void setCocModel(CocModel cocModel) {
+//        this.cocModel = cocModel;
+//    }
+
+    public FileInfoModel getFileInfoModel() {
+        return fileInfoModel;
     }
 
-    public void setCocModelList(List<CocModel> cocModelList) {
-        this.cocModelList = cocModelList;
+    public void setFileInfoModel(FileInfoModel fileInfoModel) {
+        this.fileInfoModel = fileInfoModel;
     }
 
     public String getCheckT24() {

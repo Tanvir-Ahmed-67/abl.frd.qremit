@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="upload_file_info")
@@ -30,6 +31,39 @@ public class FileInfoModel {
     @Column(name = "total_count")
     private String totalCount;
 
+    /*
+    @ManyToOne
+    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
+    private NafexEhMstModel nafexEhMstModel;
+*/
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    private List<NafexEhMstModel> nafexEhMstModel;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    private List<CocModel> cocModelList;
+
+    public List<CocModel> getCocModelList() {
+        return cocModelList;
+    }
+
+    public void setCocModelList(List<CocModel> cocModelList) {
+        this.cocModelList = cocModelList;
+    }
+
+    public FileInfoModel(String exchangeCode, String uploadDate, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount, List<NafexEhMstModel> nafexEhMstModelSet) {
+        this.exchangeCode = exchangeCode;
+        this.uploadDate = uploadDate;
+        this.fileName = fileName;
+        this.cocCount = cocCount;
+        this.beftnCount = beftnCount;
+        this.onlineCount = onlineCount;
+        this.accountPayeeCount = accountPayeeCount;
+        this.unprocessedCount = unprocessedCount;
+        this.processedCount = processedCount;
+        this.totalCount = totalCount;
+        this.nafexEhMstModel = nafexEhMstModelSet;
+    }
+
     @Override
     public String toString() {
         return "FileInfoModel{" +
@@ -44,20 +78,16 @@ public class FileInfoModel {
                 ", unprocessedCount='" + unprocessedCount + '\'' +
                 ", processedCount='" + processedCount + '\'' +
                 ", totalCount='" + totalCount + '\'' +
+                ", nafexEhMstModelSet=" + nafexEhMstModel +
                 '}';
     }
 
-    public FileInfoModel(String exchangeCode, String uploadDate, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount) {
-        this.exchangeCode = exchangeCode;
-        this.uploadDate = uploadDate;
-        this.fileName = fileName;
-        this.cocCount = cocCount;
-        this.beftnCount = beftnCount;
-        this.onlineCount = onlineCount;
-        this.accountPayeeCount = accountPayeeCount;
-        this.unprocessedCount = unprocessedCount;
-        this.processedCount = processedCount;
-        this.totalCount = totalCount;
+    public List<NafexEhMstModel> getNafexEhMstModel() {
+        return nafexEhMstModel;
+    }
+
+    public void setNafexEhMstModel(List<NafexEhMstModel> nafexEhMstModelSet) {
+        this.nafexEhMstModel = nafexEhMstModelSet;
     }
 
     public String getTotalCount() {

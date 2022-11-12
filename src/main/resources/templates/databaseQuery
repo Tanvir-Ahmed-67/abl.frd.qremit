@@ -10,5 +10,6 @@ drop TABLE converted_data_online;
 drop table converted_data_coc;
 drop table converted_data_beftn;
 drop table converted_data_account_payee;
-drop TABLE upload_file_info;
 drop TABLE base_data_table_nafex;
+drop table upload_file_info_nafex_eh_mst_model;
+drop TABLE upload_file_info;
