@@ -13,53 +13,90 @@
 
 <div class="container text-center">
     <div class="row">
-        <p th:text="${fileInfo.fileName}">File Name - </p>
-        <p th:text="${fileInfo.totalCount}"> Total Remittances -  </p>
-
-        <p th:text="${fileInfo.onlineCount}"> Online Count -  </p>
-        <p th:text="${fileInfo.beftnCount}"> Beftn Count -  </p>
+        <br/>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">File Information</div>
+                <table class="table table-bordered table-primary table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">File Name</th>
+                        <th scope="col">Total Remittances</th>
+                        <th scope="col">Online</th>
+                        <th scope="col">Coc</th>
+                        <th scope="col">Account Payee</th>
+                        <th scope="col">Beftn</th>
+                        <th scope="col">Processed</th>
+                        <th scope="col">Unprocessed</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row"><p th:text="${fileInfo.fileName}"></p></th>
+                        <td><p th:text="${fileInfo.totalCount}"></p></td>
+                        <td><p th:text="${fileInfo.onlineCount}"></p></td>
+                        <td><p th:text="${fileInfo.cocCount}"></p></td>
+                        <td><p th:text="${fileInfo.accountPayeeCount}"></p></td>
+                        <td><p th:text="${fileInfo.beftnCount}"></p></td>
+                        <td><p th:text="${fileInfo.processedCount}"></p></td>
+                        <td><p th:text="${fileInfo.unprocessedCount}"></p></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="row">
             <div class="panel-group">
                 <div class="col-md-3">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">Online File</div>
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Online</div>
                         <div class="panel-body">
-                            <p>HTML is the standard markup language for describing the structure of the web pages. Our HTML tutorials will help you to understand the basics of latest HTML5 language, so that you can create your own web pages or website.</p>
+                            <p th:text="${fileInfo.onlineCount}" style="font-size:30px;"> </p>
+                            <br/>
+                            <div th:if="${fileInfo.onlineCount}>0">
+                                <button class="btn btn-primary" value="Download" th:onclick="'javascript:upload('\' + ${fileInfo.id} + '\')'">Download Online File</button>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">COC File</div>
+                    <div class="panel panel-success">
+                        <div class="panel-heading">COC</div>
                         <div class="panel-body">
                             <p th:text="${fileInfo.cocCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.cocCount}>0">
-                                <button class="btn btn-primary" value="Download" th:onclick="'javascript:upload('\' + ${fileInfo.id} + '\')'">Download</button>
+                                <button class="btn btn-primary" th:name="coc" th:value="${fileInfo.id}" th:attr="onclick=|upload('${fileInfo.id}','coc')|" >Download COC File</button>
                             </div>
 
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">A/C Payee File</div>
+                    <div class="panel panel-success">
+                        <div class="panel-heading">A/C Payee</div>
                         <div class="panel-body">
                             <p th:text="${fileInfo.accountPayeeCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.accountPayeeCount}>0">
-                                <button class="btn btn-primary" value="Download">Download</button>
+                                <button class="btn btn-primary" value="Download">Download Account Payee</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">Beftn File</div>
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Beftn</div>
                         <div class="panel-body">
-                            <p>HTML is the standard markup language for describing the structure of the web pages. Our HTML tutorials will help you to understand the basics of latest HTML5 language, so that you can create your own web pages or website.</p>
+                            <p th:text="${fileInfo.beftnCount}" style="font-size:30px;"> </p>
+                            <br/>
+                            <div th:if="${fileInfo.beftnCount}>0">
+                                <button class="btn btn-primary" value="Download" th:onclick="'javascript:upload('\' + ${fileInfo.id} + '\')'">Download Beftn</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -67,9 +104,11 @@
         </div>
         <br />
         <div class="row text-center">
+            <!--
             <div class="col-md-12">
                 <button type="button" class="btn btn-primary">Download All</button>
             </div>
+            -->
         </div>
         <br />
         <div class="row">
@@ -116,7 +155,7 @@
         <footer>
             <div class="row">
                 <div class="col-md-6">
-                    <p>Copyright &copy; 2021 Tutorial Republic</p>
+                    <p>Copyright &copy; 2022 Agrani Bank Limited, FRD</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <a href="#" class="text-dark">Terms of Use</a>

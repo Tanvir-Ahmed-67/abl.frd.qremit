@@ -52,6 +52,9 @@ public class NafexModelService {
             fileInfoModel.setUploadDate("test");
             fileInfoModel.setNafexEhMstModel(nafexModels);
             fileInfoModel.setCocModelList(cocModelList);
+            fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
+            fileInfoModel.setBeftnModelList(beftnModelList);
+            fileInfoModel.setOnlineModelList(onlineModelList);
 
             int ind=0;
             for(NafexEhMstModel nafexModel : nafexModels){
@@ -66,7 +69,15 @@ public class NafexModelService {
             for(CocModel cocModel:cocModelList){
                 cocModel.setFileInfoModel(fileInfoModel);
             }
-
+            for (AccountPayeeModel accountPayeeModel:accountPayeeModelList){
+                accountPayeeModel.setFileInfoModel(fileInfoModel);
+            }
+            for(BeftnModel beftnModel:beftnModelList){
+                beftnModel.setFileInfoModel(fileInfoModel);
+            }
+            for (OnlineModel onlineModel:onlineModelList){
+                onlineModel.setFileInfoModel(fileInfoModel);
+            }
 
 
             // SAVING TO MySql Data Table

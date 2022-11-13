@@ -42,6 +42,39 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     private List<CocModel> cocModelList;
 
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    private List<AccountPayeeModel> accountPayeeModelList;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    private List<BeftnModel> beftnModelList;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    private List<OnlineModel> onlineModelList;
+
+    public List<OnlineModel> getOnlineModelList() {
+        return onlineModelList;
+    }
+
+    public void setOnlineModelList(List<OnlineModel> onlineModelList) {
+        this.onlineModelList = onlineModelList;
+    }
+
+    public List<BeftnModel> getBeftnModelList() {
+        return beftnModelList;
+    }
+
+    public void setBeftnModelList(List<BeftnModel> beftnModelList) {
+        this.beftnModelList = beftnModelList;
+    }
+
+    public List<AccountPayeeModel> getAccountPayeeModelList() {
+        return accountPayeeModelList;
+    }
+
+    public void setAccountPayeeModelList(List<AccountPayeeModel> accountPayeeModelList) {
+        this.accountPayeeModelList = accountPayeeModelList;
+    }
+
     public List<CocModel> getCocModelList() {
         return cocModelList;
     }

@@ -146,7 +146,7 @@ public class NafexModelServiceHelper {
         cocModel.setBranchCode(nafexEhMstModel.getBranchCode());
         cocModel.setBranchName(nafexEhMstModel.getBranchName());
         cocModel.setCocCode("15");
-        cocModel.setCreditMark("CREDIT");
+        cocModel.setCreditMark("CRED");
         cocModel.setCurrency(nafexEhMstModel.getCurrency());
         cocModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
         cocModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
