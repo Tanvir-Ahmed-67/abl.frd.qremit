@@ -9,9 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/qremit")
@@ -24,13 +22,13 @@ public class OnlineModelController {
         this.onlineModelService = onlineModelService;
     }
 
-    @PostMapping("/downloadonline")
-    public ResponseEntity<Resource> downloadFile(@RequestParam("file") String fileNameId, @RequestParam("online") String fileType ) {
-        InputStreamResource file = new InputStreamResource(onlineModelService.load(fileNameId, fileType));
-        String fileName = "online.txt";
+    @GetMapping("/downloadonline/{fileId}/{fileType}")
+    public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
+        InputStreamResource file = new InputStreamResource(onlineModelService.load(fileId, fileType));
+        String fileName = "online_nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
-                .contentType(MediaType.parseMediaType("application/json"))
+                .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
 }

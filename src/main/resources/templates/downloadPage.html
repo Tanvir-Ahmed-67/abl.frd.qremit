@@ -16,7 +16,7 @@
         <br/>
     </div>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" style="padding: 0px">
             <div class="panel panel-primary">
                 <div class="panel-heading">File Information</div>
                 <table class="table table-bordered table-primary table-hover">
@@ -54,11 +54,11 @@
                 <div class="col-md-3">
                     <div class="panel panel-success">
                         <div class="panel-heading">Online</div>
-                        <div class="panel-body">
+                        <div class="panel-body" style="min-height: 150px">
                             <p th:text="${fileInfo.onlineCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.onlineCount}>0">
-                                <button class="btn btn-primary" value="Download" th:onclick="'javascript:upload('\' + ${fileInfo.id} + '\')'">Download Online File</button>
+                                <button class="btn btn-primary" th:name="online" th:value="${fileInfo.id}" th:attr="onclick=|downloadOnline('${fileInfo.id}','coc')|" >Download Online File</button>
                             </div>
                         </div>
                     </div>
@@ -66,11 +66,11 @@
                 <div class="col-md-3">
                     <div class="panel panel-success">
                         <div class="panel-heading">COC</div>
-                        <div class="panel-body">
+                        <div class="panel-body" style="min-height: 150px">
                             <p th:text="${fileInfo.cocCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.cocCount}>0">
-                                <button class="btn btn-primary" th:name="coc" th:value="${fileInfo.id}" th:attr="onclick=|upload('${fileInfo.id}','coc')|" >Download COC File</button>
+                                <button class="btn btn-primary" th:name="coc" th:value="${fileInfo.id}" th:attr="onclick=|downloadCoc('${fileInfo.id}','coc')|" >Download COC File</button>
                             </div>
 
                         </div>
@@ -79,11 +79,11 @@
                 <div class="col-md-3">
                     <div class="panel panel-success">
                         <div class="panel-heading">A/C Payee</div>
-                        <div class="panel-body">
+                        <div class="panel-body" style="min-height: 150px">
                             <p th:text="${fileInfo.accountPayeeCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.accountPayeeCount}>0">
-                                <button class="btn btn-primary" value="Download">Download Account Payee</button>
+                                <button class="btn btn-primary" th:name="accountpayee" th:value="${fileInfo.id}" th:attr="onclick=|downloadAccountPayee('${fileInfo.id}','coc')|" >Download Account Payee</button>
                             </div>
                         </div>
                     </div>
@@ -91,11 +91,11 @@
                 <div class="col-md-3">
                     <div class="panel panel-success">
                         <div class="panel-heading">Beftn</div>
-                        <div class="panel-body">
+                        <div class="panel-body" style="min-height: 150px">
                             <p th:text="${fileInfo.beftnCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.beftnCount}>0">
-                                <button class="btn btn-primary" value="Download" th:onclick="'javascript:upload('\' + ${fileInfo.id} + '\')'">Download Beftn</button>
+                                <button class="btn btn-primary" th:name="beftn" th:value="${fileInfo.id}" th:attr="onclick=|downloadBeftn('${fileInfo.id}','coc')|" >Download Beftn</button>
                             </div>
                         </div>
                     </div>

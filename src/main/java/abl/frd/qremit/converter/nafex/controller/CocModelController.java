@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/qremit")
-public class CocController {
+public class CocModelController {
     private final CocModelService cocModelService;
 
     @Autowired
-    public CocController(CocModelService cocModelService){
+    public CocModelController(CocModelService cocModelService){
         this.cocModelService = cocModelService;
     }
 
 
-    @PostMapping("/downloadcoc")
-    public ResponseEntity<Resource> downloadFile(@RequestParam("file") String fileNameId, @RequestParam("coc") String fileType ) {
-        InputStreamResource file = new InputStreamResource(cocModelService.load(fileNameId, fileType));
-        String fileName = "coc.txt";
+    @GetMapping("/downloadcoc/{fileId}/{fileType}")
+    public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
+        InputStreamResource file = new InputStreamResource(cocModelService.load(fileId, fileType));
+        String fileName = "coc_nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
-                .contentType(MediaType.parseMediaType("application/json"))
+                .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
 }

@@ -1,18 +1,16 @@
-function upload(file, coc) {
-        var formData = new FormData();
-        formData.append("file", file);
-        formData.append("coc", coc);
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/qremit/downloadcoc");
-        xhr.send(formData);
-        xhr.onload = function() {
-            console.log(xhr.responseText);
-            var response = JSON.parse(xhr.responseText);
-            if(xhr.status == 200) {
-                alert("success");
-            } else {
-                alert("fail");
-            }
-        }
+function downloadCoc(file, coc) {
+    window.location="/qremit/downloadcoc/"+file+"/"+coc;
+
+}
+function downloadAccountPayee(file, accountpayee) {
+    window.location="/qremit/downloadaccountpayee/"+file+"/"+accountpayee;
+
+}
+function downloadOnline(file, online) {
+    window.location="/qremit/downloadonline/"+file+"/"+online;
+
+}
+function downloadBeftn(file, beftn) {
+    window.location="/qremit/downloadbeftn/"+file+"/"+beftn;
 
 }
