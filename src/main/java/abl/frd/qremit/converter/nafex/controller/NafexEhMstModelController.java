@@ -24,7 +24,6 @@ public class NafexEhMstModelController {
 
     @GetMapping(value = "/index")
     public String homePage() {
-        System.out.println("inside controller");
         return "homePage";
     }
     @PostMapping("/upload")

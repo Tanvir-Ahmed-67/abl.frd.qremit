@@ -3,7 +3,6 @@ package abl.frd.qremit.converter.nafex.helper;
 import abl.frd.qremit.converter.nafex.model.CocModel;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,6 @@ public class CocModelServiceHelper {
 
     public static ByteArrayInputStream cocModelToCSV(List<CocModel> cocDataModelList) {
         final CSVFormat format = CSVFormat.DEFAULT;
-
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             for (CocModel cocDataModel : cocDataModelList) {
@@ -66,6 +65,7 @@ public class CocModelServiceHelper {
     }
 
     public static Double calculatePercentage(Double mainAmount){
+        df.setRoundingMode(RoundingMode.DOWN);
         Double percentage;
         percentage = (incentivePercentage / 100f) * mainAmount;
         return Double.valueOf(df.format(percentage));

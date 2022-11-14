@@ -29,11 +29,10 @@ public class OnlineModelServiceHelper {
 
     public static ByteArrayInputStream OnlineModelToCSV(List<OnlineModel> onlineModelList) {
         final CSVFormat format = CSVFormat.DEFAULT;
-
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             for (OnlineModel onlineModel : onlineModelList) {
-                onlineModel.setBeneficiaryAccount(onlineModel.getBeneficiaryAccount());
+                onlineModel.setBeneficiaryAccount(getOnlineAccountNumber(onlineModel.getBeneficiaryAccount()));
                 List<Object> data = Arrays.asList(
                         onlineModel.getTransactionNo().trim(),
                         onlineModel.getExchangeCode().trim(),
@@ -45,7 +44,6 @@ public class OnlineModelServiceHelper {
             }
             csvPrinter.flush();
 
-            System.out.println("..................."+incentivePercentage);
             return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException("fail to Download " + e.getMessage());
@@ -53,15 +51,15 @@ public class OnlineModelServiceHelper {
     }
 
     public static String getOnlineAccountNumber(String accountNumber){
-        //^.*02000(\d{8})$.*
-        Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
+        //^.*(02000\d{8})$.*
+        Pattern p = Pattern.compile("^.*(02000\\d{8})$.*");
         Matcher m = p.matcher(accountNumber);
-        String onlineAccountNumber=null;
+        String updatedOlineAccountNumber=null;
         if (m.find())
         {
-            onlineAccountNumber = m.group(1);
+            updatedOlineAccountNumber = m.group(0);
         }
-        return onlineAccountNumber;
+        return updatedOlineAccountNumber;
     }
 }
 

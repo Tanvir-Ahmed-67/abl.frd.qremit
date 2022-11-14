@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +64,7 @@ public class AccountPayeeModelServiceHelper {
     }
 
     public static Double calculatePercentage(Double mainAmount){
+        df.setRoundingMode(RoundingMode.DOWN);
         Double percentage;
         percentage = (incentivePercentage / 100f) * mainAmount;
         return Double.valueOf(df.format(percentage));
