@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 @Controller
 @RequestMapping("/qremit")
 public class BeftnModelController {
@@ -23,11 +26,10 @@ public class BeftnModelController {
     @GetMapping("/downloadbeftn/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(beftnModelService.load(fileId, fileType));
-        String fileName = "coc_nafex";
+        String fileName = "beftn_nafex";
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xls")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
-
 }

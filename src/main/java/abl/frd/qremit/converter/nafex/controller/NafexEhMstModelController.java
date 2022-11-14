@@ -25,7 +25,7 @@ public class NafexEhMstModelController {
     @GetMapping(value = "/index")
     public String homePage() {
         System.out.println("inside controller");
-        return "index";
+        return "homePage";
     }
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
@@ -34,29 +34,19 @@ public class NafexEhMstModelController {
         FileInfoModel fileInfoModelObject;
         if (NafexModelServiceHelper.hasCSVFormat(file)) {
             int extensionIndex = file.getOriginalFilename().lastIndexOf(".");
-            String fileNameWithoutExtension = file.getOriginalFilename().substring(0,extensionIndex);
             try {
                 fileInfoModelObject = nafexModelService.save(file);
                 model.addAttribute("fileInfo", fileInfoModelObject);
-                //message ="Uploaded the file successfully: " + file.getOriginalFilename();
-                String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .path("/qremit/download/")
-                        .path(fileNameWithoutExtension+".txt")
-                        .toUriString();
-
                 return "downloadPage";
 
-                //return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message,fileDownloadUri));
             } catch (Exception e) {
                 e.printStackTrace();
                 message = "Could not upload the file: " + file.getOriginalFilename() + "!";
                 return "downloadPage";
-                //return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(count,""));
             }
         }
         message = "Please upload a csv file!";
         return "downloadPage";
-        //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message,""));
     }
 
 }

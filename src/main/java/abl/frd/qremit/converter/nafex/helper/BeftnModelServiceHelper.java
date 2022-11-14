@@ -24,15 +24,47 @@ public class BeftnModelServiceHelper {
 
             Row row = sheet.createRow(rowIndex++);
             Cell cell0 = row.createCell(0);
-            cell0.setCellValue(beftnModel.getExtraE());
+            cell0.setCellValue(beftnModel.getId());
             Cell cell1 = row.createCell(1);
-            cell1.setCellValue(beftnModel.getBeneficiaryName());
+            cell1.setCellValue(beftnModel.getOrgCustomerNo().trim());
+
+            Cell cell2 = row.createCell(2);
+            cell2.setCellValue(beftnModel.getOrgName().trim());
+
+            Cell cell3 = row.createCell(3);
+            cell3.setCellValue(beftnModel.getOrgAccountNo().trim());
+
+            Cell cell4 = row.createCell(4);
+            cell4.setCellValue(beftnModel.getOrgAccountType().trim());
+
+            Cell cell5 = row.createCell(5);
+            cell5.setCellValue(beftnModel.getBeneficiaryName().trim());
+
+            Cell cell6 = row.createCell(6);
+            cell6.setCellValue(beftnModel.getBeneficiaryAccount().trim());
+
+            Cell cell7 = row.createCell(7);
+            cell7.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
+
+            Cell cell8 = row.createCell(8);
+            cell8.setCellValue(beftnModel.getRoutingNo().trim());
+
+            Cell cell9 = row.createCell(9);
+            cell9.setCellValue(beftnModel.getAmount());
+
+            Cell cell10 = row.createCell(10);
+            cell10.setCellValue(beftnModel.getTransactionNo());
         }
-        FileOutputStream fos = null;
+
+        //FileOutputStream fos = null;
+        ByteArrayOutputStream fos = new ByteArrayOutputStream();
+        ByteArrayInputStream is = null;
         try {
-            fos = new FileOutputStream("Beftn.xls");
             workbook.write(fos);
+            byte[] xls = fos.toByteArray();
+            is = new ByteArrayInputStream(xls);
             fos.close();
+            is.close();
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -40,7 +72,7 @@ public class BeftnModelServiceHelper {
         catch (IOException e) {
             e.printStackTrace();
         }
-    return null;
+    return is;
     }
 
 }

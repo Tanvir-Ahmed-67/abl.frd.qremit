@@ -31,7 +31,6 @@ public class NafexModelService {
             List<NafexEhMstModel> nafexModels = NafexModelServiceHelper.csvToNafexModels(file.getInputStream());
 
 
-            //Map<String, List<Object>> differentTypesOfModels = NafexModelServiceHelper.segregateDifferentTypesOfModel(nafexModels);
 
             // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
             List<OnlineModel> onlineModelList = NafexModelServiceHelper.generateOnlineModelList(nafexModels);

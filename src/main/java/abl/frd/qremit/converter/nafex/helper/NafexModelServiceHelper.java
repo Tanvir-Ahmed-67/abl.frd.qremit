@@ -219,10 +219,10 @@ public class NafexModelServiceHelper {
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");
         beftnModel.setIncentive(000.00);
-        beftnModel.setOrgAccountNo("dummy");
-        beftnModel.setOrgAccountType("dummy");
-        beftnModel.setOrgCustomerNo("dummy");
-        beftnModel.setOrgName("dummy");
+        beftnModel.setOrgAccountNo("160954");
+        beftnModel.setOrgAccountType("CA");
+        beftnModel.setOrgCustomerNo("7892");
+        beftnModel.setOrgName("FRD Remittance");
         beftnModel.setRoutingNo(nafexEhMstModel.getBranchCode());
         beftnModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
 

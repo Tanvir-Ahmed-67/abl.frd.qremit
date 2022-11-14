@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap Fixed Layout Example</title>
+    <title>Qremit Data Converter</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -28,8 +28,8 @@
                         <th scope="col">Coc</th>
                         <th scope="col">Account Payee</th>
                         <th scope="col">Beftn</th>
-                        <th scope="col">Processed</th>
-                        <th scope="col">Unprocessed</th>
+                        <!--<th scope="col">Processed</th>
+                        <th scope="col">Unprocessed</th>-->
                     </tr>
                     </thead>
                     <tbody>
@@ -40,8 +40,8 @@
                         <td><p th:text="${fileInfo.cocCount}"></p></td>
                         <td><p th:text="${fileInfo.accountPayeeCount}"></p></td>
                         <td><p th:text="${fileInfo.beftnCount}"></p></td>
-                        <td><p th:text="${fileInfo.processedCount}"></p></td>
-                        <td><p th:text="${fileInfo.unprocessedCount}"></p></td>
+                       <!-- <td><p th:text="${fileInfo.processedCount}"></p></td>
+                        <td><p th:text="${fileInfo.unprocessedCount}"></p></td>-->
                     </tr>
                     </tbody>
                 </table>
@@ -111,6 +111,7 @@
             -->
         </div>
         <br />
+        <!--
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-danger">
@@ -149,6 +150,7 @@
                 </div>
             </div>
         </div>
+
     </div>
     <div class="row">
         <hr>
@@ -165,6 +167,7 @@
             </div>
         </footer>
     </div>
+    -->
 </div>
 </body>
 </html>
