@@ -21,9 +21,9 @@ import java.util.regex.Pattern;
 public class OnlineModelServiceHelper {
 
 
-    private static String incentivePercentage;
+    private static float incentivePercentage;
     @Autowired
-    public OnlineModelServiceHelper(@Value("${incentive.percentage}") String incentivePercentage) {
+    public OnlineModelServiceHelper(@Value("${incentive.percentage}") float incentivePercentage) {
         this.incentivePercentage = incentivePercentage;
     }
 

@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 public class AccountPayeeModelServiceHelper {
     public static ByteArrayInputStream AccountPayeeModelToCSV(List<AccountPayeeModel> accountPayeeModelList) {
-        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.NON_NUMERIC);
+        final CSVFormat format = CSVFormat.DEFAULT;
 
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
