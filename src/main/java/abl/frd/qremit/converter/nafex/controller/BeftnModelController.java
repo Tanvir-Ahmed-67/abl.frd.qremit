@@ -26,7 +26,7 @@ public class BeftnModelController {
     @GetMapping("/downloadbeftn/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(beftnModelService.load(fileId, fileType));
-        String fileName = "beftn_nafex";
+        String fileName = "Beftn_Main_Nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
                 .contentType(MediaType.parseMediaType("application/csv"))
@@ -36,7 +36,7 @@ public class BeftnModelController {
     @GetMapping("/downloadBeftnIncentive/{fileId}/{fileType}")
     public ResponseEntity<Resource> downloadIncentiveFile(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(beftnModelService.loadIncentive(fileId, fileType));
-        String fileName = "beftn_Incentive_nafex";
+        String fileName = "Beftn_Incentive_Nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
                 .contentType(MediaType.parseMediaType("application/csv"))

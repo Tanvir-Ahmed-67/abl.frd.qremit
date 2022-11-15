@@ -23,7 +23,7 @@ public class AccountPayeeModelController {
     @GetMapping("/downloadaccountpayee/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(accountPayeeModelService.load(fileId, fileType));
-        String fileName = "account_payee_nafex";
+        String fileName = "Account_Payee_Nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
                 .contentType(MediaType.parseMediaType("application/csv"))

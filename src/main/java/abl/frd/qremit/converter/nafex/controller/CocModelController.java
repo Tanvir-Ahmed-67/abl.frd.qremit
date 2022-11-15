@@ -24,7 +24,7 @@ public class CocModelController {
     @GetMapping("/downloadcoc/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(cocModelService.load(fileId, fileType));
-        String fileName = "coc_nafex";
+        String fileName = "Coc_Nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
                 .contentType(MediaType.parseMediaType("application/csv"))
