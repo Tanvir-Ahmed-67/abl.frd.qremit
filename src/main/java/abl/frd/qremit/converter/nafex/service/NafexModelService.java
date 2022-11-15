@@ -29,8 +29,16 @@ public class NafexModelService {
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
             List<NafexEhMstModel> nafexModels = NafexModelServiceHelper.csvToNafexModels(file.getInputStream());
+            int ind=0;
+            for(NafexEhMstModel nafexModel : nafexModels){
+                nafexModel.setExchangeCode("7010234");
+                nafexModel.setFileInfoModel(fileInfoModel);
+                if(ind==0) {
+                    fileInfoModel.setExchangeCode(nafexModel.getExchangeCode());
+                    ind++;
+                }
 
-
+            }
 
             // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
             List<OnlineModel> onlineModelList = NafexModelServiceHelper.generateOnlineModelList(nafexModels);
@@ -55,16 +63,6 @@ public class NafexModelService {
             fileInfoModel.setBeftnModelList(beftnModelList);
             fileInfoModel.setOnlineModelList(onlineModelList);
 
-            int ind=0;
-            for(NafexEhMstModel nafexModel : nafexModels){
-                nafexModel.setExchangeCode("7010234");
-                nafexModel.setFileInfoModel(fileInfoModel);
-                if(ind==0) {
-                    fileInfoModel.setExchangeCode(nafexModel.getExchangeCode());
-                    ind++;
-                }
-
-            }
             for(CocModel cocModel:cocModelList){
                 cocModel.setFileInfoModel(fileInfoModel);
             }
@@ -77,16 +75,8 @@ public class NafexModelService {
             for (OnlineModel onlineModel:onlineModelList){
                 onlineModel.setFileInfoModel(fileInfoModel);
             }
-
-
             // SAVING TO MySql Data Table
             fileInfoModelRepository.save(fileInfoModel);
-            //nafexModelRepository.saveAll(nafexModels);
-            //onlineModelRepository.saveAll(onlineModelList);
-           // cocModelRepository.saveAll(cocModelList);
-           // accountPayeeModelRepository.saveAll(accountPayeeModelList);
-          //  beftnModelRepository.saveAll(beftnModelList);
-
             return fileInfoModel;
         } catch (IOException e) {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());

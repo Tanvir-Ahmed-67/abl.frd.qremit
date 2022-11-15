@@ -14,3 +14,7 @@ function downloadBeftn(file, beftn) {
     window.location="/qremit/downloadbeftn/"+file+"/"+beftn;
 
 }
+
+function  downloadBeftnIncentive(file, beftn){
+    window.location="/qremit/downloadBeftnIncentive/"+file+"/"+beftn;
+}

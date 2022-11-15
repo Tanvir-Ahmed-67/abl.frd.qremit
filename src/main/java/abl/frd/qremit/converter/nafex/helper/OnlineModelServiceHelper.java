@@ -57,7 +57,7 @@ public class OnlineModelServiceHelper {
         String updatedOlineAccountNumber=null;
         if (m.find())
         {
-            updatedOlineAccountNumber = m.group(0);
+            updatedOlineAccountNumber = m.group(1);
         }
         return updatedOlineAccountNumber;
     }

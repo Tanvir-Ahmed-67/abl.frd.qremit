@@ -70,35 +70,6 @@ public class NafexModelServiceHelper {
         }
     }
 
-    public static Map<String, List<Object>> segregateDifferentTypesOfModel(List<NafexEhMstModel> nafexEhMstModel){
-        HashMap<String, List<Object>> differentTypesOfModel = new HashMap<String, List<Object>>();
-        List<OnlineModel> onlineList = new ArrayList<>();
-        List<NafexEhMstModel> cocList = new ArrayList<>();
-        List<NafexEhMstModel> beftnList = new ArrayList<>();
-        List<NafexEhMstModel> accountPayeeList = new ArrayList<>();
-        List<NafexEhMstModel> nonProcessed = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
-            if(singleModel.getCheckT24().equals("1")){
-                onlineList.add(generateOnlineModel(singleModel));
-            } else if (singleModel.getCheckCoc().equals("1")) {
-                cocList.add(singleModel);
-            } else if (singleModel.getCheckBeftn().equals("1")) {
-                beftnList.add(singleModel);
-            }
-            else if (singleModel.getCheckAccPayee().equals("1")){
-                accountPayeeList.add(singleModel);
-            }
-            else{
-                nonProcessed.add(singleModel);
-            }
-        }
-        differentTypesOfModel.put("online", Collections.singletonList(onlineList));
-        //differentTypesOfModel.put("coc", cocList);
-       // differentTypesOfModel.put("beftn", beftnList);
-       // differentTypesOfModel.put("accountPayee", accountPayeeList);
-       // differentTypesOfModel.put("nonProcessed", nonProcessed);
-        return  differentTypesOfModel;
-    }
 
     public static List<OnlineModel> generateOnlineModelList(List<NafexEhMstModel> nafexEhMstModel){
         List<OnlineModel> onlineList = new ArrayList<>();

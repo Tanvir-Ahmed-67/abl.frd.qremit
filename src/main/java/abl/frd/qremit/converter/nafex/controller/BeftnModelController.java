@@ -32,4 +32,14 @@ public class BeftnModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
+
+    @GetMapping("/downloadBeftnIncentive/{fileId}/{fileType}")
+    public ResponseEntity<Resource> downloadIncentiveFile(@PathVariable String fileId, @PathVariable String fileType) {
+        InputStreamResource file = new InputStreamResource(beftnModelService.loadIncentive(fileId, fileType));
+        String fileName = "beftn_Incentive_nafex";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
+                .contentType(MediaType.parseMediaType("application/csv"))
+                .body(file);
+    }
 }

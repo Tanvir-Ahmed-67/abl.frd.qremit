@@ -22,24 +22,24 @@
                 <table class="table table-bordered table-primary table-hover">
                     <thead class="thead-dark">
                     <tr>
-                        <th scope="col">File Name</th>
-                        <th scope="col">Total Remittances</th>
-                        <th scope="col">Online</th>
-                        <th scope="col">Coc</th>
-                        <th scope="col">Account Payee</th>
-                        <th scope="col">Beftn</th>
+                        <th scope="col" class="text-center">File Name</th>
+                        <th scope="col" class="text-center">Total Remittances</th>
+                        <th scope="col" class="text-center">Online</th>
+                        <th scope="col" class="text-center">Coc</th>
+                        <th scope="col" class="text-center">Account Payee</th>
+                        <th scope="col" class="text-center">Beftn</th>
                         <!--<th scope="col">Processed</th>
                         <th scope="col">Unprocessed</th>-->
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <th scope="row"><p th:text="${fileInfo.fileName}"></p></th>
-                        <td><p th:text="${fileInfo.totalCount}"></p></td>
-                        <td><p th:text="${fileInfo.onlineCount}"></p></td>
-                        <td><p th:text="${fileInfo.cocCount}"></p></td>
-                        <td><p th:text="${fileInfo.accountPayeeCount}"></p></td>
-                        <td><p th:text="${fileInfo.beftnCount}"></p></td>
+                        <th scope="row" class="text-center"><p th:text="${fileInfo.fileName}"></p></th>
+                        <td class="text-center"><p th:text="${fileInfo.totalCount}"></p></td>
+                        <td class="text-center"><p th:text="${fileInfo.onlineCount}"></p></td>
+                        <td class="text-center"><p th:text="${fileInfo.cocCount}"></p></td>
+                        <td class="text-center"><p th:text="${fileInfo.accountPayeeCount}"></p></td>
+                        <td class="text-center"><p th:text="${fileInfo.beftnCount}"></p></td>
                        <!-- <td><p th:text="${fileInfo.processedCount}"></p></td>
                         <td><p th:text="${fileInfo.unprocessedCount}"></p></td>-->
                     </tr>
@@ -58,7 +58,7 @@
                             <p th:text="${fileInfo.onlineCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.onlineCount}>0">
-                                <button class="btn btn-primary" th:name="online" th:value="${fileInfo.id}" th:attr="onclick=|downloadOnline('${fileInfo.id}','coc')|" >Download Online File</button>
+                                <button class="btn btn-primary" th:name="online" th:value="${fileInfo.id}" th:attr="onclick=|downloadOnline('${fileInfo.id}','coc')|" >Download Online</button>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                             <p th:text="${fileInfo.cocCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.cocCount}>0">
-                                <button class="btn btn-primary" th:name="coc" th:value="${fileInfo.id}" th:attr="onclick=|downloadCoc('${fileInfo.id}','coc')|" >Download COC File</button>
+                                <button class="btn btn-primary" th:name="coc" th:value="${fileInfo.id}" th:attr="onclick=|downloadCoc('${fileInfo.id}','coc')|" >Download Coc</button>
                             </div>
 
                         </div>
@@ -83,7 +83,7 @@
                             <p th:text="${fileInfo.accountPayeeCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.accountPayeeCount}>0">
-                                <button class="btn btn-primary" th:name="accountpayee" th:value="${fileInfo.id}" th:attr="onclick=|downloadAccountPayee('${fileInfo.id}','coc')|" >Download Account Payee</button>
+                                <button class="btn btn-primary" th:name="accountpayee" th:value="${fileInfo.id}" th:attr="onclick=|downloadAccountPayee('${fileInfo.id}','coc')|" >Download A/C Payee</button>
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,12 @@
                             <p th:text="${fileInfo.beftnCount}" style="font-size:30px;"> </p>
                             <br/>
                             <div th:if="${fileInfo.beftnCount}>0">
-                                <button class="btn btn-primary" th:name="beftn" th:value="${fileInfo.id}" th:attr="onclick=|downloadBeftn('${fileInfo.id}','coc')|" >Download Beftn</button>
+                                <div class="row">
+                                    <div class="col text-center">
+                                        <button class="btn btn-primary" th:name="beftn" th:value="${fileInfo.id}" th:attr="onclick=|downloadBeftn('${fileInfo.id}','beftn')|" >Beftn Main</button>
+                                        <button class="btn btn-primary" style="display: inline-block; vertical-align: top;" th:name="beftn_incentive" th:value="1" th:attr="onclick=|downloadBeftnIncentive('${fileInfo.id}','beftn')|" >Beftn Incentive</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
