@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.nafex.controller;
 
-import abl.frd.qremit.converter.nafex.service.AccountPayeeModelService;
 import abl.frd.qremit.converter.nafex.service.OnlineModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;

@@ -20,7 +20,7 @@ public class BeftnModelService {
     }
 
     public ByteArrayInputStream loadIncentive(String fileId, String fileType) {
-        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(Long.parseLong(fileId));
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoIdForIncentive(Long.parseLong(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnIncentiveModelsToExcel(beftnModels);
         return in;
     }
