@@ -18,13 +18,39 @@ public class BeftnModelServiceHelper {
         Sheet sheet = workbook.createSheet("Beftn");
         Iterator<BeftnModel> iterator = beftnModelList.iterator();
         int rowIndex = 1;
+        int count=1;
+        Row row = null;
+
+        row = sheet.createRow(0);
+        Cell cell_0 = row.createCell(0);
+        cell_0.setCellValue("REFERENCE_NO");
+        Cell cell_1 = row.createCell(1);
+        cell_1.setCellValue("ORG_CUSTOMER_NO");
+        Cell cell_2 = row.createCell(2);
+        cell_2.setCellValue("ORG_NAME");
+        Cell cell_3 = row.createCell(3);
+        cell_3.setCellValue("ORG_ACCOUNT_NO");
+        Cell cell_4 = row.createCell(4);
+        cell_4.setCellValue("ORG_ACCOUNT_TYPE");
+        Cell cell_5 = row.createCell(5);
+        cell_5.setCellValue("BEN_NAME");
+        Cell cell_6 = row.createCell(6);
+        cell_6.setCellValue("BEN_ACCOUNT_NO");
+        Cell cell_7 = row.createCell(7);
+        cell_7.setCellValue("BEN_ACCOUNT_TYPE");
+        Cell cell_8 = row.createCell(8);
+        cell_8.setCellValue("BEN_ROUTING_NO");
+        Cell cell_9 = row.createCell(9);
+        cell_9.setCellValue("AMOUNT");
+        Cell cell_10 = row.createCell(10);
+        cell_10.setCellValue("PAYMENT_DESCRIPTION");
         while(iterator.hasNext()){
             BeftnModel beftnModel = iterator.next();
 
-            Row row = sheet.createRow(rowIndex++);
+            row = sheet.createRow(rowIndex++);
 
             Cell cell0 = row.createCell(0);
-            cell0.setCellValue(rowIndex-1);
+            cell0.setCellValue(count);
 
             Cell cell1 = row.createCell(1);
             cell1.setCellValue(beftnModel.getOrgCustomerNo().trim());
@@ -55,18 +81,22 @@ public class BeftnModelServiceHelper {
 
             Cell cell10 = row.createCell(10);
             cell10.setCellValue(beftnModel.getTransactionNo());
+
+            count++;
         }
-        sheet.getRow(0).getCell(0).setCellValue("REFERENCE_NO");
-        sheet.getRow(0).getCell(1).setCellValue("ORG_CUSTOMER_NO");
-        sheet.getRow(0).getCell(2).setCellValue("ORG_NAME");
-        sheet.getRow(0).getCell(3).setCellValue("ORG_ACCOUNT_NO");
-        sheet.getRow(0).getCell(4).setCellValue("ORG_ACCOUNT_TYPE");
-        sheet.getRow(0).getCell(5).setCellValue("BEN_NAME");
-        sheet.getRow(0).getCell(6).setCellValue("BEN_ACCOUNT_NO");
-        sheet.getRow(0).getCell(7).setCellValue("BEN_ACCOUNT_TYPE");
-        sheet.getRow(0).getCell(8).setCellValue("BEN_ROUTING_NO");
-        sheet.getRow(0).getCell(9).setCellValue("AMOUNT");
-        sheet.getRow(0).getCell(10).setCellValue("PAYMENT_DESCRIPTION");
+
+
+//        sheet.getRow(0).getCell(0).setCellValue("REFERENCE_NO");
+//        sheet.getRow(0).getCell(1).setCellValue("ORG_CUSTOMER_NO");
+//        sheet.getRow(0).getCell(2).setCellValue("ORG_NAME");
+//        sheet.getRow(0).getCell(3).setCellValue("ORG_ACCOUNT_NO");
+//        sheet.getRow(0).getCell(4).setCellValue("ORG_ACCOUNT_TYPE");
+//        sheet.getRow(0).getCell(5).setCellValue("BEN_NAME");
+//        sheet.getRow(0).getCell(6).setCellValue("BEN_ACCOUNT_NO");
+//        sheet.getRow(0).getCell(7).setCellValue("BEN_ACCOUNT_TYPE");
+//        sheet.getRow(0).getCell(8).setCellValue("BEN_ROUTING_NO");
+//        sheet.getRow(0).getCell(9).setCellValue("AMOUNT");
+//        sheet.getRow(0).getCell(10).setCellValue("PAYMENT_DESCRIPTION");
 
 
         //FileOutputStream fos = null;
