@@ -152,7 +152,7 @@ public class NafexModelServiceHelper {
         aoountPayeeModel.setBranchCode(nafexEhMstModel.getBranchCode());
         aoountPayeeModel.setBranchName(nafexEhMstModel.getBranchName());
         aoountPayeeModel.setAccountPayeeCode("5");
-        aoountPayeeModel.setCreditMark("CREDIT");
+        aoountPayeeModel.setCreditMark("CRED");
         aoountPayeeModel.setCurrency(nafexEhMstModel.getCurrency());
         aoountPayeeModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
         aoountPayeeModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
