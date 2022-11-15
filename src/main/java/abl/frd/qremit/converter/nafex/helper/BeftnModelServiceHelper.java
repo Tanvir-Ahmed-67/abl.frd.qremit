@@ -17,15 +17,14 @@ public class BeftnModelServiceHelper {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Beftn");
         Iterator<BeftnModel> iterator = beftnModelList.iterator();
-
-        int rowIndex = 0;
+        int rowIndex = 1;
         while(iterator.hasNext()){
             BeftnModel beftnModel = iterator.next();
 
             Row row = sheet.createRow(rowIndex++);
 
             Cell cell0 = row.createCell(0);
-            cell0.setCellValue(rowIndex);
+            cell0.setCellValue(rowIndex-1);
 
             Cell cell1 = row.createCell(1);
             cell1.setCellValue(beftnModel.getOrgCustomerNo().trim());
@@ -57,6 +56,18 @@ public class BeftnModelServiceHelper {
             Cell cell10 = row.createCell(10);
             cell10.setCellValue(beftnModel.getTransactionNo());
         }
+        sheet.getRow(0).getCell(0).setCellValue("REFERENCE_NO");
+        sheet.getRow(0).getCell(1).setCellValue("ORG_CUSTOMER_NO");
+        sheet.getRow(0).getCell(2).setCellValue("ORG_NAME");
+        sheet.getRow(0).getCell(3).setCellValue("ORG_ACCOUNT_NO");
+        sheet.getRow(0).getCell(4).setCellValue("ORG_ACCOUNT_TYPE");
+        sheet.getRow(0).getCell(5).setCellValue("BEN_NAME");
+        sheet.getRow(0).getCell(6).setCellValue("BEN_ACCOUNT_NO");
+        sheet.getRow(0).getCell(7).setCellValue("BEN_ACCOUNT_TYPE");
+        sheet.getRow(0).getCell(8).setCellValue("BEN_ROUTING_NO");
+        sheet.getRow(0).getCell(9).setCellValue("AMOUNT");
+        sheet.getRow(0).getCell(10).setCellValue("PAYMENT_DESCRIPTION");
+
 
         //FileOutputStream fos = null;
         ByteArrayOutputStream fos = new ByteArrayOutputStream();
