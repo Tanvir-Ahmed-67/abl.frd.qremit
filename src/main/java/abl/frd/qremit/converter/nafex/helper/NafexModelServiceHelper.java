@@ -27,7 +27,7 @@ public class NafexModelServiceHelper {
     }
     public static List<NafexEhMstModel> csvToNafexModels(InputStream is) {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withIgnoreHeaderCase().withTrim())) {
+             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
             List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
@@ -70,35 +70,6 @@ public class NafexModelServiceHelper {
         }
     }
 
-    public static Map<String, List<Object>> segregateDifferentTypesOfModel(List<NafexEhMstModel> nafexEhMstModel){
-        HashMap<String, List<Object>> differentTypesOfModel = new HashMap<String, List<Object>>();
-        List<OnlineModel> onlineList = new ArrayList<>();
-        List<NafexEhMstModel> cocList = new ArrayList<>();
-        List<NafexEhMstModel> beftnList = new ArrayList<>();
-        List<NafexEhMstModel> accountPayeeList = new ArrayList<>();
-        List<NafexEhMstModel> nonProcessed = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
-            if(singleModel.getCheckT24().equals("1")){
-                onlineList.add(generateOnlineModel(singleModel));
-            } else if (singleModel.getCheckCoc().equals("1")) {
-                cocList.add(singleModel);
-            } else if (singleModel.getCheckBeftn().equals("1")) {
-                beftnList.add(singleModel);
-            }
-            else if (singleModel.getCheckAccPayee().equals("1")){
-                accountPayeeList.add(singleModel);
-            }
-            else{
-                nonProcessed.add(singleModel);
-            }
-        }
-        differentTypesOfModel.put("online", Collections.singletonList(onlineList));
-        //differentTypesOfModel.put("coc", cocList);
-       // differentTypesOfModel.put("beftn", beftnList);
-       // differentTypesOfModel.put("accountPayee", accountPayeeList);
-       // differentTypesOfModel.put("nonProcessed", nonProcessed);
-        return  differentTypesOfModel;
-    }
 
     public static List<OnlineModel> generateOnlineModelList(List<NafexEhMstModel> nafexEhMstModel){
         List<OnlineModel> onlineList = new ArrayList<>();
@@ -146,7 +117,7 @@ public class NafexModelServiceHelper {
         cocModel.setBranchCode(nafexEhMstModel.getBranchCode());
         cocModel.setBranchName(nafexEhMstModel.getBranchName());
         cocModel.setCocCode("15");
-        cocModel.setCreditMark("CREDIT");
+        cocModel.setCreditMark("CRED");
         cocModel.setCurrency(nafexEhMstModel.getCurrency());
         cocModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
         cocModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
@@ -181,7 +152,7 @@ public class NafexModelServiceHelper {
         aoountPayeeModel.setBranchCode(nafexEhMstModel.getBranchCode());
         aoountPayeeModel.setBranchName(nafexEhMstModel.getBranchName());
         aoountPayeeModel.setAccountPayeeCode("5");
-        aoountPayeeModel.setCreditMark("CREDIT");
+        aoountPayeeModel.setCreditMark("CRED");
         aoountPayeeModel.setCurrency(nafexEhMstModel.getCurrency());
         aoountPayeeModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
         aoountPayeeModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
@@ -219,10 +190,10 @@ public class NafexModelServiceHelper {
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");
         beftnModel.setIncentive(000.00);
-        beftnModel.setOrgAccountNo("dummy");
-        beftnModel.setOrgAccountType("dummy");
-        beftnModel.setOrgCustomerNo("dummy");
-        beftnModel.setOrgName("dummy");
+        beftnModel.setOrgAccountNo("160954");
+        beftnModel.setOrgAccountType("CA");
+        beftnModel.setOrgCustomerNo("7892");
+        beftnModel.setOrgName("FRD Remittance");
         beftnModel.setRoutingNo(nafexEhMstModel.getBranchCode());
         beftnModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
 

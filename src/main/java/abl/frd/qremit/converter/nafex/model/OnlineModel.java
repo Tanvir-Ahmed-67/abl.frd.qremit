@@ -32,16 +32,16 @@ public class OnlineModel {
     @Column(name = "extra_e")
     private String extraE;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
-    private NafexEhMstModel nafexEhMstModel;
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="file_info_model_id")
+    private FileInfoModel fileInfoModel;
 
-    public NafexEhMstModel getNafexEhMstModel() {
-        return nafexEhMstModel;
+    public FileInfoModel getFileInfoModel() {
+        return fileInfoModel;
     }
 
-    public void setNafexEhMstModel(NafexEhMstModel nafexEhMstModel) {
-        this.nafexEhMstModel = nafexEhMstModel;
+    public void setFileInfoModel(FileInfoModel fileInfoModel) {
+        this.fileInfoModel = fileInfoModel;
     }
 
     public OnlineModel() {

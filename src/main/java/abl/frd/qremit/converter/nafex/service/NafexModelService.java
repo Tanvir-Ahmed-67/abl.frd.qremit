@@ -24,18 +24,21 @@ public class NafexModelService {
     BeftnModelRepository beftnModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
-    public String save(MultipartFile file) {
-        String numberOfRows=null;
+    public FileInfoModel save(MultipartFile file) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
             List<NafexEhMstModel> nafexModels = NafexModelServiceHelper.csvToNafexModels(file.getInputStream());
+            int ind=0;
             for(NafexEhMstModel nafexModel : nafexModels){
                 nafexModel.setExchangeCode("7010234");
-                fileInfoModel.setExchangeCode(nafexModel.getExchangeCode());
-            }
+                nafexModel.setFileInfoModel(fileInfoModel);
+                if(ind==0) {
+                    fileInfoModel.setExchangeCode(nafexModel.getExchangeCode());
+                    ind++;
+                }
 
-            //Map<String, List<Object>> differentTypesOfModels = NafexModelServiceHelper.segregateDifferentTypesOfModel(nafexModels);
+            }
 
             // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
             List<OnlineModel> onlineModelList = NafexModelServiceHelper.generateOnlineModelList(nafexModels);
@@ -54,18 +57,27 @@ public class NafexModelService {
             fileInfoModel.setProcessedCount("test");
             fileInfoModel.setUnprocessedCount("test");
             fileInfoModel.setUploadDate("test");
+            fileInfoModel.setNafexEhMstModel(nafexModels);
+            fileInfoModel.setCocModelList(cocModelList);
+            fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
+            fileInfoModel.setBeftnModelList(beftnModelList);
+            fileInfoModel.setOnlineModelList(onlineModelList);
 
-
+            for(CocModel cocModel:cocModelList){
+                cocModel.setFileInfoModel(fileInfoModel);
+            }
+            for (AccountPayeeModel accountPayeeModel:accountPayeeModelList){
+                accountPayeeModel.setFileInfoModel(fileInfoModel);
+            }
+            for(BeftnModel beftnModel:beftnModelList){
+                beftnModel.setFileInfoModel(fileInfoModel);
+            }
+            for (OnlineModel onlineModel:onlineModelList){
+                onlineModel.setFileInfoModel(fileInfoModel);
+            }
             // SAVING TO MySql Data Table
-            nafexModelRepository.saveAll(nafexModels);
-            onlineModelRepository.saveAll(onlineModelList);
-            cocModelRepository.saveAll(cocModelList);
-            accountPayeeModelRepository.saveAll(accountPayeeModelList);
-            beftnModelRepository.saveAll(beftnModelList);
             fileInfoModelRepository.save(fileInfoModel);
-
-            numberOfRows = String.valueOf(nafexModelRepository.count());
-            return numberOfRows;
+            return fileInfoModel;
         } catch (IOException e) {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
