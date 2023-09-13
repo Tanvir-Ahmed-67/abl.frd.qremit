@@ -24,7 +24,8 @@ public class NafexEhMstModelController {
 
     @GetMapping(value = "/index")
     public String homePage() {
-        return "homePage";
+        //return "homePage";
+        return "index";
     }
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
