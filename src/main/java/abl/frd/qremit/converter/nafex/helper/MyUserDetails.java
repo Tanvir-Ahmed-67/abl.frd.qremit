@@ -1,7 +1,6 @@
 package abl.frd.qremit.converter.nafex.helper;
 
 import abl.frd.qremit.converter.nafex.model.UserModel;
-import org.apache.commons.math3.ml.neuralnet.twod.util.TopographicErrorHistogram;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,5 +59,13 @@ public class MyUserDetails implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+    public boolean hasRole(String roleName){
+        Collection<? extends GrantedAuthority> authoritiesList = getAuthorities();
+        if(authoritiesList.toString().contains(roleName)){
+            return true;
+        }
+        else
+            return false;
     }
 }
