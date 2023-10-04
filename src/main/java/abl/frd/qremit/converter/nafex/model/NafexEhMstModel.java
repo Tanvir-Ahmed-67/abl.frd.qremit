@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name="base_data_table_nafex")
@@ -72,7 +71,19 @@ public class NafexEhMstModel {
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
-//    @OneToOne(cascade=CascadeType.ALL, mappedBy = "nafexEhMstModel")
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    private UserModel userModel;
+
+    public UserModel getUserModel() {
+        return userModel;
+    }
+
+    public void setUserModel(UserModel userModel) {
+        this.userModel = userModel;
+    }
+
+    //    @OneToOne(cascade=CascadeType.ALL, mappedBy = "nafexEhMstModel")
 //    private CocModel cocModel;
 
 //    public CocModel getCocModel() {

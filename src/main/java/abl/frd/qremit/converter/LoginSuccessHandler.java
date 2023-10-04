@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -12,16 +13,32 @@ import java.io.IOException;
 
 @Component
 public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+    @Value("${user.role}")
+    String userRole;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         String redirectUrl = request.getContextPath();
+        String loggedInUserName = myUserDetails.getUsername();
+        String[] allUsersName = userRole.split(",");
+        if(myUserDetails.hasRole("admin")){
+            redirectUrl += "/admin_home";
+        }
+        else if(myUserDetails.hasRole("user")){
+            for (String userName:allUsersName){
+                if(loggedInUserName.equalsIgnoreCase(userName)){
+                    redirectUrl += "/"+userName;
+                }
+            }
+        }
+        /*
         if(myUserDetails.hasRole("ADMIN")){
             redirectUrl += "/admin_home";
         }
         if(myUserDetails.hasRole("USER")){
             redirectUrl += "/user_home";
         }
+        */
         response.sendRedirect(redirectUrl);
     }
 }
