@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
-@RequestMapping("/qremit")
 public class NafexEhMstModelController {
     private final NafexModelService nafexModelService;
 
@@ -21,9 +20,12 @@ public class NafexEhMstModelController {
     public NafexEhMstModelController(NafexModelService nafexModelService){
         this.nafexModelService = nafexModelService;
     }
-
-    @GetMapping(value = "/index")
+    @GetMapping(value = "/")
     public String homePage() {
+        return "homePage";
+    }
+    @GetMapping(value = "/index")
+    public String indexPage() {
         return "homePage";
     }
     @PostMapping("/upload")
