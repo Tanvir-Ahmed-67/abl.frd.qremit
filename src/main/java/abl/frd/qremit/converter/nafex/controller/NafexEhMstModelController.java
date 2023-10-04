@@ -7,10 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 public class NafexEhMstModelController {
@@ -22,17 +20,17 @@ public class NafexEhMstModelController {
     }
     @GetMapping(value = "/")
     public String homePage() {
-        return "homePage";
+        return "user7010243";
     }
     @GetMapping(value = "/admin_home")
     public String adminHomePage() {
         return "admin_home";
     }
-    @GetMapping(value = "/user_home")
+    @GetMapping(value = "/user7010243")
     public String userHomePage() {
-        return "homePage";
+        return "user7010243";
     }
-    @PostMapping("/upload")
+    @PostMapping("/upload7010243")
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
         String message = "";
         String count ="";
