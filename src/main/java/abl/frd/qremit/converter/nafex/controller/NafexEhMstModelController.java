@@ -24,8 +24,12 @@ public class NafexEhMstModelController {
     public String homePage() {
         return "homePage";
     }
-    @GetMapping(value = "/index")
-    public String indexPage() {
+    @GetMapping(value = "/admin_home")
+    public String adminHomePage() {
+        return "admin_home";
+    }
+    @GetMapping(value = "/user_home")
+    public String userHomePage() {
         return "homePage";
     }
     @PostMapping("/upload")
