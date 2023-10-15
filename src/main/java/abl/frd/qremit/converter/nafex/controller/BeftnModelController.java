@@ -16,7 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 @Controller
-@RequestMapping("/qremit")
 public class BeftnModelController {
     private final BeftnModelService beftnModelService;
     public BeftnModelController(BeftnModelService beftnModelService){
