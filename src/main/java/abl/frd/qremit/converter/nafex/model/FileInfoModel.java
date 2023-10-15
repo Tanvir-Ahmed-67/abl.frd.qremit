@@ -31,15 +31,6 @@ public class FileInfoModel {
     @Column(name = "total_count")
     private String totalCount;
 
-    /*
-    @ManyToOne
-    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
-    private NafexEhMstModel nafexEhMstModel;
-*/
-    @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
-    private UserModel userModel;
-
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     private List<NafexEhMstModel> nafexEhMstModel;
 
@@ -54,14 +45,6 @@ public class FileInfoModel {
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     private List<OnlineModel> onlineModelList;
-
-    public UserModel getUserModel() {
-        return userModel;
-    }
-
-    public void setUserModel(UserModel userModel) {
-        this.userModel = userModel;
-    }
 
     public List<OnlineModel> getOnlineModelList() {
         return onlineModelList;

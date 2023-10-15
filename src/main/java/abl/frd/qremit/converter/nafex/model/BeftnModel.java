@@ -48,18 +48,6 @@ public class BeftnModel {
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
-    @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
-    private UserModel userModel;
-
-    public UserModel getUserModel() {
-        return userModel;
-    }
-
-    public void setUserModel(UserModel userModel) {
-        this.userModel = userModel;
-    }
-
     public FileInfoModel getFileInfoModel() {
         return fileInfoModel;
     }

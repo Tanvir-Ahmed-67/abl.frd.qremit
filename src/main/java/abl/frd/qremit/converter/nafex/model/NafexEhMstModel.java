@@ -64,35 +64,9 @@ public class NafexEhMstModel {
     @Column(name = "check_beftn")
     private String checkBeftn;
 
-    //@OneToMany(mappedBy="nafexEhMstModel")
-    //@ManyToOne(cascade=CascadeType.ALL)
-    //@JoinColumn(name="file_info_model_id ")
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
-
-    @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
-    private UserModel userModel;
-
-    public UserModel getUserModel() {
-        return userModel;
-    }
-
-    public void setUserModel(UserModel userModel) {
-        this.userModel = userModel;
-    }
-
-    //    @OneToOne(cascade=CascadeType.ALL, mappedBy = "nafexEhMstModel")
-//    private CocModel cocModel;
-
-//    public CocModel getCocModel() {
-//        return cocModel;
-//    }
-//
-//    public void setCocModel(CocModel cocModel) {
-//        this.cocModel = cocModel;
-//    }
 
     public FileInfoModel getFileInfoModel() {
         return fileInfoModel;

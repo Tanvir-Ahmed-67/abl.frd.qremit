@@ -49,34 +49,9 @@ public class CocModel {
     @Column(name = "extra_e")
     private String extraE;
 
-
-//    @OneToOne(cascade=CascadeType.ALL)
-//    @JoinColumn(name = "nafex_eh_mst_model_id")
-//    private NafexEhMstModel nafexEhMstModel;
-//
-//    public NafexEhMstModel getNafexEhMstModel() {
-//        return nafexEhMstModel;
-//    }
-//
-//    public void setNafexEhMstModel(NafexEhMstModel nafexEhMstModel) {
-//        this.nafexEhMstModel = nafexEhMstModel;
-//    }
-
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
-
-    @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
-    private UserModel userModel;
-
-    public UserModel getUserModel() {
-        return userModel;
-    }
-
-    public void setUserModel(UserModel userModel) {
-        this.userModel = userModel;
-    }
 
     public FileInfoModel getFileInfoModel() {
         return fileInfoModel;
