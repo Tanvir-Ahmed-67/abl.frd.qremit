@@ -19,11 +19,11 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <div sec:authorize="hasRole('ADMIN')">
+                <div sec:authorize="hasRole('ROLE_ADMIN')">
                     <li class='sidebar-title'>Management</li>
                 </div>
                 <li class="sidebar-item">
-                    <div sec:authorize="hasRole('ADMIN')">
+                    <div sec:authorize="hasRole('ROLE_ADMIN')">
                     <a href="#" class='sidebar-link'>
                         <i data-feather="triangle" width="20"></i>
                         <span>User Management</span>
@@ -74,11 +74,11 @@
                         </li>
                     </ul>-->
                 </li>
-                <div sec:authorize="hasRole('USER')">
+                <div sec:authorize="hasRole('ROLE_USER')">
                     <li class='sidebar-title'>File Upload</li>
                 </div>
                 <li class="sidebar-item">
-                    <div sec:authorize="hasRole('USER')">
+                    <div sec:authorize="hasRole('ROLE_USER')">
                     <a href="#" class='sidebar-link'>
                         <i data-feather="briefcase" width="20"></i>
                         <span>Upload File</span>
