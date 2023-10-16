@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,12 +24,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
     protected void configure(HttpSecurity http) throws Exception{
         http.authorizeRequests()
-                .antMatchers("/admin_home/**").hasRole("admin")
-                .antMatchers("/user7010243/**", "upload7010243/**").hasAnyRole("admin","user7010243")
-                .antMatchers("/").hasAnyRole("admin","user7010243","user7010253","user7010263")
+                .antMatchers("/login").permitAll()
+                .antMatchers("**/home").hasRole("ADMIN")
+                .antMatchers("/user_home/**","**/upload","**/downloadaccountpayee/**","**/downloadbeftn/**","**/downloadcoc/**","**/downloadonline/**").hasAnyRole("ADMIN","USER")
+                .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .successHandler(loginSuccessHandler);
+                .formLogin().defaultSuccessUrl("/home")
+                .and()
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                .sessionManagement(session -> session.invalidSessionUrl("/logout"))
+                .logout(logout -> logout.deleteCookies("JSESSIONID").invalidateHttpSession(true));
 
     }
 

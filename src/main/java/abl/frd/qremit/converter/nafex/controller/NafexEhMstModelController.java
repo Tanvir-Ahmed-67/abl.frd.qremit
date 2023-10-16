@@ -18,25 +18,15 @@ public class NafexEhMstModelController {
     public NafexEhMstModelController(NafexModelService nafexModelService){
         this.nafexModelService = nafexModelService;
     }
-    @GetMapping(value = "/")
-    public String homePage() {
+    @GetMapping(value = "/home")
+    public String adminHomePage_1() {
         return "user7010243";
     }
-    @GetMapping(value = "/admin_home")
-    public String adminHomePage() {
-        return "admin_home";
-    }
-    @GetMapping(value = "/user7010243")
-    public String userHomePage() {
-        return "user7010243";
-    }
-    @PostMapping("/upload7010243")
+    @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
         String message = "";
-        String count ="";
         FileInfoModel fileInfoModelObject;
         if (NafexModelServiceHelper.hasCSVFormat(file)) {
-            int extensionIndex = file.getOriginalFilename().lastIndexOf(".");
             try {
                 fileInfoModelObject = nafexModelService.save(file);
                 model.addAttribute("fileInfo", fileInfoModelObject);

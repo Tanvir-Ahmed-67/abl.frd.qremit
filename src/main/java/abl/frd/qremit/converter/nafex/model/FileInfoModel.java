@@ -31,11 +31,6 @@ public class FileInfoModel {
     @Column(name = "total_count")
     private String totalCount;
 
-    /*
-    @ManyToOne
-    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
-    private NafexEhMstModel nafexEhMstModel;
-*/
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     private List<NafexEhMstModel> nafexEhMstModel;
 
