@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +19,17 @@ public class NafexEhMstModelController {
     public NafexEhMstModelController(NafexModelService nafexModelService){
         this.nafexModelService = nafexModelService;
     }
-    @GetMapping(value = "/home")
-    public String adminHomePage_1() {
-        return "user7010243";
+    @RequestMapping("/login")
+    public String loginPage(){
+        return "auth-login";
+    }
+    @RequestMapping("/home")
+    public String loginSubmit(){
+        return "/pages/landingpage";
+    }
+    @RequestMapping("/logout")
+    public String logoutSuccessPage(){
+        return "auth-login";
     }
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
