@@ -22,15 +22,12 @@ public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     UserModelRepository userModelRepository;
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userModel = userModelRepository.findByUserName(username);
-        userModel.orElseThrow(() -> new UsernameNotFoundException("Not Found " +username));
-        return userModel.map(MyUserDetails::new).get();
-    }
-
-    private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles){
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        roles.forEach(a -> authorityList.add(new SimpleGrantedAuthority(a.getRoleName())));
-        return authorityList;
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+        User user = userModelRepository.findByUserName(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Could not find user");
+        }
+        return new MyUserDetails(user);
     }
 }

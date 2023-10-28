@@ -1,44 +1,42 @@
 package abl.frd.qremit.converter.nafex.helper;
 
+import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.model.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class MyUserDetails implements UserDetails {
-    private String userName;
-    private String password;
-    private boolean status;
-    private String nrtaCode;
+    private User user;
 
-    private List<GrantedAuthority> authorityList;
-
-    public MyUserDetails(User user){
-        this.userName = user.getUserName();
-        this.password = user.getPassword();
-        this.status = user.isStatus();
-        this.nrtaCode = user.getNrtaCode();
+    public MyUserDetails(User user) {
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorityList;
+        Set<Role> roles = user.getRoles();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+        }
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return userName;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return status;
+        return user.getUserName();
     }
 
     @Override
@@ -62,5 +60,9 @@ public class MyUserDetails implements UserDetails {
         }
         else
             return false;
+    }
+    @Override
+    public boolean isEnabled() {
+        return user.isStatus();
     }
 }
