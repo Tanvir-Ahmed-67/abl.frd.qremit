@@ -13,6 +13,7 @@
         <div class="sidebar-menu">
             <ul class="menu">
                 <li class='sidebar-title'>Main Menu</li>
+                <!--..........................Admin Section......................-->
                 <div sec:authorize="hasRole('ROLE_ADMIN')">
                     <li class="sidebar-item active ">
                         <a th:href="@{/home}" class='sidebar-link'>
@@ -20,12 +21,8 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                </div>
-                <div sec:authorize="hasRole('ROLE_ADMIN')">
                     <li class='sidebar-title'>Management</li>
-                </div>
-                <li class="sidebar-item has-sub">
-                    <div sec:authorize="hasRole('ROLE_ADMIN')">
+                    <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
                             <i data-feather="file-plus" width="20"></i>
                             <span>Data Management</span>
@@ -46,10 +43,8 @@
                                 <a href="component-breadcrumb.html">Delete Data</a>
                             </li>
                         </ul>
-                    </div>
-                </li>
-                <li class="sidebar-item has-sub">
-                    <div sec:authorize="hasRole('ROLE_ADMIN')">
+                    </li>
+                    <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
                             <i data-feather="user" width="20"></i>
                             <span>User Management</span>
@@ -70,21 +65,22 @@
                                 <a href="component-breadcrumb.html">Delete User</a>
                             </li>
                         </ul>
-                    </div>
-                </li>
+                    </li>
+                </div>
+                <!--..........................User Section......................-->
                 <div sec:authorize="hasRole('ROLE_USER')">
-                    <li class="sidebar-item active ">
-                        <a th:href="@{/home}" class='sidebar-link'>
+                    <li class="sidebar-item active">
+                        <a href="#" class='sidebar-link'>
                             <i data-feather="home" width="20"></i>
                             <span>File Upload</span>
                         </a>
                     </li>
                     <li class="sidebar-item  has-sub">
-                        <a th:href="@{/home}" class='sidebar-link'>
+                        <a href="#" class='sidebar-link'>
                             <i data-feather="triangle" width="20"></i>
                             <span>Components</span>
                         </a>
-                        <ul class="submenu ">
+                        <ul class="submenu">
                             <li>
                                 <a href="component-alert.html">Alert</a>
                             </li>
@@ -102,18 +98,14 @@
                             </li>
                         </ul>
                     </li>
-                </div>
-                <div sec:authorize="hasRole('ROLE_USER')">
                     <li class='sidebar-title'>File Management</li>
-                </div>
-                <li class="sidebar-item">
-                    <div sec:authorize="hasRole('ROLE_USER')">
+                    <li class="sidebar-item">
                         <a href="#" class='sidebar-link'>
                             <i data-feather="file-plus" width="20"></i>
                             <span>Upload File</span>
                         </a>
-                    </div>
-                </li>
+                    </li>
+                </div>
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
