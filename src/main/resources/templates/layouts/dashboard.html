@@ -15,7 +15,7 @@
     <span th:replace="/fragments/sidebar :: sidebar"></span>
     <div id="main"><!--content Id-->
         <span th:replace="/fragments/header :: header"></span>
-        <div class="main-content container-fluid" layout:fragment="content"><!--dynamic content-->
+        <div class="main-content container-fluid" th:replace="/fragments/fileUploadPage :: fileUploadForm"><!--dynamic content-->
 
         </div>
         <span th:replace="/fragments/footer :: footer"></span>
