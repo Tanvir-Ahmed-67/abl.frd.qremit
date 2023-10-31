@@ -32,7 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().defaultSuccessUrl("/home", true)
-                .loginPage("/login")
+                .loginPage("/login").usernameParameter("userEmail").passwordParameter("password")
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .sessionManagement(session -> session.invalidSessionUrl("/logout"))

@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.userName = :username")
     public User findByUserName(@Param("username") String username);
-
+    @Query("SELECT u FROM User u WHERE u.userEmail = :useremail")
+    public User findByUserEmail(@Param("useremail") String useremail);
 
 }

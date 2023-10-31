@@ -13,6 +13,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String userName;
+    private String userEmail;
     private String password;
     private boolean status;
     private String nrtaCode;
@@ -69,5 +70,13 @@ public class User {
 
     public void setNrtaCode(String nrtaCode) {
         this.nrtaCode = nrtaCode;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }
