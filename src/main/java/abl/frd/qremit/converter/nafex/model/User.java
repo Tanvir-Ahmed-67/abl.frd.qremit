@@ -3,6 +3,7 @@ package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,6 +18,9 @@ public class User {
     private String password;
     private boolean status;
     private String nrtaCode;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<FileInfoModel> fileInfoModels;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_role",

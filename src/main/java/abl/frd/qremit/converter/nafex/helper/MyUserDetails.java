@@ -69,4 +69,12 @@ public class MyUserDetails implements UserDetails {
     public String getUserEmail(){
         return user.getUserEmail();
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

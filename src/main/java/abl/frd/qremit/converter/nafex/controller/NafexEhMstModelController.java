@@ -32,6 +32,7 @@ public class NafexEhMstModelController {
     }
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
+        //MyUserDetails myUserDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String message = "";
         FileInfoModel fileInfoModelObject;
         if (NafexModelServiceHelper.hasCSVFormat(file)) {
