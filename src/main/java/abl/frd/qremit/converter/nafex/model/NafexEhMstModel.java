@@ -68,6 +68,18 @@ public class NafexEhMstModel {
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    private User userModel;
+
+    public User getUserModel() {
+        return userModel;
+    }
+
+    public void setUserModel(User userModel) {
+        this.userModel = userModel;
+    }
+
     public FileInfoModel getFileInfoModel() {
         return fileInfoModel;
     }

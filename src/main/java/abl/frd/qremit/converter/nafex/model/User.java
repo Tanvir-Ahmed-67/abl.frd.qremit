@@ -20,7 +20,18 @@ public class User {
     private String nrtaCode;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<AccountPayeeModel> accountPayeeModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<BeftnModel> beftnModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<CocModel> cocModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<FileInfoModel> fileInfoModels;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<NafexEhMstModel> nafexEhMstModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<OnlineModel> onlineModel;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_role",
