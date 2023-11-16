@@ -28,7 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/images/**").permitAll()
                 .antMatchers("/login").permitAll()
-                .antMatchers("**/upload","**/all_users","**/downloadaccountpayee/**","**/downloadbeftn/**","**/downloadcoc/**","**/downloadonline/**").hasAnyRole("ADMIN","USER")
+                .antMatchers("**/upload","**/all_users","**/downloadaccountpayee/**","**/downloadbeftn/**","**/downloadcoc/**","**/downloadonline/**").hasAnyRole("ADMIN","USER","SUPERADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().defaultSuccessUrl("/home", true)

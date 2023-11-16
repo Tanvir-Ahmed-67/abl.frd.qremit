@@ -21,6 +21,9 @@
         <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_ADMIN')" layout:fragment="content"><!--dynamic content-->
 
         </div>
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_SUPERADMIN')" layout:fragment="superAdminContent"><!--dynamic content-->
+
+        </div>
         <span th:replace="/fragments/footer :: footer"></span>
     </div>
 </div>
