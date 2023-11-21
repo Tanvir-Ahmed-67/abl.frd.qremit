@@ -24,20 +24,24 @@ public class NafexModelService {
     BeftnModelRepository beftnModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
-    public FileInfoModel save(MultipartFile file) {
+    @Autowired
+    UserModelRepository userModelRepository;
+    public FileInfoModel save(MultipartFile file, int userId) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
+            fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
+            User user = userModelRepository.findByUserId(userId);
             List<NafexEhMstModel> nafexModels = NafexModelServiceHelper.csvToNafexModels(file.getInputStream());
             int ind=0;
             for(NafexEhMstModel nafexModel : nafexModels){
                 nafexModel.setExchangeCode("7010234");
                 nafexModel.setFileInfoModel(fileInfoModel);
+                nafexModel.setUserModel(user);
                 if(ind==0) {
                     fileInfoModel.setExchangeCode(nafexModel.getExchangeCode());
                     ind++;
                 }
-
             }
 
             // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
@@ -65,15 +69,19 @@ public class NafexModelService {
 
             for(CocModel cocModel:cocModelList){
                 cocModel.setFileInfoModel(fileInfoModel);
+                cocModel.setUserModel(user);
             }
             for (AccountPayeeModel accountPayeeModel:accountPayeeModelList){
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
+                accountPayeeModel.setUserModel(user);
             }
             for(BeftnModel beftnModel:beftnModelList){
                 beftnModel.setFileInfoModel(fileInfoModel);
+                beftnModel.setUserModel(user);
             }
             for (OnlineModel onlineModel:onlineModelList){
                 onlineModel.setFileInfoModel(fileInfoModel);
+                onlineModel.setUserModel(user);
             }
             // SAVING TO MySql Data Table
             fileInfoModelRepository.save(fileInfoModel);
