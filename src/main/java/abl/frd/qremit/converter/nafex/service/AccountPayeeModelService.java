@@ -21,4 +21,9 @@ public class AccountPayeeModelService {
         ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(accountPayeeModes);
         return in;
     }
+    public ByteArrayInputStream loadAll() {
+        List<AccountPayeeModel> accountPayeeModes = accountPayeeModelRepository.findAllAccountPayeeModel();
+        ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(accountPayeeModes);
+        return in;
+    }
 }

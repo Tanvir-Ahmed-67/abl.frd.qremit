@@ -23,7 +23,7 @@
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round">Download Online</button>
+              <button type="submit" class="btn btn-success round" th:name="online" th:attr="onclick=|downloadOnline()|">Download Online</button>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round">Download COC</button>
+              <button type="submit" class="btn btn-success round" th:name="coc" th:attr="onclick=|downloadCoc()|">Download COC</button>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round">Download A/C Payee</button>
+              <button type="submit" class="btn btn-success round" th:name="accountpayee" th:attr="onclick=|downloadAccountPayee()|">Download A/C Payee</button>
             </div>
           </div>
         </div>
@@ -74,8 +74,8 @@
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round">Main</button>
-              <button type="submit" class="btn btn-success round">Incentive</button>
+              <button type="submit" class="btn btn-success round" th:name="beftn" th:attr="onclick=|downloadBeftn()|">Main</button>
+              <button type="submit" class="btn btn-success round" th:name="beftn_incentive" th:attr="onclick=|downloadBeftnIncentive()|">Incentive</button>
             </div>
           </div>
         </div>
@@ -277,6 +277,8 @@
     </div>
   </div>
   </section>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="/js/script.js" ></script>
 </div>
 </body>
 </html>

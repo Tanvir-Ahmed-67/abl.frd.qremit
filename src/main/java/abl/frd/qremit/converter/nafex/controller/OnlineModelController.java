@@ -29,4 +29,13 @@ public class OnlineModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
+    @GetMapping("/downloadonline")
+    public ResponseEntity<Resource> download_File() {
+        InputStreamResource file = new InputStreamResource(onlineModelService.loadAll());
+        String fileName = "Online_Nafex";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
+                .contentType(MediaType.parseMediaType("application/csv"))
+                .body(file);
+    }
 }

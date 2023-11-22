@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +28,12 @@ public class NafexEhMstModelController {
     public String loginPage(){
         return "auth-login";
     }
+    @RequestMapping("/super-admin-home-page")
+    public String loginSubmitSuperAdmin(){ return "/layouts/dashboard"; }
+    @RequestMapping("/admin-home-page")
+    public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
+    @RequestMapping("/user-home-page")
+    public String loginSubmitUser(){ return "/layouts/dashboard"; }
     @RequestMapping("/home")
     public String loginSubmit(){
         return "/layouts/dashboard";
@@ -63,5 +70,9 @@ public class NafexEhMstModelController {
         message = "Please upload a csv file!";
         return "downloadPage";
     }
-
+    @GetMapping("/adminDashboard")
+    public String loadAdminDashboard(Model model){
+        System.out.println("Admin Dashboard from controller");
+        return "/layouts/dashboard";
+    }
 }

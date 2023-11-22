@@ -13,4 +13,6 @@ import java.util.List;
 public interface OnlineModelRepository extends JpaRepository<OnlineModel, Integer> {
     @Query("SELECT n FROM OnlineModel n WHERE n.fileInfoModel.id =?1")
     List<OnlineModel> findAllOnlineModelHavingFileInfoId(long id);
+    @Query("SELECT n FROM OnlineModel n")
+    List<OnlineModel> findAllOnlineModel();
 }

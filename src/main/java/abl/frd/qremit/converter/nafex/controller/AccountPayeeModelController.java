@@ -28,4 +28,13 @@ public class AccountPayeeModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
+    @GetMapping("/downloadaccountpayee")
+    public ResponseEntity<Resource> download_File() {
+        InputStreamResource file = new InputStreamResource(accountPayeeModelService.loadAll());
+        String fileName = "Account_Payee_Nafex";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
+                .contentType(MediaType.parseMediaType("application/csv"))
+                .body(file);
+    }
 }

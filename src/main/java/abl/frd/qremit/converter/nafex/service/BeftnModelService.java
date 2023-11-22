@@ -18,9 +18,19 @@ public class BeftnModelService {
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnModelsToExcel(beftnModels);
         return in;
     }
+    public ByteArrayInputStream loadAll() {
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModel();
+        ByteArrayInputStream in = BeftnModelServiceHelper.BeftnModelsToExcel(beftnModels);
+        return in;
+    }
 
     public ByteArrayInputStream loadIncentive(String fileId, String fileType) {
         List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoIdForIncentive(Long.parseLong(fileId));
+        ByteArrayInputStream in = BeftnModelServiceHelper.BeftnIncentiveModelsToExcel(beftnModels);
+        return in;
+    }
+    public ByteArrayInputStream loadAllIncentive() {
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelForIncentive();
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnIncentiveModelsToExcel(beftnModels);
         return in;
     }

@@ -1,20 +1,28 @@
-function downloadCoc(file, coc) {
-    window.location="/downloadcoc/"+file+"/"+coc;
+$(document).ready(function(){
+    $.ajax({ url: "/adminDashboard",
+        context: document.body,
+        success: function(){
+            alert("done");
+        }
+    });
+});
+function downloadCoc() {
+    window.location="/downloadcoc";
 
 }
-function downloadAccountPayee(file, accountpayee) {
-    window.location="/downloadaccountpayee/"+file+"/"+accountpayee;
+function downloadAccountPayee() {
+    window.location="/downloadaccountpayee";
 
 }
-function downloadOnline(file, online) {
-    window.location="/downloadonline/"+file+"/"+online;
+function downloadOnline() {
+    window.location="/downloadonline";
 
 }
-function downloadBeftn(file, beftn) {
-    window.location="/downloadbeftn/"+file+"/"+beftn;
+function downloadBeftn() {
+    window.location="/downloadbeftn";
 
 }
 
-function  downloadBeftnIncentive(file, beftn){
-    window.location="/downloadBeftnIncentive/"+file+"/"+beftn;
+function  downloadBeftnIncentive(){
+    window.location="/downloadBeftnIncentive";
 }

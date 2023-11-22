@@ -12,4 +12,6 @@ import java.util.List;
 public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeModel, Integer> {
     @Query("SELECT n FROM AccountPayeeModel n WHERE n.fileInfoModel.id =?1")
     List<AccountPayeeModel> findAllAccountPayeeModelHavingFileInfoId(long id);
+    @Query("SELECT n FROM AccountPayeeModel n")
+    List<AccountPayeeModel> findAllAccountPayeeModel();
 }

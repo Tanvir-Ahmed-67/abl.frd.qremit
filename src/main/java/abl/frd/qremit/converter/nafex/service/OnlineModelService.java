@@ -21,4 +21,9 @@ public class OnlineModelService {
         ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModes);
         return in;
     }
+    public ByteArrayInputStream loadAll() {
+        List<OnlineModel> onlineModes = onlineModelRepository.findAllOnlineModel();
+        ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModes);
+        return in;
+    }
 }
