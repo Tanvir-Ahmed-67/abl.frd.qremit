@@ -29,7 +29,7 @@ public class NafexEhMstModelController {
     }
     @RequestMapping("/home")
     public String loginSubmit(){
-        return "/pages/adminLandingPage";
+        return "/layouts/dashboard";
     }
     @RequestMapping("/logout")
     public String logoutSuccessPage(){
