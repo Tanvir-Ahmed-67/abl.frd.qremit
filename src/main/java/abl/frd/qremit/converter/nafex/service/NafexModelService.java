@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -89,5 +90,14 @@ public class NafexModelService {
         } catch (IOException e) {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
+    }
+
+    public List<Integer> CountAllFourTypesOfData(){
+        List<Integer> count = new ArrayList<Integer>(4);
+        count.add((int) onlineModelRepository.count());
+        count.add((int) cocModelRepository.count());
+        count.add((int) accountPayeeModelRepository.count());
+        count.add((int) beftnModelRepository.count());
+        return count;
     }
 }

@@ -1,8 +1,14 @@
 $(document).ready(function(){
-    $.ajax({ url: "/adminDashboard",
+    $.ajax({
+        type: "GET",
+        url: "/adminDashboard",
         context: document.body,
         success: function(){
-            alert("done");
+            var onlineCount = '${onlineCount}';
+            $("p.onlineCount").html(10);//in index.html add a div tag with class="show-part-view"
+            $("p.cocCount").html(20);
+            $("p.accountPayeeCount").html(30);
+            $("p.beftnCount").html(40);
         }
     });
 });

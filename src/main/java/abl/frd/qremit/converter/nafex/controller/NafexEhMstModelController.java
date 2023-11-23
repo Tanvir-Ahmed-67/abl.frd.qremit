@@ -10,11 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Controller
 public class NafexEhMstModelController {
@@ -71,8 +70,15 @@ public class NafexEhMstModelController {
         return "downloadPage";
     }
     @GetMapping("/adminDashboard")
+    @ResponseBody
     public String loadAdminDashboard(Model model){
-        System.out.println("Admin Dashboard from controller");
-        return "/layouts/dashboard";
+        List<Integer> count = nafexModelService.CountAllFourTypesOfData();
+        model.addAttribute("onlineCount", count.get(0));
+        model.addAttribute("cocCount", count.get(1));
+        model.addAttribute("accountPayeeCount", count.get(2));
+        model.addAttribute("beftnCount", count.get(3));
+        System.out.println("Admin Dashboard from controller"+count.toString());
+        //return "/layouts/dashboard";
+        return "/adminDashboard";
     }
 }
