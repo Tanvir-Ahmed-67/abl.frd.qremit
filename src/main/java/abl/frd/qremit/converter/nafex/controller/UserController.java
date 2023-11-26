@@ -35,6 +35,7 @@ public class UserController {
             }
             if (authorityName.equals("ROLE_ADMIN")) {
                 userList = myUserDetailsService.loadUsersOnly();
+                System.out.println(userList.toString());
                 model.addAttribute("UserList", userList);
                 return "/pages/adminUserListPage";
             }
