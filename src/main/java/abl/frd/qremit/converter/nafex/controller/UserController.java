@@ -21,6 +21,7 @@ public class UserController {
     public String loadAllUser(Model model){
         List<User> userList = myUserDetailsService.loadAllUser();
         model.addAttribute("UserList", userList);
-        return "/pages/userDetailPage";
+        System.out.println("inside all users"+userList);
+        return "/pages/superAdminUserListPage";
     }
 }
