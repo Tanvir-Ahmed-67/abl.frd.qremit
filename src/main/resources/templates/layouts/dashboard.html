@@ -15,10 +15,10 @@
     <span th:replace="/fragments/sidebar :: sidebar"></span>
     <div id="main"><!--content Id-->
         <span th:replace="/fragments/header :: header"></span>
-        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="/pages/superAdminLandingPage :: superAdminContent"><!--dynamic content-->
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="/pages/superAdmin/superAdminLandingPage :: superAdminContent"><!--dynamic content-->
 
         </div>
-        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_ADMIN')" th:replace="/pages/adminLandingPage :: adminContent"><!--dynamic content-->
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_ADMIN')" th:replace="/pages/admin/adminLandingPage :: adminContent"><!--dynamic content-->
 
         </div>
         <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_USER')" th:replace="/fragments/file_upload_form :: fileUploadForm"><!--dynamic content-->

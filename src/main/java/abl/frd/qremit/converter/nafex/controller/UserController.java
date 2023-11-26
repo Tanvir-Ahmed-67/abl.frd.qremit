@@ -31,13 +31,13 @@ public class UserController {
             if (authorityName.equals("ROLE_SUPERADMIN")) {
                 userList = myUserDetailsService.loadAllUser();
                 model.addAttribute("UserList", userList);
-                return "/pages/superAdminUserListPage";
+                return "/pages/superAdmin/superAdminUserListPage";
             }
             if (authorityName.equals("ROLE_ADMIN")) {
                 userList = myUserDetailsService.loadUsersOnly();
                 System.out.println(userList.toString());
                 model.addAttribute("UserList", userList);
-                return "/pages/adminUserListPage";
+                return "/pages/admin/adminUserListPage";
             }
         }
         return "/allUsers";

@@ -78,7 +78,6 @@ public class NafexEhMstModelController {
         model.addAttribute("accountPayeeCount", count.get(2));
         model.addAttribute("beftnCount", count.get(3));
         System.out.println("Admin Dashboard from controller"+count.toString());
-        //return "/layouts/dashboard";
         return "/adminDashboard";
     }
 }
