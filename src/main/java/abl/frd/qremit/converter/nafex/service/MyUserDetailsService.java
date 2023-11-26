@@ -41,4 +41,11 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return users;
     }
+    public List<User> loadUsersOnly() throws UsernameNotFoundException {
+        List<User> users = userModelRepository.loadUsersOnly();
+        if(users.isEmpty()){
+            throw new UsernameNotFoundException("Could not find user");
+        }
+        return users;
+    }
 }

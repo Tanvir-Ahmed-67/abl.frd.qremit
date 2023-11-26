@@ -19,5 +19,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u")
     public List<User> loadAllUsers();
+    @Query("SELECT user FROM User user LEFT JOIN user.roles role WHERE role.id = 1")
+    public List<User> loadUsersOnly();
 
 }
