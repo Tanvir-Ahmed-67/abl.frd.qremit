@@ -54,7 +54,7 @@
                                 <a th:href="@{/allUsers}">View User</a>
                             </li>
                             <li>
-                                <a href="component-alert.html">Insert User</a>
+                                <a th:href="@{/createNewUser}">Insert User</a>
                             </li>
 
                             <li>
@@ -124,7 +124,7 @@
                 <!--..........................User Section......................-->
                 <div sec:authorize="hasRole('ROLE_USER')">
                     <li class="sidebar-item active">
-                        <a href="#" class='sidebar-link'>
+                        <a th:href="@{/home}" class='sidebar-link'>
                             <i data-feather="home" width="20"></i>
                             <span>File Upload</span>
                         </a>
@@ -154,7 +154,7 @@
                     </li>
                     <li class='sidebar-title'>File Management</li>
                     <li class="sidebar-item">
-                        <a href="#" class='sidebar-link'>
+                        <a th:href="@{/home}" class='sidebar-link'>
                             <i data-feather="file-plus" width="20"></i>
                             <span>Upload File</span>
                         </a>

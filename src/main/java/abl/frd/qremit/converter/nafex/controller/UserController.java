@@ -42,4 +42,6 @@ public class UserController {
         }
         return "/allUsers";
     }
+    @RequestMapping("/createNewUser")
+    public String NewUserCreateSuperAdmin(){ return "/pages/superAdmin/superAdminNewUserEntryPage"; }
 }
