@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collection;
 import java.util.List;
@@ -49,9 +50,10 @@ public class UserController {
         return "/pages/superAdmin/superAdminNewUserEntryPage";
     }
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
-    public String submitUserCreateFromSuperAdmin(User user){
+    public String submitUserCreateFromSuperAdmin(User user, RedirectAttributes ra){
         user.setStatus(true);
         myUserDetailsService.insertUser(user);
+        ra.addFlashAttribute("message","New User has been created successfully");
         return "redirect:/allUsers";
     }
 }
