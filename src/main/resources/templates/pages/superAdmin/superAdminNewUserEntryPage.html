@@ -27,7 +27,7 @@
                         </div>
                         <div class="card-content">
                             <div class="card-body">
-                                <form class="form form-horizontal">
+                                <form th:action="@{/createNewUser}" th:object="${user}" method="post" class="form form-horizontal">
                                     <div class="form-body">
                                         <div class="row">
                                             <div class="col-md-4">
@@ -36,7 +36,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="text" class="form-control" placeholder="Name" id="first-name-icon">
+                                                        <input type="text" th:name="userName" th:field="*{userName}" class="form-control" placeholder="Name">
                                                         <div class="form-control-icon">
                                                             <i data-feather="user"></i>
                                                         </div>
@@ -49,7 +49,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="email" class="form-control" placeholder="Email" id="first-name-icon">
+                                                        <input type="email" th:name="userEmail" th:field="*{userEmail}" class="form-control" placeholder="Email" id="first-name-icon">
                                                         <div class="form-control-icon">
                                                             <i data-feather="mail"></i>
                                                         </div>
@@ -62,11 +62,11 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <select class="form-select" id="inputGroupSelect01">
-                                                            <option selected>Choose...</option>
-                                                            <option value="7010243">7010243</option>
-                                                            <option value="7010253">7010253</option>
-                                                            <option value="7010263">7010263</option>
+                                                        <select th:name="userNrtaCode" th:field="*{nrtaCode}" class="form-select">
+                                                            <option th:value="selected" selected>Choose...</option>
+                                                            <option th:value="7010243">7010243</option>
+                                                            <option th:value="7010253">7010253</option>
+                                                            <option th:value="7010263">7010263</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -77,10 +77,10 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <select class="form-select" id="inputGroupSelect01">
-                                                            <option selected>Choose...</option>
-                                                            <option value="1">User</option>
-                                                            <option value="2">Admin</option>
+                                                        <select th:name="userType" class="form-select">
+                                                            <option th:value="selected" selected>Choose...</option>
+                                                            <option th:value="user">User</option>
+                                                            <option th:value="admin">Admin</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -91,7 +91,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="password" class="form-control" placeholder="Password">
+                                                        <input th:name="userPassword" th:field="*{password}" type="password" class="form-control" placeholder="Password">
                                                         <div class="form-control-icon">
                                                             <i data-feather="lock"></i>
                                                         </div>
@@ -104,7 +104,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="password" class="form-control" placeholder="Re-Type Password">
+                                                        <input th:name="userRetypePassword" type="password" class="form-control" placeholder="Re-Type Password">
                                                         <div class="form-control-icon">
                                                             <i data-feather="lock"></i>
                                                         </div>

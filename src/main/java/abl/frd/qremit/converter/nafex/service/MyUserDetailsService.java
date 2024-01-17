@@ -48,4 +48,7 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return users;
     }
+    public void insertUser(User user) throws UsernameNotFoundException {
+        userModelRepository.save(user);
+    }
 }
