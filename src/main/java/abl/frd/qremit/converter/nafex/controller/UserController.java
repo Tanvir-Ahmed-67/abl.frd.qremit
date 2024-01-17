@@ -56,9 +56,9 @@ public class UserController {
         return "/pages/superAdmin/superAdminNewUserEntryPage";
     }
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
-    public String submitUserCreateFromSuperAdmin(@Valid @ModelAttribute("user")User user, BindingResult result, Model model){
+    public String submitUserCreateFromSuperAdmin(User user){
         user.setStatus(true);
         myUserDetailsService.insertUser(user);
-        return "/allUsers";
+        return "redirect:/allUsers";
     }
 }
