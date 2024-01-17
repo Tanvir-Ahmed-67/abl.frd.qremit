@@ -36,7 +36,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="text" th:name="userName" th:field="*{userName}" class="form-control" placeholder="Name">
+                                                        <input type="text" th:name="userName" th:field="*{userName}" class="form-control" placeholder="Name" required th:minlength="1" th:maxlength="20">
                                                         <div class="form-control-icon">
                                                             <i data-feather="user"></i>
                                                         </div>
@@ -49,7 +49,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="email" th:name="userEmail" th:field="*{userEmail}" class="form-control" placeholder="Email" id="first-name-icon">
+                                                        <input type="email" th:name="userEmail" th:field="*{userEmail}" class="form-control" placeholder="Email" required th:minlength="3" th:maxlength="45">
                                                         <div class="form-control-icon">
                                                             <i data-feather="mail"></i>
                                                         </div>
@@ -91,7 +91,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input th:name="userPassword" th:field="*{password}" type="password" class="form-control" placeholder="Password">
+                                                        <input th:name="userPassword" th:field="*{password}" type="password" class="form-control" placeholder="Password" required th:minlength="5" th:maxlength="20">
                                                         <div class="form-control-icon">
                                                             <i data-feather="lock"></i>
                                                         </div>
@@ -104,7 +104,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input th:name="userRetypePassword" type="password" class="form-control" placeholder="Re-Type Password">
+                                                        <input th:name="userRetypePassword" type="password" class="form-control" placeholder="Re-Type Password" required>
                                                         <div class="form-control-icon">
                                                             <i data-feather="lock"></i>
                                                         </div>

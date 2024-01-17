@@ -52,8 +52,7 @@ public class UserController {
     }
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromSuperAdmin(Model model){
-        User user = new User();
-        model.addAttribute("user", user);
+        model.addAttribute("user", new User());
         return "/pages/superAdmin/superAdminNewUserEntryPage";
     }
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
