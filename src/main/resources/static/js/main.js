@@ -33,15 +33,3 @@ var check = function() {
         document.getElementById('message').innerHTML = 'Password did not match!';
     }
 }
-function validateCreditCardForm(){
-    var result = false;
-    if (($('#userName').val().length > 0) &&
-        ($('#userEmail').val().length  > 0) &&
-        ($('#userNrtaCode').val().length > 0) &&
-        ($('#userType').val().length > 0) &&
-        ($('#userPassword').val().length > 0) &&
-        ($('#userRetypePassword').val().length > 0)) {
-        result = true;
-    }
-    return result;
-}
