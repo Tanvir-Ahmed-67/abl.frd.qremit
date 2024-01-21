@@ -7,6 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
     <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/choices.min.css}">
     <link rel="stylesheet" th:href="@{/css/app.css}">
     <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
 </head>
@@ -60,15 +61,23 @@
                                                 <label>Nrta Code</label>
                                             </div>
                                             <div class="col-md-8">
-                                                <div class="form-group has-icon-left">
-                                                    <div class="position-relative">
-                                                        <select th:name="userNrtaCode" th:field="*{nrtaCode}" class="form-select">
-                                                            <option th:value="selected" selected>Choose...</option>
-                                                            <option th:value="7010243">7010243</option>
-                                                            <option th:value="7010253">7010253</option>
-                                                            <option th:value="7010263">7010263</option>
+                                                <div class="form-group">
+                                                        <select th:name="userNrtaCode" th:field="*{nrtaCode}" class="choices form-select multiple-remove" multiple="multiple">
+                                                            <optgroup label="NRTA Code">
+                                                                <option value="7010243">7010243</option>
+                                                                <option value="7010253">7010253</option>
+                                                                <option value="selected" selected>Choose...</option>
+                                                                <option value="7010263">7010263</option>
+                                                                <option value="7010243">7010273</option>
+                                                                <option value="7010253">7010283</option>
+                                                                <option value="7010243">7010293</option>
+                                                                <option value="7010253">7010294</option>
+                                                                <option value="7010243">7010295</option>
+                                                                <option value="7010253">7010296</option>
+                                                                <option value="7010243">7010297</option>
+                                                                <option value="7010253">7010298</option>
+                                                            </optgroup>
                                                         </select>
-                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -139,10 +148,10 @@
 <script th:src="@{/js/feather.min.js}"></script>
 <script th:src="@{/js/perfect-scrollbar.min.js}"></script>
 <script th:src="@{/js/app.js}"></script>
-
 <script th:src="@{/js/Chart.min.js}"></script>
 <script th:src="@{/js/apexcharts.min.js}"></script>
 <script th:src="@{/js/dashboard.js}"></script>
 <script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/choices.min.js}"></script>
 </body>
 </html>
