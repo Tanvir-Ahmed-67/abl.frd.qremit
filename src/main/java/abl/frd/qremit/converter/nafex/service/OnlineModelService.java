@@ -24,4 +24,22 @@ public class OnlineModelService {
         ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModes);
         return in;
     }
+    public ByteArrayInputStream loadUnprocessedOnlineData(String isProcessed) {
+        List<OnlineModel> onlineModels = onlineModelRepository.loadUnprocessedOnlineData(isProcessed);
+        ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModels);
+        return in;
+    }
+
+    public ByteArrayInputStream loadProcessedOnlineData(String isProcessed) {
+        List<OnlineModel> onlineModels = onlineModelRepository.loadProcessedOnlineData(isProcessed);
+        ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModels);
+        return in;
+    }
+
+    public int countProcessedOnlineData(String isProcessed){
+        return onlineModelRepository.countByIsProcessed(isProcessed);
+    }
+    public int countUnProcessedOnlineData(String isProcessed){
+        return onlineModelRepository.countByIsProcessed(isProcessed);
+    }
 }

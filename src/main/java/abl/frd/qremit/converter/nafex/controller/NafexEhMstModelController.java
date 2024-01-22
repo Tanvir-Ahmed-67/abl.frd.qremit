@@ -69,15 +69,4 @@ public class NafexEhMstModelController {
         message = "Please upload a csv file!";
         return "/pages/user/userUploadSuccessPage";
     }
-    @GetMapping("/adminDashboard")
-    @ResponseBody
-    public String loadAdminDashboard(Model model){
-        List<Integer> count = nafexModelService.CountAllFourTypesOfData();
-        model.addAttribute("onlineCount", count.get(0));
-        model.addAttribute("cocCount", count.get(1));
-        model.addAttribute("accountPayeeCount", count.get(2));
-        model.addAttribute("beftnCount", count.get(3));
-        System.out.println("Admin Dashboard from controller"+count.toString());
-        return "/adminDashboard";
-    }
 }

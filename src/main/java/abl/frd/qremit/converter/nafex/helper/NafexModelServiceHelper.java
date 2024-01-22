@@ -89,8 +89,8 @@ public class NafexModelServiceHelper {
                     onlineModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
                     onlineModel.setRemitterName(nafexEhMstModel.getRemitterName());
                     onlineModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
-                    onlineModel.setExtraA("dump");
-                    onlineModel.setExtraB("dump");
+                    onlineModel.setIsProcessed("0");
+                    onlineModel.setIsDownloaded("0");
                     onlineModel.setExtraC("dump");
                     onlineModel.setExtraD("dump");
                     onlineModel.setExtraE("dump");

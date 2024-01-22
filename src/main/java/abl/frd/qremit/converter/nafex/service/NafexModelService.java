@@ -94,7 +94,7 @@ public class NafexModelService {
 
     public List<Integer> CountAllFourTypesOfData(){
         List<Integer> count = new ArrayList<Integer>(4);
-        count.add((int) onlineModelRepository.count());
+        count.add(onlineModelRepository.countByIsProcessed("0"));
         count.add((int) cocModelRepository.count());
         count.add((int) accountPayeeModelRepository.count());
         count.add((int) beftnModelRepository.count());
