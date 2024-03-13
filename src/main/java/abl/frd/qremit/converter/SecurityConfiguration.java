@@ -34,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login").usernameParameter("userEmail").passwordParameter("password")
-                .successHandler(new LoginSuccessHandler())
+                .successHandler(loginSuccessHandler)
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .sessionManagement(session -> session.invalidSessionUrl("/logout"))

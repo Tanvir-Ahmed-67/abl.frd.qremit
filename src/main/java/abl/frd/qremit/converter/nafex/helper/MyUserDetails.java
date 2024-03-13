@@ -69,6 +69,9 @@ public class MyUserDetails implements UserDetails {
     public String getUserEmail(){
         return user.getUserEmail();
     }
+    public String getUserNrtaCode(){
+        return user.getNrtaCode();
+    }
 
     public User getUser() {
         return user;

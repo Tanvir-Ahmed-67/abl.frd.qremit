@@ -28,6 +28,24 @@ public class UserController {
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
     }
+    @RequestMapping("/login")
+    public String loginPage(){
+        return "auth-login";
+    }
+    @RequestMapping("/super-admin-home-page")
+    public String loginSubmitSuperAdmin(){ return "/layouts/dashboard"; }
+    @RequestMapping("/admin-home-page")
+    public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
+    @RequestMapping("/user-home-page")
+    public String loginSubmitUser(){ return "/layouts/dashboard"; }
+    @RequestMapping("/home")
+    public String loginSubmit(){
+        return "/layouts/dashboard";
+    }
+    @RequestMapping("/logout")
+    public String logoutSuccessPage(){
+        return "auth-login";
+    }
     @RequestMapping("/allUsers")
     public String loadAllUser(Model model){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

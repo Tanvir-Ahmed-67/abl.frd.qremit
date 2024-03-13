@@ -12,7 +12,9 @@
 </head>
 <body>
 <div id="app"><!--main content-->
-    <span th:replace="/fragments/sidebar :: sidebar"></span>
+    <span sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="/fragments/sidebarSuperAdmin :: sidebar"></span>
+    <span sec:authorize="hasRole('ROLE_ADMIN')" th:replace="/fragments/sidebarAdmin :: sidebar"></span>
+    <span sec:authorize="hasRole('ROLE_USER')" th:replace="/fragments/sidebarUser :: sidebar"></span>
     <div id="main"><!--content Id-->
         <span th:replace="/fragments/header :: header"></span>
         <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="/pages/superAdmin/superAdminLandingPage :: superAdminContent"><!--dynamic content-->

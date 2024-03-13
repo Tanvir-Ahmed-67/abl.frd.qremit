@@ -23,24 +23,6 @@ public class NafexEhMstModelController {
     public NafexEhMstModelController(NafexModelService nafexModelService){
         this.nafexModelService = nafexModelService;
     }
-    @RequestMapping("/login")
-    public String loginPage(){
-        return "auth-login";
-    }
-    @RequestMapping("/super-admin-home-page")
-    public String loginSubmitSuperAdmin(){ return "/layouts/dashboard"; }
-    @RequestMapping("/admin-home-page")
-    public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
-    @RequestMapping("/user-home-page")
-    public String loginSubmitUser(){ return "/layouts/dashboard"; }
-    @RequestMapping("/home")
-    public String loginSubmit(){
-        return "/layouts/dashboard";
-    }
-    @RequestMapping("/logout")
-    public String logoutSuccessPage(){
-        return "auth-login";
-    }
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
         int userId = 000000000;
