@@ -67,10 +67,10 @@ public class MyUserDetails implements UserDetails {
     }
 
     public String getUserEmail(){
-        return user.getUserEmail();
+        return this.user.getUserEmail();
     }
     public String getUserNrtaCode(){
-        return user.getNrtaCode();
+        return this.user.getNrtaCode();
     }
 
     public User getUser() {

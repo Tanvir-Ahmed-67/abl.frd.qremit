@@ -1,11 +1,13 @@
 package abl.frd.qremit.converter.nafex.controller;
 
+import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +39,11 @@ public class UserController {
     @RequestMapping("/admin-home-page")
     public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
     @RequestMapping("/user-home-page")
-    public String loginSubmitUser(){ return "/layouts/dashboard"; }
+    public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+        String nrtaCode = userDetails.getUserNrtaCode();
+        String[] arrOfNrtaCode = nrtaCode.split(",");
+        model.addAttribute("arrOfNrtaCode", arrOfNrtaCode);
+        return "/layouts/dashboard"; }
     @RequestMapping("/home")
     public String loginSubmit(){
         return "/layouts/dashboard";
