@@ -16,4 +16,11 @@ public class ExchangeHouseModelService {
         List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findAll();
         return exchangeHouseModels;
     }
+    public void insertNewExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception{
+        exchangeHouseModelRepository.save(exchangeHouseModel);
+    }
+    public List<ExchangeHouseModel> loadAllInactiveExchangeHouse(){
+        List<ExchangeHouseModel> inactiveExchangeHouseModels = exchangeHouseModelRepository.findAllInactiveExchangeHouse();
+        return inactiveExchangeHouseModels;
+    }
 }
