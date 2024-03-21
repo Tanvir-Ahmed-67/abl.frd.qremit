@@ -25,6 +25,9 @@
                         <div class="card-header">
                             <h4 class="card-title">List of All Exchange Houses</h4>
                         </div>
+                        <div th:if="${message}" class="alert alert-success text-center">
+                            [[${message}]]
+                        </div>
                         <div class="card-content">
                             <div class="table-responsive">
                                 <table class="table table-hover mb-0">

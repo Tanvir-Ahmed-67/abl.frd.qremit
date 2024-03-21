@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -67,5 +68,14 @@ public class ExchangeHouseModelController {
         inactiveExchangeHouseModelList = exchangeHouseModelService.loadAllInactiveExchangeHouse();
         model.addAttribute("inactiveExchangeHouseList", inactiveExchangeHouseModelList);
         return "/pages/superAdmin/superAdminInactiveExchangeHouseListPage";
+    }
+
+    @RequestMapping(value="/activateExchangeHouse/{id}", method = RequestMethod.POST)
+    public String activateInactiveExchangeHouse(Model model, @PathVariable(required = true, name = "id") String id, RedirectAttributes ra) {
+        int idInIntegerFormat = Integer.parseInt(id);
+        if(exchangeHouseModelService.updateInactiveExchangeHouse(idInIntegerFormat)){
+            ra.addFlashAttribute("message","Exchange House has been activated successfully");
+        }
+        return "redirect:/showInactiveExchangeHouse";
     }
 }

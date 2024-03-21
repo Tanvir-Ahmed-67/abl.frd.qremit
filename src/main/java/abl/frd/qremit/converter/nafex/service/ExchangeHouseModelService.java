@@ -23,4 +23,9 @@ public class ExchangeHouseModelService {
         List<ExchangeHouseModel> inactiveExchangeHouseModels = exchangeHouseModelRepository.findAllInactiveExchangeHouse();
         return inactiveExchangeHouseModels;
     }
+
+    public boolean updateInactiveExchangeHouse(int id){
+        exchangeHouseModelRepository.updateInactiveExchangeHouseById(id);
+        return true;
+    }
 }
