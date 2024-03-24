@@ -17,5 +17,10 @@ public interface ExchangeHouseModelRepository extends JpaRepository<ExchangeHous
     @Transactional
     @Modifying
     @Query("UPDATE ExchangeHouseModel n SET n.isActive = '1' WHERE n.Id = :id")
-    void updateInactiveExchangeHouseById(int id);
+    void setExchangeHouseActiveStatusTrueById(int id);
+    @Transactional
+    @Modifying
+    @Query("UPDATE ExchangeHouseModel n SET n.isActive = '0' WHERE n.Id = :id")
+    void setExchangeHouseActiveStatusFalseById(int id);
+
 }

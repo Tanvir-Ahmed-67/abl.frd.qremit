@@ -25,7 +25,11 @@ public class ExchangeHouseModelService {
     }
 
     public boolean updateInactiveExchangeHouse(int id){
-        exchangeHouseModelRepository.updateInactiveExchangeHouseById(id);
+        exchangeHouseModelRepository.setExchangeHouseActiveStatusTrueById(id);
         return true;
+    }
+    public void editExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception {
+        exchangeHouseModelRepository.save(exchangeHouseModel);
+        exchangeHouseModelRepository.setExchangeHouseActiveStatusFalseById(exchangeHouseModel.getId());
     }
 }
