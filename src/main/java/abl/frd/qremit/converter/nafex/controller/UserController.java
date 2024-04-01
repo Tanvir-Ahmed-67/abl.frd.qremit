@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
@@ -11,12 +12,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 
@@ -73,13 +73,13 @@ public class UserController {
         return "/allUsers";
     }
     @RequestMapping("/newUserCreationForm")
-    public String showUserCreateFromSuperAdmin(Model model){
+    public String showUserCreateFromAdmin(Model model){
         model.addAttribute("user", new User());
-        return "/pages/superAdmin/superAdminNewUserEntryForm";
+        return "/pages/admin/adminNewUserEntryForm";
     }
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
     public String submitUserCreateFromSuperAdmin(User user, RedirectAttributes ra){
-        user.setStatus(true);
+        user.setActiveStatus(false);
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
         return "redirect:/allUsers";
@@ -89,5 +89,26 @@ public class UserController {
     public List<Integer> loadAdminDashboard(Model model){
         List<Integer> count = nafexModelService.CountAllFourTypesOfData();
         return count;
+    }
+    @RequestMapping(value="/userEditForm/{id}", method = RequestMethod.POST)
+    public String showUserEditForm(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user){
+        model.addAttribute("user", user);
+        return "/pages/admin/adminUserEditForm";
+    }
+    @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
+    public String editExchangeHouse(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user, BindingResult result, RedirectAttributes ra){
+        int idInIntegerFormat = Integer.parseInt(id);
+        if (result.hasErrors()) {
+            user.setId(idInIntegerFormat);
+            return "editUser";
+        }
+        try {
+            myUserDetailsService.editUser(user);
+            ra.addFlashAttribute("message","User Updated successfully");
+            model.addAttribute("user",user);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return "redirect:/allUsers";
     }
 }

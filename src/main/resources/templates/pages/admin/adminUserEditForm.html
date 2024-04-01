@@ -13,22 +13,22 @@
 </head>
 <body>
 <div id="app"><!--main content-->
-    <span th:replace="/fragments/sidebarSuperAdmin :: sidebarSuperAdmin"></span>
+    <span th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
     <div id="main"><!--content Id-->
         <span th:replace="/fragments/header :: header"></span>
         <div class="main-content container-fluid"><!--dynamic content-->
             <div class="page-title">
-                <h3>New User</h3>
+                <h3>Edit User</h3>
             </div>
             <div class="row" id="table-hover-row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Create New User</h4>
+                            <h4 class="card-title">Edit User</h4>
                         </div>
                         <div class="card-content">
                             <div class="card-body">
-                                <form th:action="@{/createNewUser}" th:object="${user}" th:name="newUserEntryForm" method="post" class="form form-horizontal">
+                                <form th:action="@{/editUser/{id}(id=${user.getId()})}" th:object="${user}" method="post" class="form form-horizontal">
                                     <div class="form-body">
                                         <div class="row">
                                             <div class="col-md-4">
@@ -37,7 +37,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="text" th:name="userName" th:field="*{userName}" class="form-control" placeholder="Name" required th:minlength="1" th:maxlength="20">
+                                                       <input type="text" name="userName" th:with="userName=*{userName}" th:value="${user.userName}" class="form-control" required th:minlength="1" th:maxlength="250"><!-- <span th:if="${#fields.hasAnyErrors('userName')}" th:errors="*{userName}" class="text-danger"></span>-->
                                                         <div class="form-control-icon">
                                                             <i data-feather="user"></i>
                                                         </div>
@@ -50,7 +50,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="email" th:name="userEmail" th:field="*{userEmail}" class="form-control" placeholder="Email" required th:minlength="3" th:maxlength="45">
+                                                        <input type="text" name="userEmail" th:with="userEmail=*{userEmail}" th:value="${user.userEmail}" class="form-control" required th:minlength="3" th:maxlength="45"><!-- span th:if="${#fields.hasAnyErrors('userEmail')}" th:errors="*{userEmail}" class="text-danger"></span>-->
                                                         <div class="form-control-icon">
                                                             <i data-feather="mail"></i>
                                                         </div>
@@ -62,7 +62,7 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="form-group">
-                                                        <select th:name="userNrtaCode" th:field="*{nrtaCode}" class="choices form-select multiple-remove" multiple="multiple">
+                                                        <select name="nrtaCode" th:with="nrtaCode=*{nrtaCode}" class="choices form-select multiple-remove" multiple="multiple">
                                                             <optgroup label="NRTA Code">
                                                                 <option value="7010243">7010243</option>
                                                                 <option value="7010253">7010253</option>
@@ -77,21 +77,7 @@
                                                                 <option value="7010243">7010297</option>
                                                                 <option value="7010253">7010298</option>
                                                             </optgroup>
-                                                        </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label>User Type</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <div class="form-group has-icon-left">
-                                                    <div class="position-relative">
-                                                        <select th:name="userType" class="form-select">
-                                                            <option th:value="selected" selected>Choose...</option>
-                                                            <option th:value="user">User</option>
-                                                            <option th:value="admin">Admin</option>
-                                                        </select>
-                                                    </div>
+                                                        </select><!--<span th:if="${#fields.hasAnyErrors('userNrtaCode')}" th:errors="*{nrtaCode}" class="text-danger"></span>-->
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -124,7 +110,7 @@
                                             <div class="form-group col-md-8 offset-md-4">
                                                 <div class='form-check'>
                                                     <div class="checkbox">
-                                                        <input type="checkbox" id="checkbox2" class='form-check-input' checked>
+                                                        <input type="checkbox" id="checkbox2" class='form-check-input'>
                                                         <label for="checkbox2">Remember Me</label>
                                                     </div>
                                                 </div>

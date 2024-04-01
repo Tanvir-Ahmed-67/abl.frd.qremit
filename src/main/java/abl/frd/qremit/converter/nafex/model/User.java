@@ -1,7 +1,6 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +18,7 @@ public class User {
     private String userEmail;
     @Column(nullable=false)
     private String password;
-    private boolean status;
+    private boolean ActiveStatus;
     private String nrtaCode;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
@@ -74,12 +73,12 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    public boolean isStatus() {
-        return status;
+    public boolean isActiveStatus() {
+        return ActiveStatus;
     }
 
-    public void setStatus(boolean active) {
-        this.status = active;
+    public void setActiveStatus(boolean active) {
+        this.ActiveStatus = active;
     }
 
     public String getNrtaCode() {

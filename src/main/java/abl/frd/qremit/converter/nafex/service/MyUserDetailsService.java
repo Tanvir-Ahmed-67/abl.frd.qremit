@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +51,9 @@ public class MyUserDetailsService implements UserDetailsService {
     }
     public void insertUser(User user) throws UsernameNotFoundException {
         userModelRepository.save(user);
+    }
+    public void editUser(User user) throws Exception {
+        userModelRepository.save(user);
+        userModelRepository.setUserActiveStatusFalseById(user.getId());
     }
 }
