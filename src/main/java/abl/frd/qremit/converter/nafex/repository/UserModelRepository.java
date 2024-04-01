@@ -25,7 +25,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<User> loadUsersOnly();
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.ActiveStatus = '0' WHERE n.id = :id")
+    @Query("UPDATE User n SET n.ActiveStatus = false WHERE n.id = :id")
     void setUserActiveStatusFalseById(int id);
 
 }
