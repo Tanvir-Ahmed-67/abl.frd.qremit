@@ -40,6 +40,13 @@ public class FileInfoModel {
     private List<NafexEhMstModel> nafexEhMstModel;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    private List<BecModel> becModel;
+
+      @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    private List<MuzainiModel> muzainiModel;
+
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     private List<CocModel> cocModelList;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
@@ -122,6 +129,16 @@ public class FileInfoModel {
     public void setNafexEhMstModel(List<NafexEhMstModel> nafexEhMstModelSet) {
         this.nafexEhMstModel = nafexEhMstModelSet;
     }
+
+      public void setBecModel(List<BecModel> becModelSet) {
+        this.becModel = becModelSet;
+    }
+
+      public void setMuzainiModel(List<MuzainiModel> muzainiModelSet) {
+        this.muzainiModel = muzainiModelSet;
+    }
+
+    
 
     public String getTotalCount() {
         return totalCount;

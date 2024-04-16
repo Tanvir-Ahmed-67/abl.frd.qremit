@@ -14,10 +14,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NafexModelServiceHelper {
-    
+public class MuzainiModelServiceHelper {
     public static String TYPE = "text/csv";
-    static String[] HEADERs = {"Excode","Tranno","Currency","Amount","Entered Date","Remitter","Beneficiary","Bene A/C","Bank Name","Bank Code","Branch Name","Branch Code"};
+    static String[] HEADERs = {"Excode","Tranno","Currency","Amount","Entered Date","Remitter","Beneficiary","Bene A/C","Bank Name","Bank Code","Branch Name","Branch Code","Beneficiary Mobile No","Source of Income", "Remitter Mobile No"};
 
     public static boolean hasCSVFormat(MultipartFile file) {
         if (TYPE.equals(file.getContentType())
@@ -26,13 +25,14 @@ public class NafexModelServiceHelper {
         }
         return false;
     }
-    public static List<NafexEhMstModel> csvToNafexModels(InputStream is) {
+    public static List<MuzainiModel> csvToMuzainiModels(InputStream is) {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
-            List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
+            List<MuzainiModel> muzainiDataModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
-                NafexEhMstModel nafexDataModel = new NafexEhMstModel(
+                MuzainiModel muzainiDataModel = new MuzainiModel(
+   
                         csvRecord.get(0), //exCode
                         csvRecord.get(1), //Tranno
                         csvRecord.get(2), //Currency
@@ -42,17 +42,17 @@ public class NafexModelServiceHelper {
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
-                        csvRecord.get(12), //beneficiaryMobile
+                       
                         csvRecord.get(8), //bankName
                         csvRecord.get(9), //bankCode
                         csvRecord.get(10), //branchName
                         csvRecord.get(11), // branchCode
-
-                        csvRecord.get(13), //draweeBranchName
-                        csvRecord.get(14), //draweeBranchCode
-                        csvRecord.get(15), //purposeOfRemittance
-                        csvRecord.get(16), //sourceOfIncome
-                        csvRecord.get(17), //remitterMobile
+                        csvRecord.get(12), //beneficiaryMobile
+                       // csvRecord.get(13), //draweeBranchName
+                      //  csvRecord.get(14), //draweeBranchCode
+                        csvRecord.get(13), //purposeOfRemittance
+                      //  csvRecord.get(16), //sourceOfIncome
+                        csvRecord.get(14), //remitterMobile
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
@@ -63,18 +63,18 @@ public class NafexModelServiceHelper {
                         putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
                         putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        //checkBeftn
 
-                nafexDataModelList.add(nafexDataModel);
+                muzainiDataModelList.add(muzainiDataModel);
             }
-            return nafexDataModelList;
+            return muzainiDataModelList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
     }
 
 
-    public static List<OnlineModel> generateOnlineModelList(List<NafexEhMstModel> nafexEhMstModel){
+    public static List<OnlineModel> generateOnlineModelList(List<MuzainiModel> muzainiModel){
         List<OnlineModel> onlineList = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
+        for (MuzainiModel singleModel : muzainiModel){
             if(singleModel.getCheckT24().equals("1")){
                 onlineList.add(generateOnlineModel(singleModel));
             }
@@ -82,14 +82,14 @@ public class NafexModelServiceHelper {
         return onlineList;
     }
 
-    public static OnlineModel generateOnlineModel(NafexEhMstModel nafexEhMstModel){
+    public static OnlineModel generateOnlineModel(MuzainiModel muzainiModel){
         OnlineModel onlineModel = new OnlineModel();
-                    onlineModel.setAmount(nafexEhMstModel.getAmount());
-                    onlineModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
-                    onlineModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-                    onlineModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
-                    onlineModel.setRemitterName(nafexEhMstModel.getRemitterName());
-                    onlineModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+                    onlineModel.setAmount(muzainiModel.getAmount());
+                    onlineModel.setBeneficiaryAccount(muzainiModel.getBeneficiaryAccount());
+                    onlineModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
+                    onlineModel.setExchangeCode(muzainiModel.getExchangeCode());
+                    onlineModel.setRemitterName(muzainiModel.getRemitterName());
+                    onlineModel.setTransactionNo(muzainiModel.getTransactionNo());
                     onlineModel.setExtraA("dump");
                     onlineModel.setExtraB("dump");
                     onlineModel.setExtraC("dump");
@@ -98,9 +98,9 @@ public class NafexModelServiceHelper {
         return onlineModel;
     }
 
-    public static List<CocModel> generateCocModelList(List<NafexEhMstModel> nafexEhMstModel){
+    public static List<CocModel> generateCocModelList(List<MuzainiModel> muzainiModel){
         List<CocModel> cocList = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
+        for (MuzainiModel singleModel : muzainiModel){
             if(singleModel.getCheckCoc().equals("1")){
                 cocList.add(generateCocModel(singleModel));
             }
@@ -108,83 +108,83 @@ public class NafexModelServiceHelper {
         return cocList;
     }
 
-    public static CocModel generateCocModel(NafexEhMstModel nafexEhMstModel){
+    public static CocModel generateCocModel(MuzainiModel muzainiModel){
         CocModel cocModel = new CocModel();
-        cocModel.setAmount(nafexEhMstModel.getAmount());
-        cocModel.setBankCode(nafexEhMstModel.getBankCode());
-        cocModel.setBankName(nafexEhMstModel.getBankName());
-        cocModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
-        cocModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-        cocModel.setBranchCode(nafexEhMstModel.getBranchCode());
-        cocModel.setBranchName(nafexEhMstModel.getBranchName());
+        cocModel.setAmount(muzainiModel.getAmount());
+        cocModel.setBankCode(muzainiModel.getBankCode());
+        cocModel.setBankName(muzainiModel.getBankName());
+        cocModel.setBeneficiaryAccount(muzainiModel.getBeneficiaryAccount());
+        cocModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
+        cocModel.setBranchCode(muzainiModel.getBranchCode());
+        cocModel.setBranchName(muzainiModel.getBranchName());
         cocModel.setCocCode("15");
         cocModel.setCreditMark("CRED");
-        cocModel.setCurrency(nafexEhMstModel.getCurrency());
-        cocModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
-        cocModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
+        cocModel.setCurrency(muzainiModel.getCurrency());
+        cocModel.setEnteredDate(muzainiModel.getEnteredDate());
+        cocModel.setExchangeCode(muzainiModel.getExchangeCode());
         cocModel.setExtraA("dummy");
         cocModel.setExtraB("dummy");
         cocModel.setExtraC("dummy");
         cocModel.setExtraD("dummy");
         cocModel.setExtraE("dummy");
         cocModel.setIncentive(000.00);
-        cocModel.setRemitterName(nafexEhMstModel.getRemitterName());
-        cocModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+        cocModel.setRemitterName(muzainiModel.getRemitterName());
+        cocModel.setTransactionNo(muzainiModel.getTransactionNo());
 
         return cocModel;
     }
 
-    public static List<AccountPayeeModel> generateAccountPayeeModelList(List<NafexEhMstModel> nafexEhMstModel){
+    public static List<AccountPayeeModel> generateAccountPayeeModelList(List<MuzainiModel> muzainiModel){
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
+        for (MuzainiModel singleModel : muzainiModel){
             if(singleModel.getCheckAccPayee().equals("1")){
                 accountPayeeModelList.add(generateAccountPayeeModel(singleModel));
             }
         }
         return accountPayeeModelList;
     }
-    public static AccountPayeeModel generateAccountPayeeModel(NafexEhMstModel nafexEhMstModel){
+    public static AccountPayeeModel generateAccountPayeeModel(MuzainiModel muzainiModel){
         AccountPayeeModel aoountPayeeModel = new AccountPayeeModel();
-        aoountPayeeModel.setAmount(nafexEhMstModel.getAmount());
-        aoountPayeeModel.setBankCode(nafexEhMstModel.getBankCode());
-        aoountPayeeModel.setBankName(nafexEhMstModel.getBankName());
-        aoountPayeeModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
-        aoountPayeeModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-        aoountPayeeModel.setBranchCode(nafexEhMstModel.getBranchCode());
-        aoountPayeeModel.setBranchName(nafexEhMstModel.getBranchName());
+        aoountPayeeModel.setAmount(muzainiModel.getAmount());
+        aoountPayeeModel.setBankCode(muzainiModel.getBankCode());
+        aoountPayeeModel.setBankName(muzainiModel.getBankName());
+        aoountPayeeModel.setBeneficiaryAccount(muzainiModel.getBeneficiaryAccount());
+        aoountPayeeModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
+        aoountPayeeModel.setBranchCode(muzainiModel.getBranchCode());
+        aoountPayeeModel.setBranchName(muzainiModel.getBranchName());
         aoountPayeeModel.setAccountPayeeCode("5");
         aoountPayeeModel.setCreditMark("CRED");
-        aoountPayeeModel.setCurrency(nafexEhMstModel.getCurrency());
-        aoountPayeeModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
-        aoountPayeeModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
+        aoountPayeeModel.setCurrency(muzainiModel.getCurrency());
+        aoountPayeeModel.setEnteredDate(muzainiModel.getEnteredDate());
+        aoountPayeeModel.setExchangeCode(muzainiModel.getExchangeCode());
         aoountPayeeModel.setExtraA("dummy");
         aoountPayeeModel.setExtraB("dummy");
         aoountPayeeModel.setExtraC("dummy");
         aoountPayeeModel.setExtraD("dummy");
         aoountPayeeModel.setExtraE("dummy");
         aoountPayeeModel.setIncentive(000.00);
-        aoountPayeeModel.setRemitterName(nafexEhMstModel.getRemitterName());
-        aoountPayeeModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+        aoountPayeeModel.setRemitterName(muzainiModel.getRemitterName());
+        aoountPayeeModel.setTransactionNo(muzainiModel.getTransactionNo());
 
         return aoountPayeeModel;
     }
 
-    public static List<BeftnModel> generateBeftnModelList(List<NafexEhMstModel> nafexEhMstModel){
+    public static List<BeftnModel> generateBeftnModelList(List<MuzainiModel> muzainiModel){
         List<BeftnModel> beftnModelList = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
+        for (MuzainiModel singleModel : muzainiModel){
             if(singleModel.getCheckBeftn().equals("1")){
                 beftnModelList.add(generateBeftnModel(singleModel));
             }
         }
         return beftnModelList;
     }
-    public static BeftnModel generateBeftnModel(NafexEhMstModel nafexEhMstModel){
+    public static BeftnModel generateBeftnModel(MuzainiModel muzainiModel){
         BeftnModel beftnModel = new BeftnModel();
-        beftnModel.setAmount(nafexEhMstModel.getAmount());
-        beftnModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
+        beftnModel.setAmount(muzainiModel.getAmount());
+        beftnModel.setBeneficiaryAccount(muzainiModel.getBeneficiaryAccount());
         beftnModel.setBeneficiaryAccountType("SA");
-        beftnModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-        beftnModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
+        beftnModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
+        beftnModel.setExchangeCode(muzainiModel.getExchangeCode());
         beftnModel.setExtraA("dummy");
         beftnModel.setExtraB("dummy");
         beftnModel.setExtraC("dummy");
@@ -195,8 +195,8 @@ public class NafexModelServiceHelper {
         beftnModel.setOrgAccountType("CA");
         beftnModel.setOrgCustomerNo("7892");
         beftnModel.setOrgName("FRD Remittance");
-        beftnModel.setRoutingNo(nafexEhMstModel.getBranchCode());
-        beftnModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+        beftnModel.setRoutingNo(muzainiModel.getBranchCode());
+        beftnModel.setTransactionNo(muzainiModel.getTransactionNo());
 
         return beftnModel;
     }

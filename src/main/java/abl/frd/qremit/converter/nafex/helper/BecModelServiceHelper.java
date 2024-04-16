@@ -14,8 +14,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NafexModelServiceHelper {
-    
+public class BecModelServiceHelper {
     public static String TYPE = "text/csv";
     static String[] HEADERs = {"Excode","Tranno","Currency","Amount","Entered Date","Remitter","Beneficiary","Bene A/C","Bank Name","Bank Code","Branch Name","Branch Code"};
 
@@ -26,13 +25,13 @@ public class NafexModelServiceHelper {
         }
         return false;
     }
-    public static List<NafexEhMstModel> csvToNafexModels(InputStream is) {
+    public static List<BecModel> csvToBecModels(InputStream is) {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
-            List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
+            List<BecModel> becDataModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
-                NafexEhMstModel nafexDataModel = new NafexEhMstModel(
+                BecModel becDataModel = new BecModel(
                         csvRecord.get(0), //exCode
                         csvRecord.get(1), //Tranno
                         csvRecord.get(2), //Currency
@@ -42,12 +41,12 @@ public class NafexModelServiceHelper {
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
-                        csvRecord.get(12), //beneficiaryMobile
+                       
                         csvRecord.get(8), //bankName
                         csvRecord.get(9), //bankCode
                         csvRecord.get(10), //branchName
                         csvRecord.get(11), // branchCode
-
+                        csvRecord.get(12), //beneficiaryMobile
                         csvRecord.get(13), //draweeBranchName
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance
@@ -63,18 +62,18 @@ public class NafexModelServiceHelper {
                         putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
                         putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        //checkBeftn
 
-                nafexDataModelList.add(nafexDataModel);
+                becDataModelList.add(becDataModel);
             }
-            return nafexDataModelList;
+            return becDataModelList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
     }
 
 
-    public static List<OnlineModel> generateOnlineModelList(List<NafexEhMstModel> nafexEhMstModel){
+    public static List<OnlineModel> generateOnlineModelList(List<BecModel> becModel){
         List<OnlineModel> onlineList = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
+        for (BecModel singleModel : becModel){
             if(singleModel.getCheckT24().equals("1")){
                 onlineList.add(generateOnlineModel(singleModel));
             }
@@ -82,14 +81,14 @@ public class NafexModelServiceHelper {
         return onlineList;
     }
 
-    public static OnlineModel generateOnlineModel(NafexEhMstModel nafexEhMstModel){
+    public static OnlineModel generateOnlineModel(BecModel becModel){
         OnlineModel onlineModel = new OnlineModel();
-                    onlineModel.setAmount(nafexEhMstModel.getAmount());
-                    onlineModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
-                    onlineModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-                    onlineModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
-                    onlineModel.setRemitterName(nafexEhMstModel.getRemitterName());
-                    onlineModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+                    onlineModel.setAmount(becModel.getAmount());
+                    onlineModel.setBeneficiaryAccount(becModel.getBeneficiaryAccount());
+                    onlineModel.setBeneficiaryName(becModel.getBeneficiaryName());
+                    onlineModel.setExchangeCode(becModel.getExchangeCode());
+                    onlineModel.setRemitterName(becModel.getRemitterName());
+                    onlineModel.setTransactionNo(becModel.getTransactionNo());
                     onlineModel.setExtraA("dump");
                     onlineModel.setExtraB("dump");
                     onlineModel.setExtraC("dump");
@@ -98,9 +97,9 @@ public class NafexModelServiceHelper {
         return onlineModel;
     }
 
-    public static List<CocModel> generateCocModelList(List<NafexEhMstModel> nafexEhMstModel){
+    public static List<CocModel> generateCocModelList(List<BecModel> becModel){
         List<CocModel> cocList = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
+        for (BecModel singleModel : becModel){
             if(singleModel.getCheckCoc().equals("1")){
                 cocList.add(generateCocModel(singleModel));
             }
@@ -108,83 +107,83 @@ public class NafexModelServiceHelper {
         return cocList;
     }
 
-    public static CocModel generateCocModel(NafexEhMstModel nafexEhMstModel){
+    public static CocModel generateCocModel(BecModel becModel){
         CocModel cocModel = new CocModel();
-        cocModel.setAmount(nafexEhMstModel.getAmount());
-        cocModel.setBankCode(nafexEhMstModel.getBankCode());
-        cocModel.setBankName(nafexEhMstModel.getBankName());
-        cocModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
-        cocModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-        cocModel.setBranchCode(nafexEhMstModel.getBranchCode());
-        cocModel.setBranchName(nafexEhMstModel.getBranchName());
+        cocModel.setAmount(becModel.getAmount());
+        cocModel.setBankCode(becModel.getBankCode());
+        cocModel.setBankName(becModel.getBankName());
+        cocModel.setBeneficiaryAccount(becModel.getBeneficiaryAccount());
+        cocModel.setBeneficiaryName(becModel.getBeneficiaryName());
+        cocModel.setBranchCode(becModel.getBranchCode());
+        cocModel.setBranchName(becModel.getBranchName());
         cocModel.setCocCode("15");
         cocModel.setCreditMark("CRED");
-        cocModel.setCurrency(nafexEhMstModel.getCurrency());
-        cocModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
-        cocModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
+        cocModel.setCurrency(becModel.getCurrency());
+        cocModel.setEnteredDate(becModel.getEnteredDate());
+        cocModel.setExchangeCode(becModel.getExchangeCode());
         cocModel.setExtraA("dummy");
         cocModel.setExtraB("dummy");
         cocModel.setExtraC("dummy");
         cocModel.setExtraD("dummy");
         cocModel.setExtraE("dummy");
         cocModel.setIncentive(000.00);
-        cocModel.setRemitterName(nafexEhMstModel.getRemitterName());
-        cocModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+        cocModel.setRemitterName(becModel.getRemitterName());
+        cocModel.setTransactionNo(becModel.getTransactionNo());
 
         return cocModel;
     }
 
-    public static List<AccountPayeeModel> generateAccountPayeeModelList(List<NafexEhMstModel> nafexEhMstModel){
+    public static List<AccountPayeeModel> generateAccountPayeeModelList(List<BecModel> becModel){
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
+        for (BecModel singleModel : becModel){
             if(singleModel.getCheckAccPayee().equals("1")){
                 accountPayeeModelList.add(generateAccountPayeeModel(singleModel));
             }
         }
         return accountPayeeModelList;
     }
-    public static AccountPayeeModel generateAccountPayeeModel(NafexEhMstModel nafexEhMstModel){
+    public static AccountPayeeModel generateAccountPayeeModel(BecModel becModel){
         AccountPayeeModel aoountPayeeModel = new AccountPayeeModel();
-        aoountPayeeModel.setAmount(nafexEhMstModel.getAmount());
-        aoountPayeeModel.setBankCode(nafexEhMstModel.getBankCode());
-        aoountPayeeModel.setBankName(nafexEhMstModel.getBankName());
-        aoountPayeeModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
-        aoountPayeeModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-        aoountPayeeModel.setBranchCode(nafexEhMstModel.getBranchCode());
-        aoountPayeeModel.setBranchName(nafexEhMstModel.getBranchName());
+        aoountPayeeModel.setAmount(becModel.getAmount());
+        aoountPayeeModel.setBankCode(becModel.getBankCode());
+        aoountPayeeModel.setBankName(becModel.getBankName());
+        aoountPayeeModel.setBeneficiaryAccount(becModel.getBeneficiaryAccount());
+        aoountPayeeModel.setBeneficiaryName(becModel.getBeneficiaryName());
+        aoountPayeeModel.setBranchCode(becModel.getBranchCode());
+        aoountPayeeModel.setBranchName(becModel.getBranchName());
         aoountPayeeModel.setAccountPayeeCode("5");
         aoountPayeeModel.setCreditMark("CRED");
-        aoountPayeeModel.setCurrency(nafexEhMstModel.getCurrency());
-        aoountPayeeModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
-        aoountPayeeModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
+        aoountPayeeModel.setCurrency(becModel.getCurrency());
+        aoountPayeeModel.setEnteredDate(becModel.getEnteredDate());
+        aoountPayeeModel.setExchangeCode(becModel.getExchangeCode());
         aoountPayeeModel.setExtraA("dummy");
         aoountPayeeModel.setExtraB("dummy");
         aoountPayeeModel.setExtraC("dummy");
         aoountPayeeModel.setExtraD("dummy");
         aoountPayeeModel.setExtraE("dummy");
         aoountPayeeModel.setIncentive(000.00);
-        aoountPayeeModel.setRemitterName(nafexEhMstModel.getRemitterName());
-        aoountPayeeModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+        aoountPayeeModel.setRemitterName(becModel.getRemitterName());
+        aoountPayeeModel.setTransactionNo(becModel.getTransactionNo());
 
         return aoountPayeeModel;
     }
 
-    public static List<BeftnModel> generateBeftnModelList(List<NafexEhMstModel> nafexEhMstModel){
+    public static List<BeftnModel> generateBeftnModelList(List<BecModel> becModel){
         List<BeftnModel> beftnModelList = new ArrayList<>();
-        for (NafexEhMstModel singleModel : nafexEhMstModel){
+        for (BecModel singleModel : becModel){
             if(singleModel.getCheckBeftn().equals("1")){
                 beftnModelList.add(generateBeftnModel(singleModel));
             }
         }
         return beftnModelList;
     }
-    public static BeftnModel generateBeftnModel(NafexEhMstModel nafexEhMstModel){
+    public static BeftnModel generateBeftnModel(BecModel becModel){
         BeftnModel beftnModel = new BeftnModel();
-        beftnModel.setAmount(nafexEhMstModel.getAmount());
-        beftnModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
+        beftnModel.setAmount(becModel.getAmount());
+        beftnModel.setBeneficiaryAccount(becModel.getBeneficiaryAccount());
         beftnModel.setBeneficiaryAccountType("SA");
-        beftnModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-        beftnModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
+        beftnModel.setBeneficiaryName(becModel.getBeneficiaryName());
+        beftnModel.setExchangeCode(becModel.getExchangeCode());
         beftnModel.setExtraA("dummy");
         beftnModel.setExtraB("dummy");
         beftnModel.setExtraC("dummy");
@@ -195,8 +194,8 @@ public class NafexModelServiceHelper {
         beftnModel.setOrgAccountType("CA");
         beftnModel.setOrgCustomerNo("7892");
         beftnModel.setOrgName("FRD Remittance");
-        beftnModel.setRoutingNo(nafexEhMstModel.getBranchCode());
-        beftnModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+        beftnModel.setRoutingNo(becModel.getBranchCode());
+        beftnModel.setTransactionNo(becModel.getTransactionNo());
 
         return beftnModel;
     }
