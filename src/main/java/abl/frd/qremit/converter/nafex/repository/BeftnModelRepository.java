@@ -14,6 +14,11 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
 
     @Query("SELECT n FROM BeftnModel n WHERE n.fileInfoModel.id =?1")
     List<BeftnModel> findAllBeftnModelHavingFileInfoIdForIncentive(long id);
+    @Query("SELECT n FROM BeftnModel n")
+    List<BeftnModel> findAllBeftnModel();
+
+    @Query("SELECT n FROM BeftnModel n")
+    List<BeftnModel> findAllBeftnModelForIncentive();
 
 }
 /*

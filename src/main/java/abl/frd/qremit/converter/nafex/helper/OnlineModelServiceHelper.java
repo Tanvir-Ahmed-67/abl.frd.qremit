@@ -3,7 +3,6 @@ package abl.frd.qremit.converter.nafex.helper;
 import abl.frd.qremit.converter.nafex.model.OnlineModel;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

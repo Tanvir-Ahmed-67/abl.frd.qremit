@@ -1,33 +1,59 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
-import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     UserModelRepository userModelRepository;
-    @Override
-    public UserDetails loadUserByUsername(String username)
+    public UserDetails loadUserByUserEmail(String userEmail)
             throws UsernameNotFoundException {
-        User user = userModelRepository.findByUserName(username);
+        User user = userModelRepository.findByUserEmail(userEmail);
         if (user == null) {
             throw new UsernameNotFoundException("Could not find user");
         }
         return new MyUserDetails(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+        User user = userModelRepository.findByUserEmail(userEmail);
+        if (user == null) {
+            throw new UsernameNotFoundException("Could not find user");
+        }
+        return new MyUserDetails(user);
+
+    }
+    public List<User> loadAllUser() throws UsernameNotFoundException {
+        List<User> users = userModelRepository.loadAllUsers();
+        if(users.isEmpty()){
+            throw new UsernameNotFoundException("Could not find user");
+        }
+        return users;
+    }
+    public List<User> loadUsersOnly() throws UsernameNotFoundException {
+        List<User> users = userModelRepository.loadUsersOnly();
+        if(users.isEmpty()){
+            throw new UsernameNotFoundException("Could not find user");
+        }
+        return users;
+    }
+    public void insertUser(User user) throws UsernameNotFoundException {
+        userModelRepository.save(user);
+    }
+    public void editUser(User user) throws Exception {
+        userModelRepository.save(user);
+        userModelRepository.setUserActiveStatusFalseById(user.getId());
     }
 }

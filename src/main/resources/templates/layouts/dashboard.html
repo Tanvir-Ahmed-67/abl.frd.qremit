@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>FRD Remittance</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
     <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
@@ -12,10 +12,18 @@
 </head>
 <body>
 <div id="app"><!--main content-->
-    <span th:replace="/fragments/sidebar :: sidebar"></span>
+    <span sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="/fragments/sidebarSuperAdmin :: sidebarSuperAdmin"></span>
+    <span sec:authorize="hasRole('ROLE_ADMIN')" th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <span sec:authorize="hasRole('ROLE_USER')" th:replace="/fragments/sidebarUser :: sidebarUser"></span>
     <div id="main"><!--content Id-->
         <span th:replace="/fragments/header :: header"></span>
-        <div class="main-content container-fluid" layout:fragment="content"><!--dynamic content-->
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="/pages/superAdmin/superAdminLandingPage :: superAdminContent"><!--dynamic content-->
+
+        </div>
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_ADMIN')" th:replace="/pages/admin/adminLandingPage :: adminContent"><!--dynamic content-->
+
+        </div>
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_USER')" th:replace="/fragments/file_upload_form :: fileUploadForm"><!--dynamic content-->
 
         </div>
         <span th:replace="/fragments/footer :: footer"></span>

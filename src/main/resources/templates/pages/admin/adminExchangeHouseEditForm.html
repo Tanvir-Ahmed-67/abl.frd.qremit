@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRD Remittance</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
+    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/choices.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
+</head>
+<body>
+<div id="app"><!--main content-->
+    <span th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <div id="main"><!--content Id-->
+        <span th:replace="/fragments/header :: header"></span>
+        <div class="main-content container-fluid"><!--dynamic content-->
+            <div class="page-title">
+                <h3>Edit Exchange House</h3>
+            </div>
+            <div class="row" id="table-hover-row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Edit Exchange House</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-body">
+                                <form th:action="@{/editExchangeHouse/{id}(id=${exchangeHouse.getId()})}" th:object="${exchangeHouse}" method="post" class="form form-horizontal">
+                                    <div class="form-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Exchange Name</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="text" name="exchangeName" th:with="exchangeName=*{exchangeName}" th:value="${exchangeHouse.exchangeName}" class="form-control" required th:minlength="1" th:maxlength="250"><span th:if="${#fields.hasErrors('exchangeName')}" th:errors="*{exchangeName}" class="text-danger"></span>
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="mail"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Exchange Code</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="text" name="exchangeCode" th:with="exchangeCode=*{exchangeCode}" th:value="${exchangeHouse.exchangeCode}" class="form-control" required th:minlength="1" th:maxlength="15"><span th:if="${#fields.hasErrors('exchangeCode')}" th:errors="*{exchangeCode}" class="text-danger"></span>
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="lock"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Nrta Code</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="text" name="nrtaCode" th:with="nrtaCode=*{nrtaCode}" th:value="${exchangeHouse.nrtaCode}" class="form-control" required th:minlength="1" th:maxlength="15"><span th:if="${#fields.hasErrors('nrtaCode')}" th:errors="*{nrtaCode}" class="text-danger"></span>
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="lock"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 d-flex justify-content-end ">
+                                                <button type="submit" th:name="submitButton" class="btn btn-primary me-1 mb-1">Update</button>
+                                                <button th:action="@{/viewAllExchangeHouse}" type="submit" th:name="cancelButton" class="btn btn-light-secondary me-1 mb-1">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <span th:replace="/fragments/footer :: footer"></span>
+    </div>
+</div>
+<script th:src="@{/js/feather.min.js}"></script>
+<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+<script th:src="@{/js/Chart.min.js}"></script>
+<script th:src="@{/js/apexcharts.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/choices.min.js}"></script>
+</body>
+</html>

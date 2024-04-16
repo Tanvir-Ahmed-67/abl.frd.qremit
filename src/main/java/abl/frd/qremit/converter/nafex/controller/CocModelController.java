@@ -29,4 +29,13 @@ public class CocModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
+    @GetMapping("/downloadcoc")
+    public ResponseEntity<Resource> download_File() {
+        InputStreamResource file = new InputStreamResource(cocModelService.loadAll());  // have to apply logic in this loadAll method to download unprocessed coc data each time
+        String fileName = "Coc_Nafex";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
+                .contentType(MediaType.parseMediaType("application/csv"))
+                .body(file);
+    }
 }

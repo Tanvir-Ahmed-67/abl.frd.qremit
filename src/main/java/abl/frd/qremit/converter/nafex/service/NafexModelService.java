@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,20 +25,24 @@ public class NafexModelService {
     BeftnModelRepository beftnModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
-    public FileInfoModel save(MultipartFile file) {
+    @Autowired
+    UserModelRepository userModelRepository;
+    public FileInfoModel save(MultipartFile file, int userId) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
+            fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
+            User user = userModelRepository.findByUserId(userId);
             List<NafexEhMstModel> nafexModels = NafexModelServiceHelper.csvToNafexModels(file.getInputStream());
             int ind=0;
             for(NafexEhMstModel nafexModel : nafexModels){
                 nafexModel.setExchangeCode("7010234");
                 nafexModel.setFileInfoModel(fileInfoModel);
+                nafexModel.setUserModel(user);
                 if(ind==0) {
                     fileInfoModel.setExchangeCode(nafexModel.getExchangeCode());
                     ind++;
                 }
-
             }
 
             // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
@@ -65,15 +70,19 @@ public class NafexModelService {
 
             for(CocModel cocModel:cocModelList){
                 cocModel.setFileInfoModel(fileInfoModel);
+                cocModel.setUserModel(user);
             }
             for (AccountPayeeModel accountPayeeModel:accountPayeeModelList){
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
+                accountPayeeModel.setUserModel(user);
             }
             for(BeftnModel beftnModel:beftnModelList){
                 beftnModel.setFileInfoModel(fileInfoModel);
+                beftnModel.setUserModel(user);
             }
             for (OnlineModel onlineModel:onlineModelList){
                 onlineModel.setFileInfoModel(fileInfoModel);
+                onlineModel.setUserModel(user);
             }
             // SAVING TO MySql Data Table
             fileInfoModelRepository.save(fileInfoModel);
@@ -81,5 +90,14 @@ public class NafexModelService {
         } catch (IOException e) {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
+    }
+
+    public List<Integer> CountAllFourTypesOfData(){
+        List<Integer> count = new ArrayList<Integer>(4);
+        count.add(onlineModelRepository.countByIsProcessed("0"));
+        count.add((int) cocModelRepository.count());
+        count.add((int) accountPayeeModelRepository.count());
+        count.add((int) beftnModelRepository.count());
+        return count;
     }
 }

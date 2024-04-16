@@ -1,8 +1,8 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -12,10 +12,28 @@ public class User {
     @Column(name = "user_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(nullable=false)
     private String userName;
+    @Column(nullable=false, unique=true)
+    private String userEmail;
+    @Column(nullable=false)
     private String password;
-    private boolean status;
+    private boolean ActiveStatus;
     private String nrtaCode;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<AccountPayeeModel> accountPayeeModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<BeftnModel> beftnModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<CocModel> cocModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<FileInfoModel> fileInfoModels;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<NafexEhMstModel> nafexEhMstModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    private List<OnlineModel> onlineModel;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_role",
@@ -55,12 +73,12 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    public boolean isStatus() {
-        return status;
+    public boolean isActiveStatus() {
+        return ActiveStatus;
     }
 
-    public void setStatus(boolean active) {
-        this.status = active;
+    public void setActiveStatus(boolean active) {
+        this.ActiveStatus = active;
     }
 
     public String getNrtaCode() {
@@ -69,5 +87,13 @@ public class User {
 
     public void setNrtaCode(String nrtaCode) {
         this.nrtaCode = nrtaCode;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

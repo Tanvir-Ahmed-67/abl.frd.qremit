@@ -31,6 +31,10 @@ public class FileInfoModel {
     @Column(name = "total_count")
     private String totalCount;
 
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    private User userModel;
+
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     private List<NafexEhMstModel> nafexEhMstModel;
 
@@ -108,6 +112,14 @@ public class FileInfoModel {
                 ", totalCount='" + totalCount + '\'' +
                 ", nafexEhMstModelSet=" + nafexEhMstModel +
                 '}';
+    }
+
+    public User getUserModel() {
+        return userModel;
+    }
+
+    public void setUserModel(User userModel) {
+        this.userModel = userModel;
     }
 
     public List<NafexEhMstModel> getNafexEhMstModel() {

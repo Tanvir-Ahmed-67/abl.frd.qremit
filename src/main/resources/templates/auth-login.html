@@ -20,15 +20,15 @@
                 <div class="card pt-2">
                     <div class="card-body">
                         <div class="text-center mb-3">
-                            <img th:src="@{/images/favicon.png}" height="68" class='mb-4'>
+                            <img th:src="@{/images/logo.jpg}" height="68" class='mb-4'>
                             <h3>Sign In</h3>
                             <p>Please sign in to continue</p>
                         </div>
                         <form th:action="@{/login}" method="post">
                             <div class="form-group position-relative has-icon-left">
-                                <label for="username">Username</label>
+                                <label for="userEmail">Username</label>
                                 <div class="position-relative">
-                                    <input type="text" class="form-control" name="username" id="username">
+                                    <input type="text" class="form-control" name="userEmail" id="userEmail">
                                     <div class="form-control-icon">
                                         <i data-feather="user"></i>
                                     </div>
@@ -42,7 +42,7 @@
                                     </a>
                                 </div>
                                 <div class="position-relative">
-                                    <input type="password" class="form-control" name="password" id="password">
+                                    <input type="password" class="form-control" name="password" id="password" placeholder="12345" value="12345">
                                     <div class="form-control-icon">
                                         <i data-feather="lock"></i>
                                     </div>

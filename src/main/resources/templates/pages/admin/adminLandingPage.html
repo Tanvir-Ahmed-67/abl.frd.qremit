@@ -2,13 +2,13 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/dashboard}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+  <title>FRD Remittance</title>
 </head>
 <body>
-<div class="main-content container-fluid" layout:fragment="content">
+<div class="main-content container-fluid" th:fragment="adminContent">
   <div class="page-title">
-    <h3>Dashboard</h3>
-    <p class="text-subtitle text-muted">A good dashboard to display your statistics</p>
+    <h3>Admin Dashboard</h3>
+    <p class="text-subtitle text-muted">Admin Dashboard to display statistics of Remittances</p>
   </div>
   <section class="section">
   <div class="row mb-2">
@@ -17,13 +17,13 @@
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
-              <h3 class='card-title'>BALANCE</h3>
+              <h3 class='card-title'>Online</h3>
               <div class="card-right d-flex align-items-center">
-                <p>$50 </p>
+                <p class="onlineCount" th:text="${onlineCount}"></p>
               </div>
             </div>
-            <div class="chart-wrapper">
-              <canvas id="canvas1" style="height:100px !important"></canvas>
+            <div class="buttons text-center">
+              <button type="submit" class="btn btn-success round" th:name="online" th:attr="onclick=|downloadOnline()|">Download Online</button>
             </div>
           </div>
         </div>
@@ -34,13 +34,13 @@
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
-              <h3 class='card-title'>Revenue</h3>
+              <h3 class='card-title'>COC</h3>
               <div class="card-right d-flex align-items-center">
-                <p>$532,2 </p>
+                <p class="cocCount" th:text="${cocCount}"></p>
               </div>
             </div>
-            <div class="chart-wrapper">
-              <canvas id="canvas2" style="height:100px !important"></canvas>
+            <div class="buttons text-center">
+              <button type="submit" class="btn btn-success round" th:name="coc" th:attr="onclick=|downloadCoc()|">Download COC</button>
             </div>
           </div>
         </div>
@@ -51,13 +51,13 @@
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
-              <h3 class='card-title'>ORDERS</h3>
+              <h3 class='card-title'>A/C Payee</h3>
               <div class="card-right d-flex align-items-center">
-                <p>1,544 </p>
+                <p class="accountPayeeCount" th:text="${accountPayeeCount}"></p>
               </div>
             </div>
-            <div class="chart-wrapper">
-              <canvas id="canvas3" style="height:100px !important"></canvas>
+            <div class="buttons text-center">
+              <button type="submit" class="btn btn-success round" th:name="accountpayee" th:attr="onclick=|downloadAccountPayee()|">Download A/C Payee</button>
             </div>
           </div>
         </div>
@@ -68,13 +68,14 @@
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
-              <h3 class='card-title'>Sales Today</h3>
+              <h3 class='card-title'>BEFTN</h3>
               <div class="card-right d-flex align-items-center">
-                <p>423 </p>
+                <p class="beftnCount" th:text="${beftnCount}"></p>
               </div>
             </div>
-            <div class="chart-wrapper">
-              <canvas id="canvas4" style="height:100px !important"></canvas>
+            <div class="buttons text-center">
+              <button type="submit" class="btn btn-success round" th:name="beftn" th:attr="onclick=|downloadBeftn()|">Main</button>
+              <button type="submit" class="btn btn-success round" th:name="beftn_incentive" th:attr="onclick=|downloadBeftnIncentive()|">Incentive</button>
             </div>
           </div>
         </div>
@@ -276,6 +277,8 @@
     </div>
   </div>
   </section>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="/js/script.js" ></script>
 </div>
 </body>
 </html>

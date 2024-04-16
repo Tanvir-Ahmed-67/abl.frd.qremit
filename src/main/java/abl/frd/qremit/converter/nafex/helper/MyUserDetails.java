@@ -63,6 +63,21 @@ public class MyUserDetails implements UserDetails {
     }
     @Override
     public boolean isEnabled() {
-        return user.isStatus();
+        return user.isActiveStatus();
+    }
+
+    public String getUserEmail(){
+        return this.user.getUserEmail();
+    }
+    public String getUserNrtaCode(){
+        return this.user.getNrtaCode();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

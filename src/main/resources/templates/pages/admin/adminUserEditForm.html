@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRD Remittance</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
+    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/choices.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
+</head>
+<body>
+<div id="app"><!--main content-->
+    <span th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <div id="main"><!--content Id-->
+        <span th:replace="/fragments/header :: header"></span>
+        <div class="main-content container-fluid"><!--dynamic content-->
+            <div class="page-title">
+                <h3>Edit User</h3>
+            </div>
+            <div class="row" id="table-hover-row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Edit User</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-body">
+                                <form th:action="@{/editUser/{id}(id=${user.getId()})}" th:object="${user}" method="post" class="form form-horizontal">
+                                    <div class="form-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Name</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                       <input type="text" name="userName" th:with="userName=*{userName}" th:value="${user.userName}" class="form-control" required th:minlength="1" th:maxlength="250"><!-- <span th:if="${#fields.hasAnyErrors('userName')}" th:errors="*{userName}" class="text-danger"></span>-->
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="user"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Email</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="text" name="userEmail" th:with="userEmail=*{userEmail}" th:value="${user.userEmail}" class="form-control" required th:minlength="3" th:maxlength="45"><!-- span th:if="${#fields.hasAnyErrors('userEmail')}" th:errors="*{userEmail}" class="text-danger"></span>-->
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="mail"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Nrta Code</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                        <select name="nrtaCode" th:with="nrtaCode=*{nrtaCode}" class="choices form-select multiple-remove" multiple="multiple">
+                                                            <optgroup label="NRTA Code">
+                                                                <option value="7010243">7010243</option>
+                                                                <option value="7010253">7010253</option>
+                                                                <option value="selected" selected>Choose...</option>
+                                                                <option value="7010263">7010263</option>
+                                                                <option value="7010243">7010273</option>
+                                                                <option value="7010253">7010283</option>
+                                                                <option value="7010243">7010293</option>
+                                                                <option value="7010253">7010294</option>
+                                                                <option value="7010243">7010295</option>
+                                                                <option value="7010253">7010296</option>
+                                                                <option value="7010243">7010297</option>
+                                                                <option value="7010253">7010298</option>
+                                                            </optgroup>
+                                                        </select><!--<span th:if="${#fields.hasAnyErrors('userNrtaCode')}" th:errors="*{nrtaCode}" class="text-danger"></span>-->
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Password</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input th:name="userPassword" th:id="password" th:field="*{password}" type="password" class="form-control" placeholder="Password" required th:minlength="5" th:maxlength="20" onkeyup="check();">
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="lock"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Re-Type Password</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input th:name="userRetypePassword" th:id="confirm-password" type="password" class="form-control" placeholder="Re-Type Password" required onkeyup="check();">
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="lock"></i>
+                                                        </div>
+                                                    </div>
+                                                    <strong><span th:id="message"></span></strong>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-md-8 offset-md-4">
+                                                <div class='form-check'>
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" id="checkbox2" class='form-check-input'>
+                                                        <label for="checkbox2">Remember Me</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 d-flex justify-content-end ">
+                                                <button type="submit" th:name="submitButton" class="btn btn-primary me-1 mb-1">Submit</button>
+                                                <button type="reset" th:name="resetButton" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <span th:replace="/fragments/footer :: footer"></span>
+    </div>
+</div>
+<script th:src="@{/js/feather.min.js}"></script>
+<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+<script th:src="@{/js/Chart.min.js}"></script>
+<script th:src="@{/js/apexcharts.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/choices.min.js}"></script>
+</body>
+</html>
