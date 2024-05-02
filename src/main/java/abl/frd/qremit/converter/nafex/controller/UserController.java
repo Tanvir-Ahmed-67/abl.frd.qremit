@@ -1,11 +1,13 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
+import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
+import abl.frd.qremit.converter.nafex.repository.RoleModelRepository;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
+import abl.frd.qremit.converter.nafex.service.RoleModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,22 +21,26 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class UserController {
     private final MyUserDetailsService myUserDetailsService;
     private final NafexModelService nafexModelService;
     private final ExchangeHouseModelService exchangeHouseModelService;
+    private final RoleModelService roleModelService;
 
     @Autowired
     public UserController(MyUserDetailsService myUserDetailsService, 
     NafexModelService nafexModelService,
-     ExchangeHouseModelService exchangeHouseModelService) {
+     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService) {
 
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
         this.exchangeHouseModelService = exchangeHouseModelService;
+        this.roleModelService = roleModelService;
     }
     @RequestMapping("/login")
     public String loginPage(){
@@ -102,7 +108,11 @@ public class UserController {
 
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
     public String submitUserCreateFromSuperAdmin(User user, RedirectAttributes ra){
+        Role role = roleModelService.findRoleByRoleName("ROLE_USER");
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(role);
         user.setActiveStatus(false);
+        user.setRoles(roleSet);
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
         return "redirect:/allUsers";
