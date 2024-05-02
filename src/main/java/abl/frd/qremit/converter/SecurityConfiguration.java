@@ -31,6 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("**/upload","**/allUsers","**/downloadaccountpayee/**","**/downloadbeftn/**","**/downloadcoc/**","**/downloadonline/**").hasAnyRole("ADMIN","USER","SUPERADMIN")
                 .antMatchers("**/newUserCreationForm/**","**/createNewUser/**").hasRole("SUPERADMIN")
                 .antMatchers("**/exchangeHouseEditForm/**","**/editExchangeHouse/**").hasRole("ADMIN")
+                .antMatchers("**/bec/index/**","**/upload/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

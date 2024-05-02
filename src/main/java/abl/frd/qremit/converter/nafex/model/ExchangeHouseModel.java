@@ -15,6 +15,8 @@ public class ExchangeHouseModel {
     private String nrtaCode;
     @Column(nullable=false)
     private String exchangeCode;
+    @Column(nullable=false)
+    private String exchangeShortName;
     @Column
     private String isActive;
 
