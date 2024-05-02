@@ -47,6 +47,8 @@ public class UserController {
     public String loginPage(){
         return "auth-login";
     }
+
+    
     @RequestMapping("/super-admin-home-page")
     public String loginSubmitSuperAdmin(){ return "/layouts/dashboard"; }
     @RequestMapping("/admin-home-page")
