@@ -3,6 +3,7 @@ package abl.frd.qremit.converter.nafex.controller;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
+import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,16 @@ import java.util.List;
 public class UserController {
     private final MyUserDetailsService myUserDetailsService;
     private final NafexModelService nafexModelService;
+    private final ExchangeHouseModelService exchangeHouseModelService;
 
     @Autowired
-    public UserController(MyUserDetailsService myUserDetailsService, NafexModelService nafexModelService) {
+    public UserController(MyUserDetailsService myUserDetailsService, 
+    NafexModelService nafexModelService,
+     ExchangeHouseModelService exchangeHouseModelService) {
+
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
+        this.exchangeHouseModelService = exchangeHouseModelService;
     }
     @RequestMapping("/login")
     public String loginPage(){
@@ -75,8 +81,25 @@ public class UserController {
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromAdmin(Model model){
         model.addAttribute("user", new User());
+
+        List<ExchangeHouseModel> exchangeHouseList;
+        exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
+        model.addAttribute("exchangeList", exchangeHouseList);
+
         return "/pages/admin/adminNewUserEntryForm";
     }
+
+    @RequestMapping("/newExchangeHouseList")
+    public  String generateExchangeHouseLisString(Model model){
+
+       List<ExchangeHouseModel> exchangeHouseList;
+        exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
+        model.addAttribute("exchangeList", exchangeHouseList);
+
+        return "/pages/admin/adminNewUserEntryForm";
+    }  
+
+
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
     public String submitUserCreateFromSuperAdmin(User user, RedirectAttributes ra){
         user.setActiveStatus(false);

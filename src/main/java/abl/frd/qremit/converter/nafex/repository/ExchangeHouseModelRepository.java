@@ -14,6 +14,8 @@ public interface ExchangeHouseModelRepository extends JpaRepository<ExchangeHous
 
     @Query("SELECT n FROM ExchangeHouseModel n WHERE n.isActive = '0'")
     List<ExchangeHouseModel> findAllInactiveExchangeHouse();
+    @Query("SELECT n FROM ExchangeHouseModel n WHERE n.isActive = '1'")
+    List<ExchangeHouseModel> findAllActiveExchangeHouseList();
     @Transactional
     @Modifying
     @Query("UPDATE ExchangeHouseModel n SET n.isActive = '1' WHERE n.Id = :id")
