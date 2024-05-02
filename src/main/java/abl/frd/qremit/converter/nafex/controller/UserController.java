@@ -5,7 +5,6 @@ import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
-import abl.frd.qremit.converter.nafex.repository.RoleModelRepository;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import abl.frd.qremit.converter.nafex.service.RoleModelService;
