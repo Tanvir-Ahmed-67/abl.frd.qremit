@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
