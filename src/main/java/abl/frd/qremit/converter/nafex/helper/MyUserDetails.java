@@ -70,7 +70,7 @@ public class MyUserDetails implements UserDetails {
         return this.user.getUserEmail();
     }
     public String getUserNrtaCode(){
-        return this.user.getNrtaCode();
+        return this.user.getExchangeCode();
     }
 
     public User getUser() {

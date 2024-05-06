@@ -19,7 +19,7 @@ public class User {
     @Column(nullable=false)
     private String password;
     private boolean ActiveStatus;
-    private String nrtaCode;
+    private String exchangeCode;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<AccountPayeeModel> accountPayeeModel;
@@ -81,12 +81,12 @@ public class User {
         this.ActiveStatus = active;
     }
 
-    public String getNrtaCode() {
-        return nrtaCode;
+    public String getExchangeCode() {
+        return exchangeCode;
     }
 
-    public void setNrtaCode(String nrtaCode) {
-        this.nrtaCode = nrtaCode;
+    public void setExchangeCode(String nrtaCode) {
+        this.exchangeCode = nrtaCode;
     }
 
     public String getUserEmail() {

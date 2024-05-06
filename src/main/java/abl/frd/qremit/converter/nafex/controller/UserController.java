@@ -87,22 +87,18 @@ public class UserController {
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromAdmin(Model model){
         model.addAttribute("user", new User());
-
         List<ExchangeHouseModel> exchangeHouseList;
         exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
         model.addAttribute("exchangeList", exchangeHouseList);
-
         return "/pages/admin/adminNewUserEntryForm";
     }
 
     @RequestMapping("/newExchangeHouseList")
     public  String generateExchangeHouseLisString(Model model){
-
        List<ExchangeHouseModel> exchangeHouseList;
-        exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
-        model.addAttribute("exchangeList", exchangeHouseList);
-
-        return "/pages/admin/adminNewUserEntryForm";
+       exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
+       model.addAttribute("exchangeList", exchangeHouseList);
+       return "/pages/admin/adminNewUserEntryForm";
     }  
 
 
@@ -124,8 +120,14 @@ public class UserController {
         return count;
     }
     @RequestMapping(value="/userEditForm/{id}", method = RequestMethod.POST)
-    public String showUserEditForm(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user){
-        model.addAttribute("user", user);
+    public String showUserEditForm(Model model, @PathVariable(required = true, name= "id") int id){
+        User userSelected = myUserDetailsService.loadUserByUserId(id);
+        List<ExchangeHouseModel> exchangeHouseList;
+        String[] exchangeCodeAssignedToUser = userSelected.getExchangeCode().split(",");
+        exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
+        model.addAttribute("exchangeList", exchangeHouseList);
+        model.addAttribute("user", userSelected);
+        model.addAttribute("exchangeCodeAssignedToUser", exchangeCodeAssignedToUser);
         return "/pages/admin/adminUserEditForm";
     }
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
