@@ -32,12 +32,25 @@
                                     <div class="form-body">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <label>Exchange Name</label>
+                                                <label>Exchange Full Name</label>
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="text" th:name="exchangeName" th:field="*{exchangeName}" class="form-control" placeholder="Name" required th:minlength="1" th:maxlength="250">
+                                                        <input type="text" th:name="exchangeName" th:field="*{exchangeName}" class="form-control" placeholder="Full Name" required th:minlength="1" th:maxlength="250">
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="mail"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Exchange Short Name</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="text" th:name="exchangeShortName" th:field="*{exchangeShortName}" class="form-control" placeholder="Short Name" required th:minlength="1" th:maxlength="30">
                                                         <div class="form-control-icon">
                                                             <i data-feather="mail"></i>
                                                         </div>
