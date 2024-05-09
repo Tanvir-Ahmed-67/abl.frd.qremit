@@ -63,7 +63,7 @@ public class MyUserDetails implements UserDetails {
     }
     @Override
     public boolean isEnabled() {
-        return user.isActiveStatus();
+        return user.getActiveStatus();
     }
 
     public String getUserEmail(){

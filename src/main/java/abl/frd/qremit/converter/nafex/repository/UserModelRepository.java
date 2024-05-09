@@ -7,9 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.Optional;
 @Repository
 public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.userName = :username")
@@ -25,7 +23,17 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<User> loadUsersOnly();
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.ActiveStatus = false WHERE n.id = :id")
+    @Query("UPDATE User n SET n.activeStatus = false WHERE n.id = :id")
     void setUserActiveStatusFalseById(int id);
+    @Transactional
+    @Modifying
+    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.exchangeCode = :exchangeCode, n.activeStatus = false where n.id = :userId")
+    void updateUser(int userId, String userName, String userEmail, String exchangeCode);
+    @Query("SELECT u FROM User u WHERE u.activeStatus = false")
+    public List<User> loadAllInactiveUsers();
+    @Transactional
+    @Modifying
+    @Query("UPDATE User n SET n.activeStatus = true where n.id = :userId")
+    void updateInactiveUser(int userId);
 
 }

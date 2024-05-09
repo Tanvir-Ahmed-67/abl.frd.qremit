@@ -60,8 +60,19 @@ public class MyUserDetailsService implements UserDetailsService {
     public void insertUser(User user) throws UsernameNotFoundException {
         userModelRepository.save(user);
     }
-    public void editUser(User user) throws Exception {
-        userModelRepository.save(user);
-        userModelRepository.setUserActiveStatusFalseById(user.getId());
+    public void editUser(User user){
+        int userId = user.getId();
+        String userName = user.getUserName();
+        String userEmail = user.getUserEmail();
+        String exchangeCode = user.getExchangeCode();
+        userModelRepository.updateUser(userId, userName, userEmail, exchangeCode);
+    }
+    public List<User> loadAllInactiveUsers(){
+        List<User> inactiveUsersList = userModelRepository.loadAllInactiveUsers();
+        return inactiveUsersList;
+    }
+    public boolean updateInactiveUser(int userId){
+        userModelRepository.updateInactiveUser(userId);
+        return true;
     }
 }

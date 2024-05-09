@@ -18,7 +18,7 @@ public class User {
     private String userEmail;
     @Column(nullable=false)
     private String password;
-    private boolean ActiveStatus;
+    private boolean activeStatus;
     private String exchangeCode;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
@@ -73,12 +73,10 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    public boolean isActiveStatus() {
-        return ActiveStatus;
-    }
+    public boolean getActiveStatus() { return activeStatus;}
 
     public void setActiveStatus(boolean active) {
-        this.ActiveStatus = active;
+        this.activeStatus = active;
     }
 
     public String getExchangeCode() {

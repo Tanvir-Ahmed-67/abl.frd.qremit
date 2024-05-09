@@ -50,7 +50,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="text" name="userEmail" th:with="userEmail=*{userEmail}" th:value="${user.userEmail}" class="form-control" required th:minlength="3" th:maxlength="45"><!-- span th:if="${#fields.hasAnyErrors('userEmail')}" th:errors="*{userEmail}" class="text-danger"></span>-->
+                                                        <input type="email" name="userEmail" th:with="userEmail=*{userEmail}" th:value="${user.userEmail}" class="form-control" required th:minlength="3" th:maxlength="45"><!-- span th:if="${#fields.hasAnyErrors('userEmail')}" th:errors="*{userEmail}" class="text-danger"></span>-->
                                                         <div class="form-control-icon">
                                                             <i data-feather="mail"></i>
                                                         </div>

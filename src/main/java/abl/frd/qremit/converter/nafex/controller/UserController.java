@@ -148,4 +148,21 @@ public class UserController {
         }
         return "redirect:/allUsers";
     }
+
+    @RequestMapping("/showInactiveUsers")
+    public String showInactiveUserSuperAdmin(Model model){
+        List<User> inactiveUserModelList;
+        inactiveUserModelList = myUserDetailsService.loadAllInactiveUsers();
+        model.addAttribute("inactiveUserModelList", inactiveUserModelList);
+        return "/pages/superAdmin/superAdminInactiveUserListPage";
+    }
+
+    @RequestMapping(value="/activateUser/{id}", method = RequestMethod.POST)
+    public String activateInactiveUser(Model model, @PathVariable(required = true, name = "id") String id, RedirectAttributes ra) {
+        int idInIntegerFormat = Integer.parseInt(id);
+        if(myUserDetailsService.updateInactiveUser(idInIntegerFormat)){
+            ra.addFlashAttribute("message","User has been activated successfully");
+        }
+        return "redirect:/showInactiveUsers";
+    }
 }
