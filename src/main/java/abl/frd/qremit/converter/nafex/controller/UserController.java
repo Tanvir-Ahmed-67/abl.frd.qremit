@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,16 +32,18 @@ public class UserController {
     private final NafexModelService nafexModelService;
     private final ExchangeHouseModelService exchangeHouseModelService;
     private final RoleModelService roleModelService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserController(MyUserDetailsService myUserDetailsService, 
     NafexModelService nafexModelService,
-     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService) {
+     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder) {
 
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
         this.exchangeHouseModelService = exchangeHouseModelService;
         this.roleModelService = roleModelService;
+        this.passwordEncoder = passwordEncoder;
     }
     @RequestMapping("/login")
     public String loginPage(){
@@ -109,6 +112,7 @@ public class UserController {
         Role role = roleModelService.findRoleByRoleName("ROLE_USER");
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(role);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActiveStatus(false);
         user.setRoles(roleSet);
         myUserDetailsService.insertUser(user);
