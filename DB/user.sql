@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 11, 2024 at 09:11 AM
+-- Generation Time: May 11, 2024 at 09:36 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -41,9 +41,9 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `active_status`, `exchange_code`, `password`, `user_email`, `user_name`) VALUES
-(1, b'1', '7010243', '12345', 'USER7010243@GMAIL.COM', 'USER7010243'),
-(2, b'1', NULL, '12345', 'ADMIN@GMAIL.COM', 'ADMIN'),
-(3, b'1', NULL, '12345', 'SUPERADMIN@GMAIL.COM', 'SUPERADMIN');
+(1, b'1', '7010243', '$2a$12$hoqphqLBKxBhUUlsaendPelDw0EL2yENpniMRro6/l9N2mVGcR6De', 'USER7010243@GMAIL.COM', 'USER7010243'),
+(2, b'1', NULL, '$2a$12$hoqphqLBKxBhUUlsaendPelDw0EL2yENpniMRro6/l9N2mVGcR6De', 'ADMIN@GMAIL.COM', 'ADMIN'),
+(3, b'1', NULL, '$2a$12$hoqphqLBKxBhUUlsaendPelDw0EL2yENpniMRro6/l9N2mVGcR6De', 'SUPERADMIN@GMAIL.COM', 'SUPERADMIN');
 
 --
 -- Indexes for dumped tables
@@ -64,7 +64,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
