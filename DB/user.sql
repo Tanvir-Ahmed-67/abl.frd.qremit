@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2024 at 10:54 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: May 11, 2024 at 09:11 AM
+-- Server version: 10.4.25-MariaDB
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -30,20 +30,20 @@ SET time_zone = "+00:00";
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL,
   `active_status` bit(1) NOT NULL,
-  `nrta_code` varchar(255) DEFAULT NULL,
+  `exchange_code` varchar(255) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `user_email` varchar(255) NOT NULL,
   `user_name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `active_status`, `nrta_code`, `password`, `user_email`, `user_name`) VALUES
-(1, b'1', '7010243,7010253', '12345', 'user7010243@gmail.com', 'user7010243'),
-(2, b'1', NULL, '12345', 'admin@gmail.com', 'admin'),
-(3, b'1', NULL, '12345', 'superadmin@gmail.com', 'superadmin');
+INSERT INTO `user` (`user_id`, `active_status`, `exchange_code`, `password`, `user_email`, `user_name`) VALUES
+(1, b'1', '7010243', '12345', 'USER7010243@GMAIL.COM', 'USER7010243'),
+(2, b'1', NULL, '12345', 'ADMIN@GMAIL.COM', 'ADMIN'),
+(3, b'1', NULL, '12345', 'SUPERADMIN@GMAIL.COM', 'SUPERADMIN');
 
 --
 -- Indexes for dumped tables
