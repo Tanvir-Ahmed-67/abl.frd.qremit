@@ -21,6 +21,8 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<User> loadAllUsers();
     @Query("SELECT user FROM User user LEFT JOIN user.roles role WHERE role.id = 1")
     public List<User> loadUsersOnly();
+    @Query("SELECT user FROM User user LEFT JOIN user.roles role WHERE role.id = 2")
+    public List<User> loadAdminsOnly();
     @Transactional
     @Modifying
     @Query("UPDATE User n SET n.activeStatus = false WHERE n.id = :id")

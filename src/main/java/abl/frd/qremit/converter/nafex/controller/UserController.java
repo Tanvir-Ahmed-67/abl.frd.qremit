@@ -74,11 +74,14 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         List<User> userList;
+        List<User> adminList;
         for (final GrantedAuthority grantedAuthority : authorities) {
             String authorityName = grantedAuthority.getAuthority();
             if (authorityName.equals("ROLE_SUPERADMIN")) {
-                userList = myUserDetailsService.loadAllUser();
+                userList = myUserDetailsService.loadUsersOnly();
+                adminList = myUserDetailsService.loadAdminsOnly();
                 model.addAttribute("UserList", userList);
+                model.addAttribute("adminList", adminList);
                 return "/pages/superAdmin/superAdminUserListPage";
             }
             if (authorityName.equals("ROLE_ADMIN")) {

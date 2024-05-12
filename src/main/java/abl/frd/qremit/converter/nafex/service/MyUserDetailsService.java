@@ -57,6 +57,13 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return users;
     }
+    public List<User> loadAdminsOnly() throws UsernameNotFoundException {
+        List<User> admins = userModelRepository.loadAdminsOnly();
+        if(admins.isEmpty()){
+            throw new UsernameNotFoundException("Could not find Admin");
+        }
+        return admins;
+    }
     public void insertUser(User user) throws UsernameNotFoundException {
         userModelRepository.save(user);
     }
