@@ -57,9 +57,9 @@ public class UserController {
     public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-        String nrtaCode = userDetails.getUserNrtaCode();
-        String[] arrOfNrtaCode = nrtaCode.split(",");
-        model.addAttribute("arrOfNrtaCode", arrOfNrtaCode);
+        String exchangeCode = userDetails.getUserExchangeCode();
+        String[] arrOfexchangeCode = exchangeCode.split(",");
+        model.addAttribute("arrOfNrtaCode", arrOfexchangeCode);
         return "/layouts/dashboard"; }
     @RequestMapping("/home")
     public String loginSubmit(){
@@ -96,19 +96,10 @@ public class UserController {
     public String showUserCreateFromAdmin(Model model){
         model.addAttribute("user", new User());
         List<ExchangeHouseModel> exchangeHouseList;
-        exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
+        exchangeHouseList = exchangeHouseModelService.loadAllActiveExchangeHouse();
         model.addAttribute("exchangeList", exchangeHouseList);
         return "/pages/admin/adminNewUserEntryForm";
     }
-
-    @RequestMapping("/newExchangeHouseList")
-    public  String generateExchangeHouseLisString(Model model){
-       List<ExchangeHouseModel> exchangeHouseList;
-       exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
-       model.addAttribute("exchangeList", exchangeHouseList);
-       return "/pages/admin/adminNewUserEntryForm";
-    }  
-
 
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
     public String submitUserCreateFromSuperAdmin(User user, RedirectAttributes ra){
@@ -133,7 +124,7 @@ public class UserController {
         User userSelected = myUserDetailsService.loadUserByUserId(id);
         List<ExchangeHouseModel> exchangeHouseList;
         String[] exchangeCodeAssignedToUser = userSelected.getExchangeCode().split(",");
-        exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
+        exchangeHouseList = exchangeHouseModelService.loadAllActiveExchangeHouse();
         model.addAttribute("exchangeList", exchangeHouseList);
         model.addAttribute("user", userSelected);
         model.addAttribute("exchangeCodeAssignedToUser", exchangeCodeAssignedToUser);
