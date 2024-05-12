@@ -24,42 +24,44 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `role`
+-- Table structure for table `user_role`
 --
 
-CREATE TABLE `role` (
-  `role_id` int(11) NOT NULL,
-  `role_name` varchar(255) DEFAULT NULL
+CREATE TABLE `user_role` (
+  `user_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `role`
+-- Dumping data for table `user_role`
 --
 
-INSERT INTO `role` (`role_id`, `role_name`) VALUES
-(1, 'ROLE_USER'),
-(2, 'ROLE_ADMIN'),
-(3, 'ROLE_SUPERADMIN');
+INSERT INTO `user_role` (`user_id`, `role_id`) VALUES
+(1, 1),
+(2, 2),
+(3, 3);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `role`
+-- Indexes for table `user_role`
 --
-ALTER TABLE `role`
-  ADD PRIMARY KEY (`role_id`);
+ALTER TABLE `user_role`
+  ADD PRIMARY KEY (`user_id`,`role_id`),
+  ADD KEY `FKa68196081fvovjhkek5m97n3y` (`role_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- Constraints for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `role`
+-- Constraints for table `user_role`
 --
-ALTER TABLE `role`
-  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `user_role`
+  ADD CONSTRAINT `FK859n2jvi8ivhui0rl0esws6o` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`),
+  ADD CONSTRAINT `FKa68196081fvovjhkek5m97n3y` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

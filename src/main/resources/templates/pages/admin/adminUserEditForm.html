@@ -50,8 +50,10 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="email" th:name="userEmail" th:field="*{userEmail}">
-                                                        
+                                                        <input type="email" name="userEmail" th:with="userEmail=*{userEmail}" th:value="${user.userEmail}" class="form-control" required th:minlength="3" th:maxlength="45"><!-- span th:if="${#fields.hasAnyErrors('userEmail')}" th:errors="*{userEmail}" class="text-danger"></span>-->
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="mail"></i>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -60,18 +62,43 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="form-group">
-                                                        <select th:name="userNrtaCode" th:field="*{nrtaCode}" class="choices form-select multiple-remove" multiple="multiple">
-                                                            
-                                                            
+                                                        <select name="exchangeCode" th:with="exchangeCode=*{exchangeCode}" class="choices form-select multiple-remove" multiple="multiple">
                                                             <optgroup label="NRTA Code">
-                                                                <option th:each="exchangeHouse : ${exchangeList}" th:value="${exchangeHouse.Id}"  th:text="${exchangeHouse.exchangeCode}" >
-                                                          
+                                                                <option th:each="exchangeCodeAssignedToUser : ${exchangeCodeAssignedToUser}" th:value="${exchangeCodeAssignedToUser}" th:text="${exchangeCodeAssignedToUser}" selected></option>
+                                                                <option th:each="exchangeHouse : ${exchangeList}" th:value="${exchangeHouse.exchangeCode}"  th:text="${exchangeHouse.exchangeCode}" ></option>
                                                             </optgroup>
-                                                        </select>
+                                                        </select><!--<span th:if="${#fields.hasAnyErrors('userNrtaCode')}" th:errors="*{nrtaCode}" class="text-danger"></span>-->
                                                 </div>
                                             </div>
-                                            
-                                          
+                                            <!--
+                                            <div class="col-md-4">
+                                                <label>Password</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input th:name="userPassword" th:id="password" th:field="*{password}" type="password" class="form-control" placeholder="Password" required th:minlength="5" th:maxlength="20" onkeyup="check();">
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="lock"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Re-Type Password</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input th:name="userRetypePassword" th:id="confirm-password" type="password" class="form-control" placeholder="Re-Type Password" required onkeyup="check();">
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="lock"></i>
+                                                        </div>
+                                                    </div>
+                                                    <strong><span th:id="message"></span></strong>
+                                                </div>
+                                            </div>
+                                            -->
                                             <div class="form-group col-md-8 offset-md-4">
                                                 <div class='form-check'>
                                                     <div class="checkbox">

@@ -33,7 +33,8 @@
                                 <table class="table table-hover mb-0">
                                     <thead>
                                     <tr>
-                                        <th>Exchange House Name</th>
+                                        <th>Exchange Full Name</th>
+                                        <th>Exchange Short Name</th>
                                         <th>Exchange Code</th>
                                         <th>Nrta Code</th>
                                         <th>Active Status</th>
@@ -43,9 +44,10 @@
                                     <tbody>
                                     <tr th:each="inactiveExchangeHouseList : ${inactiveExchangeHouseList}">
                                         <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getExchangeName()}"></td>
+                                        <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getExchangeShortName()}"></td>
                                         <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getExchangeCode()}"></td>
                                         <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getNrtaCode()}"></td>
-                                        <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getIsActive()}"></td>
+                                        <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getActiveStatus()} ? 'ACTIVE':'INACTIVE' "></td>
                                         <td>
                                             <form th:action="@{/activateExchangeHouse/{id}(id=${inactiveExchangeHouseList.getId()})}" th:method="POST">
                                                 <button type="submit" class="btn btn-outline-primary round" th:name="Activate" th:value="${inactiveExchangeHouseList.getId()}">Activate</button>
