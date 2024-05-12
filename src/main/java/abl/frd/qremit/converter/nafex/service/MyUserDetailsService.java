@@ -11,10 +11,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
+    private static final String other = null;
     @Autowired
     UserModelRepository userModelRepository;
     public UserDetails loadUserByUserEmail(String userEmail)
@@ -56,4 +58,39 @@ public class MyUserDetailsService implements UserDetailsService {
         userModelRepository.save(user);
         userModelRepository.setUserActiveStatusFalseById(user.getId());
     }
+
+    // public User updateUser(User user){
+    //     User existingUser= userModelRepository.findByUserId(user.getId());
+    //     existingUser.setUserName(user.getUserName());
+    //     existingUser.setRoles(user.getRoles());
+    //     existingUser.setUserEmail(user.getUserEmail());
+    //     existingUser.setNrtaCode(user.getNrtaCode());
+
+    //     return existingUser;
+
+    // }
+
+    public User getUserByIds(int id){
+        Optional <User> optional = userModelRepository.findById(id);
+        User user = null;
+        if(optional.isPresent()){
+            user =optional.get();
+        }else {
+            throw new RuntimeException("User not Found for id :: " + id);
+        }
+        return user;
+    }
+
+    // public static User getUserByIds(int id) {
+    //     Optional <User> optional = userModelRepository.findById(id);
+    //     User user = null;
+    //     if(optional.isPresent()){
+    //         user =optional.get();
+    //     }else {
+    //         throw new RuntimeException("User not Found for id :: " + id);
+    //     }
+    //     return user;
+    // }
+
+
 }

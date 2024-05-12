@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -127,10 +128,16 @@ public class UserController {
         return count;
     }
     @RequestMapping(value="/userEditForm/{id}", method = RequestMethod.POST)
-    public String showUserEditForm(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user){
-        model.addAttribute("user", user);
+    public String showUserEditForm(Model model, @PathVariable(required = true, name= "id") int id){
+       User user =myUserDetailsService.getUserByIds(id);
+       
+         model.addAttribute("user", user);
+        // System.out.println(user.getUserEmail());
         return "/pages/admin/adminUserEditForm";
     }
+
+  
+    
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
     public String editExchangeHouse(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user, BindingResult result, RedirectAttributes ra){
         int idInIntegerFormat = Integer.parseInt(id);
