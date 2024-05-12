@@ -32,7 +32,7 @@
                                     <div class="form-body">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <label>Exchange Name</label>
+                                                <label>Exchange Full Name</label>
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
@@ -45,12 +45,25 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
+                                                <label>Exchange Short Name</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="text" name="exchangeShortName" th:with="exchangeShortName=*{exchangeShortName}" th:value="${exchangeHouse.exchangeShortName}" class="form-control" required th:minlength="1" th:maxlength="30">
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="mail"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
                                                 <label>Exchange Code</label>
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="text" name="exchangeCode" th:with="exchangeCode=*{exchangeCode}" th:value="${exchangeHouse.exchangeCode}" class="form-control" required th:minlength="1" th:maxlength="15"><span th:if="${#fields.hasErrors('exchangeCode')}" th:errors="*{exchangeCode}" class="text-danger"></span>
+                                                        <input type="text" name="exchangeCode" th:with="exchangeCode=*{exchangeCode}" th:value="${exchangeHouse.exchangeCode}" class="form-control" required th:minlength="1" th:maxlength="15">
                                                         <div class="form-control-icon">
                                                             <i data-feather="lock"></i>
                                                         </div>
@@ -63,7 +76,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="text" name="nrtaCode" th:with="nrtaCode=*{nrtaCode}" th:value="${exchangeHouse.nrtaCode}" class="form-control" required th:minlength="1" th:maxlength="15"><span th:if="${#fields.hasErrors('nrtaCode')}" th:errors="*{nrtaCode}" class="text-danger"></span>
+                                                        <input type="text" name="nrtaCode" th:with="nrtaCode=*{nrtaCode}" th:value="${exchangeHouse.nrtaCode}" class="form-control" required th:minlength="1" th:maxlength="15">
                                                         <div class="form-control-icon">
                                                             <i data-feather="lock"></i>
                                                         </div>

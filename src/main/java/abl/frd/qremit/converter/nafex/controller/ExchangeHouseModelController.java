@@ -53,7 +53,7 @@ public class ExchangeHouseModelController {
     }
     @RequestMapping(value = "/createNewExchange", method = RequestMethod.POST)
     public String submitNewExchangeHouseCreateFromAdmin(ExchangeHouseModel exchangeHouseModel, RedirectAttributes ra){
-        exchangeHouseModel.setIsActive("0");
+        exchangeHouseModel.setActiveStatus(false);
         try{
             exchangeHouseModelService.insertNewExchangeHouse(exchangeHouseModel);
             ra.addFlashAttribute("message","New Exchange House has been created successfully");
@@ -80,8 +80,10 @@ public class ExchangeHouseModelController {
         return "redirect:/showInactiveExchangeHouse";
     }
     @RequestMapping(value="/exchangeHouseEditForm/{id}", method= RequestMethod.POST)
-    public String showExchangeHouseEditFormAdmin(Model model, @PathVariable(required = true, name= "id") String id, @Valid ExchangeHouseModel exchangeHouseModel){
-        model.addAttribute("exchangeHouse", exchangeHouseModel);
+    public String showExchangeHouseEditFormAdmin(Model model, @PathVariable(required = true, name= "id") String id){
+        int idInIntegerFormat = Integer.parseInt(id);
+        ExchangeHouseModel exchangeHouseModelSelected = exchangeHouseModelService.getExchangeHouseByExchangeId(idInIntegerFormat);
+        model.addAttribute("exchangeHouse", exchangeHouseModelSelected);
         return "/pages/admin/adminExchangeHouseEditForm";
     }
     @RequestMapping(value="/editExchangeHouse/{id}", method= RequestMethod.POST)
@@ -89,10 +91,12 @@ public class ExchangeHouseModelController {
         int idInIntegerFormat = Integer.parseInt(id);
         if (result.hasErrors()) {
             exchangeHouseModel.setId(idInIntegerFormat);
+            ra.addFlashAttribute("message","Operation Unsuccessfull!");
             return "editExchangeHouse";
         }
         try {
             exchangeHouseModelService.editExchangeHouse(exchangeHouseModel);
+            ra.addFlashAttribute("message","Exchange House Has been Edited Successfully");
             model.addAttribute("exchangeHouse",exchangeHouseModel);
         } catch (Exception e) {
             throw new RuntimeException(e);

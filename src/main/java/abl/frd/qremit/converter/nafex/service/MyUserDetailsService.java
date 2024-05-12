@@ -25,6 +25,14 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return new MyUserDetails(user);
     }
+    public User loadUserByUserId(int userId)
+            throws UsernameNotFoundException {
+        User user = userModelRepository.findByUserId(userId);
+        if (user == null) {
+            throw new UsernameNotFoundException("Could not find user");
+        }
+        return user;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
@@ -49,11 +57,29 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return users;
     }
+    public List<User> loadAdminsOnly() throws UsernameNotFoundException {
+        List<User> admins = userModelRepository.loadAdminsOnly();
+        if(admins.isEmpty()){
+            throw new UsernameNotFoundException("Could not find Admin");
+        }
+        return admins;
+    }
     public void insertUser(User user) throws UsernameNotFoundException {
         userModelRepository.save(user);
     }
-    public void editUser(User user) throws Exception {
-        userModelRepository.save(user);
-        userModelRepository.setUserActiveStatusFalseById(user.getId());
+    public void editUser(User user){
+        int userId = user.getId();
+        String userName = user.getUserName();
+        String userEmail = user.getUserEmail();
+        String exchangeCode = user.getExchangeCode();
+        userModelRepository.updateUser(userId, userName, userEmail, exchangeCode);
+    }
+    public List<User> loadAllInactiveUsers(){
+        List<User> inactiveUsersList = userModelRepository.loadAllInactiveUsers();
+        return inactiveUsersList;
+    }
+    public boolean updateInactiveUser(int userId){
+        userModelRepository.updateInactiveUser(userId);
+        return true;
     }
 }

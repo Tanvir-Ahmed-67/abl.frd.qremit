@@ -5,7 +5,6 @@ import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
-import abl.frd.qremit.converter.nafex.repository.RoleModelRepository;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import abl.frd.qremit.converter.nafex.service.RoleModelService;
@@ -14,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,16 +32,18 @@ public class UserController {
     private final NafexModelService nafexModelService;
     private final ExchangeHouseModelService exchangeHouseModelService;
     private final RoleModelService roleModelService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserController(MyUserDetailsService myUserDetailsService, 
     NafexModelService nafexModelService,
-     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService) {
+     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder) {
 
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
         this.exchangeHouseModelService = exchangeHouseModelService;
         this.roleModelService = roleModelService;
+        this.passwordEncoder = passwordEncoder;
     }
     @RequestMapping("/login")
     public String loginPage(){
@@ -72,11 +74,14 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         List<User> userList;
+        List<User> adminList;
         for (final GrantedAuthority grantedAuthority : authorities) {
             String authorityName = grantedAuthority.getAuthority();
             if (authorityName.equals("ROLE_SUPERADMIN")) {
-                userList = myUserDetailsService.loadAllUser();
+                userList = myUserDetailsService.loadUsersOnly();
+                adminList = myUserDetailsService.loadAdminsOnly();
                 model.addAttribute("UserList", userList);
+                model.addAttribute("adminList", adminList);
                 return "/pages/superAdmin/superAdminUserListPage";
             }
             if (authorityName.equals("ROLE_ADMIN")) {
@@ -90,22 +95,18 @@ public class UserController {
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromAdmin(Model model){
         model.addAttribute("user", new User());
-
         List<ExchangeHouseModel> exchangeHouseList;
         exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
         model.addAttribute("exchangeList", exchangeHouseList);
-
         return "/pages/admin/adminNewUserEntryForm";
     }
 
     @RequestMapping("/newExchangeHouseList")
     public  String generateExchangeHouseLisString(Model model){
-
        List<ExchangeHouseModel> exchangeHouseList;
-        exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
-        model.addAttribute("exchangeList", exchangeHouseList);
-
-        return "/pages/admin/adminNewUserEntryForm";
+       exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
+       model.addAttribute("exchangeList", exchangeHouseList);
+       return "/pages/admin/adminNewUserEntryForm";
     }  
 
 
@@ -114,6 +115,7 @@ public class UserController {
         Role role = roleModelService.findRoleByRoleName("ROLE_USER");
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(role);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActiveStatus(false);
         user.setRoles(roleSet);
         myUserDetailsService.insertUser(user);
@@ -127,8 +129,14 @@ public class UserController {
         return count;
     }
     @RequestMapping(value="/userEditForm/{id}", method = RequestMethod.POST)
-    public String showUserEditForm(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user){
-        model.addAttribute("user", user);
+    public String showUserEditForm(Model model, @PathVariable(required = true, name= "id") int id){
+        User userSelected = myUserDetailsService.loadUserByUserId(id);
+        List<ExchangeHouseModel> exchangeHouseList;
+        String[] exchangeCodeAssignedToUser = userSelected.getExchangeCode().split(",");
+        exchangeHouseList = exchangeHouseModelService.loadAllExchangeHouse();
+        model.addAttribute("exchangeList", exchangeHouseList);
+        model.addAttribute("user", userSelected);
+        model.addAttribute("exchangeCodeAssignedToUser", exchangeCodeAssignedToUser);
         return "/pages/admin/adminUserEditForm";
     }
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
@@ -146,5 +154,22 @@ public class UserController {
             throw new RuntimeException(e);
         }
         return "redirect:/allUsers";
+    }
+
+    @RequestMapping("/showInactiveUsers")
+    public String showInactiveUserSuperAdmin(Model model){
+        List<User> inactiveUserModelList;
+        inactiveUserModelList = myUserDetailsService.loadAllInactiveUsers();
+        model.addAttribute("inactiveUserModelList", inactiveUserModelList);
+        return "/pages/superAdmin/superAdminInactiveUserListPage";
+    }
+
+    @RequestMapping(value="/activateUser/{id}", method = RequestMethod.POST)
+    public String activateInactiveUser(Model model, @PathVariable(required = true, name = "id") String id, RedirectAttributes ra) {
+        int idInIntegerFormat = Integer.parseInt(id);
+        if(myUserDetailsService.updateInactiveUser(idInIntegerFormat)){
+            ra.addFlashAttribute("message","User has been activated successfully");
+        }
+        return "redirect:/showInactiveUsers";
     }
 }

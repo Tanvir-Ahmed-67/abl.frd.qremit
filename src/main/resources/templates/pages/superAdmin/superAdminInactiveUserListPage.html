@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRD Remittance</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
     <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
     <link rel="stylesheet" th:href="@{/css/app.css}">
     <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
+    <title>FRD Remittance</title>
 </head>
 <body>
 <div id="app"><!--main content-->
-    <span th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <span th:replace="/fragments/sidebarSuperAdmin :: sidebarSuperAdmin"></span>
     <div id="main"><!--content Id-->
         <span th:replace="/fragments/header :: header"></span>
         <div class="main-content container-fluid"><!--dynamic content-->
             <div class="page-title">
-                <h3>All Users Details</h3>
+                <h3>All Inactive Users</h3>
             </div>
             <div class="row" id="table-hover-row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">List of All Users</h4>
+                            <h4 class="card-title">List of All Inactive Users</h4>
                         </div>
                         <div th:if="${message}" class="alert alert-success text-center">
                             [[${message}]]
@@ -35,24 +35,22 @@
                                     <tr>
                                         <th>User Name</th>
                                         <th>User Email</th>
-                                        <th>User Type</th>
                                         <th>Exchange Code</th>
                                         <th>Active Status</th>
                                         <th>ACTION</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="user : ${UserList}">
-                                        <form th:action="@{/userEditForm/{id}(id=${user.getId()})}" th:object="${user}" th:method="POST">
-                                            <td class="text-bold-500" th:text="${user.getUserName()}"></td>
-                                            <td class="text-bold-500" th:text="${user.getUserEmail()}"></td>
-                                            <td class="text-bold-500">USER</td>
-                                            <td class="text-bold-500" th:text="${user.getExchangeCode()}"></td>
-                                            <td class="text-bold-500" th:text="${user.activeStatus} ? 'ACTIVE':'INACTIVE'"></td>
-                                            <td>
-                                                <button type="submit" class="btn btn-outline-primary round" th:name="Edit" th:value="${user.getId()}">Edit</button>
-                                            </td>
-                                        </form>
+                                    <tr th:each="inactiveUserModel : ${inactiveUserModelList}">
+                                        <td class="text-bold-500" th:text="${inactiveUserModel.getUserName()}"></td>
+                                        <td class="text-bold-500" th:text="${inactiveUserModel.getUserEmail()}"></td>
+                                        <td class="text-bold-500" th:text="${inactiveUserModel.getExchangeCode()}"></td>
+                                        <td class="text-bold-500" th:text="${inactiveUserModel.getActiveStatus()} ? 'ACTIVE':'INACTIVE' "></td>
+                                        <td>
+                                            <form th:action="@{/activateUser/{id}(id=${inactiveUserModel.getId()})}" th:method="POST">
+                                                <button type="submit" class="btn btn-outline-primary round" th:name="Activate" th:value="${inactiveUserModel.getId()}">Activate</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>

@@ -18,14 +18,14 @@ public class ExchangeHouseModel {
     @Column(nullable=false)
     private String exchangeShortName;
     @Column
-    private String isActive;
+    private boolean activeStatus;
 
-    public String getIsActive() {
-        return isActive;
+    public boolean getActiveStatus() {
+        return activeStatus;
     }
 
-    public void setIsActive(String isActive) {
-        this.isActive = isActive;
+    public void setActiveStatus(boolean isActive) {
+        this.activeStatus = isActive;
     }
 
     public int getId() {
@@ -60,6 +60,14 @@ public class ExchangeHouseModel {
         this.exchangeCode = exchangeCode;
     }
 
+    public String getExchangeShortName() {
+        return exchangeShortName;
+    }
+
+    public void setExchangeShortName(String exchangeShortName) {
+        this.exchangeShortName = exchangeShortName;
+    }
+
     @Override
     public String toString() {
         return "ExchangeHouseModel{" +
@@ -67,7 +75,8 @@ public class ExchangeHouseModel {
                 ", exchangeName='" + exchangeName + '\'' +
                 ", nrtaCode='" + nrtaCode + '\'' +
                 ", exchangeCode='" + exchangeCode + '\'' +
-                ", isActive='" + isActive + '\'' +
+                ", exchangeShortName='" + exchangeShortName + '\'' +
+                ", isActive='" + activeStatus + '\'' +
                 '}';
     }
 }
