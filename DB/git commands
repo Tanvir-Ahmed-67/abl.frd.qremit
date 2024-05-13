@@ -1,0 +1,3 @@
+Ashik
+Step one- To fetch the latest push from development branch of tanvir
+git pull https://github.com/Tanvir-Ahmed-67/abl.frd.qremit.git  development
