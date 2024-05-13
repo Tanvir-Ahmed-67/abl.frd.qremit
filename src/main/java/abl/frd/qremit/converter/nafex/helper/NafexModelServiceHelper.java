@@ -121,8 +121,8 @@ public class NafexModelServiceHelper {
         cocModel.setCurrency(nafexEhMstModel.getCurrency());
         cocModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
         cocModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
-        cocModel.setExtraA("dummy");
-        cocModel.setExtraB("dummy");
+        cocModel.setIsProcessed("0");
+        cocModel.setIsDownloaded("0");
         cocModel.setExtraC("dummy");
         cocModel.setExtraD("dummy");
         cocModel.setExtraE("dummy");
@@ -143,29 +143,29 @@ public class NafexModelServiceHelper {
         return accountPayeeModelList;
     }
     public static AccountPayeeModel generateAccountPayeeModel(NafexEhMstModel nafexEhMstModel){
-        AccountPayeeModel aoountPayeeModel = new AccountPayeeModel();
-        aoountPayeeModel.setAmount(nafexEhMstModel.getAmount());
-        aoountPayeeModel.setBankCode(nafexEhMstModel.getBankCode());
-        aoountPayeeModel.setBankName(nafexEhMstModel.getBankName());
-        aoountPayeeModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
-        aoountPayeeModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
-        aoountPayeeModel.setBranchCode(nafexEhMstModel.getBranchCode());
-        aoountPayeeModel.setBranchName(nafexEhMstModel.getBranchName());
-        aoountPayeeModel.setAccountPayeeCode("5");
-        aoountPayeeModel.setCreditMark("CRED");
-        aoountPayeeModel.setCurrency(nafexEhMstModel.getCurrency());
-        aoountPayeeModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
-        aoountPayeeModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
-        aoountPayeeModel.setExtraA("dummy");
-        aoountPayeeModel.setExtraB("dummy");
-        aoountPayeeModel.setExtraC("dummy");
-        aoountPayeeModel.setExtraD("dummy");
-        aoountPayeeModel.setExtraE("dummy");
-        aoountPayeeModel.setIncentive(000.00);
-        aoountPayeeModel.setRemitterName(nafexEhMstModel.getRemitterName());
-        aoountPayeeModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
+        AccountPayeeModel accountPayeeModel = new AccountPayeeModel();
+        accountPayeeModel.setAmount(nafexEhMstModel.getAmount());
+        accountPayeeModel.setBankCode(nafexEhMstModel.getBankCode());
+        accountPayeeModel.setBankName(nafexEhMstModel.getBankName());
+        accountPayeeModel.setBeneficiaryAccount(nafexEhMstModel.getBeneficiaryAccount());
+        accountPayeeModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
+        accountPayeeModel.setBranchCode(nafexEhMstModel.getBranchCode());
+        accountPayeeModel.setBranchName(nafexEhMstModel.getBranchName());
+        accountPayeeModel.setAccountPayeeCode("5");
+        accountPayeeModel.setCreditMark("CRED");
+        accountPayeeModel.setCurrency(nafexEhMstModel.getCurrency());
+        accountPayeeModel.setEnteredDate(nafexEhMstModel.getEnteredDate());
+        accountPayeeModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
+        accountPayeeModel.setIsProcessed("0");
+        accountPayeeModel.setIsDownloaded("0");
+        accountPayeeModel.setExtraC("dummy");
+        accountPayeeModel.setExtraD("dummy");
+        accountPayeeModel.setExtraE("dummy");
+        accountPayeeModel.setIncentive(000.00);
+        accountPayeeModel.setRemitterName(nafexEhMstModel.getRemitterName());
+        accountPayeeModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
 
-        return aoountPayeeModel;
+        return accountPayeeModel;
     }
 
     public static List<BeftnModel> generateBeftnModelList(List<NafexEhMstModel> nafexEhMstModel){
@@ -184,8 +184,8 @@ public class NafexModelServiceHelper {
         beftnModel.setBeneficiaryAccountType("SA");
         beftnModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
         beftnModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
-        beftnModel.setExtraA("dummy");
-        beftnModel.setExtraB("dummy");
+        beftnModel.setIsProcessed("0");
+        beftnModel.setIsDownloaded("0");
         beftnModel.setExtraC("dummy");
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");

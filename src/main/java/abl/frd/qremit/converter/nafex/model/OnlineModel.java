@@ -21,9 +21,9 @@ public class OnlineModel {
     private Double amount;
     @Column(name = "remitter_name")
     private String remitterName;
-    @Column(name = "isProcessed")
+    @Column(name = "is_processed")
     private String isProcessed;
-    @Column(name = "isDownloaded")
+    @Column(name = "is_downloaded")
     private String isDownloaded;
     @Column(name = "extra_c")
     private String extraC;

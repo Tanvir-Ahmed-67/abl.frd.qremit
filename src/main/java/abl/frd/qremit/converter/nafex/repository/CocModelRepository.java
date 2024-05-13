@@ -13,4 +13,5 @@ public interface CocModelRepository extends JpaRepository<CocModel, Integer> {
     List<CocModel> findAllCocModelHavingFileInfoId(long id);
     @Query("SELECT n FROM CocModel n")
     List<CocModel> findAllCocModel();
+    Integer countByIsProcessed(String isProcessed);
 }
