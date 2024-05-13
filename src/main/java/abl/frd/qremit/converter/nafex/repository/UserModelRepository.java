@@ -15,7 +15,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.userEmail = :useremail")
     public User findByUserEmail(@Param("useremail") String useremail);
     @Query("SELECT u FROM User u WHERE u.id = :userid")
-    public User findByUserId(@Param("userid") int userId);
+    public User findByUserId(@Param("userid") int id);
 
     @Query("SELECT u FROM User u")
     public List<User> loadAllUsers();
@@ -37,5 +37,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("UPDATE User n SET n.activeStatus = true where n.id = :userId")
     void updateInactiveUser(int userId);
+
+    User getUserById(long id);
 
 }

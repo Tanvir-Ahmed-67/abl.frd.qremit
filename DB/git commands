@@ -1,0 +1,14 @@
+Ashik
+Step one- To fetch the latest push from development branch of tanvir
+    git pull https://github.com/Tanvir-Ahmed-67/abl.frd.qremit.git  development
+
+Step two - Add the changes and commit with message
+    git status
+    git add .
+    git commit -m "git commands added"
+
+Step three - Push to developers own local branch to remote repository whre developer forked the project
+    git push https://github.com/ashikur-rahman/abl.frd.qremit.git dev-ashik
+
+Step Four - Create a Pull request fromthe github websie to the main owners repository development branch
+

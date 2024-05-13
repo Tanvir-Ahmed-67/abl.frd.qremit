@@ -130,6 +130,9 @@ public class UserController {
         model.addAttribute("exchangeCodeAssignedToUser", exchangeCodeAssignedToUser);
         return "/pages/admin/adminUserEditForm";
     }
+
+  
+    
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
     public String editExchangeHouse(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user, BindingResult result, RedirectAttributes ra){
         int idInIntegerFormat = Integer.parseInt(id);
