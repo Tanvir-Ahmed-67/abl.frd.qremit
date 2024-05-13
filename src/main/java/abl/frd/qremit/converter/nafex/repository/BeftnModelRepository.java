@@ -19,6 +19,7 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
 
     @Query("SELECT n FROM BeftnModel n")
     List<BeftnModel> findAllBeftnModelForIncentive();
+    Integer countByIsProcessed(String isProcessed);
 
 }
 /*

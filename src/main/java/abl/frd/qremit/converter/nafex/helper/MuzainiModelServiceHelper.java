@@ -121,8 +121,8 @@ public class MuzainiModelServiceHelper {
         cocModel.setCurrency(muzainiModel.getCurrency());
         cocModel.setEnteredDate(muzainiModel.getEnteredDate());
         cocModel.setExchangeCode(muzainiModel.getExchangeCode());
-        cocModel.setExtraA("dummy");
-        cocModel.setExtraB("dummy");
+        cocModel.setIsProcessed("dummy");
+        cocModel.setIsDownloaded("dummy");
         cocModel.setExtraC("dummy");
         cocModel.setExtraD("dummy");
         cocModel.setExtraE("dummy");
@@ -156,8 +156,8 @@ public class MuzainiModelServiceHelper {
         aoountPayeeModel.setCurrency(muzainiModel.getCurrency());
         aoountPayeeModel.setEnteredDate(muzainiModel.getEnteredDate());
         aoountPayeeModel.setExchangeCode(muzainiModel.getExchangeCode());
-        aoountPayeeModel.setExtraA("dummy");
-        aoountPayeeModel.setExtraB("dummy");
+        aoountPayeeModel.setIsProcessed("dummy");
+        aoountPayeeModel.setIsDownloaded("dummy");
         aoountPayeeModel.setExtraC("dummy");
         aoountPayeeModel.setExtraD("dummy");
         aoountPayeeModel.setExtraE("dummy");
@@ -184,8 +184,8 @@ public class MuzainiModelServiceHelper {
         beftnModel.setBeneficiaryAccountType("SA");
         beftnModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
         beftnModel.setExchangeCode(muzainiModel.getExchangeCode());
-        beftnModel.setExtraA("dummy");
-        beftnModel.setExtraB("dummy");
+        beftnModel.setIsProcessed("dummy");
+        beftnModel.setIsDownloaded("dummy");
         beftnModel.setExtraC("dummy");
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");

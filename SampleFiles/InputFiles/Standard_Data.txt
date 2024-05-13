@@ -1,0 +1,2 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Remitter Name|Beneficiary Name|Beneficiary a/c number (or Mobile NO)|Beneficiary Bank|Benificiary Bank Code|Beneficiary Bank Branch Name|Beneficiary Bank Branch Code|Beneficiary Mobile No|Drawee Bank Branch Name|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter Mobile No
+7040|100524018345|BDT|10074.0000|12/05/2024|MOHAMMAD SAIDUL ISLAM|BONNYA KHATUN |01780905293|AGRANI BANK LIMITED|11|NATORE SUGAR MILL;8702|8702|01780905293|||Family||

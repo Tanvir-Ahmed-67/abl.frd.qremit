@@ -16,6 +16,10 @@ public class ExchangeHouseModelService {
         List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findAll();
         return exchangeHouseModels;
     }
+    public List<ExchangeHouseModel> loadAllActiveExchangeHouse(){
+        List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
+        return exchangeHouseModels;
+    }
     public ExchangeHouseModel getExchangeHouseByExchangeId(int exchangeId){
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeId(exchangeId);
         return exchangeHouseModel;

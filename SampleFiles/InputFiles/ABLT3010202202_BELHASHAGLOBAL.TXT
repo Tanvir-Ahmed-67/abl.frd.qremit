@@ -1,0 +1,2 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Remitter Name|Beneficiary Name|Beneficiary Bank Account/mobile  Number|Beneficiary Bank|Benificiary Bank Code|Beneficiary Bank Branch Name|Beneficiary Bank Branch Code|Beneficiary Mobile No|Drawee Bank Branch Name|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter Mobile No|
+7040|20220223697401|BDT|25000.00|30/10/2022|KABUL HOSSAIN MD AZAD|ALO MATHI|0100216920133|JANATA BANK LIMITED|11|NOHATA BRANCH MAGURA|135550733||||REMITTANCE TO OTHER INDV|SALARY|00971569211640|

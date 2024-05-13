@@ -39,10 +39,10 @@ public class AccountPayeeModel {
     private Double incentive;
     @Column(name = "account_payee_code")
     private String accountPayeeCode;
-    @Column(name = "extra_a")
-    private String extraA;
-    @Column(name = "extra_b")
-    private String extraB;
+    @Column(name = "is_processed")
+    private String isProcessed;
+    @Column(name = "is_downloaded")
+    private String isDownloaded;
     @Column(name = "extra_c")
     private String extraC;
     @Column(name = "extra_d")
@@ -206,20 +206,20 @@ public class AccountPayeeModel {
         this.accountPayeeCode = accountPayeeCode;
     }
 
-    public String getExtraA() {
-        return extraA;
+    public String getIsProcessed() {
+        return isProcessed;
     }
 
-    public void setExtraA(String extraA) {
-        this.extraA = extraA;
+    public void setIsProcessed(String extraA) {
+        this.isProcessed = extraA;
     }
 
-    public String getExtraB() {
-        return extraB;
+    public String getIsDownloaded() {
+        return isDownloaded;
     }
 
-    public void setExtraB(String extraB) {
-        this.extraB = extraB;
+    public void setIsDownloaded(String extraB) {
+        this.isDownloaded = extraB;
     }
 
     public String getExtraC() {
@@ -263,8 +263,8 @@ public class AccountPayeeModel {
         this.remitterName = remitterName;
         this.incentive = incentive;
         this.accountPayeeCode = accountPayeeCode;
-        this.extraA = extraA;
-        this.extraB = extraB;
+        this.isProcessed = extraA;
+        this.isDownloaded = extraB;
         this.extraC = extraC;
         this.extraD = extraD;
         this.extraE = extraE;
@@ -289,8 +289,8 @@ public class AccountPayeeModel {
                 ", remitterName='" + remitterName + '\'' +
                 ", incentive=" + incentive +
                 ", accountPayeeCode='" + accountPayeeCode + '\'' +
-                ", extraA='" + extraA + '\'' +
-                ", extraB='" + extraB + '\'' +
+                ", extraA='" + isProcessed + '\'' +
+                ", extraB='" + isDownloaded + '\'' +
                 ", extraC='" + extraC + '\'' +
                 ", extraD='" + extraD + '\'' +
                 ", extraE='" + extraE + '\'' +

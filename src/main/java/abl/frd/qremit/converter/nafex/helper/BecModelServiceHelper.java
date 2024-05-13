@@ -119,8 +119,8 @@ public class BecModelServiceHelper {
         cocModel.setCurrency(becModel.getCurrency());
         cocModel.setEnteredDate(becModel.getEnteredDate());
         cocModel.setExchangeCode(becModel.getExchangeCode());
-        cocModel.setExtraA("dummy");
-        cocModel.setExtraB("dummy");
+        cocModel.setIsProcessed("dummy");
+        cocModel.setIsDownloaded("dummy");
         cocModel.setExtraC("dummy");
         cocModel.setExtraD("dummy");
         cocModel.setExtraE("dummy");
@@ -154,8 +154,8 @@ public class BecModelServiceHelper {
         aoountPayeeModel.setCurrency(becModel.getCurrency());
         aoountPayeeModel.setEnteredDate(becModel.getEnteredDate());
         aoountPayeeModel.setExchangeCode(becModel.getExchangeCode());
-        aoountPayeeModel.setExtraA("dummy");
-        aoountPayeeModel.setExtraB("dummy");
+        aoountPayeeModel.setIsProcessed("dummy");
+        aoountPayeeModel.setIsDownloaded("dummy");
         aoountPayeeModel.setExtraC("dummy");
         aoountPayeeModel.setExtraD("dummy");
         aoountPayeeModel.setExtraE("dummy");
@@ -182,8 +182,8 @@ public class BecModelServiceHelper {
         beftnModel.setBeneficiaryAccountType("SA");
         beftnModel.setBeneficiaryName(becModel.getBeneficiaryName());
         beftnModel.setExchangeCode(becModel.getExchangeCode());
-        beftnModel.setExtraA("dummy");
-        beftnModel.setExtraB("dummy");
+        beftnModel.setIsProcessed("dummy");
+        beftnModel.setIsDownloaded("dummy");
         beftnModel.setExtraC("dummy");
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");

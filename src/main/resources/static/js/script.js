@@ -19,7 +19,7 @@ function downloadOnline() {
         url: "/countOnlineAfterDownloadButtonClicked",
         context: document.body,
         success: function(count){
-            $("p.onlineCount").html(count);    //in index.html add a div tag with class="show-part-view"
+            $("p.onlineCount").html(count);
         }
     });
 }

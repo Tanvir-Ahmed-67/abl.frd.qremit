@@ -1,0 +1,2 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Remitter Name|Beneficiary Name|Beneficiary Bank Account/mobile  Number|Beneficiary Bank|Beneficiary Bank Code|Beneficiary Bank Branch Name|Beneficiary Bank Branch Code|Beneficiary Mobile No|Drawee Bank Branch Name|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter Mobile No
+7040|600924227|BDT|161250.00|24/10/2022|MD MIA|SADIA SULTANA|COC01710660006|AGRANI BANK LIMITED|11|Any Branch|000|01710660006|||Family Assistance||
