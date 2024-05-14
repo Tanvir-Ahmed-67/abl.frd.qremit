@@ -52,6 +52,17 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return users;
     }
+
+//    need to work on Ashik
+//     public List<User> loadAllExchangeOfAUser() throws UsernameNotFoundException {
+//         List<exchange_name> users = userModelRepository.findExchangeNameByUser();
+//         if(users.isEmpty()){
+//             throw new UsernameNotFoundException("Could not find user");
+//         }
+//         return users;
+//     }
+
+    
     public List<User> loadUsersOnly() throws UsernameNotFoundException {
         List<User> users = userModelRepository.loadUsersOnly();
         if(users.isEmpty()){
