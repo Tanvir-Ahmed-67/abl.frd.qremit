@@ -65,7 +65,7 @@
                                                         <select name="exchangeCode" th:with="exchangeCode=*{exchangeCode}" class="choices form-select multiple-remove" multiple="multiple">
                                                             <optgroup label="NRTA Code">
                                                                 <option th:each="exchangeCodeAssignedToUser : ${exchangeCodeAssignedToUser}" th:value="${exchangeCodeAssignedToUser}" th:text="${exchangeCodeAssignedToUser}" selected></option>
-                                                                <option th:each="exchangeHouse : ${exchangeList}" th:value="${exchangeHouse.exchangeCode}"  th:text="${exchangeHouse.exchangeCode}" ></option>
+                                                                <option th:each="exchangeHouse : ${exchangeList}" th:value="${exchangeHouse.exchangeCode}"  th:text="${exchangeHouse.exchangeName}" ></option>
                                                             </optgroup>
                                                         </select><!--<span th:if="${#fields.hasAnyErrors('userNrtaCode')}" th:errors="*{nrtaCode}" class="text-danger"></span>-->
                                                 </div>

@@ -57,9 +57,11 @@ public class UserController {
     public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+        
         String exchangeCode = userDetails.getUserExchangeCode();
         String[] arrOfexchangeCode = exchangeCode.split(",");
         model.addAttribute("arrOfNrtaCode", arrOfexchangeCode);
+        
         return "/layouts/dashboard"; }
     @RequestMapping("/home")
     public String loginSubmit(){
