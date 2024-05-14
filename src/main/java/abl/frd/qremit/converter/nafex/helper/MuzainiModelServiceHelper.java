@@ -186,7 +186,7 @@ public class MuzainiModelServiceHelper {
         beftnModel.setExchangeCode(muzainiModel.getExchangeCode());
         beftnModel.setIsProcessed("dummy");
         beftnModel.setIsDownloaded("dummy");
-        beftnModel.setExtraC("dummy");
+        beftnModel.setIsIncDownloaded("dummy");
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");
         beftnModel.setIncentive(000.00);

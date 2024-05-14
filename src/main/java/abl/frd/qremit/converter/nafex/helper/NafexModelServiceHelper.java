@@ -186,7 +186,7 @@ public class NafexModelServiceHelper {
         beftnModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
         beftnModel.setIsProcessed("0");
         beftnModel.setIsDownloaded("0");
-        beftnModel.setExtraC("dummy");
+        beftnModel.setIsIncDownloaded("dummy");
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");
         beftnModel.setIncentive(000.00);

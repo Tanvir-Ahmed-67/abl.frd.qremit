@@ -37,8 +37,8 @@ public class BeftnModel {
     private String isProcessed;
     @Column(name = "is_downloaded")
     private String isDownloaded;
-    @Column(name = "extra_c")
-    private String extraC;
+    @Column(name = "is_inc_downloaded")
+    private String isIncDownloaded;
     @Column(name = "extra_d")
     private String extraD;
     @Column(name = "extra_e")
@@ -192,12 +192,12 @@ public class BeftnModel {
         this.isDownloaded = extraB;
     }
 
-    public String getExtraC() {
-        return extraC;
+    public String getIsIncDownloaded() {
+        return isIncDownloaded;
     }
 
-    public void setExtraC(String extraC) {
-        this.extraC = extraC;
+    public void setIsIncDownloaded(String extraC) {
+        this.isIncDownloaded = extraC;
     }
 
     public String getExtraD() {
@@ -232,7 +232,7 @@ public class BeftnModel {
         this.incentive = incentive;
         this.isProcessed = extraA;
         this.isDownloaded = extraB;
-        this.extraC = extraC;
+        this.isIncDownloaded = extraC;
         this.extraD = extraD;
         this.extraE = extraE;
     }
@@ -255,7 +255,7 @@ public class BeftnModel {
                 ", incentive=" + incentive +
                 ", extraA='" + isProcessed + '\'' +
                 ", extraB='" + isDownloaded + '\'' +
-                ", extraC='" + extraC + '\'' +
+                ", extraC='" + isIncDownloaded + '\'' +
                 ", extraD='" + extraD + '\'' +
                 ", extraE='" + extraE + '\'' +
                 '}';

@@ -26,7 +26,7 @@ public class BeftnModelServiceHelper {
     }
 
 
-    public static ByteArrayInputStream BeftnModelsToExcel(List<BeftnModel> beftnModelList) {
+    public static ByteArrayInputStream BeftnMainModelsToExcel(List<BeftnModel> beftnModelList) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Beftn");
         Iterator<BeftnModel> iterator = beftnModelList.iterator();

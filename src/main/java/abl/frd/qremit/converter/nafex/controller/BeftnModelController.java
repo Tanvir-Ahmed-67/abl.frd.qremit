@@ -33,8 +33,8 @@ public class BeftnModelController {
     }
     @GetMapping("/downloadbeftn")
     public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(beftnModelService.loadAll());
-        String fileName = "Beftn_Main_Nafex";
+        InputStreamResource file = new InputStreamResource(beftnModelService.loadAndUpdateUnprocessedBeftnMainData("0"));
+        String fileName = "Beftn_Main";  // Have to attch date with file name here.
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
                 .contentType(MediaType.parseMediaType("application/csv"))
