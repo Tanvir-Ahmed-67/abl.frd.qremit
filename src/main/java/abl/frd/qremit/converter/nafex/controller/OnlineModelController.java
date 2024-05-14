@@ -33,7 +33,7 @@ public class OnlineModelController {
     }
     @GetMapping("/downloadonline")
     public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(onlineModelService.loadUnprocessedOnlineData("0"));
+        InputStreamResource file = new InputStreamResource(onlineModelService.loadAndUpdateUnprocessedOnlineData("0"));
         String fileName = "Online_Nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")

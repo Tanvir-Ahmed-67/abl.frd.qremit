@@ -31,8 +31,8 @@ public class CocModelController {
     }
     @GetMapping("/downloadcoc")
     public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(cocModelService.loadAll());  // have to apply logic in this loadAll method to download unprocessed coc data each time
-        String fileName = "Coc_Nafex";
+        InputStreamResource file = new InputStreamResource(cocModelService.loadAndUpdateUnprocessedCocData("0"));
+        String fileName = "Coc_Nafex";  // Have to attch date with file name here.
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
                 .contentType(MediaType.parseMediaType("application/csv"))
