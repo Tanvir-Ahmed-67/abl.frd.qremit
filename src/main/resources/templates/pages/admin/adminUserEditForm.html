@@ -28,7 +28,7 @@
                         </div>
                         <div class="card-content">
                             <div class="card-body">
-                                <form th:action="@{/editUser/{id}(id=${user.getId()})}" th:object="${user}" method="post" class="form form-horizontal">
+                                <form th:action="@{/editUser/{id}(id=${user.getId()})}" th:object="${user}" th:name="newUserEntryForm" method="post" class="form form-horizontal">
                                     <div class="form-body">
                                         <div class="row">
                                             <div class="col-md-4">
@@ -37,7 +37,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                       <input type="text" name="userName" th:with="userName=*{userName}" th:value="${user.userName}" class="form-control" required th:minlength="1" th:maxlength="250"><!-- <span th:if="${#fields.hasAnyErrors('userName')}" th:errors="*{userName}" class="text-danger"></span>-->
+                                                        <input type="text" th:name="userName" th:field="*{userName}" class="form-control" >
                                                         <div class="form-control-icon">
                                                             <i data-feather="user"></i>
                                                         </div>
@@ -108,12 +108,16 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 d-flex justify-content-end ">
-                                                <button type="submit" th:name="submitButton" class="btn btn-primary me-1 mb-1">Submit</button>
+                                                <button type="submit" th:name="submitButton" class="btn btn-primary me-1 mb-1">Update</button>
                                                 <button type="reset" th:name="resetButton" class="btn btn-light-secondary me-1 mb-1">Reset</button>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
+
+
+
+                              
                             </div>
                         </div>
                     </div>
