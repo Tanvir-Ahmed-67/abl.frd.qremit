@@ -13,8 +13,8 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.userName = :username")
     public User findByUserName(@Param("username") String username);
 
-    @Query("select group_concat(c.`exchange_name`) as exchange_name from `user` m join `ex_house_list` c on find_in_set(c.`exchange_code`, m.`exchange_code`)  where m.`user_id`=:userid group by m.`user_id`")
-    public User findExchangeNameByUser(@Param("userid") int id);
+   // @Query("select group_concat(c.exchangeName) as exchange_name from User m join ExchangeHouseModel c on find_in_set(c.exchangeCode, m.exchangeCode)  where m.id=:userid group by m.id")
+   // public User findExchangeNameByUser(@Param("userid") int id);
     
     @Query("SELECT u FROM User u WHERE u.userEmail = :useremail")
     public User findByUserEmail(@Param("useremail") String useremail);
