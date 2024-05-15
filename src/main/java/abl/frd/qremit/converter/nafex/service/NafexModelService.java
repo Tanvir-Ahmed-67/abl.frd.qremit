@@ -93,11 +93,12 @@ public class NafexModelService {
     }
 
     public List<Integer> CountAllFourTypesOfData(){
-        List<Integer> count = new ArrayList<Integer>(4);
+        List<Integer> count = new ArrayList<Integer>(5);
         count.add(onlineModelRepository.countByIsProcessed("0"));
         count.add(cocModelRepository.countByIsProcessed("0"));
         count.add(accountPayeeModelRepository.countByIsProcessed("0"));
-        count.add(beftnModelRepository.countByIsProcessed("0"));
+        count.add(beftnModelRepository.countByIsProcessedMain("0"));
+        count.add(beftnModelRepository.countByIsProcessedIncentive("0"));
         return count;
     }
 }

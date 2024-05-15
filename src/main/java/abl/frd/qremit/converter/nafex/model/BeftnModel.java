@@ -33,10 +33,10 @@ public class BeftnModel {
     private String routingNo;
     @Column(name = "incentive")
     private Double incentive;
-    @Column(name = "is_processed")
-    private String isProcessed;
-    @Column(name = "is_downloaded")
-    private String isDownloaded;
+    @Column(name = "is_processed_main")
+    private String isProcessedMain;
+    @Column(name = "is_processed_incentive")
+    private String isProcessedIncentive;
     @Column(name = "is_inc_downloaded")
     private String isIncDownloaded;
     @Column(name = "extra_d")
@@ -176,20 +176,20 @@ public class BeftnModel {
         this.incentive = incentive;
     }
 
-    public String getIsProcessed() {
-        return isProcessed;
+    public String getIsProcessedMain() {
+        return isProcessedMain;
     }
 
-    public void setIsProcessed(String extraA) {
-        this.isProcessed = extraA;
+    public void setIsProcessedMain(String extraA) {
+        this.isProcessedMain = extraA;
     }
 
-    public String getIsDownloaded() {
-        return isDownloaded;
+    public String getIsProcessedIncentive() {
+        return isProcessedIncentive;
     }
 
-    public void setIsDownloaded(String extraB) {
-        this.isDownloaded = extraB;
+    public void setIsProcessedIncentive(String extraB) {
+        this.isProcessedIncentive = extraB;
     }
 
     public String getIsIncDownloaded() {
@@ -230,8 +230,8 @@ public class BeftnModel {
         this.exchangeCode = exchangeCode;
         this.routingNo = routingNo;
         this.incentive = incentive;
-        this.isProcessed = extraA;
-        this.isDownloaded = extraB;
+        this.isProcessedMain = extraA;
+        this.isProcessedIncentive = extraB;
         this.isIncDownloaded = extraC;
         this.extraD = extraD;
         this.extraE = extraE;
@@ -253,8 +253,8 @@ public class BeftnModel {
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", routingNo='" + routingNo + '\'' +
                 ", incentive=" + incentive +
-                ", extraA='" + isProcessed + '\'' +
-                ", extraB='" + isDownloaded + '\'' +
+                ", extraA='" + isProcessedMain + '\'' +
+                ", extraB='" + isProcessedIncentive + '\'' +
                 ", extraC='" + isIncDownloaded + '\'' +
                 ", extraD='" + extraD + '\'' +
                 ", extraE='" + extraE + '\'' +

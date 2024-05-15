@@ -21,10 +21,11 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
 
     @Query("SELECT n FROM BeftnModel n")
     List<BeftnModel> findAllBeftnModelForIncentive();
-    Integer countByIsProcessed(String isProcessed);
-    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessed= :isProcessed")
+    Integer countByIsProcessedMain(String isProcessed);
+    Integer countByIsProcessedIncentive(String isProcessed);
+    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedMain= :isProcessed")
     List<BeftnModel> loadUnprocessedBeftnMainData(@Param("isProcessed") String isProcessed);
-    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessed= :isProcessed AND n.isIncDownloaded=:isProcessed")
+    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedIncentive= :isProcessed")
     List<BeftnModel> loadUnprocessedBeftnIncentiveData(@Param("isProcessed") String isProcessed);
 
 }

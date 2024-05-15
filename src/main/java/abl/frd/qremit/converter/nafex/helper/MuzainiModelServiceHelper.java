@@ -184,8 +184,8 @@ public class MuzainiModelServiceHelper {
         beftnModel.setBeneficiaryAccountType("SA");
         beftnModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
         beftnModel.setExchangeCode(muzainiModel.getExchangeCode());
-        beftnModel.setIsProcessed("dummy");
-        beftnModel.setIsDownloaded("dummy");
+        beftnModel.setIsProcessedMain("dummy");
+        beftnModel.setIsProcessedIncentive("dummy");
         beftnModel.setIsIncDownloaded("dummy");
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");

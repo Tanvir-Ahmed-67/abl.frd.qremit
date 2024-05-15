@@ -1,14 +1,11 @@
 package abl.frd.qremit.converter.nafex.service;
 import abl.frd.qremit.converter.nafex.helper.BeftnModelServiceHelper;
-import abl.frd.qremit.converter.nafex.helper.CocModelServiceHelper;
 import abl.frd.qremit.converter.nafex.model.BeftnModel;
-import abl.frd.qremit.converter.nafex.model.CocModel;
 import abl.frd.qremit.converter.nafex.repository.BeftnModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @Service
@@ -50,8 +47,8 @@ public class BeftnModelService {
         for (BeftnModel existingEntity : existingEntities) {
             for (BeftnModel updatedEntity : entitiesToUpdate) {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
-                    existingEntity.setIsProcessed(processed);
-                    existingEntity.setIsDownloaded(processed);
+                    existingEntity.setIsProcessedMain(processed);
+                    existingEntity.setIsProcessedIncentive(processed);
                     // Update other properties as needed
                     break;
                 }

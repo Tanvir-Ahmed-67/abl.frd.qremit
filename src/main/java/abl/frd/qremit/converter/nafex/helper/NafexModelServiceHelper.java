@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static abl.frd.qremit.converter.nafex.helper.BeftnModelServiceHelper.calculatePercentage;
 
 public class NafexModelServiceHelper {
     public static String TYPE = "text/csv";
@@ -184,12 +185,12 @@ public class NafexModelServiceHelper {
         beftnModel.setBeneficiaryAccountType("SA");
         beftnModel.setBeneficiaryName(nafexEhMstModel.getBeneficiaryName());
         beftnModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
-        beftnModel.setIsProcessed("0");
-        beftnModel.setIsDownloaded("0");
-        beftnModel.setIsIncDownloaded("dummy");
+        beftnModel.setIsProcessedMain("0");
+        beftnModel.setIsProcessedIncentive("0");
+        beftnModel.setIsIncDownloaded("0");
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");
-        beftnModel.setIncentive(000.00);
+        beftnModel.setIncentive(calculatePercentage(nafexEhMstModel.getAmount()));
         beftnModel.setOrgAccountNo("160954");
         beftnModel.setOrgAccountType("CA");
         beftnModel.setOrgCustomerNo("7892");

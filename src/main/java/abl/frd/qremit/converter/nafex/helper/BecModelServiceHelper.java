@@ -182,8 +182,8 @@ public class BecModelServiceHelper {
         beftnModel.setBeneficiaryAccountType("SA");
         beftnModel.setBeneficiaryName(becModel.getBeneficiaryName());
         beftnModel.setExchangeCode(becModel.getExchangeCode());
-        beftnModel.setIsProcessed("dummy");
-        beftnModel.setIsDownloaded("dummy");
+        beftnModel.setIsProcessedMain("dummy");
+        beftnModel.setIsProcessedIncentive("dummy");
         beftnModel.setIsIncDownloaded("dummy");
         beftnModel.setExtraD("dummy");
         beftnModel.setExtraE("dummy");
