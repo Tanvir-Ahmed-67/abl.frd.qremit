@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,6 +27,7 @@ public class MuzainiModelService {
     BeftnModelRepository beftnModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
+    LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file) {
         try
         {
@@ -58,7 +60,7 @@ public class MuzainiModelService {
             fileInfoModel.setFileName(file.getOriginalFilename());
             fileInfoModel.setProcessedCount("test");
             fileInfoModel.setUnprocessedCount("test");
-            fileInfoModel.setUploadDate("test");
+            fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModel.setMuzainiModel(muzainiModels);
             fileInfoModel.setCocModelList(cocModelList);
             fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);

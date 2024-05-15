@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +57,7 @@ public class NafexModelServiceHelper {
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
-                        "12-23-23",         // processed_date
+                        LocalDateTime.now(), // upload_date_time
                         "extraC",
                         putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
                         putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc

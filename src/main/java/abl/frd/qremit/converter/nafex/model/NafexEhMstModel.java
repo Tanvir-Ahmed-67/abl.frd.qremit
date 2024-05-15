@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="base_data_table_nafex")
@@ -50,8 +51,8 @@ public class NafexEhMstModel {
     private String typeFlag;
     @Column(name = "processed_by")
     private String processedBy;
-    @Column(name = "processed_date")
-    private String processedDate;
+    @Column(name = "upload_date_time")
+    private LocalDateTime uploadDateTime;
     @Column(name = "extra_c")
     private String extraC;
 
@@ -300,12 +301,12 @@ public class NafexEhMstModel {
         this.processedBy = extraA;
     }
 
-    public String getProcessedDate() {
-        return processedDate;
+    public LocalDateTime getUploadDateTime() {
+        return uploadDateTime;
     }
 
-    public void setProcessedDate(String processedDate) {
-        this.processedDate = processedDate;
+    public void setUploadDateTime(LocalDateTime processedDate) {
+        this.uploadDateTime = processedDate;
     }
 
     public String getExtraC() {
@@ -316,7 +317,7 @@ public class NafexEhMstModel {
         this.extraC = extraC;
     }
 
-    public NafexEhMstModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public NafexEhMstModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, LocalDateTime uploadDateTime, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -338,7 +339,7 @@ public class NafexEhMstModel {
         this.processFlag = processFlag;
         this.typeFlag = typeFlag;
         this.processedBy = processedBy;
-        this.processedDate = processedDate;
+        this.uploadDateTime = uploadDateTime;
         this.extraC = extraC;
         this.checkT24 = checkT24;
         this.checkCoc = checkCoc;
@@ -371,7 +372,7 @@ public class NafexEhMstModel {
                 ", processFlag='" + processFlag + '\'' +
                 ", typeFlag='" + typeFlag + '\'' +
                 ", processedBy='" + processedBy + '\'' +
-                ", processedDate='" + processedDate + '\'' +
+                ", processedDate='" + uploadDateTime + '\'' +
                 ", extraC='" + extraC + '\'' +
                 ", checkT24='" + checkT24 + '\'' +
                 ", checkCoc='" + checkCoc + '\'' +

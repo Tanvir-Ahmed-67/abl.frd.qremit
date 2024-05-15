@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -12,8 +13,8 @@ public class FileInfoModel {
     private long id;
     @Column(name = "exchange_code")
     private String exchangeCode;
-    @Column(name = "upload_date")
-    private String uploadDate;
+    @Column(name = "upload_date_time")
+    private LocalDateTime uploadDateTime;
     @Column(name = "file_name")
     private String fileName;
     @Column(name = "coc_count")
@@ -88,9 +89,9 @@ public class FileInfoModel {
         this.cocModelList = cocModelList;
     }
 
-    public FileInfoModel(String exchangeCode, String uploadDate, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount, List<NafexEhMstModel> nafexEhMstModelSet) {
+    public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount, List<NafexEhMstModel> nafexEhMstModelSet) {
         this.exchangeCode = exchangeCode;
-        this.uploadDate = uploadDate;
+        this.uploadDateTime = uploadDateTime;
         this.fileName = fileName;
         this.cocCount = cocCount;
         this.beftnCount = beftnCount;
@@ -107,7 +108,7 @@ public class FileInfoModel {
         return "FileInfoModel{" +
                 "id=" + id +
                 ", exchangeCode='" + exchangeCode + '\'' +
-                ", uploadDate='" + uploadDate + '\'' +
+                ", uploadDate='" + uploadDateTime + '\'' +
                 ", fileName='" + fileName + '\'' +
                 ", cocCount='" + cocCount + '\'' +
                 ", beftnCount='" + beftnCount + '\'' +
@@ -174,12 +175,12 @@ public class FileInfoModel {
         this.exchangeCode = exchangeCode;
     }
 
-    public String getUploadDate() {
-        return uploadDate;
+    public LocalDateTime getUploadDateTime() {
+        return uploadDateTime;
     }
 
-    public void setUploadDate(String uploadDate) {
-        this.uploadDate = uploadDate;
+    public void setUploadDateTime(LocalDateTime uploadDate) {
+        this.uploadDateTime = uploadDate;
     }
 
     public String getFileName() {
