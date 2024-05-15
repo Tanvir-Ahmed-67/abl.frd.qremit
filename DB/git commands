@@ -12,3 +12,18 @@ Step three - Push to developers own local branch to remote repository whre devel
 
 Step Four - Create a Pull request fromthe github websie to the main owners repository development branch
 
+
+//bhaktear
+Step one- To fetch the latest push from development branch of tanvir
+    git pull git@github.com:Tanvir-Ahmed-67/abl.frd.qremit.git development
+
+Step two - Add the changes and commit with message
+    git status
+    git add .
+    git commit -m "git commands added"
+
+
+Step three - Push to developers own local branch to remote repository whre developer forked the project
+git push git@github.com:bhaktear/dev-bhaktear.git dev-bhaktear
+
+Step Four - Create a Pull request fromthe github websie to the main owners repository development branch
