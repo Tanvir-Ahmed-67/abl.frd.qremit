@@ -56,7 +56,7 @@ public class BecModelServiceHelper {
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
-                        LocalDateTime.now(), // upload_date_time
+                        "dummy",            // processed_date
                         "extraC",
                         putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
                         putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
@@ -90,8 +90,8 @@ public class BecModelServiceHelper {
                     onlineModel.setExchangeCode(becModel.getExchangeCode());
                     onlineModel.setRemitterName(becModel.getRemitterName());
                     onlineModel.setTransactionNo(becModel.getTransactionNo());
-                    onlineModel.setExtraC("dump");
-                    onlineModel.setExtraD("dump");
+                    onlineModel.setDownloadDateTime(LocalDateTime.now());
+                    onlineModel.setDownloadUserId(9999);
                     onlineModel.setExtraE("dump");
         return onlineModel;
     }
@@ -122,8 +122,8 @@ public class BecModelServiceHelper {
         cocModel.setExchangeCode(becModel.getExchangeCode());
         cocModel.setIsProcessed("dummy");
         cocModel.setIsDownloaded("dummy");
-        cocModel.setExtraC("dummy");
-        cocModel.setExtraD("dummy");
+        cocModel.setDownloadDateTime(LocalDateTime.now());
+        cocModel.setDownloadUserId(9999);
         cocModel.setExtraE("dummy");
         cocModel.setIncentive(000.00);
         cocModel.setRemitterName(becModel.getRemitterName());
@@ -142,29 +142,29 @@ public class BecModelServiceHelper {
         return accountPayeeModelList;
     }
     public static AccountPayeeModel generateAccountPayeeModel(BecModel becModel){
-        AccountPayeeModel aoountPayeeModel = new AccountPayeeModel();
-        aoountPayeeModel.setAmount(becModel.getAmount());
-        aoountPayeeModel.setBankCode(becModel.getBankCode());
-        aoountPayeeModel.setBankName(becModel.getBankName());
-        aoountPayeeModel.setBeneficiaryAccount(becModel.getBeneficiaryAccount());
-        aoountPayeeModel.setBeneficiaryName(becModel.getBeneficiaryName());
-        aoountPayeeModel.setBranchCode(becModel.getBranchCode());
-        aoountPayeeModel.setBranchName(becModel.getBranchName());
-        aoountPayeeModel.setAccountPayeeCode("5");
-        aoountPayeeModel.setCreditMark("CRED");
-        aoountPayeeModel.setCurrency(becModel.getCurrency());
-        aoountPayeeModel.setEnteredDate(becModel.getEnteredDate());
-        aoountPayeeModel.setExchangeCode(becModel.getExchangeCode());
-        aoountPayeeModel.setIsProcessed("dummy");
-        aoountPayeeModel.setIsDownloaded("dummy");
-        aoountPayeeModel.setExtraC("dummy");
-        aoountPayeeModel.setExtraD("dummy");
-        aoountPayeeModel.setExtraE("dummy");
-        aoountPayeeModel.setIncentive(000.00);
-        aoountPayeeModel.setRemitterName(becModel.getRemitterName());
-        aoountPayeeModel.setTransactionNo(becModel.getTransactionNo());
+        AccountPayeeModel accountPayeeModel = new AccountPayeeModel();
+        accountPayeeModel.setAmount(becModel.getAmount());
+        accountPayeeModel.setBankCode(becModel.getBankCode());
+        accountPayeeModel.setBankName(becModel.getBankName());
+        accountPayeeModel.setBeneficiaryAccount(becModel.getBeneficiaryAccount());
+        accountPayeeModel.setBeneficiaryName(becModel.getBeneficiaryName());
+        accountPayeeModel.setBranchCode(becModel.getBranchCode());
+        accountPayeeModel.setBranchName(becModel.getBranchName());
+        accountPayeeModel.setAccountPayeeCode("5");
+        accountPayeeModel.setCreditMark("CRED");
+        accountPayeeModel.setCurrency(becModel.getCurrency());
+        accountPayeeModel.setEnteredDate(becModel.getEnteredDate());
+        accountPayeeModel.setExchangeCode(becModel.getExchangeCode());
+        accountPayeeModel.setIsProcessed("dummy");
+        accountPayeeModel.setIsDownloaded("dummy");
+        accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
+        accountPayeeModel.setDownloadUserId(9999);
+        accountPayeeModel.setExtraE("dummy");
+        accountPayeeModel.setIncentive(000.00);
+        accountPayeeModel.setRemitterName(becModel.getRemitterName());
+        accountPayeeModel.setTransactionNo(becModel.getTransactionNo());
 
-        return aoountPayeeModel;
+        return accountPayeeModel;
     }
 
     public static List<BeftnModel> generateBeftnModelList(List<BecModel> becModel){
@@ -186,8 +186,8 @@ public class BecModelServiceHelper {
         beftnModel.setIsProcessedMain("dummy");
         beftnModel.setIsProcessedIncentive("dummy");
         beftnModel.setIsIncDownloaded("dummy");
-        beftnModel.setExtraD("dummy");
-        beftnModel.setExtraE("dummy");
+        beftnModel.setDownloadUserId(9999);
+        beftnModel.setDownloadDateTime(LocalDateTime.now());
         beftnModel.setIncentive(000.00);
         beftnModel.setOrgAccountNo("160954");
         beftnModel.setOrgAccountType("CA");

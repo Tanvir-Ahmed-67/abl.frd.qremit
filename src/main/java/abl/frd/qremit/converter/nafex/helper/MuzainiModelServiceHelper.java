@@ -57,7 +57,7 @@ public class MuzainiModelServiceHelper {
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
-                        LocalDateTime.now(), // upload_date_time
+                        "dummy",            // processed_date
                         "extraC",           // extra_c
                         putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
                         putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
@@ -91,9 +91,8 @@ public class MuzainiModelServiceHelper {
                     onlineModel.setExchangeCode(muzainiModel.getExchangeCode());
                     onlineModel.setRemitterName(muzainiModel.getRemitterName());
                     onlineModel.setTransactionNo(muzainiModel.getTransactionNo());
-                
-                    onlineModel.setExtraC("dump");
-                    onlineModel.setExtraD("dump");
+                    onlineModel.setDownloadDateTime(LocalDateTime.now());
+                    onlineModel.setDownloadUserId(9999);
                     onlineModel.setExtraE("dump");
         return onlineModel;
     }
@@ -124,8 +123,8 @@ public class MuzainiModelServiceHelper {
         cocModel.setExchangeCode(muzainiModel.getExchangeCode());
         cocModel.setIsProcessed("dummy");
         cocModel.setIsDownloaded("dummy");
-        cocModel.setExtraC("dummy");
-        cocModel.setExtraD("dummy");
+        cocModel.setDownloadDateTime( LocalDateTime.now());
+        cocModel.setDownloadUserId(9999);
         cocModel.setExtraE("dummy");
         cocModel.setIncentive(000.00);
         cocModel.setRemitterName(muzainiModel.getRemitterName());
@@ -144,29 +143,29 @@ public class MuzainiModelServiceHelper {
         return accountPayeeModelList;
     }
     public static AccountPayeeModel generateAccountPayeeModel(MuzainiModel muzainiModel){
-        AccountPayeeModel aoountPayeeModel = new AccountPayeeModel();
-        aoountPayeeModel.setAmount(muzainiModel.getAmount());
-        aoountPayeeModel.setBankCode(muzainiModel.getBankCode());
-        aoountPayeeModel.setBankName(muzainiModel.getBankName());
-        aoountPayeeModel.setBeneficiaryAccount(muzainiModel.getBeneficiaryAccount());
-        aoountPayeeModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
-        aoountPayeeModel.setBranchCode(muzainiModel.getBranchCode());
-        aoountPayeeModel.setBranchName(muzainiModel.getBranchName());
-        aoountPayeeModel.setAccountPayeeCode("5");
-        aoountPayeeModel.setCreditMark("CRED");
-        aoountPayeeModel.setCurrency(muzainiModel.getCurrency());
-        aoountPayeeModel.setEnteredDate(muzainiModel.getEnteredDate());
-        aoountPayeeModel.setExchangeCode(muzainiModel.getExchangeCode());
-        aoountPayeeModel.setIsProcessed("dummy");
-        aoountPayeeModel.setIsDownloaded("dummy");
-        aoountPayeeModel.setExtraC("dummy");
-        aoountPayeeModel.setExtraD("dummy");
-        aoountPayeeModel.setExtraE("dummy");
-        aoountPayeeModel.setIncentive(000.00);
-        aoountPayeeModel.setRemitterName(muzainiModel.getRemitterName());
-        aoountPayeeModel.setTransactionNo(muzainiModel.getTransactionNo());
+        AccountPayeeModel accountPayeeModel = new AccountPayeeModel();
+        accountPayeeModel.setAmount(muzainiModel.getAmount());
+        accountPayeeModel.setBankCode(muzainiModel.getBankCode());
+        accountPayeeModel.setBankName(muzainiModel.getBankName());
+        accountPayeeModel.setBeneficiaryAccount(muzainiModel.getBeneficiaryAccount());
+        accountPayeeModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
+        accountPayeeModel.setBranchCode(muzainiModel.getBranchCode());
+        accountPayeeModel.setBranchName(muzainiModel.getBranchName());
+        accountPayeeModel.setAccountPayeeCode("5");
+        accountPayeeModel.setCreditMark("CRED");
+        accountPayeeModel.setCurrency(muzainiModel.getCurrency());
+        accountPayeeModel.setEnteredDate(muzainiModel.getEnteredDate());
+        accountPayeeModel.setExchangeCode(muzainiModel.getExchangeCode());
+        accountPayeeModel.setIsProcessed("dummy");
+        accountPayeeModel.setIsDownloaded("dummy");
+        accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
+        accountPayeeModel.setDownloadUserId(9999);
+        accountPayeeModel.setExtraE("dummy");
+        accountPayeeModel.setIncentive(000.00);
+        accountPayeeModel.setRemitterName(muzainiModel.getRemitterName());
+        accountPayeeModel.setTransactionNo(muzainiModel.getTransactionNo());
 
-        return aoountPayeeModel;
+        return accountPayeeModel;
     }
 
     public static List<BeftnModel> generateBeftnModelList(List<MuzainiModel> muzainiModel){
@@ -188,8 +187,8 @@ public class MuzainiModelServiceHelper {
         beftnModel.setIsProcessedMain("dummy");
         beftnModel.setIsProcessedIncentive("dummy");
         beftnModel.setIsIncDownloaded("dummy");
-        beftnModel.setExtraD("dummy");
-        beftnModel.setExtraE("dummy");
+        beftnModel.setDownloadDateTime( LocalDateTime.now());
+        beftnModel.setDownloadUserId(9999);
         beftnModel.setIncentive(000.00);
         beftnModel.setOrgAccountNo("160954");
         beftnModel.setOrgAccountType("CA");

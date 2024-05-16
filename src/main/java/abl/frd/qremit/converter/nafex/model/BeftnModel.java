@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="converted_data_beftn")
@@ -39,13 +40,13 @@ public class BeftnModel {
     private String isProcessedIncentive;
     @Column(name = "is_inc_downloaded")
     private String isIncDownloaded;
-    @Column(name = "extra_d")
-    private String extraD;
-    @Column(name = "extra_e")
-    private String extraE;
+    @Column(name = "download_user_id")
+    private int downloadUserId;
+    @Column(name = "download_date_time")
+    private LocalDateTime downloadDateTime;
 
     @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="upload_user_id")
     private User userModel;
 
     public User getUserModel() {
@@ -200,23 +201,23 @@ public class BeftnModel {
         this.isIncDownloaded = extraC;
     }
 
-    public String getExtraD() {
-        return extraD;
+    public int getDownloadUserId() {
+        return downloadUserId;
     }
 
-    public void setExtraD(String extraD) {
-        this.extraD = extraD;
+    public void setDownloadUserId(int downloadUserId) {
+        this.downloadUserId = downloadUserId;
     }
 
-    public String getExtraE() {
-        return extraE;
+    public LocalDateTime getDownloadDateTime() {
+        return downloadDateTime;
     }
 
-    public void setExtraE(String extraE) {
-        this.extraE = extraE;
+    public void setDownloadDateTime(LocalDateTime extraE) {
+        this.downloadDateTime = extraE;
     }
 
-    public BeftnModel(long id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public BeftnModel(long id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, int downloadUserId, LocalDateTime downloadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.orgCustomerNo = orgCustomerNo;
@@ -233,8 +234,8 @@ public class BeftnModel {
         this.isProcessedMain = extraA;
         this.isProcessedIncentive = extraB;
         this.isIncDownloaded = extraC;
-        this.extraD = extraD;
-        this.extraE = extraE;
+        this.downloadUserId = downloadUserId;
+        this.downloadDateTime = downloadDateTime;
     }
 
     @Override
@@ -256,8 +257,8 @@ public class BeftnModel {
                 ", extraA='" + isProcessedMain + '\'' +
                 ", extraB='" + isProcessedIncentive + '\'' +
                 ", extraC='" + isIncDownloaded + '\'' +
-                ", extraD='" + extraD + '\'' +
-                ", extraE='" + extraE + '\'' +
+                ", extraD='" + downloadUserId + '\'' +
+                ", extraE='" + downloadDateTime + '\'' +
                 '}';
     }
 }

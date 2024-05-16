@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name="base_data_table_muzaini")
@@ -53,8 +52,8 @@ public class MuzainiModel {
     private String typeFlag;
     @Column(name = "processed_by")
     private String processedBy;
-    @Column(name = "upload_date_time")
-    private LocalDateTime uploadDateTime;
+    @Column(name = "processed_date")
+    private String processedDate;
     @Column(name = "extra_c")
     private String extraC;
 
@@ -305,12 +304,12 @@ public class MuzainiModel {
         this.processedBy = extraA;
     }
 
-    public LocalDateTime getUploadDateTime() {
-        return uploadDateTime;
+    public String getProcessedDate() {
+        return processedDate;
     }
 
-    public void setUploadDateTime(LocalDateTime processedDate) {
-        this.uploadDateTime = processedDate;
+    public void setProcessedDate(String processedDate) {
+        this.processedDate = processedDate;
     }
 
     public String getExtraC() {
@@ -321,7 +320,7 @@ public class MuzainiModel {
         this.extraC = extraC;
     }
 
-    public MuzainiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryMobile, String purposeOfRemittance, String remitterMobile, String processFlag, String typeFlag, String processedBy, LocalDateTime uploadDateTime, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public MuzainiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryMobile, String purposeOfRemittance, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -343,7 +342,7 @@ public class MuzainiModel {
         this.processFlag = processFlag;
         this.typeFlag = typeFlag;
         this.processedBy = processedBy;
-        this.uploadDateTime = uploadDateTime;
+        this.processedDate = processedDate;
         this.extraC = extraC;
         this.checkT24 = checkT24;
         this.checkCoc = checkCoc;
@@ -373,7 +372,7 @@ public class MuzainiModel {
                 ", processFlag='" + processFlag + '\'' +
                 ", typeFlag='" + typeFlag + '\'' +
                 ", processedBy='" + processedBy + '\'' +
-                ", processedDate='" + uploadDateTime + '\'' +
+                ", processedDate='" + processedDate + '\'' +
                 ", extraC='" + extraC + '\'' +
                 ", checkT24='" + checkT24 + '\'' +
                 ", checkCoc='" + checkCoc + '\'' +

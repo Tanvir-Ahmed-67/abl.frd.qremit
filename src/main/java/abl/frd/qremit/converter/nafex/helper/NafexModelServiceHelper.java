@@ -57,7 +57,7 @@ public class NafexModelServiceHelper {
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
-                        LocalDateTime.now(), // upload_date_time
+                        "dummy",            // processed_date
                         "extraC",
                         putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
                         putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
@@ -93,8 +93,8 @@ public class NafexModelServiceHelper {
                     onlineModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
                     onlineModel.setIsProcessed("0");
                     onlineModel.setIsDownloaded("0");
-                    onlineModel.setExtraC("dump");
-                    onlineModel.setExtraD("dump");
+                    onlineModel.setDownloadDateTime(LocalDateTime.now());
+                    onlineModel.setDownloadUserId(9999);
                     onlineModel.setExtraE("dump");
         return onlineModel;
     }
@@ -125,8 +125,8 @@ public class NafexModelServiceHelper {
         cocModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
         cocModel.setIsProcessed("0");
         cocModel.setIsDownloaded("0");
-        cocModel.setExtraC("dummy");
-        cocModel.setExtraD("dummy");
+        cocModel.setDownloadDateTime(LocalDateTime.now());
+        cocModel.setDownloadUserId(9999);
         cocModel.setExtraE("dummy");
         cocModel.setIncentive(000.00);
         cocModel.setRemitterName(nafexEhMstModel.getRemitterName());
@@ -160,8 +160,8 @@ public class NafexModelServiceHelper {
         accountPayeeModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
         accountPayeeModel.setIsProcessed("0");
         accountPayeeModel.setIsDownloaded("0");
-        accountPayeeModel.setExtraC("dummy");
-        accountPayeeModel.setExtraD("dummy");
+        accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
+        accountPayeeModel.setDownloadUserId(9999);
         accountPayeeModel.setExtraE("dummy");
         accountPayeeModel.setIncentive(000.00);
         accountPayeeModel.setRemitterName(nafexEhMstModel.getRemitterName());
@@ -189,8 +189,8 @@ public class NafexModelServiceHelper {
         beftnModel.setIsProcessedMain("0");
         beftnModel.setIsProcessedIncentive("0");
         beftnModel.setIsIncDownloaded("0");
-        beftnModel.setExtraD("dummy");
-        beftnModel.setExtraE("dummy");
+        beftnModel.setDownloadUserId(9999);
+        beftnModel.setDownloadDateTime(LocalDateTime.now());
         beftnModel.setIncentive(calculatePercentage(nafexEhMstModel.getAmount()));
         beftnModel.setOrgAccountNo("160954");
         beftnModel.setOrgAccountType("CA");

@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="converted_data_account_payee")
@@ -43,15 +44,16 @@ public class AccountPayeeModel {
     private String isProcessed;
     @Column(name = "is_downloaded")
     private String isDownloaded;
-    @Column(name = "extra_c")
-    private String extraC;
-    @Column(name = "extra_d")
-    private String extraD;
+    @Column(name = "download_date_time")
+    private LocalDateTime downloadDateTime;
+
+    @Column(name = "download_user_id")
+    private int downloadUserId;
     @Column(name = "extra_e")
     private String extraE;
 
     @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="upload_user_id")
     private User userModel;
 
     public User getUserModel() {
@@ -222,20 +224,20 @@ public class AccountPayeeModel {
         this.isDownloaded = extraB;
     }
 
-    public String getExtraC() {
-        return extraC;
+    public LocalDateTime getDownloadDateTime() {
+        return downloadDateTime;
     }
 
-    public void setExtraC(String extraC) {
-        this.extraC = extraC;
+    public void setDownloadDateTime(LocalDateTime downloadDateTime) {
+        this.downloadDateTime = downloadDateTime;
     }
 
-    public String getExtraD() {
-        return extraD;
+    public int getDownloadUserId() {
+        return downloadUserId;
     }
 
-    public void setExtraD(String extraD) {
-        this.extraD = extraD;
+    public void setDownloadUserId(int downloadUserId) {
+        this.downloadUserId = downloadUserId;
     }
 
     public String getExtraE() {
@@ -246,7 +248,7 @@ public class AccountPayeeModel {
         this.extraE = extraE;
     }
 
-    public AccountPayeeModel(long id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public AccountPayeeModel(long id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;
@@ -265,8 +267,8 @@ public class AccountPayeeModel {
         this.accountPayeeCode = accountPayeeCode;
         this.isProcessed = extraA;
         this.isDownloaded = extraB;
-        this.extraC = extraC;
-        this.extraD = extraD;
+        this.downloadDateTime = downloadDateTime;
+        this.downloadUserId = downloadUserId;
         this.extraE = extraE;
     }
 
@@ -291,8 +293,8 @@ public class AccountPayeeModel {
                 ", accountPayeeCode='" + accountPayeeCode + '\'' +
                 ", extraA='" + isProcessed + '\'' +
                 ", extraB='" + isDownloaded + '\'' +
-                ", extraC='" + extraC + '\'' +
-                ", extraD='" + extraD + '\'' +
+                ", extraC='" + downloadDateTime + '\'' +
+                ", extraD='" + downloadUserId + '\'' +
                 ", extraE='" + extraE + '\'' +
                 '}';
     }
