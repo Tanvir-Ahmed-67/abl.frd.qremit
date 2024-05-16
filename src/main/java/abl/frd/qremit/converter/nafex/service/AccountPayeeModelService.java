@@ -12,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class AccountPayeeModelService {
     @Autowired
     AccountPayeeModelRepository accountPayeeModelRepository;
+    @Autowired
+    MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
         List<AccountPayeeModel> accountPayeeModes = accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(Long.parseLong(fileId));
         ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(accountPayeeModes);
@@ -43,6 +46,8 @@ public class AccountPayeeModelService {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessed(processed);
                     existingEntity.setIsDownloaded(processed);
+                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     // Update other properties as needed
                     break;
                 }

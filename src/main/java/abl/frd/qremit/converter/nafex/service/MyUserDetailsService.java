@@ -5,6 +5,8 @@ import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -128,6 +130,20 @@ public class MyUserDetailsService implements UserDetailsService {
     //     }
     //     return user;
     // }
-
+    public int getCurrentUser() {
+        User user = null;
+        int loggedInUserId = 1111;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof MyUserDetails) {
+                user = ((MyUserDetails) principal).getUser();
+            }
+        }
+        if(user != null){
+            loggedInUserId = user.getId();
+        }
+        return loggedInUserId;
+    }
 
 }

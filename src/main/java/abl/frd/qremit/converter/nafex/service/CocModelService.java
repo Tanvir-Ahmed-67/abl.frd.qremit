@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class CocModelService {
     @Autowired
     CocModelRepository CocModelRepository;
+    @Autowired
+    MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
         List<CocModel> cocModels = CocModelRepository.findAllCocModelHavingFileInfoId(Long.parseLong(fileId));
         ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(cocModels);
@@ -40,6 +43,8 @@ public class CocModelService {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessed(processed);
                     existingEntity.setIsDownloaded(processed);
+                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     // Update other properties as needed
                     break;
                 }

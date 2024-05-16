@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class BeftnModelService {
     @Autowired
     BeftnModelRepository beftnModelRepository;
+    @Autowired
+    MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
         List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(Long.parseLong(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(beftnModels);
@@ -49,6 +52,8 @@ public class BeftnModelService {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessedMain(processed);
                     existingEntity.setIsProcessedIncentive(processed);
+                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     // Update other properties as needed
                     break;
                 }
