@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.nafex.repository;
 
+import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,8 +14,15 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.userName = :username")
     public User findByUserName(@Param("username") String username);
 
-   // @Query("select group_concat(c.exchangeName) as exchange_name from User m join ExchangeHouseModel c on find_in_set(c.exchangeCode, m.exchangeCode)  where m.id=:userid group by m.id")
-   // public User findExchangeNameByUser(@Param("userid") int id);
+    // @Query("SELECT GROUP_CONCAT(c.exchangeName) AS exchange_name FROM User u JOIN ExchangeHouseModel c ON FIND_IN_SET(c.exchangeCode, REPLACE(u.exchangeCode, ',', ',')) > 0 WHERE u.id = :userId GROUP BY u.id")
+    // public String findExchangeNamesByUserId(@Param("userId") int userId);
+
+    @Query(value = "SELECT GROUP_CONCAT(c.exchange_name) AS exchange_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId GROUP BY u.user_id", nativeQuery = true)
+    public String findExchangeNamesByUserId(@Param("userId") int userId);
+   
+    // @Query(value = "SELECT GROUP_CONCAT(c.exchangeName) AS exchange_name FROM User u JOIN ExchangeHouseModel c ON FIND_IN_SET(c.exchangeCode, u.exchangeCode) WHERE u.id = :userId GROUP BY u.id")
+    // public String findExchangeNamesByUserId(@Param("userId") int userId);  
+
     
     @Query("SELECT u FROM User u WHERE u.userEmail = :useremail")
     public User findByUserEmail(@Param("useremail") String useremail);

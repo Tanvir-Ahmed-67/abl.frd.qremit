@@ -55,14 +55,14 @@ public class MyUserDetailsService implements UserDetailsService {
         return users;
     }
 
-//    need to work on Ashik
-//     public List<User> loadAllExchangeOfAUser() throws UsernameNotFoundException {
-//         List<exchange_name> users = userModelRepository.findExchangeNameByUser();
-//         if(users.isEmpty()){
-//             throw new UsernameNotFoundException("Could not find user");
-//         }
-//         return users;
-//     }
+   
+    public String findExchangeNameByUser(int user_id)  {
+       String exchangeName = userModelRepository.findExchangeNamesByUserId(user_id);
+        // if(exchangeName.isEmpty()){
+        //     throw new UsernameNotFoundException("Could not find user");
+        // }
+        return exchangeName;
+    }
 
     
     public List<User> loadUsersOnly() throws UsernameNotFoundException {
@@ -144,6 +144,10 @@ public class MyUserDetailsService implements UserDetailsService {
             loggedInUserId = user.getId();
         }
         return loggedInUserId;
+    }
+    public String getUserExchangeCode() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUserExchangeCode'");
     }
 
 }
