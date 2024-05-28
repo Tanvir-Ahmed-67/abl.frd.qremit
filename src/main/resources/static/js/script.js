@@ -7,7 +7,8 @@ $(document).ready(function(){
             $("p.onlineCount").html(count[0]);    //in index.html add a div tag with class="show-part-view"
             $("p.cocCount").html(count[1]);
             $("p.accountPayeeCount").html(count[2]);
-            $("p.beftnCount").html(count[3]);
+            $("p.beftnMainCount").html(count[3])
+            $("p.beftnIncentiveCount").html(count[4]);
         }
     });
 });
@@ -31,8 +32,8 @@ function downloadAccountPayee() {
     window.location="/downloadaccountpayee";
 
 }
-function downloadBeftn() {
-    window.location="/downloadbeftn";
+function downloadBeftnMain() {
+    window.location="/downloadbeftnMain";
 
 }
 function  downloadBeftnIncentive(){

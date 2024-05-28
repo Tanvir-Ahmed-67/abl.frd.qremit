@@ -39,11 +39,17 @@ public class BeftnModelService {
 
     public ByteArrayInputStream loadAndUpdateUnprocessedBeftnMainData(String isProcessed) {
         List<BeftnModel> unprocessedBeftnModels = beftnModelRepository.loadUnprocessedBeftnMainData(isProcessed);
-        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturn(unprocessedBeftnModels, "1");
+        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnMainData(unprocessedBeftnModels, "1");
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(processedAndUpdatedBeftnModels);
         return in;
     }
-    public List<BeftnModel> updateAndReturn(List<BeftnModel> entitiesToUpdate, String processed) {
+    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnIncentiveData(String isProcessed) {
+        List<BeftnModel> unprocessedBeftnModels = beftnModelRepository.loadUnprocessedBeftnIncentiveData(isProcessed);
+        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnIncentiveData(unprocessedBeftnModels, "1");
+        ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(processedAndUpdatedBeftnModels);
+        return in;
+    }
+    public List<BeftnModel> updateAndReturnMainData(List<BeftnModel> entitiesToUpdate, String processed) {
         // Retrieve the entities you want to update
         List<BeftnModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -51,6 +57,24 @@ public class BeftnModelService {
             for (BeftnModel updatedEntity : entitiesToUpdate) {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessedMain(processed);
+                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
+                    // Update other properties as needed
+                    break;
+                }
+            }
+        }
+        // Save the modified entities
+        List<BeftnModel> updatedEntities = beftnModelRepository.saveAll(existingEntities);
+        return updatedEntities;
+    }
+    public List<BeftnModel> updateAndReturnIncentiveData(List<BeftnModel> entitiesToUpdate, String processed) {
+        // Retrieve the entities you want to update
+        List<BeftnModel> existingEntities = entitiesToUpdate;
+        // Update the entities
+        for (BeftnModel existingEntity : existingEntities) {
+            for (BeftnModel updatedEntity : entitiesToUpdate) {
+                if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessedIncentive(processed);
                     existingEntity.setDownloadDateTime(LocalDateTime.now());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
