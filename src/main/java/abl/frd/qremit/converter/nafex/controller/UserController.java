@@ -61,45 +61,28 @@ public class UserController {
     public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-       // System.out.println(userDetails.getUser().getId());
-        // String exchangeName = myUserDetailsService.findExchangeNameByUser(userDetails.getUser().getId());
-        // String exchangeNameController = myUserDetailsService.findExchangeNameControllerByUser(userDetails.getUser().getId());
-        
-        // System.out.println(exchangeName); 
-        // String[] arrOfexchangeCode = exchangeName.split(",");
-        // String[] arrexchangeNameController = exchangeNameController.split(",");
-
-        // System.out.println(arrexchangeNameController[1]);
-        // model.addAttribute("arrOfNrtaCode", arrOfexchangeCode);
-        // model.addAttribute("arrexchangeNameController", arrexchangeNameController);
+      
         Map<String, String> exchangeNamesMap = myUserDetailsService.getExchangeNamesByUserId(userDetails.getUser().getId());
         
         String exchangeNamesStr = exchangeNamesMap.get("exchange_name");
         String exchangeShortNamesStr = exchangeNamesMap.get("exchange_short_name");
-       
         
         List<String> exchangeNames = Arrays.asList(exchangeNamesStr.split(","));
         List<String> exchangeShortNames = Arrays.asList(exchangeShortNamesStr.split(","));
        
-
         Map<String, String> exchangeMap =  new HashMap<String, String>();
-        // Ensure both lists are of the same size
-      
-            // Using a for-each loop to iterate over the lists
+     
+        if (exchangeNames.size() == exchangeShortNames.size()) {
             for (int i = 0; i < exchangeNames.size(); i++) {
-                String exchangeName = exchangeNames.get(i);
-                String exchangeShortName = exchangeShortNames.get(i);
-                exchangeMap.put(exchangeName, exchangeShortName);
-                // Output the values (or perform any required processing)
-                //System.out.println("Exchange Name: " + exchangeName + ", Exchange Short Name: " + exchangeShortName);
+                exchangeMap.put(exchangeNames.get(i), exchangeShortNames.get(i));
             }
-        
             model.addAttribute("exchangeMap", exchangeMap);
-        // model.addAttribute("exchangeShortNames", exchangeShortNames);
-        // model.addAttribute("exchangeNames", exchangeNames);
+        } else {
+            model.addAttribute("error", "Mismatch in the size of exchange names and short names lists");
+        }
+        return "/layouts/dashboard"; 
+    }
 
-        
-        return "/layouts/dashboard"; }
     @RequestMapping("/home")
     public String loginSubmit(){
         return "/layouts/dashboard";

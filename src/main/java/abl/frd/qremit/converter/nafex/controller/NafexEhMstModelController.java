@@ -40,15 +40,15 @@ public class NafexEhMstModelController {
             try {
                 fileInfoModelObject = nafexModelService.save(file, userId);
                 model.addAttribute("fileInfo", fileInfoModelObject);
-                return "/pages/user/userUploadSuccessPage";
+                return "pages/user/userUploadSuccessPage";
 
             } catch (Exception e) {
                 e.printStackTrace();
                 message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-                return "/pages/user/userUploadSuccessPage";
+                return "pages/user/userUploadSuccessPage";
             }
         }
         message = "Please upload a csv file!";
-        return "/pages/user/userUploadSuccessPage";
+        return "pages/user/userUploadSuccessPage";
     }
 }
