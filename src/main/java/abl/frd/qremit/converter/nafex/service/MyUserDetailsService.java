@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -56,12 +57,18 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
    
-    public String findExchangeNameByUser(int user_id)  {
-       String exchangeName = userModelRepository.findExchangeNamesByUserId(user_id);
-        // if(exchangeName.isEmpty()){
-        //     throw new UsernameNotFoundException("Could not find user");
-        // }
-        return exchangeName;
+    // public String findExchangeNameByUser(int user_id)  {
+    //    String exchangeName = userModelRepository.findExchangeNamesByUserId(user_id);
+    //     return exchangeName;
+    // }
+
+    // public String findExchangeNameControllerByUser(int user_id)  {
+    //     String exchangeControllerName = userModelRepository.findExchangeNamesControllerByUserId(user_id);
+    //      return exchangeControllerName;
+    //  }
+
+    public Map<String, String> getExchangeNamesByUserId(int userId) {
+        return userModelRepository.findExchangeNamesByUserId(userId);
     }
 
     
