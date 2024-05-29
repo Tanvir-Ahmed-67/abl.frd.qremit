@@ -29,9 +29,11 @@ public class BeftnModelController {
     @GetMapping("/downloadbeftnMain")
     public ResponseEntity<Resource> downloadMainFile() {
         InputStreamResource file = new InputStreamResource(beftnModelService.loadAndUpdateUnprocessedBeftnMainData("0"));
+        int countRemainingBeftnDataMain = beftnModelService.countRemainingBeftnDataMain();
         String fileName = "Beftn_Main";  // Have to attch date with file name here.
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
+                .header("count", String.valueOf(countRemainingBeftnDataMain))
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
@@ -48,9 +50,11 @@ public class BeftnModelController {
     @GetMapping("/downloadBeftnIncentive")
     public ResponseEntity<Resource> downloadIncentiveFile() {
         InputStreamResource file = new InputStreamResource(beftnModelService.loadAndUpdateUnprocessedBeftnIncentiveData("0"));
+        int countRemainingBeftnDataMain = beftnModelService.countRemainingBeftnDataIncentive();
         String fileName = "Beftn_Main";  // Have to attch date with file name here.
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
+                .header("count", String.valueOf(countRemainingBeftnDataMain))
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }

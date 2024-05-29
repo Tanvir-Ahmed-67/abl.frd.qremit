@@ -34,11 +34,11 @@ public class OnlineModelController {
     @GetMapping("/downloadonline")
     public ResponseEntity<Resource> download_File() {
         InputStreamResource file = new InputStreamResource(onlineModelService.loadAndUpdateUnprocessedOnlineData("0"));
-        String fileName = "Online_Nafex";
-        String cnt = "20";
+        int countRemainingOnlineData = onlineModelService.countRemainingOnlineData();
+        String fileName = "Online";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
-                .header("count", cnt)
+                .header("count", String.valueOf(countRemainingOnlineData))
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }

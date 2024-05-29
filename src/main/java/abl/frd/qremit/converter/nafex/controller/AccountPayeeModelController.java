@@ -31,9 +31,11 @@ public class AccountPayeeModelController {
     @GetMapping("/downloadaccountpayee")
     public ResponseEntity<Resource> download_File() {
         InputStreamResource file = new InputStreamResource(accountPayeeModelService.loadAndUpdateUnprocessedAccountPayeeData("0"));
-        String fileName = "Account_Payee_Nafex";  // Have to attch date with file name here.
+        int countRemainingAccountPayeeData = accountPayeeModelService.countRemainingAccountPayeeData();
+        String fileName = "Account_Payee";  // Have to attch date with file name here.
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
+                .header("count", String.valueOf(countRemainingAccountPayeeData))
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }

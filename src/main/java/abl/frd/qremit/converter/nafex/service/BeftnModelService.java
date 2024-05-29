@@ -87,6 +87,11 @@ public class BeftnModelService {
         List<BeftnModel> updatedEntities = beftnModelRepository.saveAll(existingEntities);
         return updatedEntities;
     }
-
+    public int countRemainingBeftnDataMain(){
+        return beftnModelRepository.countByIsProcessedMain("0");
+    }
+    public int countRemainingBeftnDataIncentive(){
+        return beftnModelRepository.countByIsProcessedIncentive("0");
+    }
 
 }
