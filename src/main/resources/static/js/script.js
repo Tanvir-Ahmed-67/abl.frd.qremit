@@ -45,9 +45,10 @@ function downloadAccountPayee() {
 
 }
 function downloadBeftnMain() {
-    window.location="/downloadbeftnMain";
-
+    var url ="/downloadbeftnMain";
+    get_cnt(url,"p.beftnMainCount");
 }
 function  downloadBeftnIncentive(){
-    window.location="/downloadBeftnIncentive";
+    var url ="/downloadBeftnIncentive";
+    get_cnt(url,"p.beftnIncentiveCount");
 }
