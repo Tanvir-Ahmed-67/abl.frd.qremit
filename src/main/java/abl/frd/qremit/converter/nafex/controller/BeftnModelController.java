@@ -51,7 +51,7 @@ public class BeftnModelController {
     public ResponseEntity<Resource> downloadIncentiveFile() {
         InputStreamResource file = new InputStreamResource(beftnModelService.loadAndUpdateUnprocessedBeftnIncentiveData("0"));
         int countRemainingBeftnDataMain = beftnModelService.countRemainingBeftnDataIncentive();
-        String fileName = "Beftn_Main";  // Have to attch date with file name here.
+        String fileName = "Beftn_Incentive";  // Have to attch date with file name here.
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
                 .header("count", String.valueOf(countRemainingBeftnDataMain))
