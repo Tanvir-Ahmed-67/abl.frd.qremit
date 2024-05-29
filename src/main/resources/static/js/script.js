@@ -13,31 +13,35 @@ $(document).ready(function(){
     });
 });
 
-function downloadOnline() {
-    window.location="/downloadonline";
-    
-    var url = "/downloadonline";
+
+function get_cnt(url,tdiv){
+    window.location = url;
     $.ajax({
         url: url,
         type: "get",
         timeout: "10000",
     }).done(function(resp,status,xhr){
         var cnt = xhr.getResponseHeader("count");
-        //$("#onlineCount").text(cnt);
-        $("p.onlineCount").text(cnt);
-        console.log(cnt);
+        $(tdiv).text(cnt);
     }).fail(function(params){
         alert("Error geeting from server");
     });
 }
 
+function downloadOnline() {
+    var url = "/downloadonline";
+    get_cnt(url,"p.onlineCount");
+}
+
     
 function downloadCoc() {
-    window.location="/downloadcoc";
+    var url = "/downloadcoc";
+    get_cnt(url,"p.cocCount");
 
 }
 function downloadAccountPayee() {
-    window.location="/downloadaccountpayee";
+    var url = "/downloadaccountpayee";
+    get_cnt(url,"p.accountPayeeCount");
 
 }
 function downloadBeftnMain() {
