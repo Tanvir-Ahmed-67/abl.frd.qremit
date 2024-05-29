@@ -66,4 +66,7 @@ public class OnlineModelService {
         List<OnlineModel> updatedEntities = onlineModelRepository.saveAll(existingEntities);
         return updatedEntities;
     }
+    public int countRemainingOnlineData(){
+        return onlineModelRepository.countByIsProcessed("0");
+    }
 }

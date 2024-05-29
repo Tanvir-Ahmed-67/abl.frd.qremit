@@ -54,5 +54,8 @@ public class CocModelService {
         List<CocModel> updatedEntities = CocModelRepository.saveAll(existingEntities);
         return updatedEntities;
     }
+    public int countRemainingCocData(){
+        return CocModelRepository.countByIsProcessed("0");
+    }
 
 }

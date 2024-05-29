@@ -57,6 +57,9 @@ public class AccountPayeeModelService {
         List<AccountPayeeModel> updatedEntities = accountPayeeModelRepository.saveAll(existingEntities);
         return updatedEntities;
     }
+    public int countRemainingAccountPayeeData(){
+        return accountPayeeModelRepository.countByIsProcessed("0");
+    }
 
 
 }
