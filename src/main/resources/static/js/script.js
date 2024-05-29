@@ -15,15 +15,23 @@ $(document).ready(function(){
 
 function downloadOnline() {
     window.location="/downloadonline";
+    
+    var url = "/downloadonline";
     $.ajax({
-        type: "GET",
-        url: "/countOnlineAfterDownloadButtonClicked",
-        context: document.body,
-        success: function(count){
-            $("p.onlineCount").html(count);
-        }
+        url: url,
+        type: "get",
+        timeout: "10000",
+    }).done(function(resp,status,xhr){
+        var cnt = xhr.getResponseHeader("count");
+        //$("#onlineCount").text(cnt);
+        $("p.onlineCount").text(cnt);
+        console.log(cnt);
+    }).fail(function(params){
+        alert("Error geeting from server");
     });
 }
+
+    
 function downloadCoc() {
     window.location="/downloadcoc";
 

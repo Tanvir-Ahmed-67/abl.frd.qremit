@@ -36,6 +36,8 @@
     color: #2178d1
 }
 
+
+
 * {
     font-family: Raleway
 }
@@ -1596,3 +1598,5 @@ footer {
 .bg-gray-700 {
     background-color: #4a5568 !important
 }
+
+/** custom css **/
