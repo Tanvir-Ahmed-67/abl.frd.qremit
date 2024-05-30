@@ -61,25 +61,8 @@ public class UserController {
     public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-      
-        Map<String, String> exchangeNamesMap = myUserDetailsService.getExchangeNamesByUserId(userDetails.getUser().getId());
-        
-        String exchangeNamesStr = exchangeNamesMap.get("exchange_name");
-        String exchangeShortNamesStr = exchangeNamesMap.get("exchange_short_name");
-        
-        List<String> exchangeNames = Arrays.asList(exchangeNamesStr.split(","));
-        List<String> exchangeShortNames = Arrays.asList(exchangeShortNamesStr.split(","));
-       
-        Map<String, String> exchangeMap =  new HashMap<String, String>();
-     
-        if (exchangeNames.size() == exchangeShortNames.size()) {
-            for (int i = 0; i < exchangeNames.size(); i++) {
-                exchangeMap.put(exchangeNames.get(i), exchangeShortNames.get(i));
-            }
-            model.addAttribute("exchangeMap", exchangeMap);
-        } else {
-            model.addAttribute("error", "Mismatch in the size of exchange names and short names lists");
-        }
+
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         return "/layouts/dashboard"; 
     }
 
