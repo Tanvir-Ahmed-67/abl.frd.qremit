@@ -23,7 +23,7 @@ public class CocModelController {
     @GetMapping("/downloadcoc/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(cocModelService.load(fileId, fileType));
-        String fileName = "Coc_Nafex";
+        String fileName = "Coc";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
                 .contentType(MediaType.parseMediaType("application/csv"))
@@ -33,7 +33,7 @@ public class CocModelController {
     public ResponseEntity<Resource> download_File() {
         InputStreamResource file = new InputStreamResource(cocModelService.loadAndUpdateUnprocessedCocData("0"));
         int countRemainingCocData = cocModelService.countRemainingCocData();
-        String fileName = "Coc_Nafex";  // Have to attch date with file name here.
+        String fileName = "Coc";  // Have to attch date with file name here.
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
                 .header("count", String.valueOf(countRemainingCocData))
