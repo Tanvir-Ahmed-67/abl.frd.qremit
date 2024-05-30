@@ -3,28 +3,40 @@ import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.helper.NafexModelServiceHelper;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
+import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class NafexEhMstModelController {
+    private final MyUserDetailsService myUserDetailsService;
     private final NafexModelService nafexModelService;
 
     @Autowired
-    public NafexEhMstModelController(NafexModelService nafexModelService){
+    public NafexEhMstModelController(NafexModelService nafexModelService, MyUserDetailsService myUserDetailsService ){
+        this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
     }
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam("file") MultipartFile file, Model model) {
+
+          
+            model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+       
+
         int userId = 000000000;
 
         // Getting Logged In user Details in this block
