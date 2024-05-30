@@ -6,12 +6,16 @@ import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +34,32 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return new MyUserDetails(user);
     }
+    public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
+         
+      
+        Map<String, String> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
+        
+        String exchangeNamesStr = exchangeNamesMap.get("exchange_name");
+        String exchangeShortNamesStr = exchangeNamesMap.get("exchange_short_name");
+        
+        List<String> exchangeNames = Arrays.asList(exchangeNamesStr.split(","));
+        List<String> exchangeShortNames = Arrays.asList(exchangeShortNamesStr.split(","));
+       
+        Map<String, String> exchangeMap =  new HashMap<String, String>();
+     
+        if (exchangeNames.size() == exchangeShortNames.size()) {
+            for (int i = 0; i < exchangeNames.size(); i++) {
+                exchangeMap.put(exchangeNames.get(i), exchangeShortNames.get(i));
+            }
+            return exchangeMap;
+          //  model.addAttribute("exchangeMap", exchangeMap);
+        } 
+        // else {
+        //     model.addAttribute("error", "Mismatch in the size of exchange names and short names lists");
+        // }
+        return exchangeMap;
+    }
+
     public User loadUserByUserId(int userId)
             throws UsernameNotFoundException {
         User user = userModelRepository.findByUserId(userId);
