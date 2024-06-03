@@ -15,10 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 public class NafexEhMstModelController {
@@ -30,9 +26,12 @@ public class NafexEhMstModelController {
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
     }
-    @PostMapping("/upload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam("file") MultipartFile file, Model model) {
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+    
+    @PostMapping("/nafexUpload")
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));        
+
+
         int userId = 000000000;
         // Getting Logged In user Details in this block
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -48,7 +47,6 @@ public class NafexEhMstModelController {
                 fileInfoModelObject = nafexModelService.save(file, userId);
                 model.addAttribute("fileInfo", fileInfoModelObject);
                 return "/pages/user/userUploadSuccessPage";
-
             } catch (Exception e) {
                 e.printStackTrace();
                 message = "Could not upload the file: " + file.getOriginalFilename() + "!";

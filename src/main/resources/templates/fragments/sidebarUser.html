@@ -25,8 +25,8 @@
                                 <a th:each="arrexchangeNameController: ${arrexchangeNameController}" th:href="${arrexchangeNameController}" ><span th:text="${arrexchangeNameController}"></span></a>
                             </li> -->
                             <li th:each="entry : ${exchangeMap.entrySet()}">
-                                <a th:href="@{'/' + ${entry.value}}"
-                                   th:text="${entry.key}">
+                                <a th:href="@{'#' + ${entry.value}}"
+                                   th:text="${entry.key}" class="exCode">
                                 </a>
                             </li>
 
