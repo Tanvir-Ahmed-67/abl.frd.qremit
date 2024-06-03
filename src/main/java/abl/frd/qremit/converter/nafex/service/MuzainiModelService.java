@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,15 +27,21 @@ public class MuzainiModelService {
     BeftnModelRepository beftnModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
-    public FileInfoModel save(MultipartFile file) {
+    @Autowired
+    UserModelRepository userModelRepository;
+    LocalDateTime currentDateTime = LocalDateTime.now();
+    public FileInfoModel save(MultipartFile file, int userId) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
+            fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
+            User user = userModelRepository.findByUserId(userId);
             List<MuzainiModel> muzainiModels = MuzainiModelServiceHelper.csvToMuzainiModels(file.getInputStream());
             int ind=0;
             for(MuzainiModel muzainiModel : muzainiModels){
                 muzainiModel.setExchangeCode("7010231");
                 muzainiModel.setFileInfoModel(fileInfoModel);
+                muzainiModel.setUserModel(user);
                 if(ind==0) {
                     fileInfoModel.setExchangeCode(muzainiModel.getExchangeCode());
                     ind++;
@@ -58,7 +65,7 @@ public class MuzainiModelService {
             fileInfoModel.setFileName(file.getOriginalFilename());
             fileInfoModel.setProcessedCount("test");
             fileInfoModel.setUnprocessedCount("test");
-            fileInfoModel.setUploadDate("test");
+            fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModel.setMuzainiModel(muzainiModels);
             fileInfoModel.setCocModelList(cocModelList);
             fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
@@ -67,15 +74,19 @@ public class MuzainiModelService {
 
             for(CocModel cocModel:cocModelList){
                 cocModel.setFileInfoModel(fileInfoModel);
+                cocModel.setUserModel(user);
             }
             for (AccountPayeeModel accountPayeeModel:accountPayeeModelList){
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
+                accountPayeeModel.setUserModel(user);
             }
             for(BeftnModel beftnModel:beftnModelList){
                 beftnModel.setFileInfoModel(fileInfoModel);
+                beftnModel.setUserModel(user);
             }
             for (OnlineModel onlineModel:onlineModelList){
                 onlineModel.setFileInfoModel(fileInfoModel);
+                onlineModel.setUserModel(user);
             }
             // SAVING TO MySql Data Table
             fileInfoModelRepository.save(fileInfoModel);

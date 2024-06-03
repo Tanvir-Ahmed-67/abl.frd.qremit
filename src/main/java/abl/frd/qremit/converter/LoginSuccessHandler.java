@@ -23,6 +23,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             new SimpleUrlAuthenticationSuccessHandler("/admin-home-page");
     SimpleUrlAuthenticationSuccessHandler userSuccessHandler =
             new SimpleUrlAuthenticationSuccessHandler("/user-home-page");
+            //new SimpleUrlAuthenticationSuccessHandler("/utils");
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,

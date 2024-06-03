@@ -7,34 +7,48 @@ $(document).ready(function(){
             $("p.onlineCount").html(count[0]);    //in index.html add a div tag with class="show-part-view"
             $("p.cocCount").html(count[1]);
             $("p.accountPayeeCount").html(count[2]);
-            $("p.beftnCount").html(count[3]);
+            $("p.beftnMainCount").html(count[3])
+            $("p.beftnIncentiveCount").html(count[4]);
         }
     });
 });
 
-function downloadOnline() {
-    window.location="/downloadonline";
+
+function get_cnt(url,tdiv){
+    window.location = url;
     $.ajax({
-        type: "GET",
-        url: "/countOnlineAfterDownloadButtonClicked",
-        context: document.body,
-        success: function(count){
-            $("p.onlineCount").html(count);    //in index.html add a div tag with class="show-part-view"
-        }
+        url: url,
+        type: "get",
+        timeout: "10000",
+    }).done(function(resp,status,xhr){
+        var cnt = xhr.getResponseHeader("count");
+        $(tdiv).text(cnt);
+    }).fail(function(params){
+        alert("Error geeting from server");
     });
 }
+
+function downloadOnline() {
+    var url = "/downloadonline";
+    get_cnt(url,"p.onlineCount");
+}
+
+    
 function downloadCoc() {
-    window.location="/downloadcoc";
+    var url = "/downloadcoc";
+    get_cnt(url,"p.cocCount");
 
 }
 function downloadAccountPayee() {
-    window.location="/downloadaccountpayee";
+    var url = "/downloadaccountpayee";
+    get_cnt(url,"p.accountPayeeCount");
 
 }
-function downloadBeftn() {
-    window.location="/downloadbeftn";
-
+function downloadBeftnMain() {
+    var url ="/downloadbeftnMain";
+    get_cnt(url,"p.beftnMainCount");
 }
 function  downloadBeftnIncentive(){
-    window.location="/downloadBeftnIncentive";
+    var url ="/downloadBeftnIncentive";
+    get_cnt(url,"p.beftnIncentiveCount");
 }

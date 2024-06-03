@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="converted_data_beftn")
@@ -33,19 +34,19 @@ public class BeftnModel {
     private String routingNo;
     @Column(name = "incentive")
     private Double incentive;
-    @Column(name = "extra_a")
-    private String extraA;
-    @Column(name = "extra_b")
-    private String extraB;
-    @Column(name = "extra_c")
-    private String extraC;
-    @Column(name = "extra_d")
-    private String extraD;
-    @Column(name = "extra_e")
-    private String extraE;
+    @Column(name = "is_processed_main")
+    private String isProcessedMain;
+    @Column(name = "is_processed_incentive")
+    private String isProcessedIncentive;
+    @Column(name = "is_inc_downloaded")
+    private String isIncDownloaded;
+    @Column(name = "download_user_id")
+    private int downloadUserId;
+    @Column(name = "download_date_time")
+    private LocalDateTime downloadDateTime;
 
     @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="upload_user_id")
     private User userModel;
 
     public User getUserModel() {
@@ -176,47 +177,47 @@ public class BeftnModel {
         this.incentive = incentive;
     }
 
-    public String getExtraA() {
-        return extraA;
+    public String getIsProcessedMain() {
+        return isProcessedMain;
     }
 
-    public void setExtraA(String extraA) {
-        this.extraA = extraA;
+    public void setIsProcessedMain(String extraA) {
+        this.isProcessedMain = extraA;
     }
 
-    public String getExtraB() {
-        return extraB;
+    public String getIsProcessedIncentive() {
+        return isProcessedIncentive;
     }
 
-    public void setExtraB(String extraB) {
-        this.extraB = extraB;
+    public void setIsProcessedIncentive(String extraB) {
+        this.isProcessedIncentive = extraB;
     }
 
-    public String getExtraC() {
-        return extraC;
+    public String getIsIncDownloaded() {
+        return isIncDownloaded;
     }
 
-    public void setExtraC(String extraC) {
-        this.extraC = extraC;
+    public void setIsIncDownloaded(String extraC) {
+        this.isIncDownloaded = extraC;
     }
 
-    public String getExtraD() {
-        return extraD;
+    public int getDownloadUserId() {
+        return downloadUserId;
     }
 
-    public void setExtraD(String extraD) {
-        this.extraD = extraD;
+    public void setDownloadUserId(int downloadUserId) {
+        this.downloadUserId = downloadUserId;
     }
 
-    public String getExtraE() {
-        return extraE;
+    public LocalDateTime getDownloadDateTime() {
+        return downloadDateTime;
     }
 
-    public void setExtraE(String extraE) {
-        this.extraE = extraE;
+    public void setDownloadDateTime(LocalDateTime extraE) {
+        this.downloadDateTime = extraE;
     }
 
-    public BeftnModel(long id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public BeftnModel(long id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, int downloadUserId, LocalDateTime downloadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.orgCustomerNo = orgCustomerNo;
@@ -230,11 +231,11 @@ public class BeftnModel {
         this.exchangeCode = exchangeCode;
         this.routingNo = routingNo;
         this.incentive = incentive;
-        this.extraA = extraA;
-        this.extraB = extraB;
-        this.extraC = extraC;
-        this.extraD = extraD;
-        this.extraE = extraE;
+        this.isProcessedMain = extraA;
+        this.isProcessedIncentive = extraB;
+        this.isIncDownloaded = extraC;
+        this.downloadUserId = downloadUserId;
+        this.downloadDateTime = downloadDateTime;
     }
 
     @Override
@@ -253,11 +254,11 @@ public class BeftnModel {
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", routingNo='" + routingNo + '\'' +
                 ", incentive=" + incentive +
-                ", extraA='" + extraA + '\'' +
-                ", extraB='" + extraB + '\'' +
-                ", extraC='" + extraC + '\'' +
-                ", extraD='" + extraD + '\'' +
-                ", extraE='" + extraE + '\'' +
+                ", extraA='" + isProcessedMain + '\'' +
+                ", extraB='" + isProcessedIncentive + '\'' +
+                ", extraC='" + isIncDownloaded + '\'' +
+                ", extraD='" + downloadUserId + '\'' +
+                ", extraE='" + downloadDateTime + '\'' +
                 '}';
     }
 }

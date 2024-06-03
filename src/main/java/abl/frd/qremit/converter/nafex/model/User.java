@@ -18,8 +18,8 @@ public class User {
     private String userEmail;
     @Column(nullable=false)
     private String password;
-    private boolean ActiveStatus;
-    private String nrtaCode;
+    private boolean activeStatus;
+    private String exchangeCode;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<AccountPayeeModel> accountPayeeModel;
@@ -50,7 +50,7 @@ public class User {
         this.roles = roles;
     }
 
-    public int getId() {
+    public  int getId() {
         return id;
     }
 
@@ -73,20 +73,18 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    public boolean isActiveStatus() {
-        return ActiveStatus;
-    }
+    public boolean getActiveStatus() { return activeStatus;}
 
     public void setActiveStatus(boolean active) {
-        this.ActiveStatus = active;
+        this.activeStatus = active;
     }
 
-    public String getNrtaCode() {
-        return nrtaCode;
+    public String getExchangeCode() {
+        return exchangeCode;
     }
 
-    public void setNrtaCode(String nrtaCode) {
-        this.nrtaCode = nrtaCode;
+    public void setExchangeCode(String nrtaCode) {
+        this.exchangeCode = nrtaCode;
     }
 
     public String getUserEmail() {

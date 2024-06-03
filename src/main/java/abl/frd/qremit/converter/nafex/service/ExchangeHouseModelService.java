@@ -13,10 +13,16 @@ public class ExchangeHouseModelService {
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
     public List<ExchangeHouseModel> loadAllExchangeHouse(){
-        //List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
         List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findAll();
-        System.out.println(".................."+exchangeHouseModels);
         return exchangeHouseModels;
+    }
+    public List<ExchangeHouseModel> loadAllActiveExchangeHouse(){
+        List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
+        return exchangeHouseModels;
+    }
+    public ExchangeHouseModel getExchangeHouseByExchangeId(int exchangeId){
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeId(exchangeId);
+        return exchangeHouseModel;
     }
     public void insertNewExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception{
         exchangeHouseModelRepository.save(exchangeHouseModel);

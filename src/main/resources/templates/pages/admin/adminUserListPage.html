@@ -36,23 +36,23 @@
                                         <th>User Name</th>
                                         <th>User Email</th>
                                         <th>User Type</th>
-                                        <th>Nrta Code</th>
-                                        <th>Active Status</th>
+                                        <th>Exchange Code</th>
+                                        <th>Status</th>
                                         <th>ACTION</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr th:each="user : ${UserList}">
-                                        <td class="text-bold-500" th:text="${user.getUserName()}"></td>
-                                        <td class="text-bold-500" th:text="${user.getUserEmail()}"></td>
-                                        <td class="text-bold-500">USER</td>
-                                        <td class="text-bold-500" th:text="${user.getNrtaCode()}"></td>
-                                        <td class="text-bold-500" th:text="${user.activeStatus} ? 'ACTIVE':'INACTIVE'"></td>
-                                        <td>
-                                            <form th:action="@{/userEditForm/{id}(id=${user.getId()})}" th:method="POST">
+                                        <form th:action="@{/userEditForm/{id}(id=${user.getId()})}" th:object="${user}" th:method="POST">
+                                            <td class="text-bold-500" th:text="${user.getUserName()}"></td>
+                                            <td class="text-bold-500" th:text="${user.getUserEmail()}"></td>
+                                            <td class="text-bold-500">USER</td>
+                                            <td class="text-bold-500" th:text="${user.getExchangeCode()}"></td>
+                                            <td class="text-bold-500" th:text="${user.activeStatus} ? 'ACTIVE':'INACTIVE'"></td>
+                                            <td>
                                                 <button type="submit" class="btn btn-outline-primary round" th:name="Edit" th:value="${user.getId()}">Edit</button>
-                                            </form>
-                                        </td>
+                                            </td>
+                                        </form>
                                     </tr>
                                     </tbody>
                                 </table>

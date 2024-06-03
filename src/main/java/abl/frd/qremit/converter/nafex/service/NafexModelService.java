@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class NafexModelService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     UserModelRepository userModelRepository;
+    LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file, int userId) {
         try
         {
@@ -61,7 +63,7 @@ public class NafexModelService {
             fileInfoModel.setFileName(file.getOriginalFilename());
             fileInfoModel.setProcessedCount("test");
             fileInfoModel.setUnprocessedCount("test");
-            fileInfoModel.setUploadDate("test");
+            fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModel.setNafexEhMstModel(nafexModels);
             fileInfoModel.setCocModelList(cocModelList);
             fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
@@ -93,11 +95,12 @@ public class NafexModelService {
     }
 
     public List<Integer> CountAllFourTypesOfData(){
-        List<Integer> count = new ArrayList<Integer>(4);
+        List<Integer> count = new ArrayList<Integer>(5);
         count.add(onlineModelRepository.countByIsProcessed("0"));
-        count.add((int) cocModelRepository.count());
-        count.add((int) accountPayeeModelRepository.count());
-        count.add((int) beftnModelRepository.count());
+        count.add(cocModelRepository.countByIsProcessed("0"));
+        count.add(accountPayeeModelRepository.countByIsProcessed("0"));
+        count.add(beftnModelRepository.countByIsProcessedMain("0"));
+        count.add(beftnModelRepository.countByIsProcessedIncentive("0"));
         return count;
     }
 }

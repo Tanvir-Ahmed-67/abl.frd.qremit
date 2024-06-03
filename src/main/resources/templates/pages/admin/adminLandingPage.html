@@ -68,13 +68,16 @@
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
+              <div class="card-right d-flex align-items-center">
+                <p class="beftnMainCount" th:text="${beftnMainCount}"></p>
+              </div>
               <h3 class='card-title'>BEFTN</h3>
               <div class="card-right d-flex align-items-center">
-                <p class="beftnCount" th:text="${beftnCount}"></p>
+                <p class="beftnIncentiveCount" th:text="${beftnIncentiveCount}"></p>
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round" th:name="beftn" th:attr="onclick=|downloadBeftn()|">Main</button>
+              <button type="submit" class="btn btn-success round" th:name="beftn" th:attr="onclick=|downloadBeftnMain()|">Main</button>
               <button type="submit" class="btn btn-success round" th:name="beftn_incentive" th:attr="onclick=|downloadBeftnIncentive()|">Incentive</button>
             </div>
           </div>

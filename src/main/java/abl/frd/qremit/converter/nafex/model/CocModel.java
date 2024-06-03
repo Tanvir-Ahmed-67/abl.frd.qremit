@@ -1,6 +1,8 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="converted_data_coc")
 public class CocModel {
@@ -38,19 +40,19 @@ public class CocModel {
     private Double incentive;
     @Column(name = "coc_code")
     private String cocCode;
-    @Column(name = "extra_a")
-    private String extraA;
-    @Column(name = "extra_b")
-    private String extraB;
-    @Column(name = "extra_c")
-    private String extraC;
-    @Column(name = "extra_d")
-    private String extraD;
+    @Column(name = "is_processed")
+    private String isProcessed;
+    @Column(name = "is_downloaded")
+    private String isDownloaded;
+    @Column(name = "download_date_time")
+    private LocalDateTime downloadDateTime;
+    @Column(name = "download_user_id")
+    private int downloadUserId;
     @Column(name = "extra_e")
     private String extraE;
 
     @ManyToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="upload_user_id")
     private User userModel;
 
     public User getUserModel() {
@@ -205,36 +207,36 @@ public class CocModel {
         this.cocCode = cocCode;
     }
 
-    public String getExtraA() {
-        return extraA;
+    public String getIsProcessed() {
+        return isProcessed;
     }
 
-    public void setExtraA(String extraA) {
-        this.extraA = extraA;
+    public void setIsProcessed(String extraA) {
+        this.isProcessed = extraA;
     }
 
-    public String getExtraB() {
-        return extraB;
+    public String getIsDownloaded() {
+        return isDownloaded;
     }
 
-    public void setExtraB(String extraB) {
-        this.extraB = extraB;
+    public void setIsDownloaded(String extraB) {
+        this.isDownloaded = extraB;
     }
 
-    public String getExtraC() {
-        return extraC;
+    public LocalDateTime getDownloadDateTime() {
+        return downloadDateTime;
     }
 
-    public void setExtraC(String extraC) {
-        this.extraC = extraC;
+    public void setDownloadDateTime(LocalDateTime extraC) {
+        this.downloadDateTime = extraC;
     }
 
-    public String getExtraD() {
-        return extraD;
+    public int getDownloadUserId() {
+        return downloadUserId;
     }
 
-    public void setExtraD(String extraD) {
-        this.extraD = extraD;
+    public void setDownloadUserId(int downloadUserId) {
+        this.downloadUserId = downloadUserId;
     }
 
     public String getExtraE() {
@@ -245,7 +247,7 @@ public class CocModel {
         this.extraE = extraE;
     }
 
-    public CocModel(long id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, String extraA, String extraB, String extraC, String extraD, String extraE) {
+    public CocModel(long id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;
@@ -262,10 +264,10 @@ public class CocModel {
         this.remitterName = remitterName;
         this.incentive = incentive;
         this.cocCode = cocCode;
-        this.extraA = extraA;
-        this.extraB = extraB;
-        this.extraC = extraC;
-        this.extraD = extraD;
+        this.isProcessed = extraA;
+        this.isDownloaded = extraB;
+        this.downloadDateTime = downloadDateTime;
+        this.downloadUserId = downloadUserId;
         this.extraE = extraE;
     }
 
@@ -288,10 +290,10 @@ public class CocModel {
                 ", remitterName='" + remitterName + '\'' +
                 ", incentive=" + incentive +
                 ", cocCode='" + cocCode + '\'' +
-                ", extraA='" + extraA + '\'' +
-                ", extraB='" + extraB + '\'' +
-                ", extraC='" + extraC + '\'' +
-                ", extraD='" + extraD + '\'' +
+                ", extraA='" + isProcessed + '\'' +
+                ", extraB='" + isDownloaded + '\'' +
+                ", extraC='" + downloadDateTime + '\'' +
+                ", extraD='" + downloadUserId + '\'' +
                 ", extraE='" + extraE + '\'' +
                 '}';
     }
