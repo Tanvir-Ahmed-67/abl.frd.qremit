@@ -25,7 +25,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     // @Query(value = "SELECT GROUP_CONCAT(c.exchange_short_name) AS exchange_short_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId GROUP BY u.user_id", nativeQuery = true)
     // public String findExchangeNamesControllerByUserId(@Param("userId") int userId);
 
-    @Query(value = "SELECT GROUP_CONCAT(c.exchange_short_name) AS exchange_short_name, GROUP_CONCAT(c.exchange_name) AS exchange_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId GROUP BY u.user_id", nativeQuery = true)
+    @Query(value = "SELECT GROUP_CONCAT(c.exchange_code) AS exchange_code, GROUP_CONCAT(c.exchange_short_name) AS exchange_short_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId GROUP BY u.user_id", nativeQuery = true)
     Map<String, String> findExchangeNamesByUserId(@Param("userId") int userId);
 
     // @Query(value = "SELECT GROUP_CONCAT(c.exchangeName) AS exchange_name FROM User u JOIN ExchangeHouseModel c ON FIND_IN_SET(c.exchangeCode, u.exchangeCode) WHERE u.id = :userId GROUP BY u.id")
