@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @Controller
-//@RequestMapping("/bec")
 public class BecModelController {
     private final MyUserDetailsService myUserDetailsService;
     private final BecModelService becModelService;
@@ -29,13 +28,14 @@ public class BecModelController {
         this.myUserDetailsService = myUserDetailsService;
         this.becModelService = becModelService;
     }
-
+    /* 
     @GetMapping(value = "/index")
     public String homePage() {
 
         System.out.println("Test");
         return "bec_home";
     }
+    */
 
     @PostMapping("/becUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
@@ -65,5 +65,4 @@ public class BecModelController {
         message = "Please upload a csv file!";
         return "/pages/user/userUploadSuccessPage";
     }
-
 }
