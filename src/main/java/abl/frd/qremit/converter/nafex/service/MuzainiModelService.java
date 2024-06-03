@@ -27,16 +27,21 @@ public class MuzainiModelService {
     BeftnModelRepository beftnModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
+    @Autowired
+    UserModelRepository userModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    public FileInfoModel save(MultipartFile file) {
+    public FileInfoModel save(MultipartFile file, int userId) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
+            fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
+            User user = userModelRepository.findByUserId(userId);
             List<MuzainiModel> muzainiModels = MuzainiModelServiceHelper.csvToMuzainiModels(file.getInputStream());
             int ind=0;
             for(MuzainiModel muzainiModel : muzainiModels){
                 muzainiModel.setExchangeCode("7010231");
                 muzainiModel.setFileInfoModel(fileInfoModel);
+                muzainiModel.setUserModel(user);
                 if(ind==0) {
                     fileInfoModel.setExchangeCode(muzainiModel.getExchangeCode());
                     ind++;
@@ -69,15 +74,19 @@ public class MuzainiModelService {
 
             for(CocModel cocModel:cocModelList){
                 cocModel.setFileInfoModel(fileInfoModel);
+                cocModel.setUserModel(user);
             }
             for (AccountPayeeModel accountPayeeModel:accountPayeeModelList){
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
+                accountPayeeModel.setUserModel(user);
             }
             for(BeftnModel beftnModel:beftnModelList){
                 beftnModel.setFileInfoModel(fileInfoModel);
+                beftnModel.setUserModel(user);
             }
             for (OnlineModel onlineModel:onlineModelList){
                 onlineModel.setFileInfoModel(fileInfoModel);
+                onlineModel.setUserModel(user);
             }
             // SAVING TO MySql Data Table
             fileInfoModelRepository.save(fileInfoModel);
