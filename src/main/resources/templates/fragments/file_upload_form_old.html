@@ -33,43 +33,28 @@
                         <h4 class="card-title">Upload the CSV File</h4>
                     </div>
                     <div class="card-body">
-                        <div id="up-form">
-                            <form id="singleUploadForm" name="singleUploadForm" method="POST" th:action="@{#}"
-                                enctype="multipart/form-data">
-                                <div class="row">
-                                    <div class="col-sm-10">
-                                        <div class="form-group">
-                                            <input type="file" id="roundText" class="form-control round" name="file"
-                                                placeholder="Choose File" required>
-                                            <input type="hidden" name="exName" id="exName" value="">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <div class="buttons">
-                                            <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                                        </div>
+                        <form id="singleUploadForm" name="singleUploadForm" method="POST" th:action="@{/upload}"
+                              enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div class="form-group">
+                                        <input type="file" id="roundText" class="form-control round" name="file"
+                                               placeholder="Choose File" required>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
-                        <div id="up-data"></div>
+                                <div class="col-sm-2">
+                                    <div class="buttons">
+                                        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    
+    <script src="/js/script.js"></script>
 </div>
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        var id = document.getElementById("add_script");
-        var file = "/js/fileUpload.js";
-        var scriptElement = document.createElement('script');
-        scriptElement.type = 'text/javascript';
-        scriptElement.src = file;
-        document.querySelector('footer').appendChild(scriptElement);
-    });
-</script>
-
 </body>
 </html>
