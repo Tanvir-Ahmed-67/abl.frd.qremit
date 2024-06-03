@@ -31,8 +31,8 @@ public class NafexEhMstModelController {
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));        
 
-        int userId = 000000000;
 
+        int userId = 000000000;
         // Getting Logged In user Details in this block
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {

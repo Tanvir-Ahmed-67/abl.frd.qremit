@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static abl.frd.qremit.converter.nafex.helper.BeftnModelServiceHelper.calculatePercentage;
+
 public class MuzainiModelServiceHelper {
     public static String TYPE = "text/csv";
     static String[] HEADERs = {"Excode","Tranno","Currency","Amount","Entered Date","Remitter","Beneficiary","Bene A/C","Bank Name","Bank Code","Branch Name","Branch Code","Beneficiary Mobile No","Source of Income", "Remitter Mobile No"};
@@ -91,6 +93,8 @@ public class MuzainiModelServiceHelper {
                     onlineModel.setExchangeCode(muzainiModel.getExchangeCode());
                     onlineModel.setRemitterName(muzainiModel.getRemitterName());
                     onlineModel.setTransactionNo(muzainiModel.getTransactionNo());
+                    onlineModel.setIsProcessed("0");
+                    onlineModel.setIsDownloaded("0");
                     onlineModel.setDownloadDateTime(LocalDateTime.now());
                     onlineModel.setDownloadUserId(9999);
                     onlineModel.setExtraE("dump");
@@ -121,8 +125,8 @@ public class MuzainiModelServiceHelper {
         cocModel.setCurrency(muzainiModel.getCurrency());
         cocModel.setEnteredDate(muzainiModel.getEnteredDate());
         cocModel.setExchangeCode(muzainiModel.getExchangeCode());
-        cocModel.setIsProcessed("dummy");
-        cocModel.setIsDownloaded("dummy");
+        cocModel.setIsProcessed("0");
+        cocModel.setIsDownloaded("0");
         cocModel.setDownloadDateTime( LocalDateTime.now());
         cocModel.setDownloadUserId(9999);
         cocModel.setExtraE("dummy");
@@ -156,8 +160,8 @@ public class MuzainiModelServiceHelper {
         accountPayeeModel.setCurrency(muzainiModel.getCurrency());
         accountPayeeModel.setEnteredDate(muzainiModel.getEnteredDate());
         accountPayeeModel.setExchangeCode(muzainiModel.getExchangeCode());
-        accountPayeeModel.setIsProcessed("dummy");
-        accountPayeeModel.setIsDownloaded("dummy");
+        accountPayeeModel.setIsProcessed("0");
+        accountPayeeModel.setIsDownloaded("0");
         accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
         accountPayeeModel.setDownloadUserId(9999);
         accountPayeeModel.setExtraE("dummy");
@@ -184,12 +188,12 @@ public class MuzainiModelServiceHelper {
         beftnModel.setBeneficiaryAccountType("SA");
         beftnModel.setBeneficiaryName(muzainiModel.getBeneficiaryName());
         beftnModel.setExchangeCode(muzainiModel.getExchangeCode());
-        beftnModel.setIsProcessedMain("dummy");
-        beftnModel.setIsProcessedIncentive("dummy");
-        beftnModel.setIsIncDownloaded("dummy");
-        beftnModel.setDownloadDateTime( LocalDateTime.now());
+        beftnModel.setIsProcessedMain("0");
+        beftnModel.setIsProcessedIncentive("0");
+        beftnModel.setIsIncDownloaded("0");
         beftnModel.setDownloadUserId(9999);
-        beftnModel.setIncentive(000.00);
+        beftnModel.setDownloadDateTime( LocalDateTime.now());
+        beftnModel.setIncentive(calculatePercentage(muzainiModel.getAmount()));
         beftnModel.setOrgAccountNo("160954");
         beftnModel.setOrgAccountType("CA");
         beftnModel.setOrgCustomerNo("7892");

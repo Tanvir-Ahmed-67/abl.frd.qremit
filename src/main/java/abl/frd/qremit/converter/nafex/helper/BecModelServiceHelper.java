@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static abl.frd.qremit.converter.nafex.helper.BeftnModelServiceHelper.calculatePercentage;
+
 public class BecModelServiceHelper {
     public static String TYPE = "text/csv";
     static String[] HEADERs = {"Excode","Tranno","Currency","Amount","Entered Date","Remitter","Beneficiary","Bene A/C","Bank Name","Bank Code","Branch Name","Branch Code"};
@@ -28,7 +30,7 @@ public class BecModelServiceHelper {
     }
     public static List<BecModel> csvToBecModels(InputStream is) {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
+             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             List<BecModel> becDataModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
@@ -90,6 +92,8 @@ public class BecModelServiceHelper {
                     onlineModel.setExchangeCode(becModel.getExchangeCode());
                     onlineModel.setRemitterName(becModel.getRemitterName());
                     onlineModel.setTransactionNo(becModel.getTransactionNo());
+                    onlineModel.setIsProcessed("0");
+                    onlineModel.setIsDownloaded("0");
                     onlineModel.setDownloadDateTime(LocalDateTime.now());
                     onlineModel.setDownloadUserId(9999);
                     onlineModel.setExtraE("dump");
@@ -120,8 +124,8 @@ public class BecModelServiceHelper {
         cocModel.setCurrency(becModel.getCurrency());
         cocModel.setEnteredDate(becModel.getEnteredDate());
         cocModel.setExchangeCode(becModel.getExchangeCode());
-        cocModel.setIsProcessed("dummy");
-        cocModel.setIsDownloaded("dummy");
+        cocModel.setIsProcessed("0");
+        cocModel.setIsDownloaded("0");
         cocModel.setDownloadDateTime(LocalDateTime.now());
         cocModel.setDownloadUserId(9999);
         cocModel.setExtraE("dummy");
@@ -155,8 +159,8 @@ public class BecModelServiceHelper {
         accountPayeeModel.setCurrency(becModel.getCurrency());
         accountPayeeModel.setEnteredDate(becModel.getEnteredDate());
         accountPayeeModel.setExchangeCode(becModel.getExchangeCode());
-        accountPayeeModel.setIsProcessed("dummy");
-        accountPayeeModel.setIsDownloaded("dummy");
+        accountPayeeModel.setIsProcessed("0");
+        accountPayeeModel.setIsDownloaded("0");
         accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
         accountPayeeModel.setDownloadUserId(9999);
         accountPayeeModel.setExtraE("dummy");
@@ -183,12 +187,12 @@ public class BecModelServiceHelper {
         beftnModel.setBeneficiaryAccountType("SA");
         beftnModel.setBeneficiaryName(becModel.getBeneficiaryName());
         beftnModel.setExchangeCode(becModel.getExchangeCode());
-        beftnModel.setIsProcessedMain("dummy");
-        beftnModel.setIsProcessedIncentive("dummy");
-        beftnModel.setIsIncDownloaded("dummy");
+        beftnModel.setIsProcessedMain("0");
+        beftnModel.setIsProcessedIncentive("0");
+        beftnModel.setIsIncDownloaded("0");
         beftnModel.setDownloadUserId(9999);
         beftnModel.setDownloadDateTime(LocalDateTime.now());
-        beftnModel.setIncentive(000.00);
+        beftnModel.setIncentive(calculatePercentage(becModel.getAmount()));
         beftnModel.setOrgAccountNo("160954");
         beftnModel.setOrgAccountType("CA");
         beftnModel.setOrgCustomerNo("7892");
