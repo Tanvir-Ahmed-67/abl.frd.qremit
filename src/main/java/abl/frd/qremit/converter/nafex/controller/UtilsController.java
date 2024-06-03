@@ -40,6 +40,9 @@ public class UtilsController {
             case "bec":
                 redirectUrl  = "/becUpload";
                 break;
+            case "muzaini":
+                redirectUrl  = "/muzainiUpload";
+                break;
         }
         return "forward:" + redirectUrl;
     }

@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
-@RequestMapping("/muzaini")
+//@RequestMapping("/muzaini")
 public class MuzainiModelController {
     private final MuzainiModelService muzainiModelService;
     private final MyUserDetailsService myUserDetailsService;
@@ -31,12 +32,16 @@ public class MuzainiModelController {
         this.myUserDetailsService = myUserDetailsService;
     }
 
+    /* 
     @GetMapping(value = "/index")
     public String homePage() {
         return "muzaini_home";
     }
-    @PostMapping("/upload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam("file") MultipartFile file, Model model) {
+    */
+
+    //@PostMapping("/upload")
+    @PostMapping("/muzainiUpload")
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         int userId = 000000000;
         // Getting Logged In user Details in this block
@@ -53,16 +58,16 @@ public class MuzainiModelController {
             try {
                 fileInfoModelObject = muzainiModelService.save(file, userId);
                 model.addAttribute("fileInfo", fileInfoModelObject);
-                return "downloadPage";
+                return "/pages/user/userUploadSuccessPage";
 
             } catch (Exception e) {
                 e.printStackTrace();
                 message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-                return "downloadPage";
+                return "/pages/user/userUploadSuccessPage";
             }
         }
         message = "Please upload a csv file!";
-        return "downloadPage";
+        return "/pages/user/userUploadSuccessPage";
     }
 
 }
