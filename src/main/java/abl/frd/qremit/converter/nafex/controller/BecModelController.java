@@ -28,14 +28,6 @@ public class BecModelController {
         this.myUserDetailsService = myUserDetailsService;
         this.becModelService = becModelService;
     }
-    /* 
-    @GetMapping(value = "/index")
-    public String homePage() {
-
-        System.out.println("Test");
-        return "bec_home";
-    }
-    */
 
     @PostMapping("/becUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {

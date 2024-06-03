@@ -34,13 +34,13 @@ public class UtilsController {
         
         String redirectUrl ="";
         switch(exName){
-            case "nafex":
+            case "7010234":
                 redirectUrl  = "/nafexUpload";
                 break;
-            case "bec":
+            case "7010209":
                 redirectUrl  = "/becUpload";
                 break;
-            case "muzaini":
+            case "7010231":
                 redirectUrl  = "/muzainiUpload";
                 break;
         }

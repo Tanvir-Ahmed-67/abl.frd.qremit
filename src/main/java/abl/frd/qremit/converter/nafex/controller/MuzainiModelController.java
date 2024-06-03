@@ -12,16 +12,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 
 @Controller
-//@RequestMapping("/muzaini")
 public class MuzainiModelController {
     private final MuzainiModelService muzainiModelService;
     private final MyUserDetailsService myUserDetailsService;
@@ -32,14 +28,6 @@ public class MuzainiModelController {
         this.myUserDetailsService = myUserDetailsService;
     }
 
-    /* 
-    @GetMapping(value = "/index")
-    public String homePage() {
-        return "muzaini_home";
-    }
-    */
-
-    //@PostMapping("/upload")
     @PostMapping("/muzainiUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
