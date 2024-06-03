@@ -39,17 +39,17 @@ public class MyUserDetailsService implements UserDetailsService {
       
         Map<String, String> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
         
-        String exchangeNamesStr = exchangeNamesMap.get("exchange_name");
+        String exchangeCode = exchangeNamesMap.get("exchange_code");
         String exchangeShortNamesStr = exchangeNamesMap.get("exchange_short_name");
         
-        List<String> exchangeNames = Arrays.asList(exchangeNamesStr.split(","));
+        List<String> exchangeCodes = Arrays.asList(exchangeCode.split(","));
         List<String> exchangeShortNames = Arrays.asList(exchangeShortNamesStr.split(","));
        
         Map<String, String> exchangeMap =  new HashMap<String, String>();
      
-        if (exchangeNames.size() == exchangeShortNames.size()) {
-            for (int i = 0; i < exchangeNames.size(); i++) {
-                exchangeMap.put(exchangeNames.get(i), exchangeShortNames.get(i));
+        if (exchangeCodes.size() == exchangeShortNames.size()) {
+            for (int i = 0; i < exchangeCodes.size(); i++) {
+                exchangeMap.put(exchangeShortNames.get(i), exchangeCodes.get(i));
             }
             return exchangeMap;
           //  model.addAttribute("exchangeMap", exchangeMap);
