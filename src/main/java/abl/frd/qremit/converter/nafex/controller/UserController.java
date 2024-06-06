@@ -2,13 +2,18 @@ package abl.frd.qremit.converter.nafex.controller;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
+import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
+import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import abl.frd.qremit.converter.nafex.service.RoleModelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 @Controller
 public class UserController {
     private final MyUserDetailsService myUserDetailsService;
@@ -37,17 +43,19 @@ public class UserController {
     private final ExchangeHouseModelService exchangeHouseModelService;
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
+    private final FileInfoModelService fileInfoModelService;
 
     @Autowired
     public UserController(MyUserDetailsService myUserDetailsService, 
     NafexModelService nafexModelService,
-     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder) {
+     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, FileInfoModelService fileInfoModelService) {
 
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
         this.exchangeHouseModelService = exchangeHouseModelService;
         this.roleModelService = roleModelService;
         this.passwordEncoder = passwordEncoder;
+        this.fileInfoModelService = fileInfoModelService;
     }
     @RequestMapping("/login")
     public String loginPage(){
@@ -171,4 +179,12 @@ public class UserController {
         }
         return "redirect:/showInactiveUsers";
     }
+
+    @GetMapping("/userFileUploadReport")
+    public String userFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        return "/pages/user/userFileUploadReport";
+    }
+
+
 }

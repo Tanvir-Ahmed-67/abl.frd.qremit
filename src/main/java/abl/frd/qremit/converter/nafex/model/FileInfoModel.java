@@ -1,6 +1,9 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,27 +37,35 @@ public class FileInfoModel {
 
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="user_id")
+    @JsonIgnore 
     private User userModel;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @JsonIgnore
     private List<NafexEhMstModel> nafexEhMstModel;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @JsonIgnore
     private List<BecModel> becModel;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @JsonIgnore
     private List<MuzainiModel> muzainiModel;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @JsonIgnore
     private List<CocModel> cocModelList;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @JsonIgnore
     private List<AccountPayeeModel> accountPayeeModelList;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @JsonIgnore
     private List<BeftnModel> beftnModelList;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @JsonIgnore
     private List<OnlineModel> onlineModelList;
 
     public List<OnlineModel> getOnlineModelList() {
@@ -89,7 +100,7 @@ public class FileInfoModel {
         this.cocModelList = cocModelList;
     }
 
-    public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount, List<NafexEhMstModel> nafexEhMstModelSet) {
+    public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount) {
         this.exchangeCode = exchangeCode;
         this.uploadDateTime = uploadDateTime;
         this.fileName = fileName;
@@ -100,7 +111,6 @@ public class FileInfoModel {
         this.unprocessedCount = unprocessedCount;
         this.processedCount = processedCount;
         this.totalCount = totalCount;
-        this.nafexEhMstModel = nafexEhMstModelSet;
     }
 
     @Override
@@ -117,7 +127,6 @@ public class FileInfoModel {
                 ", unprocessedCount='" + unprocessedCount + '\'' +
                 ", processedCount='" + processedCount + '\'' +
                 ", totalCount='" + totalCount + '\'' +
-                ", nafexEhMstModelSet=" + nafexEhMstModel +
                 '}';
     }
 

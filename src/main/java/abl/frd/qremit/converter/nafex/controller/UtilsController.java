@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+
 
 
 @Controller
@@ -23,7 +26,7 @@ public class UtilsController {
     @GetMapping("/index")
     public String index(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        return "/layouts/dashboard";
+        return "/fragments/file_upload_form";
     }
     @PostMapping("/upload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails,@RequestParam("file") MultipartFile file,@RequestParam("exName") String exName, Model model){
@@ -46,4 +49,6 @@ public class UtilsController {
         }
         return "forward:" + redirectUrl;
     }
+
+    
 }

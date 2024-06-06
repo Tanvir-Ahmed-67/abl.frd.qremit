@@ -8,10 +8,16 @@
 <div id="sidebar" class='active' th:fragment="sidebarUser"><!--sidebar-->
     <div class="sidebar-wrapper active">
         <div class="sidebar-header">
-            <img src="images/banner.png" alt="" srcset="">
+            <img src="/images/banner.png" alt="" srcset="">
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
+                <li class="sidebar-item">
+                    <a th:href="@{/user-home-page}" class='sidebar-link'>
+                        <i data-feather="file-plus" width="20"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
                 <li class='sidebar-title'>File Upload</li>
                 <!--..........................User Section......................-->
                 <div>
@@ -25,7 +31,7 @@
                                 <a th:each="arrexchangeNameController: ${arrexchangeNameController}" th:href="${arrexchangeNameController}" ><span th:text="${arrexchangeNameController}"></span></a>
                             </li> -->
                             <li th:each="entry : ${exchangeMap.entrySet()}">
-                                <a th:href="@{'#' + ${entry.value}}"
+                                <a th:href="@{'/utils/index?id=' + ${entry.value}}"
                                    th:text="${entry.key}" class="exCode">
                                 </a>
                             </li>
