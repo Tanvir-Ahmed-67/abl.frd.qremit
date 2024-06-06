@@ -2,74 +2,68 @@
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Data Converter</title>
-    <link rel="stylesheet" href="/css/main.css"/>
-</head>
+<head th:replace="/fragments/header :: head-css"></head>
 <body th:fragment="fileUploadForm">
-<div class="main-content container-fluid">
-    <div class="page-title">
-        <div class="row">
-            <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>Nafex File Upload</h3>
-            </div>
-            <div class="col-12 col-md-6 order-md-2 order-first">
-                <nav aria-label="breadcrumb" class='breadcrumb-header'>
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Main Menu</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">File Upload</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
-    </div>
-    <section id="input-style">
-        <div class="row" style="min-height: 58vh">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">Upload the CSV File</h4>
-                    </div>
-                    <div class="card-body">
-                        <div id="up-form">
-                            <form id="singleUploadForm" name="singleUploadForm" method="POST" th:action="@{#}"
-                                enctype="multipart/form-data">
-                                <div class="row">
-                                    <div class="col-sm-10">
-                                        <div class="form-group">
-                                            <input type="file" id="roundText" class="form-control round" name="file"
-                                                placeholder="Choose File" required>
-                                            <input type="hidden" name="exName" id="exName" value="">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <div class="buttons">
-                                            <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+    <div id="app"><!--main content-->
+        <span th:replace="/fragments/sidebarUser :: sidebarUser"></span>
+        <div id="main"><!--content Id-->
+            <span th:replace="/fragments/header :: header"></span>
+            <div class="main-content container-fluid">
+                <div class="page-title">
+                    <div class="row">
+                        <div class="col-12 col-md-6 order-md-1 order-last">
+                            <h3>{{ exName }} File Upload</h3>
                         </div>
-                        <div id="up-data"></div>
+                        <div class="col-12 col-md-6 order-md-2 order-first">
+                            <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#">Main Menu</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">File Upload</li>
+                                </ol>
+                            </nav>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                </div>        
     
-</div>
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        var id = document.getElementById("add_script");
-        var file = "/js/fileUpload.js";
-        var scriptElement = document.createElement('script');
-        scriptElement.type = 'text/javascript';
-        scriptElement.src = file;
-        document.querySelector('footer').appendChild(scriptElement);
-    });
-</script>
+                <section id="input-style">
+                    <div class="row" style="min-height: 58vh">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Upload the CSV File</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="up-form">
+                                        <form id="singleUploadForm" name="singleUploadForm" method="POST" th:action="@{#}"
+                                            enctype="multipart/form-data">
+                                            <div class="row">
+                                                <div class="col-sm-10">
+                                                    <div class="form-group">
+                                                        <input type="file" id="roundText" class="form-control round" name="file"
+                                                            placeholder="Choose File" required>
+                                                        <input type="hidden" name="exName" id="exName" value="">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <div class="buttons">
+                                                        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div id="up-data"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <span th:replace="/fragments/footer :: footer"></span>
+        </div>
+    </div>
+    
+<script src="/js/fileUpload.js"></script>
 
 </body>
 </html>
