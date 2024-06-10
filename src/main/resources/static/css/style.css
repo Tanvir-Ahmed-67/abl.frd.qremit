@@ -1,0 +1,31 @@
+body{
+    color: black !important;
+}
+
+/* Change text color for specific elements */
+.header, .sidebar, .content, .footer {
+    color: black !important;
+}
+
+/* Change text color for headings */
+h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+}
+
+/* Change text color for paragraphs and spans */
+p, span {
+    color: black !important;
+}
+
+/* Change text color for table content */
+/*
+.table {
+    color: black !important;
+}
+*/
+
+/* Change text color for links */
+a {
+    color: black !important;
+}
+
