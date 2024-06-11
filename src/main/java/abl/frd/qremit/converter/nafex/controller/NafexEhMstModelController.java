@@ -3,9 +3,12 @@ import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.helper.NafexModelServiceHelper;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
+import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,11 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class NafexEhMstModelController {
     private final MyUserDetailsService myUserDetailsService;
     private final NafexModelService nafexModelService;
+    private final CommonService commonService;
 
     @Autowired
-    public NafexEhMstModelController(NafexModelService nafexModelService, MyUserDetailsService myUserDetailsService ){
+    public NafexEhMstModelController(NafexModelService nafexModelService, MyUserDetailsService myUserDetailsService, CommonService commonService ){
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
+        this.commonService = commonService;
     }
     
     @PostMapping("/nafexUpload")
@@ -42,18 +47,30 @@ public class NafexEhMstModelController {
         }
         String message = "";
         FileInfoModel fileInfoModelObject;
-        if (NafexModelServiceHelper.hasCSVFormat(file)) {
-            try {
-                fileInfoModelObject = nafexModelService.save(file, userId);
-                model.addAttribute("fileInfo", fileInfoModelObject);
-                return "/pages/user/userUploadSuccessPage";
-            } catch (Exception e) {
-                e.printStackTrace();
-                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-                return "/pages/user/userUploadSuccessPage";
+        if (commonService.hasCSVFormat(file)) {
+            if(!commonService.ifFileExist(file)){
+                try {
+                    fileInfoModelObject = nafexModelService.save(file, userId);
+                    model.addAttribute("fileInfo", fileInfoModelObject);
+                    return "/pages/user/userUploadSuccessPage";
+                }
+                catch (IllegalArgumentException e) {
+                    message = e.getMessage();
+                    model.addAttribute("message", message);
+                    return "/pages/user/userUploadSuccessPage";
+                }
+                catch (Exception e) {
+                    message = "Could not upload the file: " + file.getOriginalFilename() +"";
+                    model.addAttribute("message", message);
+                    return "/pages/user/userUploadSuccessPage";
+                }
             }
+            message = "File with the same name already exists !!";
+            model.addAttribute("message", message);
+            return "/pages/user/userUploadSuccessPage";
         }
         message = "Please upload a csv file!";
+        model.addAttribute("message", message);
         return "/pages/user/userUploadSuccessPage";
     }
 }

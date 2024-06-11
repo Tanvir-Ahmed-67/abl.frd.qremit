@@ -1,4 +1,5 @@
 <section class="section">
+    <div th:if="${fileInfo}">
             <table class='table table-striped' id="table1">
                 <thead>
                 <tr>
@@ -32,4 +33,9 @@
                 </tr>
                 </tbody>
             </table>
+    </div>
+    <div th:if="${fileInfo == null}">
+       <p th:if="${message}" class="alert alert-light-info text-center">
+           [[${message}]] </p>
+    </div>
 </section>

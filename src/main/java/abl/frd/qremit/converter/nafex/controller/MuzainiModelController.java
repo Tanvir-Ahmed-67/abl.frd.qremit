@@ -3,6 +3,7 @@ import abl.frd.qremit.converter.nafex.helper.MuzainiModelServiceHelper;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
+import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.MuzainiModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class MuzainiModelController {
     private final MuzainiModelService muzainiModelService;
     private final MyUserDetailsService myUserDetailsService;
+    private final CommonService commonService;
 
     @Autowired
-    public MuzainiModelController(MuzainiModelService muzainiModelService, MyUserDetailsService myUserDetailsService){
+    public MuzainiModelController(MuzainiModelService muzainiModelService, MyUserDetailsService myUserDetailsService, CommonService commonService){
         this.muzainiModelService = muzainiModelService;
         this.myUserDetailsService = myUserDetailsService;
+        this.commonService = commonService;
     }
 
     @PostMapping("/muzainiUpload")
@@ -41,20 +44,30 @@ public class MuzainiModelController {
         }
         String message = "";
         FileInfoModel fileInfoModelObject;
-        if (MuzainiModelServiceHelper.hasCSVFormat(file)) {
-            int extensionIndex = file.getOriginalFilename().lastIndexOf(".");
-            try {
-                fileInfoModelObject = muzainiModelService.save(file, userId);
-                model.addAttribute("fileInfo", fileInfoModelObject);
-                return "/pages/user/userUploadSuccessPage";
+        if (commonService.hasCSVFormat(file)) {
+            if(!commonService.ifFileExist(file)){
+                try {
+                    fileInfoModelObject = muzainiModelService.save(file, userId);
+                    model.addAttribute("fileInfo", fileInfoModelObject);
+                    return "/pages/user/userUploadSuccessPage";
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-                return "/pages/user/userUploadSuccessPage";
+                } catch (IllegalArgumentException e) {
+                    message = e.getMessage();
+                    model.addAttribute("message", message);
+                    return "/pages/user/userUploadSuccessPage";
+                }
+                catch (Exception e) {
+                    message = "Could not upload the file: " + file.getOriginalFilename() +"";
+                    model.addAttribute("message", message);
+                    return "/pages/user/userUploadSuccessPage";
+                }
             }
+            message = "File with the same name already exists !!";
+            model.addAttribute("message", message);
+            return "/pages/user/userUploadSuccessPage";
         }
         message = "Please upload a csv file!";
+        model.addAttribute("message", message);
         return "/pages/user/userUploadSuccessPage";
     }
 

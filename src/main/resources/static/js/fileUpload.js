@@ -51,7 +51,7 @@ $(document).ready(function(){
             $(".card-header").html("");
             $(".order-last h3").html("Uploaded File Statistics");
         }).fail(function(){
-            alert("Error Getting from server");
+            //alert("Error Getting from server");
         });
    
     });

@@ -2,7 +2,7 @@ package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_muzaini")
+@Table(name="base_data_table_muzaini", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
 public class MuzainiModel {
     @Id
     @Column(name = "id")
@@ -10,11 +10,11 @@ public class MuzainiModel {
     private long  id;
     @Column(name = "exchange_code")
     private String exchangeCode;
-    @Column(name = "transaction_no")
+    @Column(name = "transaction_no", unique = true, nullable = false)
     private String transactionNo;
     @Column(name = "currency")
     private String currency;
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private Double amount;
     @Column(name = "entered_date")
     private String enteredDate;
@@ -22,7 +22,7 @@ public class MuzainiModel {
     private String remitterName;
     @Column(name = "beneficiary_name")
     private String beneficiaryName;
-    @Column(name = "beneficiary_account_no")
+    @Column(name = "beneficiary_account_no", nullable = false)
     private String beneficiaryAccount;
   
     @Column(name = "bank_name")
@@ -66,7 +66,7 @@ public class MuzainiModel {
     @Column(name = "check_beftn")
     private String checkBeftn;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
