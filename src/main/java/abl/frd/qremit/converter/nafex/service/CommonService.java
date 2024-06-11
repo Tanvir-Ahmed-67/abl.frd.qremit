@@ -29,6 +29,7 @@ public class CommonService {
     @Autowired
     UserModelRepository userModelRepository;
     public static String TYPE = "text/csv";
+    public String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
     public static boolean hasCSVFormat(MultipartFile file) {
         if (TYPE.equals(file.getContentType())
                 || file.getContentType().equals("text/plain")) {
