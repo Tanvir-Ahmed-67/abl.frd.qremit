@@ -50,21 +50,14 @@ public class BecModelController {
                 try {
                     fileInfoModelObject = becModelService.save(file, userId);
                     model.addAttribute("fileInfo", fileInfoModelObject);
-                    return "/pages/user/userUploadSuccessPage";
                 } catch (IllegalArgumentException e) {
                     message = e.getMessage();
-                    model.addAttribute("message", message);
-                    return "/pages/user/userUploadSuccessPage";
                 }
                 catch (Exception e) {
                     message = "Could not upload the file: " + file.getOriginalFilename() +"";
-                    model.addAttribute("message", message);
-                    return "/pages/user/userUploadSuccessPage";
                 }
             }
             message = "File with the same name already exists !!";
-            model.addAttribute("message", message);
-            return "/pages/user/userUploadSuccessPage";
         }
         message = "Please upload a csv file!";
         model.addAttribute("message", message);
