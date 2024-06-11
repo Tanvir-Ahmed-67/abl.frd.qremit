@@ -5,11 +5,7 @@ import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.model.User;
-import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
-import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
-import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
-import abl.frd.qremit.converter.nafex.service.NafexModelService;
-import abl.frd.qremit.converter.nafex.service.RoleModelService;
+import abl.frd.qremit.converter.nafex.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,11 +40,12 @@ public class UserController {
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
     private final FileInfoModelService fileInfoModelService;
+    private final CommonService commonService;
 
     @Autowired
     public UserController(MyUserDetailsService myUserDetailsService, 
     NafexModelService nafexModelService,
-     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, FileInfoModelService fileInfoModelService) {
+     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, FileInfoModelService fileInfoModelService, CommonService commonService) {
 
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
@@ -56,6 +53,7 @@ public class UserController {
         this.roleModelService = roleModelService;
         this.passwordEncoder = passwordEncoder;
         this.fileInfoModelService = fileInfoModelService;
+        this.commonService = commonService;
     }
     @RequestMapping("/login")
     public String loginPage(){
@@ -129,7 +127,7 @@ public class UserController {
     @GetMapping("/adminDashboard")
     @ResponseBody
     public List<Integer> loadAdminDashboard(Model model){
-        List<Integer> count = nafexModelService.CountAllFourTypesOfData();
+        List<Integer> count = commonService.CountAllFourTypesOfData();
         return count;
     }
     @RequestMapping(value="/userEditForm/{id}", method = RequestMethod.POST)

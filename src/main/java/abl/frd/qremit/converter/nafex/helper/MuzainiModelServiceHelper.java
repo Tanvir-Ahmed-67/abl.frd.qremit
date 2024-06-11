@@ -18,16 +18,8 @@ import java.util.regex.Pattern;
 import static abl.frd.qremit.converter.nafex.helper.BeftnModelServiceHelper.calculatePercentage;
 
 public class MuzainiModelServiceHelper {
-    public static String TYPE = "text/csv";
     static String[] HEADERs = {"Excode","Tranno","Currency","Amount","Entered Date","Remitter","Beneficiary","Bene A/C","Bank Name","Bank Code","Branch Name","Branch Code","Beneficiary Mobile No","Source of Income", "Remitter Mobile No"};
 
-    public static boolean hasCSVFormat(MultipartFile file) {
-        if (TYPE.equals(file.getContentType())
-                || file.getContentType().equals("text/plain")) {
-            return true;
-        }
-        return false;
-    }
     public static List<MuzainiModel> csvToMuzainiModels(InputStream is) {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {

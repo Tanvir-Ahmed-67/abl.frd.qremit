@@ -4,7 +4,6 @@ import abl.frd.qremit.converter.nafex.model.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,16 +16,8 @@ import java.util.regex.Pattern;
 import static abl.frd.qremit.converter.nafex.helper.BeftnModelServiceHelper.calculatePercentage;
 
 public class NafexModelServiceHelper {
-    public static String TYPE = "text/csv";
     static String[] HEADERs = {"Excode","Tranno","Currency","Amount","Entered Date","Remitter","Beneficiary","Bene A/C","Bank Name","Bank Code","Branch Name","Branch Code"};
 
-    public static boolean hasCSVFormat(MultipartFile file) {
-        if (TYPE.equals(file.getContentType())
-                || file.getContentType().equals("text/plain")) {
-            return true;
-        }
-        return false;
-    }
     public static List<NafexEhMstModel> csvToNafexModels(InputStream is) {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {

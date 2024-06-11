@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NafexModelRepository extends JpaRepository<NafexEhMstModel, Integer> {
@@ -18,6 +19,6 @@ public interface NafexModelRepository extends JpaRepository<NafexEhMstModel, Int
     List<NafexEhMstModel> findAllNafexModelHavingBeftn();
 @Query("SELECT n FROM NafexEhMstModel n WHERE n.checkAccPayee = '1'")
     List<NafexEhMstModel> findAllNafexModelHavingAccountPayee();
-
      */
+    NafexEhMstModel findByTransactionNo(String transactionNo);
 }

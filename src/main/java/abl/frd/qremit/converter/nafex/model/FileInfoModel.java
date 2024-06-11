@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name="upload_file_info")
+@Table(name="upload_file_info", uniqueConstraints = @UniqueConstraint(columnNames = "file_name"))
 public class FileInfoModel {
     @Id
     @Column(name = "id")
@@ -18,7 +18,7 @@ public class FileInfoModel {
     private String exchangeCode;
     @Column(name = "upload_date_time")
     private LocalDateTime uploadDateTime;
-    @Column(name = "file_name")
+    @Column(name = "file_name", unique = true, nullable = false)
     private String fileName;
     @Column(name = "coc_count")
     private String cocCount;
@@ -40,15 +40,15 @@ public class FileInfoModel {
     @JsonIgnore 
     private User userModel;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<NafexEhMstModel> nafexEhMstModel;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<BecModel> becModel;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<MuzainiModel> muzainiModel;
 
