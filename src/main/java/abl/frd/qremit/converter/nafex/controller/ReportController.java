@@ -54,6 +54,7 @@ public class ReportController {
             
             List<Map<String, Object>> dataList = new ArrayList<>();
             int sl = 1;
+            int totalCount = 0;
             for (FileInfoModel fModel : fileInfoModel) {
                 Map<String, Object> dataMap = new HashMap<>();
                 //String action = "<button type='button' class='btn btn-info round' id='upload_'" + fModel.getId() + ">View</button>";
@@ -66,10 +67,19 @@ public class ReportController {
                 dataMap.put("beftnCount", fModel.getBeftnCount());
                 dataMap.put("onlineCount", fModel.getOnlineCount());
                 dataMap.put("accountPayeeCount", fModel.getAccountPayeeCount());
+                totalCount += Integer.valueOf(fModel.getTotalCount());
                 dataMap.put("totalCount", fModel.getTotalCount());
                 //dataMap.put("action", action); // Example action, customize as needed
                 dataList.add(dataMap);
             }
+            
+            /* 
+            Map<String, Object> totalMap = new HashMap<>();
+            totalMap.put("exchangeCode","Total");
+            totalMap.put("totalCount",totalCount);
+            dataList.add(totalMap);
+            */
+            //System.out.println(totalCount);
             resp.put("data", dataList);
             return ResponseEntity.ok(resp);
         }

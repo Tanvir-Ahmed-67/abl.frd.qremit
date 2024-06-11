@@ -6,7 +6,6 @@ $(document).ready(function(){
         $.ajax({
             "url" : url,
         }).done(function(resp){
-            console.log(resp);
             get_simple_dataTable(tbl,resp.columns,resp);
         }).fail(function(){
             alert("Eroor getting from server");
