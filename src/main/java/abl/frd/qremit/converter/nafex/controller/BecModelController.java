@@ -61,6 +61,6 @@ public class BecModelController {
         }
         message = "Please upload a csv file!";
         model.addAttribute("message", message);
-        return "/pages/user/userUploadSuccessPage";
+        return commonService.uploadSuccesPage;
     }
 }
