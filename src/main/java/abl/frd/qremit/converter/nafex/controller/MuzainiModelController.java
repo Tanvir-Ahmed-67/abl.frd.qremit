@@ -74,7 +74,7 @@ public class MuzainiModelController {
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return "/pages/user/userUploadSuccessPage";
+        return commonService.uploadSuccesPage;
     }
 
 }
