@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MuzainiModelRepository extends JpaRepository<MuzainiModel, Integer> {
@@ -23,4 +24,5 @@ public interface MuzainiModelRepository extends JpaRepository<MuzainiModel, Inte
 
      */
     MuzainiModel findByTransactionNo(String transactionNo);
+    Optional<MuzainiModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
 }
