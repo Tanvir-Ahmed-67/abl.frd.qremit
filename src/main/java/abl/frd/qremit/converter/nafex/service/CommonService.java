@@ -36,9 +36,9 @@ public class CommonService {
         }
         return false;
     }
-    public boolean ifFileExist(MultipartFile file){
-        if (fileInfoModelRepository.findByFileName(file.getName()) != null) {
-            throw new IllegalArgumentException("File with the same name already exists.");
+    public boolean ifFileExist(String fileName){
+        if (fileInfoModelRepository.findByFileName(fileName) != null) {
+            return true;
         }
         return false;
     }

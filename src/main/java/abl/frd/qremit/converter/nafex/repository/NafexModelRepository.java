@@ -21,4 +21,5 @@ public interface NafexModelRepository extends JpaRepository<NafexEhMstModel, Int
     List<NafexEhMstModel> findAllNafexModelHavingAccountPayee();
      */
     NafexEhMstModel findByTransactionNo(String transactionNo);
+    Optional<NafexEhMstModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
 }

@@ -46,27 +46,34 @@ public class BecModelController {
         String message = "";
         FileInfoModel fileInfoModelObject;
         if (commonService.hasCSVFormat(file)) {
-            if(!commonService.ifFileExist(file)) {
+            if(!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
                     fileInfoModelObject = becModelService.save(file, userId);
-                    model.addAttribute("fileInfo", fileInfoModelObject);
-                    return "/pages/user/userUploadSuccessPage";
+                    if(fileInfoModelObject!=null){
+                        model.addAttribute("fileInfo", fileInfoModelObject);
+                        return "/pages/user/userUploadSuccessPage";
+                    }
+                    else{
+                        message = "All Data From Your Selected File Already Exists!";
+                        model.addAttribute("message", message);
+                        return "/pages/user/userUploadSuccessPage";
+                    }
                 } catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
                     return "/pages/user/userUploadSuccessPage";
                 }
                 catch (Exception e) {
-                    message = "Could not upload the file: " + file.getOriginalFilename() +"";
+                    message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
                     return "/pages/user/userUploadSuccessPage";
                 }
             }
-            message = "File with the same name already exists !!";
+            message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
             return "/pages/user/userUploadSuccessPage";
         }
-        message = "Please upload a csv file!";
+        message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
         return "/pages/user/userUploadSuccessPage";
     }
