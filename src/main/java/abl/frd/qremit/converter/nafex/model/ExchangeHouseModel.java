@@ -17,6 +17,8 @@ public class ExchangeHouseModel {
     private String exchangeCode;
     @Column(nullable=false)
     private String exchangeShortName;
+    @Column(nullable=false)
+    private String baseTableName;
     @Column
     private boolean activeStatus;
 
@@ -56,6 +58,14 @@ public class ExchangeHouseModel {
         return exchangeCode;
     }
 
+    public void setBaseTableName(String baseTableName){
+        this.baseTableName = baseTableName;
+    }
+
+    public String getBaseTableName() {
+        return baseTableName;
+    }
+
     public void setExchangeCode(String exchangeCode) {
         this.exchangeCode = exchangeCode;
     }
@@ -76,6 +86,7 @@ public class ExchangeHouseModel {
                 ", nrtaCode='" + nrtaCode + '\'' +
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", exchangeShortName='" + exchangeShortName + '\'' +
+                ", baseTableName='" + baseTableName + '\'' +
                 ", isActive='" + activeStatus + '\'' +
                 '}';
     }

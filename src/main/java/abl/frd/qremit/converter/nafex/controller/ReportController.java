@@ -39,8 +39,8 @@ public class ReportController {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
 
-        String[] columnData = {"sl", "exchangeCode", "uploadDateTime", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount"};
-        String[] columnTitles = {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total"};
+        String[] columnData = {"sl", "exchangeCode", "uploadDateTime", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount","action"};
+        String[] columnTitles = {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total","Action"};
         List<Map<String, String>> columns = createColumns(columnData, columnTitles);
         resp.put("columns", columns);
         
@@ -57,7 +57,7 @@ public class ReportController {
             int totalCount = 0;
             for (FileInfoModel fModel : fileInfoModel) {
                 Map<String, Object> dataMap = new HashMap<>();
-                //String action = "<button type='button' class='btn btn-info round' id='upload_'" + fModel.getId() + ">View</button>";
+                String action = "<button type='button' class='btn btn-info round' id='upload_" + fModel.getId() + "'>View</button>";
                 dataMap.put("sl", sl++);
                 dataMap.put("id", fModel.getId());
                 dataMap.put("exchangeCode", fModel.getExchangeCode());
@@ -69,7 +69,7 @@ public class ReportController {
                 dataMap.put("accountPayeeCount", fModel.getAccountPayeeCount());
                 totalCount += Integer.valueOf(fModel.getTotalCount());
                 dataMap.put("totalCount", fModel.getTotalCount());
-                //dataMap.put("action", action); // Example action, customize as needed
+                dataMap.put("action", action); // Example action, customize as needed
                 dataList.add(dataMap);
             }
             
@@ -87,6 +87,8 @@ public class ReportController {
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    @GetMapping("/")
 
     // Helper method to create columns dynamically from arrays
     private List<Map<String, String>> createColumns(String[] columnData, String[] columnTitles) {
