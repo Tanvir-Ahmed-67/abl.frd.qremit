@@ -50,27 +50,27 @@ public class MuzainiModelController {
                     fileInfoModelObject = muzainiModelService.save(file, userId);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
-                        return "/pages/user/userUploadSuccessPage";
+                        return commonService.uploadSuccesPage;
                     }
                     else{
                         message = "All Data From Your Selected File Already Exists!";
                         model.addAttribute("message", message);
-                        return "/pages/user/userUploadSuccessPage";
+                        return commonService.uploadSuccesPage;
                     }
                 } catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return "/pages/user/userUploadSuccessPage";
+                    return commonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return "/pages/user/userUploadSuccessPage";
+                    return commonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return "/pages/user/userUploadSuccessPage";
+            return commonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
