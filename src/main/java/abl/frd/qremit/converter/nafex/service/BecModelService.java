@@ -35,6 +35,8 @@ public class BecModelService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     UserModelRepository userModelRepository;
+    @Autowired
+    ExchangeHouseModelRepository exchangeHouseModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file, int userId) {
         try
@@ -43,10 +45,11 @@ public class BecModelService {
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<BecModel> becModels = csvToBecModels(file.getInputStream());
+            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("bec");
             if(becModels.size()!=0) {
             int ind=0;
             for(BecModel becModel : becModels){
-                becModel.setExchangeCode("7010235");
+                becModel.setExchangeCode(exchangeHouseModel.getExchangeCode()); 
                 becModel.setFileInfoModel(fileInfoModel);
                 becModel.setUserModel(user);
                 if(ind==0) {

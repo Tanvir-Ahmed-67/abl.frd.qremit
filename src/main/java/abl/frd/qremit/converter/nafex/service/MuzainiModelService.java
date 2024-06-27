@@ -37,6 +37,8 @@ public class MuzainiModelService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     UserModelRepository userModelRepository;
+    @Autowired
+    ExchangeHouseModelRepository exchangeHouseModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file, int userId) {
         try
@@ -45,10 +47,11 @@ public class MuzainiModelService {
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<MuzainiModel> muzainiModels = csvToMuzainiModels(file.getInputStream());
+            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("muzaini");
             if(muzainiModels.size()!=0) {
                 int ind = 0;
                 for (MuzainiModel muzainiModel : muzainiModels) {
-                    muzainiModel.setExchangeCode("7010231");
+                    muzainiModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
                     muzainiModel.setFileInfoModel(fileInfoModel);
                     muzainiModel.setUserModel(user);
                     if (ind == 0) {
