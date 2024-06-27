@@ -33,6 +33,8 @@ public class NafexModelService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     UserModelRepository userModelRepository;
+    @Autowired
+    ExchangeHouseModelRepository exchangeHouseModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file, int userId) {
         try
@@ -41,10 +43,11 @@ public class NafexModelService {
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream());
+            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("nafex");
             if(nafexModels.size()!=0) {
                 int ind = 0;
                 for (NafexEhMstModel nafexModel : nafexModels) {
-                    nafexModel.setExchangeCode("7010234");
+                    nafexModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
                     nafexModel.setFileInfoModel(fileInfoModel);
                     nafexModel.setUserModel(user);
                     if (ind == 0) {

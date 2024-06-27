@@ -13,24 +13,29 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
+import abl.frd.qremit.converter.nafex.service.ReportService;
 
 @RestController
 public class ReportController {
 
     private final MyUserDetailsService myUserDetailsService;
     private final FileInfoModelService fileInfoModelService;
+    private final ReportService reportService;
 
-    public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService){
+    public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
         this.myUserDetailsService = myUserDetailsService;
         this.fileInfoModelService = fileInfoModelService;
+        this.reportService = reportService;
     }
     
     @GetMapping("/report")
@@ -88,7 +93,29 @@ public class ReportController {
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("/fileReport")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getFileDetails(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam String id,@RequestParam String exchangeCode){
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        Map<String, Object> resp = new HashMap<>();
+        ExchangeHouseModel exchangeHouseModel = reportService.findByExchangeCode(exchangeCode);
+        String baseTableName = exchangeHouseModel.getBaseTableName();
+        String tbl = "base_data_table_" + baseTableName;
+        
+        Map<String,Object> fileInfo = reportService.getFileDetails(tbl,id);
+        //System.out.println(fileInfo.toString());
+        /*
+        for (Object[] row : fileInfo) {
+            for (Object column : row) {
+                System.out.print(column + "\t");
+            }
+            System.out.println();
+        }
+        */
+
+        return ResponseEntity.ok(fileInfo);
+    }
+
 
     // Helper method to create columns dynamically from arrays
     private List<Map<String, String>> createColumns(String[] columnData, String[] columnTitles) {
