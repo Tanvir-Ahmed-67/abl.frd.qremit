@@ -42,11 +42,12 @@ function checkDataTable(tbl){
    /*
    * datTable generation without ajax 
    */
-  function get_simple_dataTable(tbl,columns,resp){
+  function get_simple_dataTable(tbl,columns,resp,sort){
     checkDataTable(tbl);
     $(tbl).DataTable({
       "columns": columns,
       "data": resp.data,
+      "sort": sort,
     });
  
   }
