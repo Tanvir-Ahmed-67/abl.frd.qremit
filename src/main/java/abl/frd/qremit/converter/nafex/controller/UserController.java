@@ -67,9 +67,20 @@ public class UserController {
     public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         return "/layouts/dashboard"; 
+    }
+    @RequestMapping("/change-password")
+    public String showChangePasswordPage() {
+        return "/pages/user/userPasswordChangeForm";
+    }
+    @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST)
+    public String changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
+        User user = myUserDetailsService.loadUserByUserEmail(userDetails.getUserEmail());
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordChangeRequired(false);
+        myUserDetailsService.updatePasswordForFirstTimeUserLogging(user);
+        return "redirect:/login";
     }
 
     @RequestMapping("/home")
@@ -119,6 +130,7 @@ public class UserController {
         roleSet.add(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActiveStatus(false);
+        user.setPasswordChangeRequired(true);
         user.setRoles(roleSet);
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
@@ -152,6 +164,7 @@ public class UserController {
             return "editUser";
         }
         try {
+            user.setPasswordChangeRequired(true);
             myUserDetailsService.editUser(user);
             ra.addFlashAttribute("message","User Updated successfully");
             model.addAttribute("user",user);

@@ -23,6 +23,7 @@ public class User {
     private String password;
     private boolean activeStatus;
     private String exchangeCode;
+    private boolean passwordChangeRequired;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<AccountPayeeModel> accountPayeeModel;
@@ -96,5 +97,13 @@ public class User {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    public boolean isPasswordChangeRequired() {
+        return passwordChangeRequired;
+    }
+
+    public void setPasswordChangeRequired(boolean passwordChangeRequired) {
+        this.passwordChangeRequired = passwordChangeRequired;
     }
 }

@@ -21,7 +21,6 @@ public class ReportRepository {
 
     public Map<String,Object> getFileDetails(String tableName, String fileInfoId) {
         String queryStr = String.format("SELECT a.* FROM %s a, upload_file_info b WHERE a.file_info_model_id = b.id AND b.id = %s", tableName,fileInfoId);
-        //System.out.println(queryStr);
         return commonService.getData(queryStr);
     }
 

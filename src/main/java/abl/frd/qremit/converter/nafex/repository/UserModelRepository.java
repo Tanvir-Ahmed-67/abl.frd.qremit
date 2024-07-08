@@ -14,24 +14,8 @@ import java.util.Map;
 public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.userName = :username")
     public User findByUserName(@Param("username") String username);
-
-    // @Query("SELECT GROUP_CONCAT(c.exchangeName) AS exchange_name FROM User u JOIN ExchangeHouseModel c ON FIND_IN_SET(c.exchangeCode, REPLACE(u.exchangeCode, ',', ',')) > 0 WHERE u.id = :userId GROUP BY u.id")
-    // public String findExchangeNamesByUserId(@Param("userId") int userId);
-
-    // @Query(value = "SELECT GROUP_CONCAT(c.exchange_name) AS exchange_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId GROUP BY u.user_id", nativeQuery = true)
-    // public String findExchangeNamesByUserId(@Param("userId") int userId);
-   
-
-    // @Query(value = "SELECT GROUP_CONCAT(c.exchange_short_name) AS exchange_short_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId GROUP BY u.user_id", nativeQuery = true)
-    // public String findExchangeNamesControllerByUserId(@Param("userId") int userId);
-
     @Query(value = "SELECT GROUP_CONCAT(c.exchange_code) AS exchange_code, GROUP_CONCAT(c.exchange_short_name) AS exchange_short_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId GROUP BY u.user_id", nativeQuery = true)
     Map<String, String> findExchangeNamesByUserId(@Param("userId") int userId);
-
-    // @Query(value = "SELECT GROUP_CONCAT(c.exchangeName) AS exchange_name FROM User u JOIN ExchangeHouseModel c ON FIND_IN_SET(c.exchangeCode, u.exchangeCode) WHERE u.id = :userId GROUP BY u.id")
-    // public String findExchangeNamesByUserId(@Param("userId") int userId);  
-
-    
     @Query("SELECT u FROM User u WHERE u.userEmail = :useremail")
     public User findByUserEmail(@Param("useremail") String useremail);
     @Query("SELECT u FROM User u WHERE u.id = :userid")
@@ -45,18 +29,18 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<User> loadAdminsOnly();
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.activeStatus = false WHERE n.id = :id")
-    void setUserActiveStatusFalseById(int id);
-    @Transactional
-    @Modifying
-    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.exchangeCode = :exchangeCode, n.activeStatus = false where n.id = :userId")
+    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.passwordChangeRequired = true, n.exchangeCode = :exchangeCode, n.activeStatus = false where n.id = :userId")
     void updateUser(int userId, String userName, String userEmail, String exchangeCode);
     @Query("SELECT u FROM User u WHERE u.activeStatus = false")
     public List<User> loadAllInactiveUsers();
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.activeStatus = true where n.id = :userId")
+    @Query("UPDATE User n SET n.activeStatus = true, n.passwordChangeRequired = true where n.id = :userId")
     void updateInactiveUser(int userId);
+    @Transactional
+    @Modifying
+    @Query("UPDATE User n SET n.password = :password, n.passwordChangeRequired = :passwordChangeRequired where n.id = :userId")
+    void updatePasswordForFirstTimeUserLogging(int userId, String password, boolean passwordChangeRequired);
 
     User getUserById(long id);
 
