@@ -164,7 +164,6 @@ public class UserController {
             return "editUser";
         }
         try {
-            user.setPasswordChangeRequired(true);
             myUserDetailsService.editUser(user);
             ra.addFlashAttribute("message","User Updated successfully");
             model.addAttribute("user",user);

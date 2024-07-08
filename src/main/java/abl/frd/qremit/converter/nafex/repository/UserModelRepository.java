@@ -29,13 +29,13 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<User> loadAdminsOnly();
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.passwordChangeRequired = true, n.exchangeCode = :exchangeCode, n.activeStatus = false where n.id = :userId")
+    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.exchangeCode = :exchangeCode, n.activeStatus = false where n.id = :userId")
     void updateUser(int userId, String userName, String userEmail, String exchangeCode);
     @Query("SELECT u FROM User u WHERE u.activeStatus = false")
     public List<User> loadAllInactiveUsers();
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.activeStatus = true, n.passwordChangeRequired = true where n.id = :userId")
+    @Query("UPDATE User n SET n.activeStatus = true where n.id = :userId")
     void updateInactiveUser(int userId);
     @Transactional
     @Modifying
