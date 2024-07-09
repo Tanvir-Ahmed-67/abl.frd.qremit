@@ -50,6 +50,7 @@ public class NafexEhMstModelController {
         if (commonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
+                    //fileInfoModelObject = nafexModelService.save(file, userId);
                     fileInfoModelObject = nafexModelService.save(file, userId);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);

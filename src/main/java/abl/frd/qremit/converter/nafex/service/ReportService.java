@@ -1,18 +1,11 @@
 package abl.frd.qremit.converter.nafex.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.nafex.repository.ReportRepository;
-
-
 
 @Service
 public class ReportService {

@@ -42,7 +42,12 @@ public class NafexModelService {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
-            List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream());
+            //List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream());
+            Map<String, Object> nafexData = csvToNafexModels(file.getInputStream());
+            List<NafexEhMstModel> nafexModels = (List<NafexEhMstModel>) nafexData.get("nafexDataModelList");
+            //Map<String, Object> notFoundData = (Map<String, Object>) nafexData.get("notFoundData");
+            System.out.println(nafexData.toString());
+            
             ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("nafex");
             if(nafexModels.size()!=0) {
                 int ind = 0;
@@ -104,16 +109,21 @@ public class NafexModelService {
         } catch (IOException e) {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
+            
     }
-    public List<NafexEhMstModel> csvToNafexModels(InputStream is) {
+    //public List<NafexEhMstModel> csvToNafexModels(InputStream is) {
+    public Map<String, Object> csvToNafexModels(InputStream is) {
+        Map<String, Object> resp = new HashMap<>();
         Optional<NafexEhMstModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
             List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            Map<String, Object> notFoundData = new HashMap<>();
             for (CSVRecord csvRecord : csvRecords) {
                 duplicateData = nafexModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
+                    notFoundData.put("tranNo", csvRecord.get(1));
                     continue;
                 }
                 NafexEhMstModel nafexDataModel = new NafexEhMstModel(
@@ -148,10 +158,13 @@ public class NafexModelService {
                         NafexModelServiceHelper.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        // Checking Beftn
                 nafexDataModelList.add(nafexDataModel);
             }
-            return nafexDataModelList;
+            resp.put("nafexDataModelList", nafexDataModelList);
+            resp.put("notFoundData", notFoundData);
+            //return nafexDataModelList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
+        return resp;
     }
 
 }
