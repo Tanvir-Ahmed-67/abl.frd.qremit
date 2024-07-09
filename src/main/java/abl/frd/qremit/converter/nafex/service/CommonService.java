@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
@@ -71,13 +72,21 @@ public class CommonService {
         return count;
     }
 
-    public Map<String,Object> getData(String sql){
+    public Map<String,Object> getData(String sql, Map<String, Object> params){
         Map<String, Object> resp = new HashMap<>();
         List<Map<String, Object>> rows = new ArrayList<>();
         try{
             Connection con = dataSource.getConnection();
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            //Statement stmt = con.createStatement();
+            //ResultSet rs = stmt.executeQuery(sql);
+            
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            int j = 1;
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                pstmt.setObject(j++, entry.getValue());
+            }
+            ResultSet rs = pstmt.executeQuery();
+            
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
             if(!rs.next()){
@@ -94,7 +103,6 @@ public class CommonService {
                 }while(rs.next());
                 return getResp(0, "Data Found", rows);
             }
-
         }catch(Exception e){
             e.printStackTrace();
         }
