@@ -50,6 +50,10 @@ public class FileInfoModel {
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<EzRemitModel> ezRemitModel;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<BecModel> becModel;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -258,5 +262,13 @@ public class FileInfoModel {
 
     public void setAgexSingaporeModel(List<AgexSingaporeModel> agexSingaporeModel) {
         this.agexSingaporeModel = agexSingaporeModel;
+    }
+
+    public List<EzRemitModel> getEzRemitModel() {
+        return ezRemitModel;
+    }
+
+    public void setEzRemitModel(List<EzRemitModel> ezRemitModel) {
+        this.ezRemitModel = ezRemitModel;
     }
 }

@@ -49,6 +49,9 @@ public class UtilsController {
             case "7010226":
                 redirectUrl  = "/agexSingaporeUpload";
                 break;
+            case "7010299":
+                redirectUrl  = "/ezRemitUpload";
+                break;
         }
         return "forward:" + redirectUrl;
     }
