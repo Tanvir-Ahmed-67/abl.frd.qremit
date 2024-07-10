@@ -46,6 +46,10 @@ public class FileInfoModel {
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<AgexSingaporeModel> agexSingaporeModel;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<BecModel> becModel;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -246,5 +250,13 @@ public class FileInfoModel {
 
     public void setProcessedCount(String processedCount) {
         this.processedCount = processedCount;
+    }
+
+    public List<AgexSingaporeModel> getAgexSingaporeModel() {
+        return agexSingaporeModel;
+    }
+
+    public void setAgexSingaporeModel(List<AgexSingaporeModel> agexSingaporeModel) {
+        this.agexSingaporeModel = agexSingaporeModel;
     }
 }

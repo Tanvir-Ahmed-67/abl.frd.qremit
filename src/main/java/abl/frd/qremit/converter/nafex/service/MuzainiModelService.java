@@ -1,8 +1,5 @@
 package abl.frd.qremit.converter.nafex.service;
 
-//import abl.frd.qremit.converter.nafex.helper.MuzainiModelServiceHelper;
-import abl.frd.qremit.converter.nafex.helper.MuzainiModelServiceHelper;
-//import abl.frd.qremit.converter.nafex.helper.MuzainiModelServiceHelper;
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import org.apache.commons.csv.CSVFormat;
@@ -62,10 +59,10 @@ public class MuzainiModelService {
                 }
 
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = MuzainiModelServiceHelper.generateOnlineModelList(muzainiModels);
-                List<CocModel> cocModelList = MuzainiModelServiceHelper.generateCocModelList(muzainiModels);
-                List<AccountPayeeModel> accountPayeeModelList = MuzainiModelServiceHelper.generateAccountPayeeModelList(muzainiModels);
-                List<BeftnModel> beftnModelList = MuzainiModelServiceHelper.generateBeftnModelList(muzainiModels);
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(muzainiModels,"getCheckT24");
+                List<CocModel> cocModelList = CommonService.generateCocModelList(muzainiModels,"getCheckCoc");
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(muzainiModels,"getCheckAccPayee");
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(muzainiModels,"getCheckBeftn");
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -149,10 +146,10 @@ public class MuzainiModelService {
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",           // extra_c
-                        MuzainiModelServiceHelper.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
-                        MuzainiModelServiceHelper.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
-                        MuzainiModelServiceHelper.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
-                        MuzainiModelServiceHelper.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        //checkBeftn
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
+                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
+                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
+                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        //checkBeftn
 
                 muzainiDataModelList.add(muzainiDataModel);
             }
