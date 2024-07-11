@@ -30,7 +30,7 @@ public class NafexEhMstModelController {
     }
     
     @PostMapping("/nafexUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));        
 
 
@@ -47,7 +47,7 @@ public class NafexEhMstModelController {
         if (commonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = nafexModelService.save(file, userId);
+                    fileInfoModelObject = nafexModelService.save(file, userId, exchangeCode);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
                         return commonService.uploadSuccesPage;

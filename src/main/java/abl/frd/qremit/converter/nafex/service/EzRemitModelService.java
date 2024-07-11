@@ -36,22 +36,27 @@ public class EzRemitModelService {
     @Autowired
     EzRemitModelRepository ezRemitModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    public FileInfoModel save(MultipartFile file, int userId) {
+    public FileInfoModel save(MultipartFile file, int userId, String exchangeCode, String fileType) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
-            List<EzRemitModel> ezRemitModelList = csvToEzRemitAccountPayeeModels(file.getInputStream());
-            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("ezremit");
+            List<EzRemitModel> ezRemitModelList = new ArrayList<>();
+            if(fileType.equalsIgnoreCase("API")){
+               ezRemitModelList = csvToEzRemitAccountPayeeModels(file.getInputStream(), exchangeCode);
+            }else if(fileType.equalsIgnoreCase("BEFTN")){
+                ezRemitModelList = csvToEzRemitBEFTNModels(file.getInputStream(), exchangeCode);
+            }
+            
             if(ezRemitModelList.size()!=0) {
                 int ind = 0;
                 for (EzRemitModel ezRemitModel : ezRemitModelList) {
-                    ezRemitModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
+                    ezRemitModel.setExchangeCode(exchangeCode);
                     ezRemitModel.setFileInfoModel(fileInfoModel);
                     ezRemitModel.setUserModel(user);
                     if (ind == 0) {
-                        fileInfoModel.setExchangeCode(ezRemitModel.getExchangeCode());
+                        fileInfoModel.setExchangeCode(exchangeCode);
                         ind++;
                     }
                 }
@@ -105,7 +110,7 @@ public class EzRemitModelService {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
     }
-    public List<EzRemitModel> csvToEzRemitAccountPayeeModels(InputStream is) {
+    public List<EzRemitModel> csvToEzRemitAccountPayeeModels(InputStream is, String exchangeCode) {
         Optional<EzRemitModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
@@ -117,7 +122,7 @@ public class EzRemitModelService {
                     continue;
                 }
                 EzRemitModel ezRemitModel = new EzRemitModel(
-                        "7010299", //exCode
+                        exchangeCode, //exCode
                         csvRecord.get(0), //Tranno
                         "BDT", //Currency
                         Double.parseDouble(csvRecord.get(5)), //Amount
@@ -153,7 +158,7 @@ public class EzRemitModelService {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
     }
-    public List<EzRemitModel> csvToEzRemitBEFTNModels(InputStream is) {
+    public List<EzRemitModel> csvToEzRemitBEFTNModels(InputStream is, String exchangeCode) {
         Optional<EzRemitModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
@@ -165,7 +170,7 @@ public class EzRemitModelService {
                     continue;
                 }
                 EzRemitModel ezRemitModel = new EzRemitModel(
-                        "7010299", //exCode
+                        exchangeCode, //exCode
                         csvRecord.get(1), //Tranno
                         csvRecord.get(2), //Currency
                         Double.parseDouble(csvRecord.get(3)), //Amount

@@ -32,7 +32,7 @@ public class BecModelController {
     }
 
     @PostMapping("/becUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));  
         int userId = 000000000;
         // Getting Logged In user Details in this block
@@ -47,7 +47,7 @@ public class BecModelController {
         if (commonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
-                    fileInfoModelObject = becModelService.save(file, userId);
+                    fileInfoModelObject = becModelService.save(file, userId, exchangeCode);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
                         return commonService.uploadSuccesPage;

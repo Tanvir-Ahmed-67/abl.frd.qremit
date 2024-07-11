@@ -35,18 +35,17 @@ public class NafexModelService {
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    public FileInfoModel save(MultipartFile file, int userId) {
+    public FileInfoModel save(MultipartFile file, int userId, String exchangeCode) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream());
-            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("nafex");
             if(nafexModels.size()!=0) {
                 int ind = 0;
                 for (NafexEhMstModel nafexModel : nafexModels) {
-                    nafexModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
+                    nafexModel.setExchangeCode(exchangeCode);
                     nafexModel.setFileInfoModel(fileInfoModel);
                     nafexModel.setUserModel(user);
                     if (ind == 0) {
