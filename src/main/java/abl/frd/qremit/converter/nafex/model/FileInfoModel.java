@@ -51,6 +51,9 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<EzRemitModel> ezRemitModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<RiaModel> riaModel;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -270,5 +273,13 @@ public class FileInfoModel {
 
     public void setEzRemitModel(List<EzRemitModel> ezRemitModel) {
         this.ezRemitModel = ezRemitModel;
+    }
+
+    public List<RiaModel> getRiaModel() {
+        return riaModel;
+    }
+
+    public void setRiaModel(List<RiaModel> riaModel) {
+        this.riaModel = riaModel;
     }
 }
