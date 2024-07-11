@@ -23,6 +23,7 @@ import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.CommonService;
+import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.ReportService;
@@ -35,6 +36,8 @@ public class ReportController {
     private final ReportService reportService;
     @Autowired
     CommonService commonService;
+    @Autowired
+    ExchangeHouseModelService exchangeHouseModelService;
 
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
         this.myUserDetailsService = myUserDetailsService;
@@ -109,7 +112,7 @@ public class ReportController {
         List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
         resp.put("columns", columns);
 
-        ExchangeHouseModel exchangeHouseModel = reportService.findByExchangeCode(exchangeCode);
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         String baseTableName = exchangeHouseModel.getBaseTableName();
         String tbl = "base_data_table_" + baseTableName;
         
