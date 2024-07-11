@@ -317,7 +317,7 @@ public class RiaModel {
         this.userModel = userModel;
     }
 
-    public RiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, FileInfoModel fileInfoModel, User userModel) {
+    public RiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -345,8 +345,6 @@ public class RiaModel {
         this.checkCoc = checkCoc;
         this.checkAccPayee = checkAccPayee;
         this.checkBeftn = checkBeftn;
-        this.fileInfoModel = fileInfoModel;
-        this.userModel = userModel;
     }
 
     @Override
