@@ -56,7 +56,7 @@ public class EzRemitModelService {
                     ezRemitModel.setFileInfoModel(fileInfoModel);
                     ezRemitModel.setUserModel(user);
                     if (ind == 0) {
-                        fileInfoModel.setExchangeCode(exchangeCode);
+                        fileInfoModel.setExchangeCode(ezRemitModel.getExchangeCode());
                         ind++;
                     }
                 }
