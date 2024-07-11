@@ -28,7 +28,7 @@ public class AgexSingaporeModelController {
         this.agexSingaporeModelService = agexSingaporeModelService;
         this.commonService = commonService;
     }
-    @PostMapping("/agexSingaporeUpload")
+    @PostMapping("/singaporeUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 

@@ -3,7 +3,6 @@ package abl.frd.qremit.converter.nafex.controller;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
-import abl.frd.qremit.converter.nafex.service.AgexSingaporeModelService;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.EzRemitModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
@@ -29,7 +28,7 @@ public class EzRemitModelController {
         this.ezRemitModelService = ezRemitModelService;
         this.commonService = commonService;
     }
-    @PostMapping("/ezRemitUpload")
+    @PostMapping("/ezremitUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 
