@@ -37,18 +37,17 @@ public class RiaModelService {
     @Autowired
     RiaModelRepository riaModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    public FileInfoModel save(MultipartFile file, int userId) {
+    public FileInfoModel save(MultipartFile file, int userId, String exchangeCode) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
-            List<RiaModel> riaModelList = csvToRiaModels(file.getInputStream());
-            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("ria");
+            List<RiaModel> riaModelList = csvToRiaModels(file.getInputStream(), exchangeCode);
             if(riaModelList.size()!=0) {
                 int ind = 0;
                 for (RiaModel riaModel : riaModelList) {
-                    riaModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
+                    riaModel.setExchangeCode(exchangeCode);
                     riaModel.setFileInfoModel(fileInfoModel);
                     riaModel.setUserModel(user);
                     if (ind == 0) {
@@ -106,7 +105,7 @@ public class RiaModelService {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
     }
-    public List<RiaModel> csvToRiaModels(InputStream is) {
+    public List<RiaModel> csvToRiaModels(InputStream is, String exchangeCode) {
         Optional<RiaModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
@@ -118,7 +117,7 @@ public class RiaModelService {
                     continue;
                 }
                 RiaModel riaModel = new RiaModel(
-                        "7010290", //exCode
+                        exchangeCode, //exCode
                         csvRecord.get(0), //Tranno
                         "BDT", //Currency
                         Double.parseDouble(csvRecord.get(1)), //Amount

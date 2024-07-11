@@ -37,22 +37,21 @@ public class BecModelService {
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    public FileInfoModel save(MultipartFile file, int userId) {
+    public FileInfoModel save(MultipartFile file, int userId, String exchangeCode) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<BecModel> becModels = csvToBecModels(file.getInputStream());
-            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("bec");
             if(becModels.size()!=0) {
             int ind=0;
             for(BecModel becModel : becModels){
-                becModel.setExchangeCode(exchangeHouseModel.getExchangeCode()); 
+                becModel.setExchangeCode(exchangeCode); 
                 becModel.setFileInfoModel(fileInfoModel);
                 becModel.setUserModel(user);
                 if(ind==0) {
-                    fileInfoModel.setExchangeCode(becModel.getExchangeCode());
+                    fileInfoModel.setExchangeCode(exchangeCode);
                     ind++;
                 }
 

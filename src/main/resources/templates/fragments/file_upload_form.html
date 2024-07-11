@@ -38,16 +38,14 @@
                                             enctype="multipart/form-data">
                                             <div th:if="${showDropDown}">
                                                 <div class="row">
-                                                    
-                                                        <div class="col-2"><label>Type</label></div>
+                                                        <div class="col-2"><label>File Type</label></div>
                                                         <div class="col-4 form-group">
-                                                            <select id="type" name="type" class="form-select">
+                                                            <select id="fileType" name="fileType" class="form-select" required>
                                                                 <option value="">Choose One</option>
-                                                                <option value="1">API</option>
-                                                                <option value="2">BEFTN</option>
+                                                                <option value="API">API</option>
+                                                                <option value="BEFTN">BEFTN</option>
                                                             </select>
                                                         </div>
-                                                    
                                                 </div>
                                             </div>
                                             
@@ -59,7 +57,7 @@
                                                             placeholder="Choose File" required>
                                                     </div>
                                                     <div>
-                                                        <input type="hidden" name="exName" id="exName" value="">
+                                                        <input type="hidden" name="exchangeCode" id="exchangeCode" value="">
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-2">

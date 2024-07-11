@@ -36,18 +36,18 @@ public class AgexSingaporeModelService {
     @Autowired
     AgexSingaporeModelRepository agexSingaporeModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    public FileInfoModel save(MultipartFile file, int userId) {
+    public FileInfoModel save(MultipartFile file, int userId, String exchangeCode) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<AgexSingaporeModel> agexSingaporeModelList = csvToAgexSingaporeModels(file.getInputStream());
-            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("singapore");
+
             if(agexSingaporeModelList.size()!=0) {
                 int ind = 0;
                 for (AgexSingaporeModel agexSingaporeModel : agexSingaporeModelList) {
-                    agexSingaporeModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
+                    agexSingaporeModel.setExchangeCode(exchangeCode);
                     agexSingaporeModel.setFileInfoModel(fileInfoModel);
                     agexSingaporeModel.setUserModel(user);
                     if (ind == 0) {

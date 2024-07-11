@@ -2,7 +2,7 @@ $(document).ready(function(){
     var title = $(".order-last h3").text();
 
     var params = getParameterByName("id");
-    $("#exName").val(params);
+    $("#exchangeCode").val(params);
     
     /*
     $('.exCode').on('click',function(e){ 
@@ -34,7 +34,6 @@ $(document).ready(function(){
     $('form').on('submit',function(e){
         e.preventDefault();
         var data = new FormData($(this)[0]);
-        //console.log(data);
         $.ajax({
             url: "/utils/upload",
             data: data,
