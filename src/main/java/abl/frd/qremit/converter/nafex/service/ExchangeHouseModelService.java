@@ -39,4 +39,9 @@ public class ExchangeHouseModelService {
     public void editExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception {
         exchangeHouseModelRepository.editExchangeHouse(exchangeHouseModel.getExchangeName(), exchangeHouseModel.getExchangeShortName(), exchangeHouseModel.getNrtaCode(), exchangeHouseModel.getId());
     }
+
+    public ExchangeHouseModel findByExchangeCode(String exchangeCode){
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+        return exchangeHouseModel;
+    }
 }

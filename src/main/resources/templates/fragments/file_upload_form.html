@@ -12,7 +12,7 @@
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>File Upload</h3>
+                            <h3>File Upload for <span id="exchangeName" th:text="${exchangeHouseModel.exchangeName}"></span></h3>
                         </div>
                         <div class="col-12 col-md-6 order-md-2 order-first">
                             <nav aria-label="breadcrumb" class='breadcrumb-header'>
@@ -30,17 +30,35 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Upload the CSV File</h4>
+                                    <!--<h4 class="card-title">Upload the CSV File</h4>-->
                                 </div>
                                 <div class="card-body">
                                     <div id="up-form">
                                         <form id="singleUploadForm" name="singleUploadForm" method="POST" th:action="@{#}"
                                             enctype="multipart/form-data">
+                                            <div th:if="${showDropDown}">
+                                                <div class="row">
+                                                    
+                                                        <div class="col-2"><label>Type</label></div>
+                                                        <div class="col-4 form-group">
+                                                            <select id="type" name="type" class="form-select">
+                                                                <option value="">Choose One</option>
+                                                                <option value="1">API</option>
+                                                                <option value="2">BEFTN</option>
+                                                            </select>
+                                                        </div>
+                                                    
+                                                </div>
+                                            </div>
+                                            
                                             <div class="row">
-                                                <div class="col-sm-10">
+                                                <div class="col-2"><label>Upload CSV File</label></div>
+                                                <div class="col-sm-8">
                                                     <div class="form-group">
                                                         <input type="file" id="roundText" class="form-control round" name="file"
                                                             placeholder="Choose File" required>
+                                                    </div>
+                                                    <div>
                                                         <input type="hidden" name="exName" id="exName" value="">
                                                     </div>
                                                 </div>

@@ -83,17 +83,14 @@ public class CommonService {
         Map<String, Object> resp = new HashMap<>();
         List<Map<String, Object>> rows = new ArrayList<>();
         try{
-            Connection con = dataSource.getConnection();
-            //Statement stmt = con.createStatement();
-            //ResultSet rs = stmt.executeQuery(sql);
-            
+            Connection con = dataSource.getConnection();            
             PreparedStatement pstmt = con.prepareStatement(sql);
             int j = 1;
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 pstmt.setObject(j++, entry.getValue());
             }
-            ResultSet rs = pstmt.executeQuery();
             
+            ResultSet rs = pstmt.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
             if(!rs.next()){
