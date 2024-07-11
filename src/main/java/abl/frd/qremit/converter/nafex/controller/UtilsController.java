@@ -45,7 +45,7 @@ public class UtilsController {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         model.addAttribute("exName", exName);
         model.addAttribute("file", file);
-        
+
         String redirectUrl ="";
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exName);
         if(exName.equals(exchangeHouseModel.getExchangeCode()))  redirectUrl = "/" + exchangeHouseModel.getBaseTableName() + "Upload";  //generate dynamic URL from database    

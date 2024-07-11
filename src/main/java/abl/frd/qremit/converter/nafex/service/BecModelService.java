@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.nafex.service;
 
-import abl.frd.qremit.converter.nafex.helper.BecModelServiceHelper;
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import org.apache.commons.csv.CSVFormat;
@@ -60,10 +59,10 @@ public class BecModelService {
             }
 
             // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-            List<OnlineModel> onlineModelList = BecModelServiceHelper.generateOnlineModelList(becModels);
-            List<CocModel> cocModelList = BecModelServiceHelper.generateCocModelList(becModels);
-            List<AccountPayeeModel> accountPayeeModelList = BecModelServiceHelper.generateAccountPayeeModelList(becModels);
-            List<BeftnModel> beftnModelList = BecModelServiceHelper.generateBeftnModelList(becModels);
+            List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(becModels,"getCheckT24");
+            List<CocModel> cocModelList = CommonService.generateCocModelList(becModels,"getCheckCoc");
+            List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(becModels,"getCheckAccPayee");
+            List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(becModels,"getCheckBeftn");
 
 
             // FILE INFO TABLE GENERATION HERE......
@@ -146,10 +145,10 @@ public class BecModelService {
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",
-                        BecModelServiceHelper.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
-                        BecModelServiceHelper.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
-                        BecModelServiceHelper.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
-                        BecModelServiceHelper.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        //checkBeftn
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
+                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
+                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
+                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        //checkBeftn
                 becDataModelList.add(becDataModel);
             }
             return becDataModelList;

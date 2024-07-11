@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.nafex.service;
-
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import org.apache.commons.csv.CSVFormat;
@@ -14,12 +13,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-public class NafexModelService {
-    @Autowired
-    NafexModelRepository nafexModelRepository;
+public class AgexSingaporeModelService {
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -34,6 +33,8 @@ public class NafexModelService {
     UserModelRepository userModelRepository;
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
+    @Autowired
+    AgexSingaporeModelRepository agexSingaporeModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file, int userId) {
         try
@@ -41,24 +42,24 @@ public class NafexModelService {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
-            List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream());
-            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("nafex");
-            if(nafexModels.size()!=0) {
+            List<AgexSingaporeModel> agexSingaporeModelList = csvToAgexSingaporeModels(file.getInputStream());
+            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("singapore");
+            if(agexSingaporeModelList.size()!=0) {
                 int ind = 0;
-                for (NafexEhMstModel nafexModel : nafexModels) {
-                    nafexModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
-                    nafexModel.setFileInfoModel(fileInfoModel);
-                    nafexModel.setUserModel(user);
+                for (AgexSingaporeModel agexSingaporeModel : agexSingaporeModelList) {
+                    agexSingaporeModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
+                    agexSingaporeModel.setFileInfoModel(fileInfoModel);
+                    agexSingaporeModel.setUserModel(user);
                     if (ind == 0) {
-                        fileInfoModel.setExchangeCode(nafexModel.getExchangeCode());
+                        fileInfoModel.setExchangeCode(agexSingaporeModel.getExchangeCode());
                         ind++;
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(nafexModels,"getCheckT24");
-                List<CocModel> cocModelList = CommonService.generateCocModelList(nafexModels,"getCheckCoc");
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(nafexModels,"getCheckAccPayee");
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(nafexModels,"getCheckBeftn");
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, "getCheckT24");
+                List<CocModel> cocModelList = CommonService.generateCocModelList(agexSingaporeModelList, "getCheckCoc");
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(agexSingaporeModelList, "getCheckAccPayee");
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(agexSingaporeModelList, "getCheckBeftn");
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -66,12 +67,12 @@ public class NafexModelService {
                 fileInfoModel.setOnlineCount(String.valueOf(onlineModelList.size()));
                 fileInfoModel.setBeftnCount(String.valueOf(beftnModelList.size()));
                 fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
-                fileInfoModel.setTotalCount(String.valueOf(nafexModels.size()));
+                fileInfoModel.setTotalCount(String.valueOf(agexSingaporeModelList.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
                 fileInfoModel.setProcessedCount("test");
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
-                fileInfoModel.setNafexEhMstModel(nafexModels);
+                fileInfoModel.setAgexSingaporeModel(agexSingaporeModelList);
                 fileInfoModel.setCocModelList(cocModelList);
                 fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
                 fileInfoModel.setBeftnModelList(beftnModelList);
@@ -104,18 +105,18 @@ public class NafexModelService {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
     }
-    public List<NafexEhMstModel> csvToNafexModels(InputStream is) {
-        Optional<NafexEhMstModel> duplicateData;
+    public List<AgexSingaporeModel> csvToAgexSingaporeModels(InputStream is) {
+        Optional<AgexSingaporeModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
-            List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
+             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
+            List<AgexSingaporeModel> agexSingaporeModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
-                duplicateData = nafexModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                duplicateData = agexSingaporeModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
                     continue;
                 }
-                NafexEhMstModel nafexDataModel = new NafexEhMstModel(
+                AgexSingaporeModel agexSingaporeModel = new AgexSingaporeModel(
                         csvRecord.get(0), //exCode
                         csvRecord.get(1), //Tranno
                         csvRecord.get(2), //Currency
@@ -125,17 +126,16 @@ public class NafexModelService {
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
-                        csvRecord.get(12), //beneficiaryMobile
+                        "beneficiary Mobile", // beneficiaryMobile
                         csvRecord.get(8), //bankName
                         csvRecord.get(9), //bankCode
                         csvRecord.get(10), //branchName
                         csvRecord.get(11), // branchCode
-
-                        csvRecord.get(13), //draweeBranchName
-                        csvRecord.get(14), //draweeBranchCode
-                        csvRecord.get(15), //purposeOfRemittance
-                        csvRecord.get(16), //sourceOfIncome
-                        csvRecord.get(17), //remitterMobile
+                        "Drawee Branch Name", //Drawee Branch Name
+                        "Drawee Branch Code", // Drawee Branch Code
+                        "Purpose Of Remittance", // purposeOfRemittance
+                        "Source Of Income", // sourceOfIncome
+                        "Remitter Mobile", // remitterMobile
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
@@ -145,12 +145,11 @@ public class NafexModelService {
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
                         CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        // Checking Beftn
-                nafexDataModelList.add(nafexDataModel);
+                agexSingaporeModelList.add(agexSingaporeModel);
             }
-            return nafexDataModelList;
+            return agexSingaporeModelList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
     }
-
 }
