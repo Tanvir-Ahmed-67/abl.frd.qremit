@@ -36,18 +36,20 @@ public class AgexSingaporeModelService {
     @Autowired
     AgexSingaporeModelRepository agexSingaporeModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    public FileInfoModel save(MultipartFile file, int userId) {
+    public FileInfoModel save(MultipartFile file, int userId, String exchangeCode, String fileType) {
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<AgexSingaporeModel> agexSingaporeModelList = csvToAgexSingaporeModels(file.getInputStream());
-            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findExchangeCodeByBaseTableName("singapore");
+            String type = "0";
+            if(fileType.equalsIgnoreCase("API")) type = "1";
+
             if(agexSingaporeModelList.size()!=0) {
                 int ind = 0;
                 for (AgexSingaporeModel agexSingaporeModel : agexSingaporeModelList) {
-                    agexSingaporeModel.setExchangeCode(exchangeHouseModel.getExchangeCode());
+                    agexSingaporeModel.setExchangeCode(exchangeCode);
                     agexSingaporeModel.setFileInfoModel(fileInfoModel);
                     agexSingaporeModel.setUserModel(user);
                     if (ind == 0) {
@@ -56,7 +58,7 @@ public class AgexSingaporeModelService {
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, "getCheckT24");
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, "getCheckT24",type);
                 List<CocModel> cocModelList = CommonService.generateCocModelList(agexSingaporeModelList, "getCheckCoc");
                 List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(agexSingaporeModelList, "getCheckAccPayee");
                 List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(agexSingaporeModelList, "getCheckBeftn");
