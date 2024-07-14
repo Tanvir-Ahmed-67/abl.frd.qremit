@@ -56,7 +56,7 @@ public class RiaModelService {
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(riaModelList, "getCheckT24");
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(riaModelList, "getCheckT24","1");
                 List<CocModel> cocModelList = CommonService.generateCocModelList(riaModelList, "getCheckCoc");
                 List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(riaModelList, "getCheckAccPayee");
                 List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(riaModelList, "getCheckBeftn");
