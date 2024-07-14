@@ -150,14 +150,15 @@ public class CommonService {
         resp.put(totalDetails,"Total");
         return resp;
     }
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName) {
+    
+    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, String isProcessed) {
         List<OnlineModel> onlineList = new ArrayList<>();
         for (T singleModel : models) {
             try {
                 Method checkT24Method = singleModel.getClass().getMethod(checkT24MethodName);
                 String checkT24Value = (String) checkT24Method.invoke(singleModel);
                 if ("1".equals(checkT24Value)) {
-                    onlineList.add(generateOnlineModel(singleModel));
+                    onlineList.add(generateOnlineModel(singleModel,isProcessed));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -166,7 +167,11 @@ public class CommonService {
         return onlineList;
     }
 
-    public static <T> OnlineModel generateOnlineModel(T model) {
+    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName){
+        return generateOnlineModelList(models, checkT24MethodName,"0");
+    }
+
+    public static <T> OnlineModel generateOnlineModel(T model,String flag) {
         OnlineModel onlineModel = new OnlineModel();
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
@@ -175,8 +180,8 @@ public class CommonService {
             onlineModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             onlineModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             onlineModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
-            onlineModel.setIsProcessed("0");
-            onlineModel.setIsDownloaded("0");
+            onlineModel.setIsProcessed(flag);
+            onlineModel.setIsDownloaded(flag);
             onlineModel.setDownloadDateTime(LocalDateTime.now());
             onlineModel.setDownloadUserId(9999);
             onlineModel.setExtraE("dump");
@@ -186,6 +191,7 @@ public class CommonService {
         }
         return onlineModel;
     }
+
 
     private static Object getPropertyValue(Object obj, String methodName) throws Exception {
         Method method = obj.getClass().getMethod(methodName);

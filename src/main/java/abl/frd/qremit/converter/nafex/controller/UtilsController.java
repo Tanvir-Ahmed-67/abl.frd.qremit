@@ -42,7 +42,8 @@ public class UtilsController {
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails,@RequestParam("file") MultipartFile file,@RequestParam("exchangeCode") String exchangeCode, @RequestParam(defaultValue = "") String fileType , Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         model.addAttribute("file", file);
-
+        model.addAttribute("exchangeCode", exchangeCode);
+        
         int showDropDown = this.showDropDown(exchangeCode);
         if(showDropDown == 1){
             switch (fileType) {
@@ -65,7 +66,6 @@ public class UtilsController {
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         if(exchangeHouseModel != null && exchangeCode.equals(exchangeHouseModel.getExchangeCode())){
             redirectUrl = "/" + exchangeHouseModel.getBaseTableName() + "Upload";  //generate dynamic URL from database
-            model.addAttribute("exchangeCode", exchangeCode);
         }
         return "forward:" + redirectUrl;
     }
