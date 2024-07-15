@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRD Remittance</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
+    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
+</head>
+<body>
+<div id="app"><!--main content-->
+    <span sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="/fragments/sidebarSuperAdmin :: sidebarSuperAdmin"></span>
+    <span sec:authorize="hasRole('ROLE_ADMIN')" th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <span sec:authorize="hasRole('ROLE_USER')" th:replace="/fragments/sidebarUser :: sidebarUser"></span>
+    <div id="main"><!--content Id-->
+        <span th:replace="/fragments/header :: header"></span>
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="/pages/superAdmin/superAdminLandingPage :: superAdminContent"><!--dynamic content-->
+
+        </div>
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_ADMIN')" th:replace="/pages/admin/adminLandingPage :: adminContent"><!--dynamic content-->
+
+        </div>
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_USER')" th:replace="/fragments/file_upload_form :: fileUploadForm"><!--dynamic content-->
+
+        </div>
+        <span th:replace="/fragments/footer :: footer"></span>
+    </div>
+</div>
+<script th:src="@{/js/feather.min.js}"></script>
+<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+
+<script th:src="@{/js/Chart.min.js}"></script>
+<script th:src="@{/js/apexcharts.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

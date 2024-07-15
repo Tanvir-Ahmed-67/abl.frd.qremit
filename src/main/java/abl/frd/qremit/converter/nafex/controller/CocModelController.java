@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/qremit")
 public class CocModelController {
     private final CocModelService cocModelService;
 
@@ -24,6 +23,15 @@ public class CocModelController {
     @GetMapping("/downloadcoc/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(cocModelService.load(fileId, fileType));
+        String fileName = "Coc_Nafex";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
+                .contentType(MediaType.parseMediaType("application/csv"))
+                .body(file);
+    }
+    @GetMapping("/downloadcoc")
+    public ResponseEntity<Resource> download_File() {
+        InputStreamResource file = new InputStreamResource(cocModelService.loadAll());  // have to apply logic in this loadAll method to download unprocessed coc data each time
         String fileName = "Coc_Nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")

@@ -15,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NafexModelServiceHelper {
-    
     public static String TYPE = "text/csv";
     static String[] HEADERs = {"Excode","Tranno","Currency","Amount","Entered Date","Remitter","Beneficiary","Bene A/C","Bank Name","Bank Code","Branch Name","Branch Code"};
 
@@ -90,8 +89,8 @@ public class NafexModelServiceHelper {
                     onlineModel.setExchangeCode(nafexEhMstModel.getExchangeCode());
                     onlineModel.setRemitterName(nafexEhMstModel.getRemitterName());
                     onlineModel.setTransactionNo(nafexEhMstModel.getTransactionNo());
-                    onlineModel.setExtraA("dump");
-                    onlineModel.setExtraB("dump");
+                    onlineModel.setIsProcessed("0");
+                    onlineModel.setIsDownloaded("0");
                     onlineModel.setExtraC("dump");
                     onlineModel.setExtraD("dump");
                     onlineModel.setExtraE("dump");

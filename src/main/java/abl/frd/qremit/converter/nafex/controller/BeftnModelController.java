@@ -16,7 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 @Controller
-@RequestMapping("/qremit")
 public class BeftnModelController {
     private final BeftnModelService beftnModelService;
     public BeftnModelController(BeftnModelService beftnModelService){
@@ -32,10 +31,28 @@ public class BeftnModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
+    @GetMapping("/downloadbeftn")
+    public ResponseEntity<Resource> download_File() {
+        InputStreamResource file = new InputStreamResource(beftnModelService.loadAll());
+        String fileName = "Beftn_Main_Nafex";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
+                .contentType(MediaType.parseMediaType("application/csv"))
+                .body(file);
+    }
 
     @GetMapping("/downloadBeftnIncentive/{fileId}/{fileType}")
     public ResponseEntity<Resource> downloadIncentiveFile(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(beftnModelService.loadIncentive(fileId, fileType));
+        String fileName = "Beftn_Incentive_Nafex";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")
+                .contentType(MediaType.parseMediaType("application/csv"))
+                .body(file);
+    }
+    @GetMapping("/downloadBeftnIncentive")
+    public ResponseEntity<Resource> downloadIncentiveFile() {
+        InputStreamResource file = new InputStreamResource(beftnModelService.loadAllIncentive());
         String fileName = "Beftn_Incentive_Nafex";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".xlsx")

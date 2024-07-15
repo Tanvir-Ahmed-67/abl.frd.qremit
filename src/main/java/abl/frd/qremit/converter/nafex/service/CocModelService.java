@@ -18,5 +18,10 @@ public class CocModelService {
         ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(cocModels);
         return in;
     }
+    public ByteArrayInputStream loadAll() {
+        List<CocModel> cocModels = CocModelRepository.findAllCocModel();
+        ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(cocModels);
+        return in;
+    }
 
 }

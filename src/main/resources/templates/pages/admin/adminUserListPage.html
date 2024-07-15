@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRD Remittance</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
+    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
+</head>
+<body>
+<div id="app"><!--main content-->
+    <span th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <div id="main"><!--content Id-->
+        <span th:replace="/fragments/header :: header"></span>
+        <div class="main-content container-fluid"><!--dynamic content-->
+            <div class="page-title">
+                <h3>All Users Details</h3>
+            </div>
+            <div class="row" id="table-hover-row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">List of All Users</h4>
+                        </div>
+                        <div th:if="${message}" class="alert alert-success text-center">
+                            [[${message}]]
+                        </div>
+                        <div class="card-content">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                    <tr>
+                                        <th>User Name</th>
+                                        <th>User Email</th>
+                                        <th>User Type</th>
+                                        <th>Nrta Code</th>
+                                        <th>Active Status</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="user : ${UserList}">
+                                        <td class="text-bold-500" th:text="${user.getUserName()}"></td>
+                                        <td class="text-bold-500" th:text="${user.getUserEmail()}"></td>
+                                        <td class="text-bold-500">USER</td>
+                                        <td class="text-bold-500" th:text="${user.getNrtaCode()}"></td>
+                                        <td class="text-bold-500" th:text="${user.activeStatus} ? 'ACTIVE':'INACTIVE'"></td>
+                                        <td>
+                                            <form th:action="@{/userEditForm/{id}(id=${user.getId()})}" th:method="POST">
+                                                <button type="submit" class="btn btn-outline-primary round" th:name="Edit" th:value="${user.getId()}">Edit</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <span th:replace="/fragments/footer :: footer"></span>
+    </div>
+</div>
+<script th:src="@{/js/feather.min.js}"></script>
+<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+
+<script th:src="@{/js/Chart.min.js}"></script>
+<script th:src="@{/js/apexcharts.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>FRD Remittance</title>
+</head>
+<body>
+<div id="sidebar" class='active' th:fragment="sidebar"><!--sidebar-->
+    <div class="sidebar-wrapper active">
+        <div class="sidebar-header">
+            <img src="images/banner.png" alt="" srcset="">
+        </div>
+        <div class="sidebar-menu">
+            <ul class="menu">
+                <li class='sidebar-title'>Main Menu</li>
+                <!--..........................Super Admin Section......................-->
+                <div sec:authorize="hasRole('ROLE_SUPERADMIN')">
+                    <li class="sidebar-item active ">
+                        <a th:href="@{/home}" class='sidebar-link'>
+                            <i data-feather="home" width="20"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class='sidebar-title'>Management</li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i data-feather="file-plus" width="20"></i>
+                            <span>Data Statistics</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a href="component-buttons.html">View Onlie Data</a>
+                            </li>
+                            <li>
+                                <a href="component-alert.html">View COC Data</a>
+                            </li>
+
+                            <li>
+                                <a href="component-badge.html">View A/C Payee Data</a>
+                            </li>
+
+                            <li>
+                                <a href="component-breadcrumb.html">View BEFTN Data</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i data-feather="user" width="20"></i>
+                            <span>User Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/allUsers}">View User</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/newUserCreationForm}">Insert User</a>
+                            </li>
+
+                            <li>
+                                <a href="component-badge.html">Update User</a>
+                            </li>
+
+                            <li>
+                                <a href="component-breadcrumb.html">Delete User</a>
+                            </li>
+                        </ul>
+                    </li>
+                </div>
+                <!--..........................Admin Section......................-->
+                <div sec:authorize="hasRole('ROLE_ADMIN')">
+                    <li class="sidebar-item active ">
+                        <a th:href="@{/home}" class='sidebar-link'>
+                            <i data-feather="home" width="20"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class='sidebar-title'>Management</li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i data-feather="file-plus" width="20"></i>
+                            <span>Data Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a href="component-buttons.html">View Data</a>
+                            </li>
+                            <li>
+                                <a href="component-alert.html">Insert Data</a>
+                            </li>
+
+                            <li>
+                                <a href="component-badge.html">Update Data</a>
+                            </li>
+
+                            <li>
+                                <a href="component-breadcrumb.html">Delete Data</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i data-feather="user" width="20"></i>
+                            <span>User Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/allUsers}">View User</a>
+                            </li>
+                            <li>
+                                <a href="component-alert.html">Insert User</a>
+                            </li>
+
+                            <li>
+                                <a href="component-badge.html">Update User</a>
+                            </li>
+
+                            <li>
+                                <a href="component-breadcrumb.html">Delete User</a>
+                            </li>
+                        </ul>
+                    </li>
+                </div>
+                <!--..........................User Section......................-->
+                <div sec:authorize="hasRole('ROLE_USER')">
+                    <li class="sidebar-item active">
+                        <a th:href="@{/home}" class='sidebar-link'>
+                            <i data-feather="home" width="20"></i>
+                            <span>File Upload</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item  has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i data-feather="triangle" width="20"></i>
+                            <span>Components</span>
+                        </a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="component-alert.html">Alert</a>
+                            </li>
+
+                            <li>
+                                <a href="component-badge.html">Badge</a>
+                            </li>
+
+                            <li>
+                                <a href="component-breadcrumb.html">Breadcrumb</a>
+                            </li>
+
+                            <li>
+                                <a href="component-buttons.html">Buttons</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class='sidebar-title'>File Management</li>
+                    <li class="sidebar-item">
+                        <a th:href="@{/home}" class='sidebar-link'>
+                            <i data-feather="file-plus" width="20"></i>
+                            <span>Upload File</span>
+                        </a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+    </div>
+</div>
+</body>
+</html>

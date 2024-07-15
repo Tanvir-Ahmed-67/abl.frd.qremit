@@ -31,20 +31,12 @@ public class FileInfoModel {
     @Column(name = "total_count")
     private String totalCount;
 
-    /*
-    @ManyToOne
-    @JoinColumn(name = "eh_mst_id", referencedColumnName = "id")
-    private NafexEhMstModel nafexEhMstModel;
-*/
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    private User userModel;
+
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     private List<NafexEhMstModel> nafexEhMstModel;
-
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
-    private List<BecModel> becModel;
-
-      @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
-    private List<MuzainiModel> muzainiModel;
-
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     private List<CocModel> cocModelList;
@@ -122,6 +114,14 @@ public class FileInfoModel {
                 '}';
     }
 
+    public User getUserModel() {
+        return userModel;
+    }
+
+    public void setUserModel(User userModel) {
+        this.userModel = userModel;
+    }
+
     public List<NafexEhMstModel> getNafexEhMstModel() {
         return nafexEhMstModel;
     }
@@ -129,16 +129,6 @@ public class FileInfoModel {
     public void setNafexEhMstModel(List<NafexEhMstModel> nafexEhMstModelSet) {
         this.nafexEhMstModel = nafexEhMstModelSet;
     }
-
-      public void setBecModel(List<BecModel> becModelSet) {
-        this.becModel = becModelSet;
-    }
-
-      public void setMuzainiModel(List<MuzainiModel> muzainiModelSet) {
-        this.muzainiModel = muzainiModelSet;
-    }
-
-    
 
     public String getTotalCount() {
         return totalCount;
@@ -229,6 +219,10 @@ public class FileInfoModel {
     }
 
     public void setProcessedCount(String processedCount) {
+        this.processedCount = processedCount;
+    }
+
+    public void setMuzainiModel(String processedCount) {
         this.processedCount = processedCount;
     }
 }

@@ -10,8 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
-@RequestMapping("/qremit")
 public class OnlineModelController {
 
     private final OnlineModelService onlineModelService;
@@ -29,5 +30,20 @@ public class OnlineModelController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
+    }
+    @GetMapping("/downloadonline")
+    public ResponseEntity<Resource> download_File() {
+        InputStreamResource file = new InputStreamResource(onlineModelService.loadUnprocessedOnlineData("0"));
+        String fileName = "Online_Nafex";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
+                .contentType(MediaType.parseMediaType("application/csv"))
+                .body(file);
+    }
+    @GetMapping("/countOnlineAfterDownloadButtonClicked")
+    @ResponseBody
+    public int countOnlineAfterDownloadButtonClicked(){
+        int count = onlineModelService.countUnProcessedOnlineData("0");
+        return count;
     }
 }
