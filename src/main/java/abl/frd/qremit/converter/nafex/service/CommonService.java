@@ -370,14 +370,15 @@ public class CommonService {
         }
         return onlineAccountNumber;
     }
-    public static String putOnlineFlag(String accountNumber){
-        if(isOnlineAccoutNumberFound(accountNumber)){
+    public static String putOnlineFlag(String accountNumber, String bankName){
+        if(isOnlineAccoutNumberFound(accountNumber, bankName)){
             return "1";
         }
         else{
             return "0";
         }
     }
+    
     public static boolean isOnlineAccoutNumberFound(String accountNumber){
         Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
         Matcher m = p.matcher(accountNumber);
@@ -385,12 +386,35 @@ public class CommonService {
         {
             return true;
         }
-        else{
+        
+        return false;
+    }
+
+    public static boolean isOnlineAccoutNumberFound(String accountNumber, String bankName){
+        Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
+        Matcher m = p.matcher(accountNumber);
+        if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")){
+            if (m.find())
+            {
+                return true;
+            }else return false;
+        }
+        return false;
+    }
+    public static boolean isBeftnFound(String bankName, String accountNumber, String routingNo){
+        if(routingNo.isEmpty() || routingNo.length() != 9 || checkAgraniRoutingNo(routingNo)){
             return false;
         }
-    }
-    public static boolean isBeftnFound(String bankName, String accountNumber){
-        if(isOnlineAccoutNumberFound(accountNumber)){
+        //if(routingNo.matches("^010.*"))  return false;
+        /* 
+        if(!(routingNo.matches("^010.*") && routingNo.length() == 9)){
+            return true;
+        }
+        else if(!(routingNo.matches("^10.*") && routingNo.length() == 8)){
+            return true;
+        }
+        */
+        else if(isOnlineAccoutNumberFound(accountNumber, bankName)){
             return false;
         }
         else if(isCocFound(accountNumber)){
@@ -404,36 +428,56 @@ public class CommonService {
         }
     }
 
+    public static boolean isBeftnFound(String bankName, String accountNumber){
+        return isBeftnFound(bankName, accountNumber,"");
+    }    
 
-    public static String putBeftnFlag(String bankName, String accountNumber){
-        if(isBeftnFound(bankName, accountNumber)){
+    public static String putBeftnFlag(String bankName, String accountNumber, String routingNo){
+        if(isBeftnFound(bankName, accountNumber,routingNo)){
             return "1";
         }
         else{
             return "0";
         }
     }
-    public static boolean isAccountPayeeFound(String bankName, String accountNumber){
-        if(isOnlineAccoutNumberFound(accountNumber)){
+    public static boolean isAccountPayeeFound(String bankName, String accountNumber, String routingNo){
+        if(isOnlineAccoutNumberFound(accountNumber, bankName)){
             return false;
         }
         else if(isCocFound(accountNumber)) {
             return false;
         }
-        else if(isBeftnFound(bankName,accountNumber)){
+        else if(isBeftnFound(bankName,accountNumber,routingNo)){
             return false;
         }
         else{
             return true;
         }
     }
-    public static String putAccountPayeeFlag(String bankName, String accountNumber){
-        if(isAccountPayeeFound(bankName, accountNumber)){
+    public static String putAccountPayeeFlag(String bankName, String accountNumber, String routingNo){
+        if(isAccountPayeeFound(bankName, accountNumber, routingNo)){
             return "1";
         }
         else{
             return "0";
         }
+    }
+
+    public static boolean checkEmptyString(String str){
+        if(str == null || str.trim().isEmpty()) return true;
+        else return false;
+    }
+
+    public static boolean checkAgraniRoutingNo(String routingNo){
+        if(routingNo.length() == 9  && routingNo.matches("^010.*")){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean checkAgraniBankName(String bankName){
+        if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")) return true;
+        return false;
     }
 
 }
