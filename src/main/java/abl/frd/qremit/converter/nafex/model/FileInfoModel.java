@@ -79,6 +79,10 @@ public class FileInfoModel {
     @JsonIgnore
     private List<OnlineModel> onlineModelList;
 
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ErrorDataModel> errorDataModelList;
+
     public List<OnlineModel> getOnlineModelList() {
         return onlineModelList;
     }
@@ -109,6 +113,14 @@ public class FileInfoModel {
 
     public void setCocModelList(List<CocModel> cocModelList) {
         this.cocModelList = cocModelList;
+    }
+
+    public List<ErrorDataModel> getErrorDataModelList() {
+        return errorDataModelList;
+    }
+
+    public void seterrorDataModelList(List<ErrorDataModel> errorDataModelList ) {
+        this.errorDataModelList = errorDataModelList;
     }
 
     public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount) {
