@@ -32,9 +32,11 @@ public class DynamicTableService {
                 continue;
             }
             baseTableName = exchangeHouseModel.getBaseTableName();
+            baseTableName = baseTableName.substring(0, 1).toUpperCase() + baseTableName.substring(1);
             nrtaCode = exchangeHouseModel.getNrtaCode();
             //baseTableName = baseTableName.substring(0,1).toUpperCase() + baseTableName.substring(1).toLowerCase();
             String repositoryName = baseTableName+"ModelRepository";
+            System.out.println(repositoryName);
             this.repositoryMap.put(nrtaCode, repositoryName);
         }
         this.repositoryMap.forEach((code, repositoryClassName) -> {
