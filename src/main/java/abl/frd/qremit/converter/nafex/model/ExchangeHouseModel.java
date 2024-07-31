@@ -20,6 +20,17 @@ public class ExchangeHouseModel {
     @Column(nullable=false)
     private String baseTableName;
     @Column
+    private String modelClassName;
+
+    public String getModelClassName() {
+        return modelClassName;
+    }
+
+    public void setModelClassName(String modelClassName) {
+        this.modelClassName = modelClassName;
+    }
+
+    @Column
     private boolean activeStatus;
 
     public boolean getActiveStatus() {

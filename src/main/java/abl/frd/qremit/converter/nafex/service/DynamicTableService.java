@@ -2,12 +2,16 @@ package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
+import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
+import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -17,44 +21,52 @@ import java.util.Map;
 public class DynamicTableService {
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
+    @Autowired
+    UserModelRepository userModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    private Map<String, String> repositoryMap = new HashMap<>();
     private final Map<String, JpaRepository> repositoryInstanceMap = new HashMap<>();
+    private final ApplicationContext applicationContext;
 
-
-    // Generating map of repositories identified by nrta code
-    public Map<String, JpaRepository> generateAllRepositoryMap(){
+    @Autowired
+    public  DynamicTableService(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+    public Map<String, JpaRepository> DoSomething(){
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
-        String baseTableName;
+        String modelClassName;
         String nrtaCode;
         for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
-            if(exchangeHouseModel.getExchangeCode().equals("710000")){
-                continue;
+            try{
+                if(exchangeHouseModel.getExchangeCode().equals("710000")){
+                    continue;
+                }
+                modelClassName = exchangeHouseModel.getModelClassName();
+                nrtaCode = exchangeHouseModel.getNrtaCode();
+                String repositoryClassName = modelClassName+"Repository";
+                Class<?> repositoryClass = Class.forName("abl.frd.qremit.converter.nafex.repository."+repositoryClassName);
+                JpaRepository repository = (JpaRepository) applicationContext.getBean(repositoryClass);
+                if (repository == null) {
+                    throw new IllegalArgumentException("No repository found for bean name: " + repositoryClass);
+                }
+                this.repositoryInstanceMap.put(nrtaCode, repository);
+            }catch (Exception e) {
+                throw new RuntimeException("Failed to initialize repository: " + e.getMessage());
             }
-            baseTableName = exchangeHouseModel.getBaseTableName();
-            baseTableName = baseTableName.substring(0, 1).toUpperCase() + baseTableName.substring(1);
-            nrtaCode = exchangeHouseModel.getNrtaCode();
-            //baseTableName = baseTableName.substring(0,1).toUpperCase() + baseTableName.substring(1).toLowerCase();
-            String repositoryName = baseTableName+"ModelRepository";
-            System.out.println(repositoryName);
-            this.repositoryMap.put(nrtaCode, repositoryName);
         }
-        this.repositoryMap.forEach((code, repositoryClassName) -> {
-            try {
-                Class<?> repositoryClass = Class.forName(repositoryClassName);
-                JpaRepository repository = (JpaRepository) repositoryClass.getDeclaredConstructor().newInstance();
-                this.repositoryInstanceMap.put(code, repository);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to initialize repository: " + repositoryClassName, e);
-            }
-        });
-        return this.repositoryInstanceMap;
+        return repositoryInstanceMap;
     }
 
     public FileInfoModel saveApiBeftn(MultipartFile file, int userId) {
-        generateAllRepositoryMap();
-        //JpaRepository repository = repositoryInstanceMap.get("71000");
-        System.out.println(repositoryInstanceMap);
-        return null;
+        try{
+            FileInfoModel fileInfoModel = new FileInfoModel();
+            fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
+            User user = userModelRepository.findByUserId(userId);
+            DoSomething();
+            //JpaRepository repository = repositoryInstanceMap.get("71000");
+            System.out.println(repositoryInstanceMap);
+            return null;
+        } catch (Exception e) {
+        throw new RuntimeException("fail to store csv data: " + e.getMessage());
+        }
     }
 }
