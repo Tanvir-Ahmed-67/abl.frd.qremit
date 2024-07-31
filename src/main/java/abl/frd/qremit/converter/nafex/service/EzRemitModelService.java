@@ -147,7 +147,7 @@ public class EzRemitModelService {
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",
-                        CommonService.putOnlineFlag(csvRecord.get(4).trim()),        // checkT24
+                        CommonService.putOnlineFlag(csvRecord.get(4).trim(), "Agrani"),        // checkT24
                         CommonService.putCocFlag(csvRecord.get(4).trim()),          //checkCoc
                         "0",                                                       //checkAccPayee
                         "0");                                                       // Checking Beftn
@@ -195,10 +195,10 @@ public class EzRemitModelService {
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim()),                                 // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(9).trim(),csvRecord.get(7).trim()),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(9).trim(), csvRecord.get(7).trim()));        // check beftn                                                // Checking Beftn
+                        CommonService.putAccountPayeeFlag(csvRecord.get(9).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
+                        CommonService.putBeftnFlag(csvRecord.get(9).trim(), csvRecord.get(7).trim(),csvRecord.get(11)));        // check beftn                                                // Checking Beftn
                 ezRemitModelList.add(ezRemitModel);
             }
             return ezRemitModelList;

@@ -141,7 +141,7 @@ public class RiaModelService {
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), "Agrani"),                                 // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
                         "0",
                         "0");

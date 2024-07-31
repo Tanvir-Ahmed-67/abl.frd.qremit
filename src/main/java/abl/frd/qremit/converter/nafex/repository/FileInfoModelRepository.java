@@ -15,4 +15,6 @@ public interface FileInfoModelRepository extends JpaRepository<FileInfoModel, In
     @Query("SELECT n FROM FileInfoModel n WHERE n.userModel.id =:userId")
     List<FileInfoModel> getUploadedFileDetails(@Param("userId") int userId);
     FileInfoModel findByFileName(String fileName);
+    @Query("UPDATE FileInfoModel n SET n.accountPayeeCount = :accountPayeeCount, n.beftnCount = :beftnCount, n.cocCount = :cocCount, n.onlineCount = :onlineCount, n.totalCount = :totalCount, n.processedCount = :processedCount, n.unprocessedCount = :unprocessedCount where n.id = :id")
+    void updateFileInfoModel(long id, String accountPayeeCount, String beftnCount, String cocCount, String onlineCount, String totalCount, String processedCount, String unprocessedCount);
 }

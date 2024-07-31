@@ -145,10 +145,10 @@ public class MuzainiModelService {
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",           // extra_c
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                                 // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        //checkBeftn
+                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
+                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(),csvRecord.get(11)));        //checkBeftn
 
                 muzainiDataModelList.add(muzainiDataModel);
             }
