@@ -146,7 +146,7 @@ public class NafexModelService {
                 
                 if(CommonService.isBeftnFound(csvRecord.get(8), csvRecord.get(7), csvRecord.get(11))){
                     if(csvRecord.get(11).length() != 9 || CommonService.checkAgraniRoutingNo(csvRecord.get(11))){
-                        errorMessage = "Invalid Routing Number";
+                        errorMessage = "Invalid Routing Number for BEFTN";
                         ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, errorMessage, "0", "0", "0", "0", currentDateTime.toString(), user, fileInfoModel);
                         errorDataModelList.add(errorDataModel);
                         continue;  
@@ -160,12 +160,23 @@ public class NafexModelService {
                     }
                 }else if(CommonService.isAccountPayeeFound(csvRecord.get(8), csvRecord.get(7), csvRecord.get(11))){
                     //check ABL A/C starts with 02** and routing no is not matched with ABL
-                    if(CommonService.isOnlineAccoutNumberFound(csvRecord.get(7)) && !CommonService.checkAgraniRoutingNo(csvRecord.get(11))){
-                        errorMessage = "Invalid Routing Number";
+                    if(CommonService.isOnlineAccoutNumberFound(csvRecord.get(7)) && !CommonService.checkAgraniRoutingNo(csvRecord.get(11)) 
+                        && !CommonService.checkAgraniBankName(csvRecord.get(8))){
+                        errorMessage = "Invalid Routing Number or Bank Name";
                         ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, errorMessage, "0", "0", "0", "0", currentDateTime.toString(), user, fileInfoModel);
                         errorDataModelList.add(errorDataModel);
                         continue;
                     }
+                    //abl routing number a/c starts 02** which isn't 13 digits
+                    else if(CommonService.checkAgraniRoutingNo(csvRecord.get(11)) && csvRecord.get(7).startsWith("02000")){
+                        if(csvRecord.get(7).length() != 13){
+                            errorMessage = "Invalid ABL Online A/C Number which requires 13 digits";
+                            ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, errorMessage, "0", "0", "0", "0", currentDateTime.toString(), user, fileInfoModel);
+                            errorDataModelList.add(errorDataModel);
+                            continue;
+                        }
+                    }
+                    
                     //string satrts with CO
                     else if(csvRecord.get(7).toLowerCase().contains("co")){
                         errorMessage = "Invalid COC A/C name";
