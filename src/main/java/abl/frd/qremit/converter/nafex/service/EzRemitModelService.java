@@ -128,6 +128,7 @@ public class EzRemitModelService {
                         Double.parseDouble(csvRecord.get(5)), //Amount
                         csvRecord.get(7), //enteredDate
                         csvRecord.get(1), //remitter
+                        "Remitter Mobile", // remitterMobile
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(4), //beneficiaryAccount
@@ -141,16 +142,15 @@ public class EzRemitModelService {
                         "Drawee Branch Code", // Drawee Branch Code
                         "Purpose Of Remittance", // purposeOfRemittance
                         "Source Of Income", // sourceOfIncome
-                        "Remitter Mobile", // remitterMobile
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",
+                        "extraC",           // extra_c
                         CommonService.putOnlineFlag(csvRecord.get(4).trim(), "Agrani"),        // checkT24
-                        CommonService.putCocFlag(csvRecord.get(4).trim()),          //checkCoc
-                        "0",                                                       //checkAccPayee
-                        "0");                                                       // Checking Beftn
+                        CommonService.putCocFlag(csvRecord.get(4).trim()),                              //checkCoc
+                        "0",                                                                            //checkAccPayee
+                        "0");                                                                           // Checking Beftn
                 ezRemitModelList.add(ezRemitModel);
             }
             return ezRemitModelList;
@@ -176,6 +176,7 @@ public class EzRemitModelService {
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
+                        "Remitter Mobile", // remitterMobile
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
@@ -189,14 +190,13 @@ public class EzRemitModelService {
                         "Drawee Branch Code", // Drawee Branch Code
                         "Purpose Of Remittance", // purposeOfRemittance
                         "Source Of Income", // sourceOfIncome
-                        "Remitter Mobile", // remitterMobile
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim()),                                 // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
+                        "extraC",           // extra_c
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim()),                           // checkT24
+                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                                       //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(9).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
                         CommonService.putBeftnFlag(csvRecord.get(9).trim(), csvRecord.get(7).trim(),csvRecord.get(11)));        // check beftn                                                // Checking Beftn
                 ezRemitModelList.add(ezRemitModel);

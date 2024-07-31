@@ -184,6 +184,7 @@ public class NafexModelService {
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
+                        csvRecord.get(17), //remitterMobile
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
@@ -197,7 +198,6 @@ public class NafexModelService {
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance
                         csvRecord.get(16), //sourceOfIncome
-                        csvRecord.get(17), //remitterMobile
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
@@ -234,6 +234,7 @@ public class NafexModelService {
             amount, //Amount
             csvRecord.get(4), //enteredDate
             csvRecord.get(5), //remitter
+            csvRecord.get(17), //remitterMobile
             csvRecord.get(6), // beneficiary
             csvRecord.get(7), //beneficiaryAccount
             csvRecord.get(12), //beneficiaryMobile
@@ -245,7 +246,6 @@ public class NafexModelService {
             csvRecord.get(14), //draweeBranchCode
             csvRecord.get(15), //purposeOfRemittance
             csvRecord.get(16), //sourceOfIncome
-            csvRecord.get(17), //remitterMobile
             "Not Processed",    // processed_flag
             "type",             // type_flag
             "processedBy",      // Processed_by

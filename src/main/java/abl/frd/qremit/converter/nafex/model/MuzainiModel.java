@@ -20,11 +20,14 @@ public class MuzainiModel {
     private String enteredDate;
     @Column(name = "remitter_name")
     private String remitterName;
+    @Column(name = "remitter_mobile_no")
+    private String remitterMobile;
     @Column(name = "beneficiary_name")
     private String beneficiaryName;
     @Column(name = "beneficiary_account_no", nullable = false)
     private String beneficiaryAccount;
-  
+    @Column(name = "beneficiary_mobile_no")
+    private String beneficiaryMobile;
     @Column(name = "bank_name")
     private String bankName;
     @Column(name = "bank_code")
@@ -33,9 +36,6 @@ public class MuzainiModel {
     private String branchName;
     @Column(name = "branch_code")
     private String branchCode;
-    @Column(name = "beneficiary_mobile_no")
-    private String beneficiaryMobile;
-
     @Column(name = "drawee_branch_name")
     private String draweeBranchName;
     @Column(name = "drawee_branch_code")
@@ -44,8 +44,6 @@ public class MuzainiModel {
     private String purposeOfRemittance;
     @Column(name = "source_of_income")
     private String sourceOfIncome;
-    @Column(name = "remitter_mobile_no")
-    private String remitterMobile;
     @Column(name = "process_flag")
     private String processFlag;
     @Column(name = "type_flag")
@@ -317,25 +315,25 @@ public class MuzainiModel {
         this.extraC = extraC;
     }
 
-    public MuzainiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryMobile, String purposeOfRemittance, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public MuzainiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
         this.amount = amount;
         this.enteredDate = enteredDate;
         this.remitterName = remitterName;
+        this.remitterMobile = remitterMobile;
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryAccount = beneficiaryAccount;
+        this.beneficiaryMobile = beneficiaryMobile;
         this.bankName = bankName;
         this.bankCode = bankCode;
         this.branchName = branchName;
         this.branchCode = branchCode;
-          this.beneficiaryMobile = beneficiaryMobile;
-        // this.draweeBranchName = draweeBranchName;
-        // this.draweeBranchCode = draweeBranchCode;
+        this.draweeBranchName = draweeBranchName;
+        this.draweeBranchCode = draweeBranchCode;
         this.purposeOfRemittance = purposeOfRemittance;
-       // this.sourceOfIncome = sourceOfIncome;
-        this.remitterMobile = remitterMobile;
+        this.sourceOfIncome = sourceOfIncome;
         this.processFlag = processFlag;
         this.typeFlag = typeFlag;
         this.processedBy = processedBy;

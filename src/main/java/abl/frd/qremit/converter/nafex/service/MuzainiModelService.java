@@ -126,27 +126,27 @@ public class MuzainiModelService {
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
+                        csvRecord.get(14), //remitterMobile
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
+                        csvRecord.get(12), //beneficiaryMobile
 
-                        csvRecord.get(8), //bankName
-                        csvRecord.get(9), //bankCode
+                        csvRecord.get(8), //bankCode
+                        csvRecord.get(9), //bankName
                         csvRecord.get(10), //branchName
                         csvRecord.get(11), // branchCode
-                        csvRecord.get(12), //beneficiaryMobile
-                        // csvRecord.get(13), //draweeBranchName
-                        //  csvRecord.get(14), //draweeBranchCode
+                        "draweeBranchName", //draweeBranchName
+                        "draweeBranchCode", //draweeBranchCode
                         csvRecord.get(13), //purposeOfRemittance
-                        //  csvRecord.get(16), //sourceOfIncome
-                        csvRecord.get(14), //remitterMobile
+                        "sourceOfIncome", //sourceOfIncome
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",           // extra_c
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                                 // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                          // checkT24
+                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                                       //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
                         CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(),csvRecord.get(11)));        //checkBeftn
 

@@ -21,6 +21,8 @@ public class RiaModel {
     private String enteredDate;
     @Column(name = "remitter_name")
     private String remitterName;
+    @Column(name = "remitter_mobile_no")
+    private String remitterMobile;
     @Column(name = "beneficiary_name")
     private String beneficiaryName;
     @Column(name = "beneficiary_account_no", nullable = false)
@@ -43,8 +45,6 @@ public class RiaModel {
     private String purposeOfRemittance;
     @Column(name = "source_of_income")
     private String sourceOfIncome;
-    @Column(name = "remitter_mobile_no")
-    private String remitterMobile;
     @Column(name = "process_flag")
     private String processFlag;
     @Column(name = "type_flag")
@@ -317,13 +317,14 @@ public class RiaModel {
         this.userModel = userModel;
     }
 
-    public RiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public RiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
         this.amount = amount;
         this.enteredDate = enteredDate;
         this.remitterName = remitterName;
+        this.remitterMobile = remitterMobile;
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryAccount = beneficiaryAccount;
         this.beneficiaryMobile = beneficiaryMobile;
@@ -335,7 +336,6 @@ public class RiaModel {
         this.draweeBranchCode = draweeBranchCode;
         this.purposeOfRemittance = purposeOfRemittance;
         this.sourceOfIncome = sourceOfIncome;
-        this.remitterMobile = remitterMobile;
         this.processFlag = processFlag;
         this.typeFlag = typeFlag;
         this.processedBy = processedBy;
