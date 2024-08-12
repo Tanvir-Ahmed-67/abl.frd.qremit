@@ -1,9 +1,9 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
+import abl.frd.qremit.converter.nafex.service.ApiBeftnModelService;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.DynamicTableService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-public class ApiBeftnController {
+public class ApiBeftnModelController {
     @Autowired
     private DynamicTableService dynamicTableService;
+    @Autowired
+    private ApiBeftnModelService apiBeftnModelService;
     @Autowired
     private CommonService commonService;
     @Autowired
@@ -44,7 +46,7 @@ public class ApiBeftnController {
         if (commonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = dynamicTableService.saveApiBeftn(file, userId);
+                    fileInfoModelObject = apiBeftnModelService.save(file, userId, "api beftn");
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
                         return commonService.uploadSuccesPage;
