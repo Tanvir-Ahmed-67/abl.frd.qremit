@@ -82,5 +82,11 @@ public class UtilsController {
         }
         return showDropDown;
     }
+
+    @GetMapping("/errorReport")
+    public String errorReport(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        return "/pages/user/errorReport";
+    }
     
 }

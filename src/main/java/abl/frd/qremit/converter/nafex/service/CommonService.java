@@ -2,12 +2,17 @@ package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
+
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +28,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
+import java.nio.file.*;
 
 @Service
 public class CommonService {
@@ -478,6 +484,88 @@ public class CommonService {
     public static boolean checkAgraniBankName(String bankName){
         if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")) return true;
         return false;
+    }
+
+    public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
+        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, errorMessage, "0", "0", "0", "0", currentDateTime.toString(), user, fileInfoModel);
+        errorDataModelList.add(errorDataModel);
+    }
+    
+    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String errorMessage, String checkT24, String checkCoc, String checkAccPayee, String checkBEFTN, String currentDateTime, User user, FileInfoModel fileInfoModel){
+        double amount;
+        try{
+            amount = Double.parseDouble(csvRecord.get(3));
+        }catch(Exception e){
+            amount = 0;
+        }
+        ErrorDataModel errorDataModel = new ErrorDataModel(
+            csvRecord.get(0), //exCode
+            csvRecord.get(1), //Tranno
+            csvRecord.get(2), //Currency
+            amount, //Amount
+            csvRecord.get(4), //enteredDate
+            csvRecord.get(5), //remitter
+            csvRecord.get(17), //remitterMobile
+            csvRecord.get(6), // beneficiary
+            csvRecord.get(7), //beneficiaryAccount
+            csvRecord.get(12), //beneficiaryMobile
+            csvRecord.get(8), //bankName
+            csvRecord.get(9), //bankCode
+            csvRecord.get(10), //branchName
+            csvRecord.get(11), // branchCode
+            csvRecord.get(13), //draweeBranchName
+            csvRecord.get(14), //draweeBranchCode
+            csvRecord.get(15), //purposeOfRemittance
+            csvRecord.get(16), //sourceOfIncome
+            "Not Processed",    // processed_flag
+            "type",             // type_flag
+            "processedBy",      // Processed_by
+            "dummy",            // processed_date
+            errorMessage, //error_message
+            currentDateTime, //error_generation_date
+            checkT24, // checkT24
+            checkCoc,  //checkCoc
+            checkAccPayee, //checkAccPayee
+            checkBEFTN // Checking Beftn
+        );
+        errorDataModel.setUserModel(user);
+        errorDataModel.setFileInfoModel(fileInfoModel);
+        return errorDataModel;
+    }
+
+    //generate template from file 
+    public static String getProcessedTemplate(String templateName, Map<String, String> variables) {
+        String template = readTemplateFromFile(templateName);
+        return replaceVariables(template, variables);
+    }
+
+    private static String readTemplateFromFile(String templateName) {
+        try {
+            Path path = Paths.get(ResourceUtils.getFile("classpath:templates/" + templateName).toURI());
+            return new String(Files.readAllBytes(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private static String replaceVariables(String template, Map<String, String> variables) {
+        for (Map.Entry<String, String> entry : variables.entrySet()) {
+            template = template.replace("{{ " + entry.getKey() + " }}", entry.getValue());
+        }
+        return template;
+    }
+
+    public static String generateTemplateBtn(String file,String url, String cls, String id, String title){
+        Map<String, String> params = new HashMap<>();
+        params.put("class", cls);
+        params.put("url", url);
+        params.put("id",id);
+        params.put("title", title);
+        return getProcessedTemplate(file, params);
     }
 
 }

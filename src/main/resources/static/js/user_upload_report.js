@@ -1,6 +1,7 @@
 $(document).ready(function(){
     var type = getParameterByName("type");
     var tbl = "#user_upload_tbl";
+    var page_header = "";
     switch(type){
         case '1':
         default:
@@ -11,7 +12,13 @@ $(document).ready(function(){
             var pid = getParameterByName("id");
             var url = "/fileReport?exchangeCode=" + exchangeCode + "&id=" + pid;
             break;
+        case '3':
+            var url = "/errorReport";
+            page_header = "Error Data Report";
+            break;
     }
+    console.log(page_header);
+    if(page_header)  $(".page-header").html(page_header);
     var params = {'tbl': tbl,'url': url};
 
     function get_user_upload_report(params){
