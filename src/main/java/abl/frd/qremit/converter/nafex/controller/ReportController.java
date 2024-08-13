@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
@@ -38,6 +39,7 @@ public class ReportController {
     CommonService commonService;
     @Autowired
     ExchangeHouseModelService exchangeHouseModelService;
+    
 
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
         this.myUserDetailsService = myUserDetailsService;
@@ -67,9 +69,12 @@ public class ReportController {
             List<Map<String, Object>> dataList = new ArrayList<>();
             int sl = 1;
             int totalCount = 0;
+            String action = "";
             for (FileInfoModel fModel : fileInfoModel) {
                 Map<String, Object> dataMap = new HashMap<>();
-                String action = "<button type='button' class='btn btn-info round view_exchange' id='" + fModel.getId() + "'>View</button>";
+                //String action = "<button type='button' class='btn btn-info round view_exchange' id='" + fModel.getId() + "'>View</button>";
+                //action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
+                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info round view_exchange", String.valueOf(fModel.getId()),"View");
                 action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
                 dataMap.put("sl", sl++);
                 dataMap.put("id", fModel.getId());
@@ -112,6 +117,14 @@ public class ReportController {
         List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
         resp.put("columns", columns);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        int userId;
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+            User user = myUserDetails.getUser();
+            userId = user.getId();
+        }else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         String baseTableName = exchangeHouseModel.getBaseTableName();
         String tbl = "base_data_table_" + baseTableName;
@@ -122,6 +135,7 @@ public class ReportController {
         List<Map<String, Object>> dataList = new ArrayList<>();
         int sl = 1;
         double totalAmount = 0;
+
         for(Map<String,Object> fdata: (List<Map<String, Object>>) fileInfo.get("data")){
             
             Map<String, Object> dataMap = new HashMap<>();
@@ -156,6 +170,51 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping("/errorReport")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        Map<String, Object> resp = new HashMap<>();
+
+        String[] columnData = {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
+        String[] columnTitles = {"SL", "Bank Name", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+        List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
+        resp.put("columns", columns);
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        int userId;
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+            User user = myUserDetails.getUser();
+            userId = user.getId();
+
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            int sl = 1;
+            String action = "";
+            List<ErrorDataModel> errorDataModel = reportService.findByUserModelId(userId);
+            for(ErrorDataModel emodel: errorDataModel){
+                Map<String, Object> dataMap = new HashMap<>();
+                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info round edit_error",String.valueOf(emodel.getId()),"Edit");
+                dataMap.put("sl", sl++);
+                dataMap.put("bankName", emodel.getBankName());
+                dataMap.put("branchName", emodel.getBranchName());
+                dataMap.put("beneficiaryName", emodel.getBeneficiaryName());
+                dataMap.put("beneficiaryAccountNo", emodel.getBeneficiaryAccount());
+                dataMap.put("transactionNo", emodel.getTransactionNo());
+                dataMap.put("amount", emodel.getAmount());
+                dataMap.put("exchangeCode", emodel.getExchangeCode());
+                dataMap.put("errorMessage", emodel.getErrorMessage());
+                dataMap.put("action", action);
+
+                dataList.add(dataMap);
+            }
+            resp.put("data", dataList);
+        }else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(resp);
+    }
+
 
     public String getRemittanceType(Map<String, String> type){
         Map<String, String> remType = new HashMap<>();
@@ -173,6 +232,5 @@ public class ReportController {
         }
         return "";
     }
-
     
 }
