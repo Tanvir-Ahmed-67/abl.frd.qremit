@@ -5,6 +5,7 @@ import abl.frd.qremit.converter.nafex.repository.*;
 
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +53,8 @@ public class CommonService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     UserModelRepository userModelRepository;
+    @Autowired
+    ExchangeHouseModelRepository exchangeHouseModelRepository;
     public static String TYPE = "text/csv";
     public String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
     private final EntityManager entityManager;
@@ -566,6 +569,25 @@ public class CommonService {
         params.put("id",id);
         params.put("title", title);
         return getProcessedTemplate(file, params);
+    }
+
+    public static Map<String, String> getNrtaCodeVsExchangeCodeMap(List<ExchangeHouseModel> exchangeHouseModelList){
+        Map<String, String> nrtaCodeVsExchangeCodeMap = new HashMap<>();
+        String exchangeCode;
+        String nrtaCode;
+        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+            try{
+                if(exchangeHouseModel.getExchangeCode().equals("710000") && exchangeHouseModel.getExchangeCode().equals("720000")){
+                    continue;
+                }
+                nrtaCode = exchangeHouseModel.getNrtaCode();
+                exchangeCode = exchangeHouseModel.getExchangeCode();
+                nrtaCodeVsExchangeCodeMap.put(nrtaCode, exchangeCode);
+            }catch (Exception e) {
+                throw new RuntimeException("Failed to map NRTA Code Vs Exchange Code: " + e.getMessage());
+            }
+        }
+        return nrtaCodeVsExchangeCodeMap;
     }
 
 }
