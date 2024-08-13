@@ -76,4 +76,10 @@ public class ApiBeftnModelController {
         model.addAttribute("message", message);
         return commonService.uploadSuccesPage;
     }
+
+    @PostMapping("/apibeftntransfer")
+    public String transferData(){
+        dynamicTableService.transferData();
+        return commonService.uploadSuccesPage;
+    }
 }
