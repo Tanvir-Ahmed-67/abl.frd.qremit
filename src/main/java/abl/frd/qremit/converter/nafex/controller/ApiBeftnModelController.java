@@ -5,7 +5,7 @@ import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.ApiBeftnModelService;
 import abl.frd.qremit.converter.nafex.service.CommonService;
-import abl.frd.qremit.converter.nafex.service.DynamicTableService;
+import abl.frd.qremit.converter.nafex.service.DynamicOperationService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class ApiBeftnModelController {
     @Autowired
-    private DynamicTableService dynamicTableService;
+    private DynamicOperationService dynamicOperationService;
     @Autowired
     private ApiBeftnModelService apiBeftnModelService;
     @Autowired
@@ -79,7 +79,7 @@ public class ApiBeftnModelController {
 
     @PostMapping("/apibeftntransfer")
     public String transferData(){
-        dynamicTableService.transferData();
+        dynamicOperationService.transferData();
         return commonService.uploadSuccesPage;
     }
 }

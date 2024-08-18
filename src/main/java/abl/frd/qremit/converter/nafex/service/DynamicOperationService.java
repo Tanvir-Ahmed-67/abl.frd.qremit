@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class DynamicTableService {
+public class DynamicOperationService {
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
     @Autowired

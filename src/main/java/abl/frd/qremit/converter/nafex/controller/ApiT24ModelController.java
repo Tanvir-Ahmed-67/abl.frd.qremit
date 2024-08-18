@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class ApiT24ModelController {
     @Autowired
-    private DynamicTableService dynamicTableService;
+    private DynamicOperationService dynamicOperationService;
     @Autowired
     private ApiT24ModelService apit24ModelService;
     @Autowired
