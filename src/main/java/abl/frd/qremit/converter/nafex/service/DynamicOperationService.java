@@ -22,6 +22,8 @@ public class DynamicOperationService {
     UserModelRepository userModelRepository;
     @Autowired
     private ApiBeftnModelRepository apiBeftnModelRepository;
+    @Autowired
+    private ApiT24ModelRepository apiT24ModelRepository;
 
     LocalDateTime currentDateTime = LocalDateTime.now();
     private Map<String, RepositoryModelWrapper<?>> repositoryModelMap = new HashMap<>();
@@ -44,9 +46,30 @@ public class DynamicOperationService {
         return repositoryModelMap;
     }
 
-    public void transferData() {
+    public void transferApiBeftnData() {
         List<ApiBeftnModel> allRows = apiBeftnModelRepository.findAll();
         for (ApiBeftnModel row : allRows) {
+            try {
+                String exchangeCode = row.getExchangeCode();
+                RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);
+                if (wrapper != null) {
+                    JpaRepository repository = wrapper.getRepository();
+                    Class<?> modelClass = wrapper.getModelClass();
+                    Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, FileInfoModel.class, User.class);
+                    Object modelInstance = constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getExtraC(), row.getCheckT24(), row.getCheckCoc(), row.getCheckAccPayee(), row.getCheckBeftn(), row.getFileInfoModel(), row.getUserModel());
+                    repository.save(modelInstance);
+                } else {
+                    throw new IllegalArgumentException("No repository or model class found for cxchangeCode: " + exchangeCode);
+                }
+            } catch (Exception e) {
+                // Handle exception
+                e.printStackTrace();
+            }
+        }
+    }
+    public void transferApiT24Data() {
+        List<ApiT24Model> allRows = apiT24ModelRepository.findAll();
+        for (ApiT24Model row : allRows) {
             try {
                 String exchangeCode = row.getExchangeCode();
                 RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);

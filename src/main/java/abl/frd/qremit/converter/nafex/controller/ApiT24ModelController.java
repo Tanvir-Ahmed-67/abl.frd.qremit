@@ -27,7 +27,7 @@ public class ApiT24ModelController {
     private MyUserDetailsService myUserDetailsService;
 
     @PostMapping("/apit24Upload")
-    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
+    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 
 
@@ -44,7 +44,7 @@ public class ApiT24ModelController {
         if (commonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = apit24ModelService.save(file, userId, "api t24");
+                    fileInfoModelObject = apit24ModelService.save(file, userId, exchangeCode);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
                         return commonService.uploadSuccesPage;
@@ -72,6 +72,11 @@ public class ApiT24ModelController {
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
+        return commonService.uploadSuccesPage;
+    }
+    @PostMapping("/apit24transfer")
+    public String transferApiT24Data(){
+        dynamicOperationService.transferApiT24Data();
         return commonService.uploadSuccesPage;
     }
 }

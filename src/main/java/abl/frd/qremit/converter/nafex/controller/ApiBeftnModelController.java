@@ -29,7 +29,7 @@ public class ApiBeftnModelController {
     private MyUserDetailsService myUserDetailsService;
 
     @PostMapping("/apibeftnUpload")
-    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
+    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 
 
@@ -46,7 +46,7 @@ public class ApiBeftnModelController {
         if (commonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = apiBeftnModelService.save(file, userId, "api beftn");
+                    fileInfoModelObject = apiBeftnModelService.save(file, userId, exchangeCode);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
                         return commonService.uploadSuccesPage;
@@ -78,8 +78,8 @@ public class ApiBeftnModelController {
     }
 
     @PostMapping("/apibeftntransfer")
-    public String transferData(){
-        dynamicOperationService.transferData();
+    public String transferApiBeftnData(){
+        dynamicOperationService.transferApiBeftnData();
         return commonService.uploadSuccesPage;
     }
 }
