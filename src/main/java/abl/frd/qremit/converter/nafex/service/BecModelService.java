@@ -125,6 +125,7 @@ public class BecModelService {
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
+                        csvRecord.get(17), //remitterMobile
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
@@ -138,16 +139,15 @@ public class BecModelService {
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance
                         csvRecord.get(16), //sourceOfIncome
-                        csvRecord.get(17), //remitterMobile
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                                 // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        //checkBeftn
+                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
+                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(), csvRecord.get(11)));        //checkBeftn
                 becDataModelList.add(becDataModel);
             }
             return becDataModelList;

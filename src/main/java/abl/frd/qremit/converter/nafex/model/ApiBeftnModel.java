@@ -1,9 +1,10 @@
 package abl.frd.qremit.converter.nafex.model;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_bec", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
-public class BecModel {
+@Table(name="base_data_table_api_beftn", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
+public class ApiBeftnModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -72,58 +73,6 @@ public class BecModel {
     @JoinColumn(name="user_id")
     private User userModel;
 
-    public User getUserModel() {
-        return userModel;
-    }
-
-    public void setUserModel(User userModel) {
-        this.userModel = userModel;
-    }
-
-    public FileInfoModel getFileInfoModel() {
-        return fileInfoModel;
-    }
-
-    public void setFileInfoModel(FileInfoModel fileInfoModel) {
-        this.fileInfoModel = fileInfoModel;
-    }
-
-    public String getCheckT24() {
-        return checkT24;
-    }
-
-    public void setCheckT24(String checkT24) {
-        this.checkT24 = checkT24;
-    }
-
-    public String getCheckCoc() {
-        return checkCoc;
-    }
-
-    public void setCheckCoc(String checkCoc) {
-        this.checkCoc = checkCoc;
-    }
-
-    public String getCheckAccPayee() {
-        return checkAccPayee;
-    }
-
-    public void setCheckAccPayee(String checkAccPayee) {
-        this.checkAccPayee = checkAccPayee;
-    }
-
-    public String getCheckBeftn() {
-        return checkBeftn;
-    }
-
-    public void setCheckBeftn(String checkBeftn) {
-        this.checkBeftn = checkBeftn;
-    }
-
-    public BecModel() {
-
-    }
-
     public long getId() {
         return id;
     }
@@ -178,6 +127,14 @@ public class BecModel {
 
     public void setRemitterName(String remitterName) {
         this.remitterName = remitterName;
+    }
+
+    public String getRemitterMobile() {
+        return remitterMobile;
+    }
+
+    public void setRemitterMobile(String remitterMobile) {
+        this.remitterMobile = remitterMobile;
     }
 
     public String getBeneficiaryName() {
@@ -268,14 +225,6 @@ public class BecModel {
         this.sourceOfIncome = sourceOfIncome;
     }
 
-    public String getRemitterMobile() {
-        return remitterMobile;
-    }
-
-    public void setRemitterMobile(String remitterMobile) {
-        this.remitterMobile = remitterMobile;
-    }
-
     public String getProcessFlag() {
         return processFlag;
     }
@@ -296,8 +245,8 @@ public class BecModel {
         return processedBy;
     }
 
-    public void setProcessedBy(String extraA) {
-        this.processedBy = extraA;
+    public void setProcessedBy(String processedBy) {
+        this.processedBy = processedBy;
     }
 
     public String getProcessedDate() {
@@ -316,7 +265,56 @@ public class BecModel {
         this.extraC = extraC;
     }
 
-    public BecModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public String getCheckT24() {
+        return checkT24;
+    }
+
+    public void setCheckT24(String checkT24) {
+        this.checkT24 = checkT24;
+    }
+
+    public String getCheckCoc() {
+        return checkCoc;
+    }
+
+    public void setCheckCoc(String checkCoc) {
+        this.checkCoc = checkCoc;
+    }
+
+    public String getCheckAccPayee() {
+        return checkAccPayee;
+    }
+
+    public void setCheckAccPayee(String checkAccPayee) {
+        this.checkAccPayee = checkAccPayee;
+    }
+
+    public String getCheckBeftn() {
+        return checkBeftn;
+    }
+
+    public void setCheckBeftn(String checkBeftn) {
+        this.checkBeftn = checkBeftn;
+    }
+
+    public FileInfoModel getFileInfoModel() {
+        return fileInfoModel;
+    }
+
+    public void setFileInfoModel(FileInfoModel fileInfoModel) {
+        this.fileInfoModel = fileInfoModel;
+    }
+
+    public User getUserModel() {
+        return userModel;
+    }
+
+    public void setUserModel(User userModel) {
+        this.userModel = userModel;
+    }
+
+    public ApiBeftnModel() {}
+    public ApiBeftnModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -345,16 +343,9 @@ public class BecModel {
         this.checkAccPayee = checkAccPayee;
         this.checkBeftn = checkBeftn;
     }
-
-    public BecModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, FileInfoModel fileInfoModel, User user) {
-        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, extraC, checkT24, checkCoc, checkAccPayee, checkBeftn);
-        this.fileInfoModel = fileInfoModel;
-        this.userModel = user;
-    }
-
     @Override
     public String toString() {
-        return "BecModel{" +
+        return "ApiBeftnModel{" +
                 "id=" + id +
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", transactionNo='" + transactionNo + '\'' +
@@ -364,11 +355,11 @@ public class BecModel {
                 ", remitterName='" + remitterName + '\'' +
                 ", beneficiaryName='" + beneficiaryName + '\'' +
                 ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
+                ", beneficiaryMobile='" + beneficiaryMobile + '\'' +
                 ", bankName='" + bankName + '\'' +
                 ", bankCode='" + bankCode + '\'' +
                 ", branchName='" + branchName + '\'' +
                 ", branchCode='" + branchCode + '\'' +
-                ", beneficiaryMobile='" + beneficiaryMobile + '\'' +
                 ", draweeBranchName='" + draweeBranchName + '\'' +
                 ", draweeBranchCode='" + draweeBranchCode + '\'' +
                 ", purposeOfRemittance='" + purposeOfRemittance + '\'' +
@@ -386,4 +377,3 @@ public class BecModel {
                 '}';
     }
 }
-

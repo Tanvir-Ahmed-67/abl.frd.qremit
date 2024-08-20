@@ -123,6 +123,7 @@ public class RiaModelService {
                         Double.parseDouble(csvRecord.get(1)), //Amount
                         csvRecord.get(10), //enteredDate
                         csvRecord.get(3), //remitter
+                        "Remitter Mobile", // remitterMobile
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
@@ -135,18 +136,15 @@ public class RiaModelService {
                         "Drawee Branch Code", // Drawee Branch Code
                         "Purpose Of Remittance", // purposeOfRemittance
                         "Source Of Income", // sourceOfIncome
-                        "Remitter Mobile", // remitterMobile
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
-                        "0",
-                        "0");
-                        //CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
-                        //CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        // Checking Beftn
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), "Agrani"),  // checkT24
+                        CommonService.putCocFlag(csvRecord.get(7).trim()),                        //checkCoc
+                        "0",  //checkAccPayee
+                        "0"); // Checking Beftn
                 riaModelList.add(riaModel);
             }
             return riaModelList;

@@ -58,6 +58,13 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<BecModel> becModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ApiBeftnModel> apiBeftnModel;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ApiT24Model> apiT24Model;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -78,6 +85,10 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<OnlineModel> onlineModelList;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ErrorDataModel> errorDataModelList;
 
     public List<OnlineModel> getOnlineModelList() {
         return onlineModelList;
@@ -109,6 +120,14 @@ public class FileInfoModel {
 
     public void setCocModelList(List<CocModel> cocModelList) {
         this.cocModelList = cocModelList;
+    }
+
+    public List<ErrorDataModel> getErrorDataModelList() {
+        return errorDataModelList;
+    }
+
+    public void seterrorDataModelList(List<ErrorDataModel> errorDataModelList ) {
+        this.errorDataModelList = errorDataModelList;
     }
 
     public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount) {
@@ -281,5 +300,21 @@ public class FileInfoModel {
 
     public void setRiaModel(List<RiaModel> riaModel) {
         this.riaModel = riaModel;
+    }
+
+    public List<ApiBeftnModel> getApiBeftnModel() {
+        return apiBeftnModel;
+    }
+
+    public void setApiBeftnModel(List<ApiBeftnModel> apiBeftnModel) {
+        this.apiBeftnModel = apiBeftnModel;
+    }
+
+    public List<ApiT24Model> getApiT24Model() {
+        return apiT24Model;
+    }
+
+    public void setApiT24Model(List<ApiT24Model> apiT24Model) {
+        this.apiT24Model = apiT24Model;
     }
 }

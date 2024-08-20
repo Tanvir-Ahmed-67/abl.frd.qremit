@@ -34,6 +34,8 @@ public class NafexModelService {
     UserModelRepository userModelRepository;
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
+    @Autowired
+    ErrorDataModelRepository errorDataModelRepository;
     LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file, int userId, String exchangeCode) {
         try
@@ -41,9 +43,17 @@ public class NafexModelService {
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
-            List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream());
+            
+            fileInfoModel.setExchangeCode(exchangeCode);
+            fileInfoModel.setFileName(file.getOriginalFilename());
+            fileInfoModel.setUploadDateTime(currentDateTime);
+            fileInfoModelRepository.save(fileInfoModel);
+            //FileInfoModel fModel = fileInfoModelRepository.findByFileName(file.getOriginalFilename());
+            
+            List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream(), user, fileInfoModel, file.getOriginalFilename());
             if(nafexModels.size()!=0) {
                 int ind = 0;
+            
                 for (NafexEhMstModel nafexModel : nafexModels) {
                     nafexModel.setExchangeCode(exchangeCode);
                     nafexModel.setFileInfoModel(fileInfoModel);
@@ -93,7 +103,7 @@ public class NafexModelService {
                     onlineModel.setUserModel(user);
                 }
                 // SAVING TO MySql Data Table
-                fileInfoModelRepository.save(fileInfoModel);
+                fileInfoModelRepository.save(fileInfoModel);                
                 return fileInfoModel;
             }
             else {
@@ -103,17 +113,66 @@ public class NafexModelService {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
     }
-    public List<NafexEhMstModel> csvToNafexModels(InputStream is) {
+    public List<NafexEhMstModel> csvToNafexModels(InputStream is, User user, FileInfoModel fileInfoModel, String fileName) {
         Optional<NafexEhMstModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
             List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
+            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            String errorMessage = "";
             for (CSVRecord csvRecord : csvRecords) {
                 duplicateData = nafexModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
+                    errorMessage = "Duplicate Reference No " + csvRecord.get(1) + " Found";
+                    CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
                     continue;
                 }
+                //a/c no, benficiary name, amount empty or null check
+                if(CommonService.checkEmptyString(csvRecord.get(7)) ||  CommonService.checkEmptyString(csvRecord.get(6)) || CommonService.checkEmptyString(csvRecord.get(3))){
+                    errorMessage = "A/C Number or Beneficiary Name or Amount Can not be empty";
+                    CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+                
+                if(CommonService.isBeftnFound(csvRecord.get(8), csvRecord.get(7), csvRecord.get(11))){
+                    if(csvRecord.get(11).length() != 9 || CommonService.checkAgraniRoutingNo(csvRecord.get(11))){
+                        errorMessage = "Invalid Routing Number for BEFTN";
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;  
+                    }
+                }else if(CommonService.isCocFound(csvRecord.get(7))){
+                    if(!CommonService.checkAgraniBankName(csvRecord.get(8))){
+                        errorMessage = "Invalid Bank Name";
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }else if(CommonService.isAccountPayeeFound(csvRecord.get(8), csvRecord.get(7), csvRecord.get(11))){
+                    //check ABL A/C starts with 02** and routing no is not matched with ABL
+                    if(CommonService.isOnlineAccoutNumberFound(csvRecord.get(7)) && !CommonService.checkAgraniRoutingNo(csvRecord.get(11)) 
+                        && !CommonService.checkAgraniBankName(csvRecord.get(8))){
+                        errorMessage = "Invalid Routing Number or Bank Name";
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                    //abl routing number a/c starts 02** which isn't 13 digits
+                    else if(CommonService.checkAgraniRoutingNo(csvRecord.get(11)) && csvRecord.get(7).startsWith("02000")){
+                        if(csvRecord.get(7).length() != 13){
+                            errorMessage = "Invalid ABL Online A/C Number which requires 13 digits";
+                            CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                            continue;
+                        }
+                    }
+                    //string satrts with CO
+                    else if(csvRecord.get(7).toLowerCase().contains("co")){
+                        errorMessage = "Invalid COC A/C name";
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }else if(CommonService.isOnlineAccoutNumberFound(csvRecord.get(7))){
+                    
+                }
+                
                 NafexEhMstModel nafexDataModel = new NafexEhMstModel(
                         csvRecord.get(0), //exCode
                         csvRecord.get(1), //Tranno
@@ -121,6 +180,7 @@ public class NafexModelService {
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
+                        csvRecord.get(17), //remitterMobile
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
@@ -134,17 +194,20 @@ public class NafexModelService {
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance
                         csvRecord.get(16), //sourceOfIncome
-                        csvRecord.get(17), //remitterMobile
                         "Not Processed",    // processed_flag
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
                         "extraC",
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim()),                                 // checkT24
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                                 // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim()),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim()));        // Checking Beftn
+                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
+                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(), csvRecord.get(11)));        // Checking Beftn
+                        //System.out.println(nafexDataModel);
                 nafexDataModelList.add(nafexDataModel);
+            }
+            if (!errorDataModelList.isEmpty()) {
+                errorDataModelRepository.saveAll(errorDataModelList);
             }
             return nafexDataModelList;
         } catch (IOException e) {

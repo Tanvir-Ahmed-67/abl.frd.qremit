@@ -19,6 +19,7 @@ public class ExchangeHouseModel {
     private String exchangeShortName;
     @Column(nullable=false)
     private String baseTableName;
+
     @Column
     private boolean activeStatus;
 
