@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRD Remittance</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
-    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
-    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
-    <link rel="stylesheet" th:href="@{/css/choices.min.css}">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
-</head>
+<head th:replace="/fragments/header :: head-css"></head>
 <body>
 <div id="app"><!--main content-->
     <span th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
@@ -32,12 +22,25 @@
                                     <div class="form-body">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <label>Exchange Name</label>
+                                                <label>Exchange Full Name</label>
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="form-group has-icon-left">
                                                     <div class="position-relative">
-                                                        <input type="text" th:name="exchangeName" th:field="*{exchangeName}" class="form-control" placeholder="Name" required th:minlength="1" th:maxlength="250">
+                                                        <input type="text" th:name="exchangeName" th:field="*{exchangeName}" class="form-control" placeholder="Full Name" required th:minlength="1" th:maxlength="250">
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="mail"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Exchange Short Name</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="text" th:name="exchangeShortName" th:field="*{exchangeShortName}" class="form-control" placeholder="Short Name" required th:minlength="1" th:maxlength="30">
                                                         <div class="form-control-icon">
                                                             <i data-feather="mail"></i>
                                                         </div>
@@ -86,13 +89,5 @@
         <span th:replace="/fragments/footer :: footer"></span>
     </div>
 </div>
-<script th:src="@{/js/feather.min.js}"></script>
-<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
-<script th:src="@{/js/app.js}"></script>
-<script th:src="@{/js/Chart.min.js}"></script>
-<script th:src="@{/js/apexcharts.min.js}"></script>
-<script th:src="@{/js/dashboard.js}"></script>
-<script th:src="@{/js/main.js}"></script>
-<script th:src="@{/js/choices.min.js}"></script>
 </body>
 </html>

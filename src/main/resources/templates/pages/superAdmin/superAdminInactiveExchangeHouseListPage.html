@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
-    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
-    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
-    <title>FRD Remittance</title>
-</head>
+<head th:replace="/fragments/header :: head-css"></head>
 <body>
 <div id="app"><!--main content-->
     <span th:replace="/fragments/sidebarSuperAdmin :: sidebarSuperAdmin"></span>
@@ -33,19 +24,21 @@
                                 <table class="table table-hover mb-0">
                                     <thead>
                                     <tr>
-                                        <th>Exchange House Name</th>
+                                        <th>Exchange Full Name</th>
+                                        <th>Exchange Short Name</th>
                                         <th>Exchange Code</th>
                                         <th>Nrta Code</th>
-                                        <th>Active Status</th>
+                                        <th>Status</th>
                                         <th>ACTION</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr th:each="inactiveExchangeHouseList : ${inactiveExchangeHouseList}">
                                         <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getExchangeName()}"></td>
+                                        <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getExchangeShortName()}"></td>
                                         <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getExchangeCode()}"></td>
                                         <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getNrtaCode()}"></td>
-                                        <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getIsActive()}"></td>
+                                        <td class="text-bold-500" th:text="${inactiveExchangeHouseList.getActiveStatus()} ? 'ACTIVE':'INACTIVE' "></td>
                                         <td>
                                             <form th:action="@{/activateExchangeHouse/{id}(id=${inactiveExchangeHouseList.getId()})}" th:method="POST">
                                                 <button type="submit" class="btn btn-outline-primary round" th:name="Activate" th:value="${inactiveExchangeHouseList.getId()}">Activate</button>
@@ -63,13 +56,5 @@
         <span th:replace="/fragments/footer :: footer"></span>
     </div>
 </div>
-<script th:src="@{/js/feather.min.js}"></script>
-<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
-<script th:src="@{/js/app.js}"></script>
-
-<script th:src="@{/js/Chart.min.js}"></script>
-<script th:src="@{/js/apexcharts.min.js}"></script>
-<script th:src="@{/js/dashboard.js}"></script>
-<script th:src="@{/js/main.js}"></script>
 </body>
 </html>

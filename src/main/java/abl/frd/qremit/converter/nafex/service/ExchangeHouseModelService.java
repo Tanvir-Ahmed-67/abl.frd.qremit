@@ -16,6 +16,14 @@ public class ExchangeHouseModelService {
         List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findAll();
         return exchangeHouseModels;
     }
+    public List<ExchangeHouseModel> loadAllActiveExchangeHouse(){
+        List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
+        return exchangeHouseModels;
+    }
+    public ExchangeHouseModel getExchangeHouseByExchangeId(int exchangeId){
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeId(exchangeId);
+        return exchangeHouseModel;
+    }
     public void insertNewExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception{
         exchangeHouseModelRepository.save(exchangeHouseModel);
     }
@@ -29,7 +37,11 @@ public class ExchangeHouseModelService {
         return true;
     }
     public void editExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception {
-        exchangeHouseModelRepository.save(exchangeHouseModel);
-        exchangeHouseModelRepository.setExchangeHouseActiveStatusFalseById(exchangeHouseModel.getId());
+        exchangeHouseModelRepository.editExchangeHouse(exchangeHouseModel.getExchangeName(), exchangeHouseModel.getExchangeShortName(), exchangeHouseModel.getNrtaCode(), exchangeHouseModel.getId());
+    }
+
+    public ExchangeHouseModel findByExchangeCode(String exchangeCode){
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+        return exchangeHouseModel;
     }
 }

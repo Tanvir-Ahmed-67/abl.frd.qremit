@@ -25,7 +25,7 @@ public class OnlineModelController {
     @GetMapping("/downloadonline/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(onlineModelService.load(fileId, fileType));
-        String fileName = "Online_Nafex";
+        String fileName = "Online";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
                 .contentType(MediaType.parseMediaType("application/csv"))
@@ -33,10 +33,12 @@ public class OnlineModelController {
     }
     @GetMapping("/downloadonline")
     public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(onlineModelService.loadUnprocessedOnlineData("0"));
-        String fileName = "Online_Nafex";
+        InputStreamResource file = new InputStreamResource(onlineModelService.loadAndUpdateUnprocessedOnlineData("0"));
+        int countRemainingOnlineData = onlineModelService.countRemainingOnlineData();
+        String fileName = "Online";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
+                .header("count", String.valueOf(countRemainingOnlineData))
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }

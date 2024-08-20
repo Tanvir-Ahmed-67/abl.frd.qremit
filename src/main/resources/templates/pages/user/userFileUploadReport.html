@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body th:fragment="userFileUploadReport">
+    <div id="app"><!--main content-->
+            <div class="main-content container-fluid"><!--dynamic content-->
+                <div class="page-title">
+                    <div class="row">
+                        <div class="col-12 col-md-6 order-md-1 order-last">
+                            <h3>Uploaded File Statistics</h3>
+                        </div>
+                        <div class="col-12 col-md-6 order-md-2 order-first">
+                            <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Datatable</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <section class="section">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class='table table-striped' id="user_upload_tbl"></table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+    </div>
+
+<script type="text/javascript">
+    var url = "/js/user_upload_report.js";
+    document.addEventListener('DOMContentLoaded', function() {
+      var id = document.getElementById(id);
+      var scriptElement = document.createElement('script');
+      scriptElement.type = 'text/javascript';
+      scriptElement.src = url;
+      document.querySelector('footer').appendChild(scriptElement);
+    });
+</script>
+</body>
+</html>
+
+
+

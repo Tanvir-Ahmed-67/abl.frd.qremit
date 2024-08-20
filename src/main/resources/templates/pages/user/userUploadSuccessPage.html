@@ -1,87 +1,41 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRD Remittance</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
-    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
-    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">
-</head>
-<body>
-<div id="app"><!--main content-->
-    <span th:replace="/fragments/sidebarUser :: sidebarUser"></span>
-    <div id="main"><!--content Id-->
-        <span th:replace="/fragments/header :: header"></span>
-        <div class="main-content container-fluid"><!--dynamic content-->
-            <div class="page-title">
-                <div class="row">
-                    <div class="col-12 col-md-6 order-md-1 order-last">
-                        <h3>Uploaded File Statistics</h3>
-                    </div>
-                    <div class="col-12 col-md-6 order-md-2 order-first">
-                        <nav aria-label="breadcrumb" class='breadcrumb-header'>
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Datatable</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-            <section class="section">
-                <div class="card">
-                    <div class="card-body">
-                        <table class='table table-striped' id="table1">
-                            <thead>
-                            <tr>
-                                <th scope="col" class="text-center">File Name</th>
-                                <th scope="col" class="text-center">Online</th>
-                                <th scope="col" class="text-center">Coc</th>
-                                <th scope="col" class="text-center">A/C Payee</th>
-                                <th scope="col" class="text-center">Beftn</th>
-                                <th scope="col" class="text-center">Total Remittance</th>
-                                <th scope="col" class="text-center">Details</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <th scope="row" class="text-center"><p th:text="${fileInfo.fileName}"></p></th>
-                                <td class="text-center"><p th:text="${fileInfo.onlineCount}"></p></td>
-                                <td class="text-center"><p th:text="${fileInfo.cocCount}"></p></td>
-                                <td class="text-center"><p th:text="${fileInfo.accountPayeeCount}"></p></td>
-                                <td class="text-center"><p th:text="${fileInfo.beftnCount}"></p></td>
-                                <td class="text-center"><p th:text="${fileInfo.totalCount}"></p></td>
-                                <td><a href="#">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                         stroke-linejoin="round"
-                                         class="feather feather-mail badge-circle badge-circle-light-secondary font-medium-1">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                        <polyline points="22,6 12,13 2,6"></polyline>
-                                    </svg>
-                                </a></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        </div>
-        <span th:replace="/fragments/footer :: footer"></span>
+<section class="section">
+    <div th:if="${fileInfo}">
+            <table class='table table-striped' id="table1">
+                <thead>
+                <tr>
+                    <th scope="col" class="text-center">File Name</th>
+                    <th scope="col" class="text-center">Online</th>
+                    <th scope="col" class="text-center">Coc</th>
+                    <th scope="col" class="text-center">A/C Payee</th>
+                    <th scope="col" class="text-center">Beftn</th>
+                    <th scope="col" class="text-center">Total Remittance</th>
+                    <th scope="col" class="text-center">Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>    
+                    <th scope="row" class="text-center"><p th:text="${fileInfo.fileName}"></p></th>
+                    <td class="text-center"><p th:text="${fileInfo.onlineCount}"></p></td>
+                    <td class="text-center"><p th:text="${fileInfo.cocCount}"></p></td>
+                    <td class="text-center"><p th:text="${fileInfo.accountPayeeCount}"></p></td>
+                    <td class="text-center"><p th:text="${fileInfo.beftnCount}"></p></td>
+                    <td class="text-center"><p th:text="${fileInfo.totalCount}"></p></td>
+                    <td><a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round"
+                             class="feather feather-mail badge-circle badge-circle-light-secondary font-medium-1">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </a></td>
+                
+                </tr>
+                </tbody>
+            </table>
     </div>
-</div>
-<script th:src="@{/js/feather.min.js}"></script>
-<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
-<script th:src="@{/js/simple-datatables.js}"></script>
-<script th:src="@{/js/vendors.js}"></script>
-<script th:src="@{/js/app.js}"></script>
-<script th:src="@{/js/Chart.min.js}"></script>
-<script th:src="@{/js/apexcharts.min.js}"></script>
-<script th:src="@{/js/dashboard.js}"></script>
-<script th:src="@{/js/main.js}"></script>
-</body>
-</html>
+    <div th:if="${fileInfo == null}">
+       <p th:if="${message}" class="alert alert-light-info text-center">
+           [[${message}]] </p>
+    </div>
+</section>

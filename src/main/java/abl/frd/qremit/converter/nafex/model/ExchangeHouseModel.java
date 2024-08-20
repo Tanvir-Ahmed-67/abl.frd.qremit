@@ -15,15 +15,19 @@ public class ExchangeHouseModel {
     private String nrtaCode;
     @Column(nullable=false)
     private String exchangeCode;
+    @Column(nullable=false)
+    private String exchangeShortName;
+    @Column(nullable=false)
+    private String baseTableName;
     @Column
-    private String isActive;
+    private boolean activeStatus;
 
-    public String getIsActive() {
-        return isActive;
+    public boolean getActiveStatus() {
+        return activeStatus;
     }
 
-    public void setIsActive(String isActive) {
-        this.isActive = isActive;
+    public void setActiveStatus(boolean isActive) {
+        this.activeStatus = isActive;
     }
 
     public int getId() {
@@ -54,8 +58,24 @@ public class ExchangeHouseModel {
         return exchangeCode;
     }
 
+    public void setBaseTableName(String baseTableName){
+        this.baseTableName = baseTableName;
+    }
+
+    public String getBaseTableName() {
+        return baseTableName;
+    }
+
     public void setExchangeCode(String exchangeCode) {
         this.exchangeCode = exchangeCode;
+    }
+
+    public String getExchangeShortName() {
+        return exchangeShortName;
+    }
+
+    public void setExchangeShortName(String exchangeShortName) {
+        this.exchangeShortName = exchangeShortName;
     }
 
     @Override
@@ -65,7 +85,9 @@ public class ExchangeHouseModel {
                 ", exchangeName='" + exchangeName + '\'' +
                 ", nrtaCode='" + nrtaCode + '\'' +
                 ", exchangeCode='" + exchangeCode + '\'' +
-                ", isActive='" + isActive + '\'' +
+                ", exchangeShortName='" + exchangeShortName + '\'' +
+                ", baseTableName='" + baseTableName + '\'' +
+                ", isActive='" + activeStatus + '\'' +
                 '}';
     }
 }

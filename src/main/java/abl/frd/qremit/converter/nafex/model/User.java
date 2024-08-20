@@ -1,6 +1,9 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,8 +21,9 @@ public class User {
     private String userEmail;
     @Column(nullable=false)
     private String password;
-    private boolean ActiveStatus;
-    private String nrtaCode;
+    private boolean activeStatus;
+    private String exchangeCode;
+    private boolean passwordChangeRequired;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<AccountPayeeModel> accountPayeeModel;
@@ -50,7 +54,7 @@ public class User {
         this.roles = roles;
     }
 
-    public int getId() {
+    public  int getId() {
         return id;
     }
 
@@ -73,20 +77,18 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    public boolean isActiveStatus() {
-        return ActiveStatus;
-    }
+    public boolean getActiveStatus() { return activeStatus;}
 
     public void setActiveStatus(boolean active) {
-        this.ActiveStatus = active;
+        this.activeStatus = active;
     }
 
-    public String getNrtaCode() {
-        return nrtaCode;
+    public String getExchangeCode() {
+        return exchangeCode;
     }
 
-    public void setNrtaCode(String nrtaCode) {
-        this.nrtaCode = nrtaCode;
+    public void setExchangeCode(String nrtaCode) {
+        this.exchangeCode = nrtaCode;
     }
 
     public String getUserEmail() {
@@ -95,5 +97,13 @@ public class User {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    public boolean isPasswordChangeRequired() {
+        return passwordChangeRequired;
+    }
+
+    public void setPasswordChangeRequired(boolean passwordChangeRequired) {
+        this.passwordChangeRequired = passwordChangeRequired;
     }
 }

@@ -1,8 +1,10 @@
 package abl.frd.qremit.converter.nafex.repository;
 
 import abl.frd.qremit.converter.nafex.model.BeftnModel;
+import abl.frd.qremit.converter.nafex.model.CocModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,6 +21,12 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
 
     @Query("SELECT n FROM BeftnModel n")
     List<BeftnModel> findAllBeftnModelForIncentive();
+    Integer countByIsProcessedMain(String isProcessed);
+    Integer countByIsProcessedIncentive(String isProcessed);
+    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedMain= :isProcessed")
+    List<BeftnModel> loadUnprocessedBeftnMainData(@Param("isProcessed") String isProcessed);
+    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedIncentive= :isProcessed")
+    List<BeftnModel> loadUnprocessedBeftnIncentiveData(@Param("isProcessed") String isProcessed);
 
 }
 /*

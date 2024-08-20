@@ -1,0 +1,2 @@
+Exch|TT No|Tra|Transaction |Transactio|Remitter Name|Beneficiary Name|Beneficiary Bank Acc|Beneficiary Bank|Be|Beneficiary Bank Branch Name|Beneficia|Beneficiary Mobile N|Drawee Bank Branch Name|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter Mobile No
+7040|15430082200052|BDT|111375.00|20220830|KHALID NAJEEB DARWISH ALMAAINI|NURUN  NAHAR|0200013934791|AGRANI BANK LTD BD|11|BARAHATTA|010720075||||FAMILY MAINTENANCE|SALARY|96892933110
