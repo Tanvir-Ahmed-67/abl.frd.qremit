@@ -57,6 +57,7 @@ public class CommonService {
     ExchangeHouseModelRepository exchangeHouseModelRepository;
     public static String TYPE = "text/csv";
     public String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
+    public String uploadApiSuccessPage = "/pages/user/userApiUploadSuccessPage";
     private final EntityManager entityManager;
     private final DataSource dataSource;
 
