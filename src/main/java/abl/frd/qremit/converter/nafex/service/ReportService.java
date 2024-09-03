@@ -36,6 +36,8 @@ public class ReportService {
     CocModelRepository cocModelRepository;
     @Autowired
     AccountPayeeModelRepository accountPayeeModelRepository;
+    @Autowired
+    ExchangeHouseModelService exchangeHouseModelService;
 
     public Map<String, Object> getFileDetails(String tableName, String fileInfoId) {
         return reportRepository.getFileDetails(tableName, fileInfoId);
@@ -45,14 +47,39 @@ public class ReportService {
         return errorDataModelRepository.findByUserModelId(userId);
     }
 
+    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList) throws JRException, FileNotFoundException {
+        for(ExchangeReportDTO exchangeReportDTO: dataList){
+            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+        }
+        // Load File And Compile It.
+        File file = ResourceUtils.getFile("classpath:dailyStatementSummary.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        // Convert data into a JasperReports data source
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
+        // Parameters map if needed
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("ReportTitle", "Sample Report");
+        // Fill the report
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Report.pdf");
+        // Export to PDF
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
+
+/*
     public String generateJasperReport(String format) throws JRException, FileNotFoundException {
         // Retrieve data from the database
-        List<NafexEhMstModel> dataList = nafexModelRepository.findAll();
+        //List<NafexEhMstModel> dataList = nafexModelRepository.findAll();
+        List<ExchangeReportDTO> dataList = generateSummaryOfDailyStatement();
+        for(ExchangeReportDTO exchangeReportDTO: dataList){
+            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+        }
         HtmlExporter exporter = new HtmlExporter();
         StringWriter stringWriter = new StringWriter();
 
         // Load File And Compile It.
-        File file = ResourceUtils.getFile("classpath:nafex.jrxml");
+        File file = ResourceUtils.getFile("classpath:dailyStatementSummary.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
 
         // Convert data into a JasperReports data source
@@ -66,7 +93,6 @@ public class ReportService {
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
         // Export the report to the desired format
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         if (format.equalsIgnoreCase("pdf")) {
             JasperExportManager.exportReportToPdf(jasperPrint);
             JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Report.pdf");
@@ -79,6 +105,7 @@ public class ReportService {
         // Add support for other formats (e.g., Excel) as needed
         return stringWriter.toString();
     }
+ */
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement() {
         List<ExchangeReportDTO> report = new ArrayList<>();
 
@@ -88,17 +115,16 @@ public class ReportService {
         List<CocModel> cocData = cocModelRepository.findAll();
         List<AccountPayeeModel> accountPayeeData = accountPayeeModelRepository.findAll();
 
-        // Combine the data by exchangeCode
+        // Combine the Online data by exchangeCode
         Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
         for (OnlineModel item : onlineData) {
             String exchangeCode = item.getExchangeCode();
             ExchangeReportDTO dto = reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(), item.getBeneficiaryAccount(),item.getFileInfoModel().getUploadDateTime()));
             dto.doSum(item.getAmount());
             dto.doCount();
-            // Add any additional logic if needed
         }
 
-        // Process data from table2
+        // Process data from beftn table
         for (BeftnModel item : beftnData) {
             String exchangeCode = item.getExchangeCode();
             reportMap.computeIfPresent(exchangeCode, (k, v) -> {
@@ -113,7 +139,7 @@ public class ReportService {
             });
         }
 
-        // Process data from table3
+        // Process data from coc table
         for (CocModel item : cocData) {
             String exchangeCode = item.getExchangeCode();
             reportMap.computeIfPresent(exchangeCode, (k, v) -> {
@@ -128,7 +154,7 @@ public class ReportService {
             });
         }
 
-        // Process data from table4
+        // Process data from account payee table
         for (AccountPayeeModel item : accountPayeeData) {
             String exchangeCode = item.getExchangeCode();
             reportMap.computeIfPresent(exchangeCode, (k, v) -> {
@@ -142,9 +168,6 @@ public class ReportService {
                 return v;
             });
         }
-
-        // Repeat for table3 and table4...
-
         return new ArrayList<>(reportMap.values());
     }
     public List<ExchangeReportDTO> generateDetailsOfDailyStatement() {
@@ -171,7 +194,7 @@ public class ReportService {
     }
     private ExchangeReportDTO convertBeftnModelToDTO(BeftnModel beftnModel ) {
         ExchangeReportDTO dto = new ExchangeReportDTO();
-        // Populate DTO fields from OnlineModel
+        // Populate DTO fields from BeftnModel
         dto.setTransactionNo(beftnModel.getTransactionNo());
         dto.setExchangeCode(beftnModel.getExchangeCode());
         dto.setAmount(beftnModel.getAmount());
@@ -181,7 +204,7 @@ public class ReportService {
     }
     private ExchangeReportDTO convertCocModelToDTO(CocModel cocModel) {
         ExchangeReportDTO dto = new ExchangeReportDTO();
-        // Populate DTO fields from OnlineModel
+        // Populate DTO fields from CocModel
         dto.setTransactionNo(cocModel.getTransactionNo());
         dto.setExchangeCode(cocModel.getExchangeCode());
         dto.setAmount(cocModel.getAmount());
@@ -191,7 +214,7 @@ public class ReportService {
     }
     private ExchangeReportDTO convertAccountPayeeModelToDTO(AccountPayeeModel  accountPayeeModel) {
         ExchangeReportDTO dto = new ExchangeReportDTO();
-        // Populate DTO fields from OnlineModel
+        // Populate DTO fields from AccountPayeeModel
         dto.setTransactionNo(accountPayeeModel.getTransactionNo());
         dto.setExchangeCode(accountPayeeModel.getExchangeCode());
         dto.setAmount(accountPayeeModel.getAmount());

@@ -9,6 +9,15 @@ import java.util.Locale;
 
 public class ExchangeReportDTO {
     private String exchangeCode;
+
+    public Double getSumOfAmount() {
+        return sumOfAmount;
+    }
+
+    public void setSumOfAmount(Double sumOfAmount) {
+        this.sumOfAmount = sumOfAmount;
+    }
+
     private String exchangeName;
     private String transactionNo;
     private String currency;

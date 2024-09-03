@@ -229,7 +229,7 @@ public class ReportController {
         return "";
     }
     @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET)
-    public String generateSummaryOfDailyStatement(@RequestParam(defaultValue = "PDF") String format, Model model) throws FileNotFoundException, JRException {
+    public String generateSummaryOfDailyStatement(Model model) {
         List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyStatement();
         Double grandTotalAmount = 0.00;
         String commaFormattedGrandTotalAmount="";
@@ -254,5 +254,24 @@ public class ReportController {
         }
         model.addAttribute("detailsReportContent", exchangeReport);
         return "/report/detailsOfDailyRemittance";
+    }
+
+    @RequestMapping(value="/downloadDailyStatementInPdfFormat", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat() throws JRException, FileNotFoundException {
+        // Getting the data as List
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement();
+
+        // Generating the PDF report and storing here - D:\\Report"+"\\Report.pdf
+        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data);
+
+        // Set the headers for file download
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Report.pdf\"");
+
+        // Return the response with the PDF as a byte array
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
     }
 }
