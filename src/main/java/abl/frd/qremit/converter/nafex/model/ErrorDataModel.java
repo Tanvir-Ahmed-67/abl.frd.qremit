@@ -3,7 +3,11 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="error_data_table", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
+@Table(name="error_data_table", 
+    uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}),
+    indexes = { @Index(name = "idx_update_status", columnList = "update_status")}
+)
+
 public class ErrorDataModel {
     @Id
     @Column(name = "id")
@@ -70,11 +74,14 @@ public class ErrorDataModel {
     @ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
-
+    
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="user_id")
     private User userModel;
 
+    @Column(name = "update_status", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int updateStatus = 0;
+     
     public User getUserModel() {
         return userModel;
     }
@@ -327,7 +334,15 @@ public class ErrorDataModel {
         this.errorMessage = errorMessage;
     }
 
-    public ErrorDataModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String errorMessage, String errorGenerationDate, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public int getUpdateStatus() {
+        return this.updateStatus;
+    }
+
+    public void setUpdateStatus(int updateStatus) {
+        this.updateStatus = updateStatus;
+    }
+
+    public ErrorDataModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String errorMessage, String errorGenerationDate, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, int updateStatus) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -356,6 +371,7 @@ public class ErrorDataModel {
         this.checkCoc = checkCoc;
         this.checkAccPayee = checkAccPayee;
         this.checkBeftn = checkBeftn;
+        this.updateStatus = updateStatus;
     }
 
     @Override
