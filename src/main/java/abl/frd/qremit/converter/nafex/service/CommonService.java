@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.nio.file.*;
 
@@ -474,7 +474,7 @@ public class CommonService {
     }
 
     public static boolean checkEmptyString(String str){
-        if(str == null || str.trim().isEmpty()) return true;
+        if(str == null || str.trim().isEmpty() || str.trim().equals("0.0")) return true;
         else return false;
     }
 
@@ -490,12 +490,14 @@ public class CommonService {
         return false;
     }
 
-    public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
-        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, errorMessage, "0", "0", "0", "0", currentDateTime.toString(), user, fileInfoModel);
+    public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
+        //String userId = String.valueOf(user.getId());
+        //String fileInfoId = String.valueOf(fileInfoModel.getId());
+        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, "0", "0", "0", "0", currentDateTime.toString(), user, fileInfoModel);
         errorDataModelList.add(errorDataModel);
     }
     
-    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String errorMessage, String checkT24, String checkCoc, String checkAccPayee, String checkBEFTN, String currentDateTime, User user, FileInfoModel fileInfoModel){
+    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String exchangeCode, String errorMessage, String checkT24, String checkCoc, String checkAccPayee, String checkBEFTN, String currentDateTime, User user, FileInfoModel fileInfoModel){
         double amount;
         try{
             amount = Double.parseDouble(csvRecord.get(3));
@@ -503,7 +505,7 @@ public class CommonService {
             amount = 0;
         }
         ErrorDataModel errorDataModel = new ErrorDataModel(
-            csvRecord.get(0), //exCode
+            exchangeCode, //exCode
             csvRecord.get(1), //Tranno
             csvRecord.get(2), //Currency
             amount, //Amount
@@ -530,7 +532,8 @@ public class CommonService {
             checkT24, // checkT24
             checkCoc,  //checkCoc
             checkAccPayee, //checkAccPayee
-            checkBEFTN // Checking Beftn
+            checkBEFTN, // Checking Beftn
+            0
         );
         errorDataModel.setUserModel(user);
         errorDataModel.setFileInfoModel(fileInfoModel);
@@ -590,5 +593,72 @@ public class CommonService {
         }
         return nrtaCodeVsExchangeCodeMap;
     }
+
+    public String getClientIpAddress(HttpServletRequest request) {
+        String remoteAddr = request.getRemoteAddr();
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            // The X-Forwarded-For header can contain multiple IPs, the first one is the client IP
+            return xForwardedFor.split(",")[0];
+        }
+        return remoteAddr;
+    }
+
+    public static String getBaseTableName(String baseTableName){
+        String tbl = "base_data_table_" + baseTableName;
+        return tbl;
+    }
+
+    //check validation error message starts
+    //a/c no, benficiary name, amount empty or null check
+    public static String checkBeneficiaryNameOrAmountOrBeneficiaryAccount(String beneficiaryAccount, String beneficiaryName, String amount){
+        String errorMessage = "";
+        if(checkEmptyString(beneficiaryName) || checkEmptyString(beneficiaryAccount) || checkEmptyString(amount)){
+            errorMessage = "A/C Number or Beneficiary Name or Amount can not be empty";
+        }
+        return errorMessage;
+    }
+
+    public static String checkBEFTNRouting(String routingNo){
+        String errorMessage = "";
+        if(routingNo.length() != 9 || checkAgraniRoutingNo(routingNo)){
+            errorMessage = "Invalid Routing Number for BEFTN";
+        }
+        return errorMessage;
+    }
+
+    public static String checkCOCBankName(String bankName){
+        String errorMessage = "";
+        if(!checkAgraniBankName(bankName)){
+            errorMessage = "Invalid Bank Name";
+        }
+        return errorMessage;
+    }
+
+    //check ABL A/C starts with 02** and routing no is not matched with ABL
+    public static String checkABLAccountAndRoutingNo(String accountNo, String routingNo, String bankName){
+        String errorMessage = "";
+        if(isOnlineAccoutNumberFound(accountNo) && (!checkAgraniRoutingNo(routingNo) || !checkAgraniBankName(bankName))){
+            errorMessage = "Invalid Routing Number or Bank Name";
+        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02") && accountNo.length() != 13){
+            errorMessage = "Invalid ABL Online A/C Number which requires 13 digits";  //check routing no
+        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("02") && accountNo.length() != 13){
+            errorMessage = "Invalid ABL Online A/C Number which requires 13 digits"; //check agrani bankName 
+        }
+        return errorMessage;
+    }
+    
+    //string starts with CO
+    public static String checkCOString(String accountNo){
+        String errorMessage = "";
+        if(accountNo.toLowerCase().contains("co")){
+            errorMessage = "Invalid COC A/C name";
+        }
+        return errorMessage;
+    }
+    //check validation error message ends
+
+    
 
 }

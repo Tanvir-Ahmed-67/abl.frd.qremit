@@ -1,0 +1,81 @@
+<form role="form" id="editErrorForm"  method="post" enctype="multipart/form-data">
+    <input type="hidden" id="_csrf" name="_csrf" th:value="${_csrf.token}">
+    <input type="hidden" id="_csrf_header" name="_csrf_header" th:value="${_csrf.headerName}">
+    <div class="row">
+        <div class="mb-3 form-group  col-sm-4" id="label_transactionNo">
+            <label>Reference Number</label>
+        </div>
+        <div class="mb-3 form-group col-sm-8" id="row_transactionNo">
+            <input class="form-control" type="text" name="transactionNo" id="transactionNo" placeholder="Reference Number" th:value="${errorDataModel.transactionNo}" readonly="true">
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3 form-group  col-sm-4" id="label_amount">
+            <label>Amount</label>
+        </div>
+        <div class="mb-3 form-group col-sm-8" id="row_amount">
+            <input class="form-control" type="text" name="amount" id="amount" placeholder="Amount" th:value="${errorDataModel.amount}" readonly="true">
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3 form-group  col-sm-4" id="label_bankName">
+            <label>Bank Name</label>
+        </div>
+        <div class="mb-3 form-group col-sm-8" id="row_bankName">
+            <input class="form-control" type="text" name="bankName" id="bankName" placeholder="Bank Name" th:value="${errorDataModel.bankName}" required="true">
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3 form-group  col-sm-4" id="label_bankCode">
+            <label>Bank Code</label>
+        </div>
+        <div class="mb-3 form-group col-sm-8" id="row_bankCode">
+            <input class="form-control" type="text" name="bankCode" id="bankCode" placeholder="Bank Name" th:value="${errorDataModel.bankCode}" required="true">
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3 form-group  col-sm-4" id="label_branchCode">
+            <label>Routing Number/ Branch Code</label>
+        </div>
+        <div class="mb-3 form-group col-sm-8" id="row_branchCode">
+            <input class="form-control" type="text" name="branchCode" id="branchCode" placeholder="Routing Number/ Branch Code" th:value="${errorDataModel.branchCode}" required="true">
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3 form-group  col-sm-4" id="label_branchName">
+            <label>Branch Name</label>
+        </div>
+        <div class="mb-3 form-group col-sm-8" id="row_branchCode">
+            <input class="form-control" type="text" name="branchName" id="branchName" placeholder="Branch Name" th:value="${errorDataModel.branchName}" required="true">
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3 form-group  col-sm-4" id="label_beneficiaryAccount">
+            <label>Beneficiary Account Number</label>
+        </div>
+        <div class="mb-3 form-group col-sm-8" id="row_beneficiaryAccount">
+            <input class="form-control" type="text" name="beneficiaryAccount" id="beneficiaryAccount" placeholder="Beneficiary Account Number" th:value="${errorDataModel.beneficiaryAccount}" required="true">
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3 form-group  col-sm-4" id="label_beneficiaryName">
+            <label>Beneficiary Name</label>
+        </div>
+        <div class="mb-3 form-group col-sm-8" id="row_beneficiaryName">
+            <input class="form-control" type="text" name="beneficiaryName" id="beneficiaryName" placeholder="Beneficiary Name" th:value="${errorDataModel.beneficiaryName}" required="true">
+        </div>
+    </div> 
+    <div class="row">
+        <div class="form-group col-sm-4" id="row_id">
+            <input class="form-control" type="hidden" name="id" id="id" th:value="${errorDataModel.id}">
+        </div>
+        <div class="form-group col-sm-4" id="row_exchangeCode">
+            <input class="form-control" type="hidden" name="exchangeCode" id="exchangeCode" th:value="${errorDataModel.exchangeCode}">
+        </div>
+    </div>   
+    <div class="row">
+        <div class="mb-3 form-group col text-center" id="row_submit">
+            <input type="submit" id="submit" class="btn btn-success" name="submit" value="Edit">
+        </div>
+    </div>
+</form>

@@ -50,16 +50,16 @@ public class NafexModelService {
             fileInfoModelRepository.save(fileInfoModel);
             //FileInfoModel fModel = fileInfoModelRepository.findByFileName(file.getOriginalFilename());
             
-            List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream(), user, fileInfoModel, file.getOriginalFilename());
+            List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream(), user, fileInfoModel, file.getOriginalFilename(), exchangeCode);
             if(nafexModels.size()!=0) {
                 int ind = 0;
             
                 for (NafexEhMstModel nafexModel : nafexModels) {
-                    nafexModel.setExchangeCode(exchangeCode);
+                    //nafexModel.setExchangeCode(exchangeCode);
                     nafexModel.setFileInfoModel(fileInfoModel);
                     nafexModel.setUserModel(user);
                     if (ind == 0) {
-                        fileInfoModel.setExchangeCode(nafexModel.getExchangeCode());
+                        fileInfoModel.setExchangeCode(exchangeCode);
                         ind++;
                     }
                 }
@@ -113,7 +113,7 @@ public class NafexModelService {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
     }
-    public List<NafexEhMstModel> csvToNafexModels(InputStream is, User user, FileInfoModel fileInfoModel, String fileName) {
+    public List<NafexEhMstModel> csvToNafexModels(InputStream is, User user, FileInfoModel fileInfoModel, String fileName, String exchangeCode) {
         Optional<NafexEhMstModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
@@ -125,48 +125,85 @@ public class NafexModelService {
                 duplicateData = nafexModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
                     errorMessage = "Duplicate Reference No " + csvRecord.get(1) + " Found";
-                    CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                    CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                     continue;
                 }
                 //a/c no, benficiary name, amount empty or null check
+                /* 
                 if(CommonService.checkEmptyString(csvRecord.get(7)) ||  CommonService.checkEmptyString(csvRecord.get(6)) || CommonService.checkEmptyString(csvRecord.get(3))){
                     errorMessage = "A/C Number or Beneficiary Name or Amount Can not be empty";
-                    CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                    CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+                */
+                errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(csvRecord.get(7), csvRecord.get(6), csvRecord.get(3));
+                if(!errorMessage.isEmpty()){
+                    CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                     continue;
                 }
                 
                 if(CommonService.isBeftnFound(csvRecord.get(8), csvRecord.get(7), csvRecord.get(11))){
+                    /*
                     if(csvRecord.get(11).length() != 9 || CommonService.checkAgraniRoutingNo(csvRecord.get(11))){
                         errorMessage = "Invalid Routing Number for BEFTN";
-                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;  
                     }
+                    */
+                    errorMessage = CommonService.checkBEFTNRouting(csvRecord.get(11));
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
                 }else if(CommonService.isCocFound(csvRecord.get(7))){
+                    /* 
                     if(!CommonService.checkAgraniBankName(csvRecord.get(8))){
                         errorMessage = "Invalid Bank Name";
-                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                    */
+                    errorMessage = CommonService.checkCOCBankName(csvRecord.get(8));
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
                 }else if(CommonService.isAccountPayeeFound(csvRecord.get(8), csvRecord.get(7), csvRecord.get(11))){
                     //check ABL A/C starts with 02** and routing no is not matched with ABL
+                    /*
                     if(CommonService.isOnlineAccoutNumberFound(csvRecord.get(7)) && !CommonService.checkAgraniRoutingNo(csvRecord.get(11)) 
                         && !CommonService.checkAgraniBankName(csvRecord.get(8))){
                         errorMessage = "Invalid Routing Number or Bank Name";
-                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                    */
+                    errorMessage = CommonService.checkABLAccountAndRoutingNo(csvRecord.get(7), csvRecord.get(11), csvRecord.get(8));
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
                     //abl routing number a/c starts 02** which isn't 13 digits
+                    /* 
                     else if(CommonService.checkAgraniRoutingNo(csvRecord.get(11)) && csvRecord.get(7).startsWith("02000")){
                         if(csvRecord.get(7).length() != 13){
                             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits";
-                            CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                            CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                             continue;
                         }
                     }
-                    //string satrts with CO
+                    */
+                    //string starts with CO
+                    /* 
                     else if(csvRecord.get(7).toLowerCase().contains("co")){
                         errorMessage = "Invalid COC A/C name";
-                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, errorMessage, currentDateTime, user, fileInfoModel);
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                    */
+                    errorMessage = CommonService.checkCOString(csvRecord.get(7));
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
                 }else if(CommonService.isOnlineAccoutNumberFound(csvRecord.get(7))){
@@ -174,7 +211,7 @@ public class NafexModelService {
                 }
                 
                 NafexEhMstModel nafexDataModel = new NafexEhMstModel(
-                        csvRecord.get(0), //exCode
+                        exchangeCode, //exCode
                         csvRecord.get(1), //Tranno
                         csvRecord.get(2), //Currency
                         Double.parseDouble(csvRecord.get(3)), //Amount
@@ -203,7 +240,6 @@ public class NafexModelService {
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
                         CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(), csvRecord.get(11)));        // Checking Beftn
-                        //System.out.println(nafexDataModel);
                 nafexDataModelList.add(nafexDataModel);
             }
             if (!errorDataModelList.isEmpty()) {
