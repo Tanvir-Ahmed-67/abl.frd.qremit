@@ -47,36 +47,36 @@ public class ApiT24ModelController {
                     fileInfoModelObject = apit24ModelService.save(file, userId, exchangeCode);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
-                        return commonService.uploadSuccesPage;
+                        return commonService.uploadApiSuccessPage;
                     }
                     else{
                         message = "All Data From Your Selected File Already Exists!";
                         model.addAttribute("message", message);
-                        return commonService.uploadSuccesPage;
+                        return commonService.uploadApiSuccessPage;
                     }
                 }
                 catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return commonService.uploadApiSuccessPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return commonService.uploadApiSuccessPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadSuccesPage;
+            return commonService.uploadApiSuccessPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadSuccesPage;
+        return commonService.uploadApiSuccessPage;
     }
     @PostMapping("/apit24transfer")
     public String transferApiT24Data(){
         dynamicOperationService.transferApiT24Data();
-        return commonService.uploadSuccesPage;
+        return "redirect:/user-home-page";
     }
 }

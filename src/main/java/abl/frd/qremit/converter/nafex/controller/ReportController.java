@@ -1,35 +1,31 @@
 package abl.frd.qremit.converter.nafex.controller;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import abl.frd.qremit.converter.nafex.model.*;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
-import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
-import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.ReportService;
 
-@RestController
+@Controller
 public class ReportController {
 
     private final MyUserDetailsService myUserDetailsService;
@@ -232,5 +228,50 @@ public class ReportController {
         }
         return "";
     }
-    
+    @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET)
+    public String generateSummaryOfDailyStatement(Model model) {
+        List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyStatement();
+        Double grandTotalAmount = 0.00;
+        String commaFormattedGrandTotalAmount="";
+        int grandTotalRemittances=0;
+        for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
+            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+            grandTotalAmount = grandTotalAmount+exchangeReportDTO.getTotalAmountCount();
+            grandTotalRemittances = grandTotalRemittances+exchangeReportDTO.getTotalRowCount();
+            commaFormattedGrandTotalAmount = exchangeReportDTO.formattedAmount.format(grandTotalAmount);
+        }
+        model.addAttribute("summaryReportContent", exchangeReport);
+        model.addAttribute("grandTotalAmount", commaFormattedGrandTotalAmount);
+        model.addAttribute("grandTotalRemittances", grandTotalRemittances);
+        return "/report/summaryOfDailyRemittance";
+    }
+
+    @RequestMapping(value="/detailsOfDailyStatement", method= RequestMethod.GET)
+    public String generateDetailsOfDailyStatement(@RequestParam(defaultValue = "html") String format, Model model) throws FileNotFoundException {
+        List<ExchangeReportDTO> exchangeReport = reportService.generateDetailsOfDailyStatement();
+        for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
+            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+        }
+        model.addAttribute("detailsReportContent", exchangeReport);
+        return "/report/detailsOfDailyRemittance";
+    }
+
+    @RequestMapping(value="/downloadDailyStatementInPdfFormat", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat() throws JRException, FileNotFoundException {
+        // Getting the data as List
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement();
+
+        // Generating the PDF report and storing here - D:\\Report"+"\\Report.pdf
+        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data);
+
+        // Set the headers for file download
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Report.pdf\"");
+
+        // Return the response with the PDF as a byte array
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
+    }
 }
