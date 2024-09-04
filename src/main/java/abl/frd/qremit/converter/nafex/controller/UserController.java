@@ -196,5 +196,12 @@ public class UserController {
         return "/pages/user/userFileUploadReport";
     }
 
+    @GetMapping("/adminErrorReport")
+    public String adminErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("type") String type){
+        //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        if(type.equalsIgnoreCase("4"))   return "/pages/admin/adminErrorUpdateReport";
+        else return "";
+    }
+
 
 }

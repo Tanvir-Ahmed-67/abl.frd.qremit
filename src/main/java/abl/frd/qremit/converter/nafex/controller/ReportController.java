@@ -22,8 +22,11 @@ import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
+import abl.frd.qremit.converter.nafex.model.LogModel;
 import abl.frd.qremit.converter.nafex.model.User;
+import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
 import abl.frd.qremit.converter.nafex.service.CommonService;
+import abl.frd.qremit.converter.nafex.service.ErrorDataModelService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
@@ -39,6 +42,10 @@ public class ReportController {
     CommonService commonService;
     @Autowired
     ExchangeHouseModelService exchangeHouseModelService;
+    @Autowired
+    ErrorDataModelService errorDataModelService;
+    @Autowired
+    LogModelRepository logModelRepository;
     
 
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
@@ -126,8 +133,7 @@ public class ReportController {
         }else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
-        String baseTableName = exchangeHouseModel.getBaseTableName();
-        String tbl = "base_data_table_" + baseTableName;
+        String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         
         Map<String,Object> fileInfo = reportService.getFileDetails(tbl,id);
         if((Integer) fileInfo.get("err") == 1)  return ResponseEntity.ok(fileInfo);
@@ -191,7 +197,7 @@ public class ReportController {
             List<Map<String, Object>> dataList = new ArrayList<>();
             int sl = 1;
             String action = "";
-            List<ErrorDataModel> errorDataModel = reportService.findByUserModelId(userId);
+            List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByIdAndUpdateStatus(userId, 0);
             for(ErrorDataModel emodel: errorDataModel){
                 Map<String, Object> dataMap = new HashMap<>();
                 action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info round edit_error",String.valueOf(emodel.getId()),"Edit");
@@ -215,6 +221,28 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping("/getErrorUpdateReport")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getErrorUpdateReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
+        //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        Map<String, Object> resp = new HashMap<>();
+
+        String[] columnData = {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
+        String[] columnTitles = {"SL", "Bank Name", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+        List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
+        resp.put("columns", columns);
+
+        List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByUpdateStatus(1);
+        for(ErrorDataModel emodel: errorDataModel){
+            String errorDataId = String.valueOf(emodel.getId());
+            System.out.println(errorDataId);
+            LogModel logModel = logModelRepository.findByErrorDataId(errorDataId);
+            System.out.println(logModel);
+        }
+
+
+        return ResponseEntity.ok(resp);
+    }
 
     public String getRemittanceType(Map<String, String> type){
         Map<String, String> remType = new HashMap<>();
