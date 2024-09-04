@@ -53,7 +53,7 @@ function checkDataTable(tbl){
   }
 
 
-    /*
+  /*
    * Improved Ajax Method
    * success_fun means succes method to be called after ajax succes
    * fail_fun means failed method to be called after ajax fail
@@ -86,7 +86,6 @@ function checkDataTable(tbl){
     }).fail(function(params){
       fail_fun(params);
     });
-
   }
 
   function getParameterByName(name, url) {
@@ -110,4 +109,88 @@ function checkDataTable(tbl){
       scriptElement.src = url;
       document.querySelector('footer').appendChild(scriptElement);
     });
+  }
+
+  function modal_ui(params){ 
+    var modal_obj = {
+      'modal_title': params.modal_title,
+      'id' : params.modalID,
+      'modal_content': params.content,
+      'modal_class': params.modal_class,
+    };
+    var modal = ui.modal(modal_obj);
+    $(params.modal_wrap).html(modal);
+    $('#' + params.modalID).modal('show');
+  }
+  
+  function gen_modal(url,params,mparams,data){
+    var cont = "";
+    $.ajax({
+      url: url,
+    }).done(function(resp){
+      mparams.content = resp;
+      modal_ui(mparams);
+    }).fail(function(){
+      alert("Error getting from server");
+    });
+  }
+    
+  function success_modal(resp,params){
+    alert(resp.msg);
+    if(resp.err == 0)   $('#' + params.modalID).modal('hide');
+    if(params.failModalhide)  $('#' + params.modalID).modal('hide');
+    if(params.reload) dataTable_reload(params.tbl);
+  }
+
+  function fail_func(data){
+    alert("Error getting from server");
+  }
+
+  function success_alert(resp,params){
+    //console.log(resp);
+    if(resp.err == 0 && params.success_alert == ""){
+    }else{ 
+      alert(resp.msg);
+    }
+    if(resp.err == 0){
+      if(params.success_redirect === 'true'){
+        window.location.href = resp.url;
+      }
+      if(params.success_reload === 'true'){
+        location.reload();
+      }
+      if(params.modal_hide === 'true'){
+        $(params.modalID).modal('hide');
+      }
+      if(params.dataTable_reload === 'true'){
+        dataTable_reload(params.tbl);
+      }
+      if(params.form_reset === 'true'){
+        $('form')[0].reset();
+      }
+    }
+  }
+
+  var ui = {
+    modal: function(obj){
+      var ret = '';
+      modal_class = (obj.modal_class) ? obj.modal_class:'';
+      ret += '<div id="'+obj.id+'" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">';
+        ret += '<div class="modal-dialog '+modal_class+'">';
+          ret += '<div class="modal-content">';
+            ret += '<div class="modal-header">';
+              ret += '<h4 class="modal-title" id="exampleModalLabel">'+ obj.modal_title +'</h4>';
+              ret += '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+            ret += '</div>';
+            ret += '<div class="modal-body">';
+              ret += obj.modal_content;
+            ret +='</div>';
+            ret += '<div class="modal-footer">';
+              ret += '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+            ret += '</div>';
+          ret += '</div>';
+        ret +='</div>';
+      ret += '</div>';
+      return ret;
+    },
   }

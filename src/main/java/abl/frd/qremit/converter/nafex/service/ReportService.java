@@ -16,6 +16,9 @@ import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import abl.frd.qremit.converter.nafex.repository.ErrorDataModelRepository;
+import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
+import abl.frd.qremit.converter.nafex.repository.ReportRepository;
 import org.springframework.util.ResourceUtils;
 
 @Service
@@ -42,6 +45,7 @@ public class ReportService {
     public Map<String, Object> getFileDetails(String tableName, String fileInfoId) {
         return reportRepository.getFileDetails(tableName, fileInfoId);
     }
+    
 
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
