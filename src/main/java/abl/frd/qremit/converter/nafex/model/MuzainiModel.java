@@ -344,6 +344,11 @@ public class MuzainiModel {
         this.checkAccPayee = checkAccPayee;
         this.checkBeftn = checkBeftn;
     }
+    public MuzainiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, FileInfoModel fileInfoModel, User user) {
+        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, extraC, checkT24, checkCoc, checkAccPayee, checkBeftn);
+        this.fileInfoModel = fileInfoModel;
+        this.userModel = user;
+    }
 
     @Override
     public String toString() {

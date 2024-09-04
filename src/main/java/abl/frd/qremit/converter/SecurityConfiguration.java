@@ -29,7 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/images/**").permitAll()
                 .antMatchers("/login", "/change-password", "/change-password-for-first-time-login").permitAll()
-                .antMatchers("**/upload","**/allUsers","**/downloadaccountpayee/**","**/downloadbeftn/**","**/downloadcoc/**","**/downloadonline/**").hasAnyRole("ADMIN","USER","SUPERADMIN")
+                .antMatchers("**/upload","**/allUsers","**/downloadaccountpayee/**","**/downloadbeftn/**","**/downloadcoc/**","**/downloadonline/**","**/apibeftntransfer/**").hasAnyRole("ADMIN","USER","SUPERADMIN")
                 .antMatchers("**/newUserCreationForm/**","**/createNewUser/**","**/showInactiveUsers/**").hasRole("SUPERADMIN")
                 .antMatchers("**/exchangeHouseEditForm/**","**/editExchangeHouse/**").hasRole("ADMIN")
                 .antMatchers("**/bec/index/**","**/upload/**").hasRole("ADMIN")

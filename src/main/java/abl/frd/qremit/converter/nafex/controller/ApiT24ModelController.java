@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class ApiT24ModelController {
     @Autowired
-    private DynamicTableService dynamicTableService;
+    private DynamicOperationService dynamicOperationService;
     @Autowired
     private ApiT24ModelService apit24ModelService;
     @Autowired
@@ -27,7 +27,7 @@ public class ApiT24ModelController {
     private MyUserDetailsService myUserDetailsService;
 
     @PostMapping("/apit24Upload")
-    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
+    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 
 
@@ -44,34 +44,39 @@ public class ApiT24ModelController {
         if (commonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = apit24ModelService.save(file, userId, "api t24");
+                    fileInfoModelObject = apit24ModelService.save(file, userId, exchangeCode);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
-                        return commonService.uploadSuccesPage;
+                        return commonService.uploadApiSuccessPage;
                     }
                     else{
                         message = "All Data From Your Selected File Already Exists!";
                         model.addAttribute("message", message);
-                        return commonService.uploadSuccesPage;
+                        return commonService.uploadApiSuccessPage;
                     }
                 }
                 catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return commonService.uploadApiSuccessPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return commonService.uploadApiSuccessPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadSuccesPage;
+            return commonService.uploadApiSuccessPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadSuccesPage;
+        return commonService.uploadApiSuccessPage;
+    }
+    @PostMapping("/apit24transfer")
+    public String transferApiT24Data(){
+        dynamicOperationService.transferApiT24Data();
+        return "redirect:/user-home-page";
     }
 }
