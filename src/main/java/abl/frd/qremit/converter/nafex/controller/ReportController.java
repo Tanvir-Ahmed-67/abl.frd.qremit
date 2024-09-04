@@ -274,4 +274,26 @@ public class ReportController {
                 .headers(headers)
                 .body(pdfReport);
     }
+    @RequestMapping(value = "/getCalender")
+    public String showCalendar(){
+        return "pages/admin/adminShowCalenderPage";
+    }
+    public List<CalendarEventDTO> getCalendarEvents() {
+        List<CalendarEventDTO> events = new ArrayList<>();
+
+        // Sample events
+        CalendarEventDTO event1 = new CalendarEventDTO();
+        event1.setTitle("Event 1");
+        event1.setStart("2024-09-04");
+
+        CalendarEventDTO event2 = new CalendarEventDTO();
+        event2.setTitle("Event 2");
+        event2.setStart("2024-09-05");
+        event2.setEnd("2024-09-06");
+
+        events.add(event1);
+        events.add(event2);
+
+        return events;
+    }
 }
