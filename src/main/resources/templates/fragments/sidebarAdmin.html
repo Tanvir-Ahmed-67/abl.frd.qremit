@@ -21,6 +21,7 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    <!--
                     <li class='sidebar-title'>Management</li>
                     <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
@@ -44,6 +45,7 @@
                             </li>
                         </ul>
                     </li>
+                -->
                     <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
                             <i data-feather="user" width="20"></i>
@@ -56,7 +58,7 @@
                             <li>
                                 <a th:href="@{/newUserCreationForm}">Insert User</a>
                             </li>
-
+                            <!--
                             <li>
                                 <a href="component-badge.html">Update User</a>
                             </li>
@@ -64,6 +66,7 @@
                             <li>
                                 <a href="component-breadcrumb.html">Delete User</a>
                             </li>
+                        -->
                         </ul>
                     </li>
                     <li class="sidebar-item has-sub">
@@ -78,13 +81,27 @@
                             <li>
                                 <a th:href="@{/newExchangeHouseCreationForm}">Insert New Exch. House</a>
                             </li>
-
+                            <!--
                             <li>
                                 <a href="component-badge.html">Update Exch. House</a>
                             </li>
 
                             <li>
                                 <a href="component-breadcrumb.html">Delete Exch. House</a>
+                            </li>
+                        -->
+                        </ul>
+                    </li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i data-feather="user" width="20"></i>
+                            <span>Report Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/summaryOfDailyStatement}">Summary of Daily Statement</a>
+                                <a th:href="@{/detailsOfDailyStatement}">Details of Daily Statement</a>
+                                <a th:href="@{/getCalender}">Calendar</a>
                             </li>
                         </ul>
                     </li>

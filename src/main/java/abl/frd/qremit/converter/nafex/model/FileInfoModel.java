@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name="upload_file_info")
+@Table(name="upload_file_info", uniqueConstraints = @UniqueConstraint(columnNames = "file_name"))
 public class FileInfoModel {
     @Id
     @Column(name = "id")
@@ -18,7 +18,7 @@ public class FileInfoModel {
     private String exchangeCode;
     @Column(name = "upload_date_time")
     private LocalDateTime uploadDateTime;
-    @Column(name = "file_name")
+    @Column(name = "file_name", unique = true, nullable = false)
     private String fileName;
     @Column(name = "coc_count")
     private String cocCount;
@@ -40,15 +40,33 @@ public class FileInfoModel {
     @JsonIgnore 
     private User userModel;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<NafexEhMstModel> nafexEhMstModel;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AgexSingaporeModel> agexSingaporeModel;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<EzRemitModel> ezRemitModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<RiaModel> riaModel;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<BecModel> becModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ApiBeftnModel> apiBeftnModel;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ApiT24Model> apiT24Model;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<MuzainiModel> muzainiModel;
 
@@ -67,6 +85,10 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<OnlineModel> onlineModelList;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ErrorDataModel> errorDataModelList;
 
     public List<OnlineModel> getOnlineModelList() {
         return onlineModelList;
@@ -98,6 +120,14 @@ public class FileInfoModel {
 
     public void setCocModelList(List<CocModel> cocModelList) {
         this.cocModelList = cocModelList;
+    }
+
+    public List<ErrorDataModel> getErrorDataModelList() {
+        return errorDataModelList;
+    }
+
+    public void seterrorDataModelList(List<ErrorDataModel> errorDataModelList ) {
+        this.errorDataModelList = errorDataModelList;
     }
 
     public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount) {
@@ -246,5 +276,45 @@ public class FileInfoModel {
 
     public void setProcessedCount(String processedCount) {
         this.processedCount = processedCount;
+    }
+
+    public List<AgexSingaporeModel> getAgexSingaporeModel() {
+        return agexSingaporeModel;
+    }
+
+    public void setAgexSingaporeModel(List<AgexSingaporeModel> agexSingaporeModel) {
+        this.agexSingaporeModel = agexSingaporeModel;
+    }
+
+    public List<EzRemitModel> getEzRemitModel() {
+        return ezRemitModel;
+    }
+
+    public void setEzRemitModel(List<EzRemitModel> ezRemitModel) {
+        this.ezRemitModel = ezRemitModel;
+    }
+
+    public List<RiaModel> getRiaModel() {
+        return riaModel;
+    }
+
+    public void setRiaModel(List<RiaModel> riaModel) {
+        this.riaModel = riaModel;
+    }
+
+    public List<ApiBeftnModel> getApiBeftnModel() {
+        return apiBeftnModel;
+    }
+
+    public void setApiBeftnModel(List<ApiBeftnModel> apiBeftnModel) {
+        this.apiBeftnModel = apiBeftnModel;
+    }
+
+    public List<ApiT24Model> getApiT24Model() {
+        return apiT24Model;
+    }
+
+    public void setApiT24Model(List<ApiT24Model> apiT24Model) {
+        this.apiT24Model = apiT24Model;
     }
 }

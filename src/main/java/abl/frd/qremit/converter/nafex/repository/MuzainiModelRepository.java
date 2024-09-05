@@ -1,11 +1,14 @@
 package abl.frd.qremit.converter.nafex.repository;
 
+import abl.frd.qremit.converter.nafex.model.BecModel;
 import abl.frd.qremit.converter.nafex.model.MuzainiModel;
+import abl.frd.qremit.converter.nafex.model.NafexEhMstModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MuzainiModelRepository extends JpaRepository<MuzainiModel, Integer> {
@@ -20,4 +23,6 @@ public interface MuzainiModelRepository extends JpaRepository<MuzainiModel, Inte
     List<NafexEhMstModel> findAllNafexModelHavingAccountPayee();
 
      */
+    MuzainiModel findByTransactionNo(String transactionNo);
+    Optional<MuzainiModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
 }

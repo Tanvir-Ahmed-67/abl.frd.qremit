@@ -23,12 +23,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             new SimpleUrlAuthenticationSuccessHandler("/admin-home-page");
     SimpleUrlAuthenticationSuccessHandler userSuccessHandler =
             new SimpleUrlAuthenticationSuccessHandler("/user-home-page");
-            //new SimpleUrlAuthenticationSuccessHandler("/utils");
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         for (final GrantedAuthority grantedAuthority : authorities) {
             String authorityName = grantedAuthority.getAuthority();
             if (authorityName.equals("ROLE_SUPERADMIN")) {
@@ -42,7 +42,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                 return;
             }
         }
+        if (userDetails.isPasswordChangeRequired()) {
+            response.sendRedirect("/change-password");
+        } else {
+            response.sendRedirect("/user-home-page");
+        }
         // if the user is not an Admin or Super Admin delegate to the userSuccessHandler
-        this.userSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+        //this.userSuccessHandler.onAuthenticationSuccess(request, response, authentication);
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Repository
@@ -26,5 +25,11 @@ public interface ExchangeHouseModelRepository extends JpaRepository<ExchangeHous
     void setExchangeHouseActiveStatusFalseById(int id);
     @Query("SELECT n FROM ExchangeHouseModel n WHERE n.Id = :id")
     ExchangeHouseModel findByExchangeId(int id);
-
+    @Transactional
+    @Modifying
+    @Query("UPDATE ExchangeHouseModel n SET n.activeStatus = false, n.exchangeName=:exchangeName, n.exchangeShortName=:exchangeShortName, n.nrtaCode=:nrtaCode WHERE n.Id = :id")
+    void editExchangeHouse(String exchangeName, String exchangeShortName, String nrtaCode, int id);
+    @Query("SELECT n FROM ExchangeHouseModel n WHERE n.exchangeCode = :exchangeCode")
+    ExchangeHouseModel findByExchangeCode(String exchangeCode);
+    ExchangeHouseModel findExchangeCodeByBaseTableName(String baseTableName);
 }

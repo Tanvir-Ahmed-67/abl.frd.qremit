@@ -2,7 +2,7 @@ package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_bec")
+@Table(name="base_data_table_bec", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
 public class BecModel {
     @Id
     @Column(name = "id")
@@ -10,21 +10,24 @@ public class BecModel {
     private long  id;
     @Column(name = "exchange_code")
     private String exchangeCode;
-    @Column(name = "transaction_no")
+    @Column(name = "transaction_no", unique = true, nullable = false)
     private String transactionNo;
     @Column(name = "currency")
     private String currency;
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private Double amount;
     @Column(name = "entered_date")
     private String enteredDate;
     @Column(name = "remitter_name")
     private String remitterName;
+    @Column(name = "remitter_mobile_no")
+    private String remitterMobile;
     @Column(name = "beneficiary_name")
     private String beneficiaryName;
-    @Column(name = "beneficiary_account_no")
+    @Column(name = "beneficiary_account_no", nullable = false)
     private String beneficiaryAccount;
-  
+    @Column(name = "beneficiary_mobile_no")
+    private String beneficiaryMobile;
     @Column(name = "bank_name")
     private String bankName;
     @Column(name = "bank_code")
@@ -33,9 +36,6 @@ public class BecModel {
     private String branchName;
     @Column(name = "branch_code")
     private String branchCode;
-    @Column(name = "beneficiary_mobile_no")
-    private String beneficiaryMobile;
-
     @Column(name = "drawee_branch_name")
     private String draweeBranchName;
     @Column(name = "drawee_branch_code")
@@ -44,8 +44,6 @@ public class BecModel {
     private String purposeOfRemittance;
     @Column(name = "source_of_income")
     private String sourceOfIncome;
-    @Column(name = "remitter_mobile_no")
-    private String remitterMobile;
     @Column(name = "process_flag")
     private String processFlag;
     @Column(name = "type_flag")
@@ -66,7 +64,7 @@ public class BecModel {
     @Column(name = "check_beftn")
     private String checkBeftn;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
@@ -318,13 +316,14 @@ public class BecModel {
         this.extraC = extraC;
     }
 
-    public BecModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public BecModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
         this.amount = amount;
         this.enteredDate = enteredDate;
         this.remitterName = remitterName;
+        this.remitterMobile = remitterMobile;
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryAccount = beneficiaryAccount;
         this.beneficiaryMobile = beneficiaryMobile;
@@ -336,7 +335,6 @@ public class BecModel {
         this.draweeBranchCode = draweeBranchCode;
         this.purposeOfRemittance = purposeOfRemittance;
         this.sourceOfIncome = sourceOfIncome;
-        this.remitterMobile = remitterMobile;
         this.processFlag = processFlag;
         this.typeFlag = typeFlag;
         this.processedBy = processedBy;
@@ -346,6 +344,12 @@ public class BecModel {
         this.checkCoc = checkCoc;
         this.checkAccPayee = checkAccPayee;
         this.checkBeftn = checkBeftn;
+    }
+
+    public BecModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, FileInfoModel fileInfoModel, User user) {
+        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, extraC, checkT24, checkCoc, checkAccPayee, checkBeftn);
+        this.fileInfoModel = fileInfoModel;
+        this.userModel = user;
     }
 
     @Override

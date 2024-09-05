@@ -37,7 +37,11 @@ public class ExchangeHouseModelService {
         return true;
     }
     public void editExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception {
-        exchangeHouseModelRepository.save(exchangeHouseModel);
-        exchangeHouseModelRepository.setExchangeHouseActiveStatusFalseById(exchangeHouseModel.getId());
+        exchangeHouseModelRepository.editExchangeHouse(exchangeHouseModel.getExchangeName(), exchangeHouseModel.getExchangeShortName(), exchangeHouseModel.getNrtaCode(), exchangeHouseModel.getId());
+    }
+
+    public ExchangeHouseModel findByExchangeCode(String exchangeCode){
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+        return exchangeHouseModel;
     }
 }
