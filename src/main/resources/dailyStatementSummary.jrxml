@@ -89,7 +89,7 @@
 			<element kind="textField" x="89" y="0" width="80" height="30" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{exchangeCode}]]></expression>
 			</element>
-			<element kind="textField" x="440" y="1" width="110" height="30" hTextAlign="Center" vTextAlign="Middle">
+			<element kind="textField" x="440" y="1" width="110" height="30" pattern="#,##,###.00" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{sumOfAmount}]]></expression>
 			</element>
 			<element kind="textField" x="180" y="0" width="150" height="30" hTextAlign="Center" vTextAlign="Middle">
@@ -112,7 +112,7 @@
 		<element kind="textField" x="340" y="4" width="90" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<expression><![CDATA[$V{sumOfTotalRowCount1}]]></expression>
 		</element>
-		<element kind="textField" x="440" y="4" width="110" height="19" bold="true" hTextAlign="Center" vTextAlign="Middle">
+		<element kind="textField" x="440" y="4" width="110" height="19" pattern="#,##,###.00" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<expression><![CDATA[$V{totalCount}]]></expression>
 		</element>
 		<element kind="staticText" x="0" y="-10" width="550" height="13" bold="true" hTextAlign="Center" vTextAlign="Top">
