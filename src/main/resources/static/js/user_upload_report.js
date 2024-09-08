@@ -59,9 +59,17 @@ $(document).ready(function(){
         var token = $('#_csrf').val();
         var header = $('#_csrf_header').val();
         var data = $(this).serialize();
-        console.log(data);
         var url = "/error/update";
         var params = {'dataTable_reload': 'true', 'tbl': tbl, 'modal_hide': 'true', 'modalID': '#myModal' };
         get_ajax(url,data,success_alert,fail_func,"post","json",params);
+    });
+    $(document).off('click',".approve_error");
+    $(document).on('click',".approve_error",function(e){
+        e.preventDefault();
+        var id = $(this).attr("id");
+        var url  = "/error/approve";
+        var data = {'id': id};
+        var params = {'dataTable_reload': 'true', 'tbl': tbl, };
+        get_ajax(url,data,success_alert,fail_func,"get","json",params);
     });
 });
