@@ -52,6 +52,10 @@ function checkDataTable(tbl){
  
   }
 
+  function dataTable_reload(tbl,pagination = true){
+    //if pagination = false user paging is not reset on reload
+    $(tbl).DataTable().ajax.reload(null,pagination);
+  }
 
   /*
    * Improved Ajax Method

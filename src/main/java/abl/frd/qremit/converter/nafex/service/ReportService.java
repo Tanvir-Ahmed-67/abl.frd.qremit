@@ -121,58 +121,80 @@ public class ReportService {
 
         // Combine the Online data by exchangeCode
         Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
-        for (OnlineModel item : onlineData) {
-            String exchangeCode = item.getExchangeCode();
-            ExchangeReportDTO dto = reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(), item.getBeneficiaryAccount(),item.getFileInfoModel().getUploadDateTime()));
-            dto.doSum(item.getAmount());
-            dto.doCount();
-        }
 
-        // Process data from beftn table
-        for (BeftnModel item : beftnData) {
-            String exchangeCode = item.getExchangeCode();
-            reportMap.computeIfPresent(exchangeCode, (k, v) -> {
-                v.setTransactionNo(item.getTransactionNo());
-                v.setAmount(item.getAmount());
-                v.setBeneficiaryName(item.getBeneficiaryName());
-                v.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                v.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                v.doSum(item.getAmount());
-                v.doCount();
-                return v;
-            });
+        // Process onlineData if it has valid data
+        if (isListValid(onlineData)) {
+            for (OnlineModel item : onlineData) {
+                String exchangeCode = item.getExchangeCode();
+                ExchangeReportDTO dto = reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
+                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
+                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
+                dto.doSum(item.getAmount());
+                dto.doCount();
+            }
         }
-
-        // Process data from coc table
-        for (CocModel item : cocData) {
-            String exchangeCode = item.getExchangeCode();
-            reportMap.computeIfPresent(exchangeCode, (k, v) -> {
-                v.setTransactionNo(item.getTransactionNo());
-                v.setAmount(item.getAmount());
-                v.setBeneficiaryName(item.getBeneficiaryName());
-                v.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                v.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                v.doSum(item.getAmount());
-                v.doCount();
-                return v;
-            });
+        // Process beftnData if it has valid data
+        if (isListValid(beftnData)) {
+            for (BeftnModel item : beftnData) {
+                String exchangeCode = item.getExchangeCode();
+                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
+                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
+                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
+                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
+                dto.setTransactionNo(item.getTransactionNo());
+                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
+                dto.setBeneficiaryName(item.getBeneficiaryName());
+                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
+                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
+                dto.doSum(item.getAmount());
+                dto.doCount();
+            }
         }
-
-        // Process data from account payee table
-        for (AccountPayeeModel item : accountPayeeData) {
-            String exchangeCode = item.getExchangeCode();
-            reportMap.computeIfPresent(exchangeCode, (k, v) -> {
-                v.setTransactionNo(item.getTransactionNo());
-                v.setAmount(item.getAmount());
-                v.setBeneficiaryName(item.getBeneficiaryName());
-                v.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                v.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                v.doSum(item.getAmount());
-                v.doCount();
-                return v;
-            });
+        // Process cocData if it has valid data
+        if (isListValid(cocData)) {
+            for (CocModel item : cocData) {
+                String exchangeCode = item.getExchangeCode();
+                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
+                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
+                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
+                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
+                dto.setTransactionNo(item.getTransactionNo());
+                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
+                dto.setBeneficiaryName(item.getBeneficiaryName());
+                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
+                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
+                dto.doSum(item.getAmount());
+                dto.doCount();
+            }
         }
-        return new ArrayList<>(reportMap.values());
+        // Process accountPayeeData if it has valid data
+        if (isListValid(accountPayeeData)) {
+            for (AccountPayeeModel item : accountPayeeData) {
+                String exchangeCode = item.getExchangeCode();
+                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
+                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
+                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
+                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
+                dto.setTransactionNo(item.getTransactionNo());
+                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
+                dto.setBeneficiaryName(item.getBeneficiaryName());
+                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
+                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
+                dto.doSum(item.getAmount());
+                dto.doCount();
+            }
+        }
+        // Convert the map values to a list for the final report
+        if (reportMap.isEmpty()) {
+            report.add(new ExchangeReportDTO("No data available", null, 0.0, "", "", null));
+        } else {
+            report.addAll(reportMap.values());
+        }
+        return report;
+    }
+    // Utility method to check if a list is valid (not null, not empty, and size > 0)
+    private boolean isListValid(List<?> list) {
+        return list != null && !list.isEmpty() && list.size() > 0;
     }
     public List<ExchangeReportDTO> generateDetailsOfDailyStatement() {
         // Fetch data from each table
