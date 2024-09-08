@@ -1,11 +1,7 @@
 package abl.frd.qremit.converter.nafex.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,20 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
-import abl.frd.qremit.converter.nafex.model.LogModel;
-import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.ErrorDataModelService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
+import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 
 @Controller
@@ -41,6 +30,8 @@ public class ErrorDataController {
     ErrorDataModelService errorDataModelService;
     @Autowired
     ExchangeHouseModelService exchangeHouseModelService;
+    @Autowired
+    LogModelService logModelService;
     
     public ErrorDataController(MyUserDetailsService myUserDetailsService){
         this.myUserDetailsService = myUserDetailsService;
@@ -61,6 +52,28 @@ public class ErrorDataController {
         formData.remove("_csrf");
         formData.remove("_csrf_header");
         Map<String, Object> resp = errorDataModelService.processUpdateErrorDataById(formData, request);
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/approve")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> approveErrorDataById(@RequestParam String id){
+        Map<String, Object> resp = new HashMap<>();
+        ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(Long.valueOf(id));
+        //String exchageCode = errorDataModel.getExchangeCode();
+        //ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchageCode);
+        //String url = exchangeHouseModel.getBaseTableName();
+        if(CommonService.checkEmptyString(id)){
+            resp = CommonService.getResp(1, "Invalid Id", null);
+            return ResponseEntity.ok(resp);
+        }
+        List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(id);
+        Map<String, Object> updatedDataMap = logModelService.fetchLogDataByKey(logData, "updatedData");
+        
+        System.out.println(updatedDataMap);
+
+        
+
         return ResponseEntity.ok(resp);
     }
 
