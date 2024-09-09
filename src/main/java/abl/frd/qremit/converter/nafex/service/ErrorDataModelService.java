@@ -54,6 +54,7 @@ public class ErrorDataModelService {
         return errorDataModelRepository.findById(id);
     }
 
+    // status 0- pending, 1- updated by user, 2- approve, 3- deny
     public void updateErrorDataModelUpdateStatus(long id, int updateStatus){
         errorDataModelRepository.updateUpdateStatusById(id, updateStatus);
     }
@@ -64,6 +65,8 @@ public class ErrorDataModelService {
         String id = formData.get("id");
         ErrorDataModel errorDataModel = findErrorModelById(Long.valueOf(id));
         entityManager.detach(errorDataModel); // Detach ErrorDataModel to prevent auto-updates
+        if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
+        if(errorDataModel.getUpdateStatus() != 0)   return CommonService.getResp(1, "Invalid Type for update data", null);  //for update status must be 0
 
         Map<String, Object> errorDataMap = getErrorDataModelMap(errorDataModel); 
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
@@ -72,6 +75,9 @@ public class ErrorDataModelService {
         info.put("oldData", errorDataMap);
         info.put("tableName",tbl);
         String ipAddress = request.getRemoteAddr();
+        String bankName = formData.get("bankName").trim();
+        String beneficiaryAccount =formData.get("beneficiaryAccount").trim();
+        String branchCode = formData.get("branchCode").trim();
 
         String errorMessage = "";
         //check amount and reference number same
@@ -101,6 +107,10 @@ public class ErrorDataModelService {
         errorDataModel.setBranchName(formData.get("branchName"));
         errorDataModel.setBeneficiaryAccount(formData.get("beneficiaryAccount"));
         errorDataModel.setBeneficiaryName(formData.get("beneficiaryName"));
+        errorDataModel.setCheckCoc(CommonService.putCocFlag(beneficiaryAccount));
+        errorDataModel.setCheckBeftn(CommonService.putBeftnFlag(bankName, beneficiaryAccount, branchCode));
+        errorDataModel.setCheckT24(CommonService.putOnlineFlag(beneficiaryAccount, bankName));
+        errorDataModel.setCheckAccPayee(CommonService.putAccountPayeeFlag(bankName, beneficiaryAccount, branchCode));
         
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel); 
         info.put("updatedData", updatedData);
