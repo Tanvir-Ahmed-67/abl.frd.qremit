@@ -9,15 +9,6 @@ import java.util.Locale;
 
 public class ExchangeReportDTO {
     private String exchangeCode;
-
-    public Double getSumOfAmount() {
-        return sumOfAmount;
-    }
-
-    public void setSumOfAmount(Double sumOfAmount) {
-        this.sumOfAmount = sumOfAmount;
-    }
-
     private String exchangeName;
     private String transactionNo;
     private String currency;
@@ -28,6 +19,7 @@ public class ExchangeReportDTO {
     private String beneficiaryName;
     private String beneficiaryAccount;
     private String beneficiaryMobile;
+
 
     private Double sumOfAmount = 0.00;
     private int totalRowCount = 0;
@@ -147,5 +139,12 @@ public class ExchangeReportDTO {
 
     public void setBeneficiaryMobile(String beneficiaryMobile) {
         this.beneficiaryMobile = beneficiaryMobile;
+    }
+    public Double getSumOfAmount() {
+        return sumOfAmount;
+    }
+
+    public void setSumOfAmount(Double sumOfAmount) {
+        this.sumOfAmount = sumOfAmount;
     }
 }
