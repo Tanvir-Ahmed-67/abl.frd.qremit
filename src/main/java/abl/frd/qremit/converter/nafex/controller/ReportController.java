@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,8 @@ import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.ReportService;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class ReportController {
@@ -303,33 +306,32 @@ public class ReportController {
         // Set the headers for file download
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Report.pdf\"");
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Summary_Report.pdf\"");
 
         // Return the response with the PDF as a byte array
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfReport);
     }
-    @RequestMapping(value = "/getCalender")
-    public String showCalendar(){
-        return "pages/admin/adminShowCalenderPage";
-    }
-    public List<CalendarEventDTO> getCalendarEvents() {
-        List<CalendarEventDTO> events = new ArrayList<>();
+    @RequestMapping(value = "/downloadDetailsReport", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format){
+        try {
+            // Prepare parameters and data source as needed
+            Map<String, Object> parameters = new HashMap<>();
+            List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyStatement();
 
-        // Sample events
-        CalendarEventDTO event1 = new CalendarEventDTO();
-        event1.setTitle("Event 1");
-        event1.setStart("2024-09-04");
-
-        CalendarEventDTO event2 = new CalendarEventDTO();
-        event2.setTitle("Event 2");
-        event2.setStart("2024-09-05");
-        event2.setEnd("2024-09-06");
-
-        events.add(event1);
-        events.add(event2);
-
-        return events;
+            // Call the method to generate the report
+            byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format);
+            // Set the content type and header for attachment download
+            String fileName = "Details_Report." + format.toLowerCase();
+            MediaType mediaType = format.equalsIgnoreCase("pdf") ? MediaType.APPLICATION_PDF : MediaType.TEXT_PLAIN;
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(mediaType)
+                    .body(reportBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
 }

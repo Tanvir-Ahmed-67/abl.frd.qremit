@@ -11,9 +11,12 @@ import abl.frd.qremit.converter.nafex.repository.*;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import abl.frd.qremit.converter.nafex.repository.ErrorDataModelRepository;
@@ -65,51 +68,66 @@ public class ReportService {
         parameters.put("ReportTitle", "Sample Report");
         // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Report.pdf");
+        JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Summary_Report.pdf");
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
-
-/*
-    public String generateJasperReport(String format) throws JRException, FileNotFoundException {
-        // Retrieve data from the database
-        //List<NafexEhMstModel> dataList = nafexModelRepository.findAll();
-        List<ExchangeReportDTO> dataList = generateSummaryOfDailyStatement();
+    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format) throws JRException, FileNotFoundException {
+        File file;
+        JasperReport jasperReport;
+        JasperPrint jasperPrint;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for(ExchangeReportDTO exchangeReportDTO: dataList){
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
         }
-        HtmlExporter exporter = new HtmlExporter();
-        StringWriter stringWriter = new StringWriter();
-
-        // Load File And Compile It.
-        File file = ResourceUtils.getFile("classpath:dailyStatementSummary.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-
         // Convert data into a JasperReports data source
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
 
         // Parameters map if needed
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("ReportTitle", "Sample Report");
-
-        // Fill the report
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
-        // Export the report to the desired format
         if (format.equalsIgnoreCase("pdf")) {
-            JasperExportManager.exportReportToPdf(jasperPrint);
-            JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Report.pdf");
+            // Load the JRXML file for PDF format
+            file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf.jrxml");
+            jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            // Export to PDF
+            JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report\\Details_Report.pdf");
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+        } else if (format.equalsIgnoreCase("csv")) {
+            // Load the JRXML file for CSV format
+            file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
+            jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            // CSV Exporter Setup for File Generation
+            JRCsvExporter fileExporter = new JRCsvExporter();
+            fileExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            fileExporter.setExporterOutput(new SimpleWriterExporterOutput("D:\\Report\\Details_Report.csv"));
+
+            // Optional: Set CSV configuration (e.g., delimiter)
+            SimpleCsvExporterConfiguration fileConfiguration = new SimpleCsvExporterConfiguration();
+            fileConfiguration.setFieldDelimiter(",");
+            fileExporter.setConfiguration(fileConfiguration);
+            fileExporter.exportReport();
+
+            // CSV Exporter Setup for Download
+            JRCsvExporter downloadExporter = new JRCsvExporter();
+            downloadExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            downloadExporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+
+            // Reuse the same configuration for the download
+            downloadExporter.setConfiguration(fileConfiguration);
+            downloadExporter.exportReport();
+        } else {
+            throw new IllegalArgumentException("Unsupported format: " + format);
         }
-        if (format.equalsIgnoreCase("html")) {
-            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            exporter.setExporterOutput(new SimpleHtmlExporterOutput(stringWriter));
-            exporter.exportReport();
-        }
-        // Add support for other formats (e.g., Excel) as needed
-        return stringWriter.toString();
+        return outputStream.toByteArray();
     }
- */
+
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement() {
         List<ExchangeReportDTO> report = new ArrayList<>();
 
