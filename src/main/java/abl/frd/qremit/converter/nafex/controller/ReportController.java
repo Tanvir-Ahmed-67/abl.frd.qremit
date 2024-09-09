@@ -20,16 +20,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
-import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
-import abl.frd.qremit.converter.nafex.model.LogModel;
-import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.ErrorDataModelService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
+import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.ReportService;
 
@@ -48,7 +44,7 @@ public class ReportController {
     @Autowired
     ErrorDataModelService errorDataModelService;
     @Autowired
-    LogModelRepository logModelRepository;
+    LogModelService logModelService;
     
 
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
@@ -82,9 +78,7 @@ public class ReportController {
             String action = "";
             for (FileInfoModel fModel : fileInfoModel) {
                 Map<String, Object> dataMap = new HashMap<>();
-                //String action = "<button type='button' class='btn btn-info round view_exchange' id='" + fModel.getId() + "'>View</button>";
-                //action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
-                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info round view_exchange", String.valueOf(fModel.getId()),"View");
+                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
                 action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
                 dataMap.put("sl", sl++);
                 dataMap.put("id", fModel.getId());
@@ -100,14 +94,6 @@ public class ReportController {
                 dataMap.put("action", action); // Example action, customize as needed
                 dataList.add(dataMap);
             }
-            
-            /* 
-            Map<String, Object> totalMap = new HashMap<>();
-            totalMap.put("exchangeCode","Total");
-            totalMap.put("totalCount",totalCount);
-            dataList.add(totalMap);
-            */
-            //System.out.println(totalCount);
             resp.put("data", dataList);
             return ResponseEntity.ok(resp);
         }
@@ -185,8 +171,8 @@ public class ReportController {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
 
-        String[] columnData = {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
-        String[] columnTitles = {"SL", "Bank Name", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+        String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
+        String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
         List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
         resp.put("columns", columns);
         
@@ -203,10 +189,11 @@ public class ReportController {
             List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByIdAndUpdateStatus(userId, 0);
             for(ErrorDataModel emodel: errorDataModel){
                 Map<String, Object> dataMap = new HashMap<>();
-                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info round edit_error",String.valueOf(emodel.getId()),"Edit");
+                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round edit_error",String.valueOf(emodel.getId()),"Edit");
                 dataMap.put("sl", sl++);
                 dataMap.put("bankName", emodel.getBankName());
                 dataMap.put("branchName", emodel.getBranchName());
+                dataMap.put("routingNo", emodel.getBranchCode());
                 dataMap.put("beneficiaryName", emodel.getBeneficiaryName());
                 dataMap.put("beneficiaryAccountNo", emodel.getBeneficiaryAccount());
                 dataMap.put("transactionNo", emodel.getTransactionNo());
@@ -230,20 +217,37 @@ public class ReportController {
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
 
-        String[] columnData = {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
-        String[] columnTitles = {"SL", "Bank Name", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+        String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
+        String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
         List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
         resp.put("columns", columns);
 
         List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByUpdateStatus(1);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        int sl = 1;
+        String action = "";
         for(ErrorDataModel emodel: errorDataModel){
             String errorDataId = String.valueOf(emodel.getId());
-            System.out.println(errorDataId);
-            LogModel logModel = logModelRepository.findByErrorDataId(errorDataId);
-            System.out.println(logModel);
+            List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(errorDataId);
+            Map<String, Object> dataMap = new HashMap<>();
+            Map<String, Object> updatedDataMap = logModelService.fetchLogDataByKey(logData, "updatedData");
+            action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round approve_error", errorDataId,"Approve");
+            
+            dataMap.put("sl", sl++);
+            dataMap.put("bankName", updatedDataMap.get("bankName"));
+            dataMap.put("branchName", updatedDataMap.get("branchName"));
+            dataMap.put("routingNo", updatedDataMap.get("branchCode"));
+            dataMap.put("beneficiaryName", updatedDataMap.get("beneficiaryName"));
+            dataMap.put("beneficiaryAccountNo", updatedDataMap.get("beneficiaryAccount"));
+            dataMap.put("transactionNo", updatedDataMap.get("transactionNo"));
+            dataMap.put("amount", updatedDataMap.get("amount"));
+            dataMap.put("exchangeCode", emodel.getExchangeCode());
+            dataMap.put("errorMessage", emodel.getErrorMessage());
+            dataMap.put("action", action);
+
+            dataList.add(dataMap);
         }
-
-
+        resp.put("data", dataList);
         return ResponseEntity.ok(resp);
     }
 
