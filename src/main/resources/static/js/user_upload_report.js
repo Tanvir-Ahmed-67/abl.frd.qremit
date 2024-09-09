@@ -60,7 +60,7 @@ $(document).ready(function(){
         var header = $('#_csrf_header').val();
         var data = $(this).serialize();
         var url = "/error/update";
-        var params = {'dataTable_reload': 'true', 'tbl': tbl, 'modal_hide': 'true', 'modalID': '#myModal' };
+        var params = {'success_reload': 'true', 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
         get_ajax(url,data,success_alert,fail_func,"post","json",params);
     });
     $(document).off('click',".approve_error");
@@ -69,7 +69,7 @@ $(document).ready(function(){
         var id = $(this).attr("id");
         var url  = "/error/approve";
         var data = {'id': id};
-        var params = {'dataTable_reload': 'true', 'tbl': tbl, };
+        var params = {'success_reload': 'true', 'tbl': tbl, };
         get_ajax(url,data,success_alert,fail_func,"get","json",params);
     });
 });

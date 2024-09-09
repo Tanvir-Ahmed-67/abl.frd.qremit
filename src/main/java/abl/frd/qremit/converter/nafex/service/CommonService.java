@@ -4,6 +4,7 @@ import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 
 import org.apache.commons.csv.CSVRecord;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -177,6 +178,20 @@ public class CommonService {
         return onlineList;
     }
 
+    public static <T> List<OnlineModel> generatOnlineModelListFromErrorData(Object object, String checkT24MethodName, String isProcessed){
+        List<OnlineModel> onlineList = new ArrayList<>();
+        try{
+            Method checkT24Method = object.getClass().getMethod(checkT24MethodName);
+            String checkT24Value = (String) checkT24Method.invoke(object);
+            if ("1".equals(checkT24Value)) {
+                onlineList.add(generateOnlineModel(object, isProcessed));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return onlineList;
+    }    
+
     public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName){
         return generateOnlineModelList(models, checkT24MethodName,"0");
     }
@@ -221,6 +236,20 @@ public class CommonService {
                 e.printStackTrace();
                 // Handle exception
             }
+        }
+        return cocList;
+    }
+
+    public static <T> List<CocModel> generatCocModelListFromErrorData(Object object, String checkCocMethodName){
+        List<CocModel> cocList = new ArrayList<>();
+        try{
+            Method checkCocMethod = object.getClass().getMethod(checkCocMethodName);
+            String checkCocValue = (String) checkCocMethod.invoke(object);
+            if ("1".equals(checkCocValue)) {
+               cocList.add(generateCocModel(object));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
         return cocList;
     }
@@ -271,6 +300,20 @@ public class CommonService {
         return accountPayeeModelList;
     }
 
+    public static <T> List<AccountPayeeModel> generatAccountPayeeModelListFromErrorData(Object object, String checkAccPayeeMethodName){
+        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
+        try{
+            Method checkAccPayeeMethod = object.getClass().getMethod(checkAccPayeeMethodName);
+            String checkAccPayeeValue = (String) checkAccPayeeMethod.invoke(object);
+            if ("1".equals(checkAccPayeeValue)) {
+               accountPayeeModelList.add(generateAccountPayeeModel(object));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return accountPayeeModelList;
+    }
+
     public static <T> AccountPayeeModel generateAccountPayeeModel(T model) {
         AccountPayeeModel accountPayeeModel = new AccountPayeeModel();
         try {
@@ -314,6 +357,20 @@ public class CommonService {
                 e.printStackTrace();
                 // Handle exception
             }
+        }
+        return beftnModelList;
+    }
+
+    public static <T> List<BeftnModel> generateBeftnModelListFromErrorData(Object object, String checkBeftnMethodName){
+        List<BeftnModel> beftnModelList = new ArrayList<>();
+        try{
+            Method checkBeftnMethod = object.getClass().getMethod(checkBeftnMethodName);
+            String checkBeftnValue = (String) checkBeftnMethod.invoke(object);
+            if ("1".equals(checkBeftnValue)) {
+                beftnModelList.add(generateBeftnModel(object));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
         return beftnModelList;
     }
@@ -491,8 +548,6 @@ public class CommonService {
     }
 
     public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
-        //String userId = String.valueOf(user.getId());
-        //String fileInfoId = String.valueOf(fileInfoModel.getId());
         ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, "0", "0", "0", "0", currentDateTime.toString(), user, fileInfoModel);
         errorDataModelList.add(errorDataModel);
     }
