@@ -130,7 +130,7 @@ function popperGenerator(generatorOptions) {
               marginTop = _getComputedStyle.marginTop,
               marginRight = _getComputedStyle.marginRight,
               marginBottom = _getComputedStyle.marginBottom,
-              marginLeft = _getComputedStyle.marginLeft; // We no longer take into account `margins` on the popper, and it can
+              marginLeft = _getComputedStyle.marginLeft; // We no inter take into account `margins` on the popper, and it can
           // cause bugs with positioning, so we'll warn the consumer
 
 
@@ -4353,7 +4353,7 @@ const SelectorEngine = {
     return [];
   },
 
-  // TODO: this is now unused; remove later along with prev()
+  // TODO: this is now unused; remove later aint with prev()
   next(element, selector) {
     let next = element.nextElementSibling;
 
@@ -6706,7 +6706,7 @@ defineJQueryPlugin(Offcanvas);
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
-const uriAttributes = new Set(['background', 'cite', 'href', 'itemtype', 'longdesc', 'poster', 'src', 'xlink:href']);
+const uriAttributes = new Set(['background', 'cite', 'href', 'itemtype', 'intdesc', 'poster', 'src', 'xlink:href']);
 const ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
 /**
  * A pattern that recognizes a commonly useful subset of URLs that are safe.

@@ -16,4 +16,15 @@ public class FileInfoModelService {
         return fileInfoModelRepository.getUploadedFileDetails(userId);
     }
 
+    public void deleteFileInfoModelById(int id){
+        try{    
+            //if(fileInfoModelRepository.existsById(id){
+
+            //}
+        }catch(Exception e){
+            
+        }
+        
+    }
+
 }

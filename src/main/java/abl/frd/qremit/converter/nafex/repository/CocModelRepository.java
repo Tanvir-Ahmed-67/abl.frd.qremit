@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface CocModelRepository extends JpaRepository<CocModel, Integer> {
     @Query("SELECT n FROM CocModel n WHERE n.fileInfoModel.id =?1")
-    List<CocModel> findAllCocModelHavingFileInfoId(long id);
+    List<CocModel> findAllCocModelHavingFileInfoId(int id);
     @Query("SELECT n FROM CocModel n")
     List<CocModel> findAllCocModel();
     Integer countByIsProcessed(String isProcessed);

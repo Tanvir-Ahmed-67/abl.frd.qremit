@@ -42,6 +42,6 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Query("UPDATE User n SET n.password = :password, n.passwordChangeRequired = :passwordChangeRequired where n.id = :userId")
     void updatePasswordForFirstTimeUserLogging(int userId, String password, boolean passwordChangeRequired);
 
-    User getUserById(long id);
+    User getUserById(int id);
 
 }

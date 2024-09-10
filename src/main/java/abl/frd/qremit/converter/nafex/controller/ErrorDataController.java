@@ -42,7 +42,7 @@ public class ErrorDataController {
     @GetMapping("/editForm/{id}")
     public String editErrorDataForm(@AuthenticationPrincipal MyUserDetails userDetails, @PathVariable("id") String id, Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(Long.valueOf(id));
+        ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(Integer.parseInt(id));
         //System.out.println(errorDataModel.toString());
         model.addAttribute("errorDataModel", errorDataModel);
         return "/pages/user/editErrorForm";
@@ -62,7 +62,7 @@ public class ErrorDataController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> approveErrorDataById(@RequestParam String id){
         Map<String, Object> resp = new HashMap<>();
-        Long errorDataId = Long.parseLong(id);
+        int errorDataId = Integer.parseInt(id);
         ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(errorDataId);
         if(errorDataModel == null)  return ResponseEntity.ok(CommonService.getResp(1, "No data found following Error Model", null));
         if(errorDataModel.getUpdateStatus() != 1)   return ResponseEntity.ok(CommonService.getResp(1, "Invalid Type for approve data", null));  //for approve status must be 1

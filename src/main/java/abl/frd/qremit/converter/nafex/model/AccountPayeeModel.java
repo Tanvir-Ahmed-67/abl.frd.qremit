@@ -9,7 +9,7 @@ public class AccountPayeeModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long id;
+    private int id;
     @Column(name = "transaction_no")
     private String transactionNo;
     @Column(name = "credit_mark")
@@ -80,11 +80,11 @@ public class AccountPayeeModel {
 
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -248,7 +248,7 @@ public class AccountPayeeModel {
         this.extraE = extraE;
     }
 
-    public AccountPayeeModel(long id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
+    public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;

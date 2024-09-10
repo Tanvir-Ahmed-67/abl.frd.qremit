@@ -9,7 +9,7 @@ public class CocModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long id;
+    private int id;
     @Column(name = "transaction_no")
     private String transactionNo;
     @Column(name = "credit_mark")
@@ -79,11 +79,11 @@ public class CocModel {
 
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -247,7 +247,7 @@ public class CocModel {
         this.extraE = extraE;
     }
 
-    public CocModel(long id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
+    public CocModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;

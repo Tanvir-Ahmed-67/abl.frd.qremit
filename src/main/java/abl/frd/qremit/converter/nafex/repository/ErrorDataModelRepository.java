@@ -16,9 +16,9 @@ public interface ErrorDataModelRepository extends JpaRepository<ErrorDataModel, 
     List<ErrorDataModel> findByUserModelId(int userId);
     List<ErrorDataModel> findByUserModelIdAndUpdateStatus(int userId, int updateStatus);
     List<ErrorDataModel> findByUpdateStatus(int updateStatus);
-    ErrorDataModel findById(long id);
+    ErrorDataModel findById(int id);
     @Transactional
     @Modifying
     @Query("UPDATE ErrorDataModel e SET e.updateStatus= :updateStatus where e.id= :id")
-    void updateUpdateStatusById(long id, int updateStatus);
+    void updateUpdateStatusById(int id, int updateStatus);
 }
