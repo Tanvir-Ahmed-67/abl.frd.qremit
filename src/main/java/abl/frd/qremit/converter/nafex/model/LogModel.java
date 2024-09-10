@@ -27,7 +27,7 @@ public class LogModel {
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    public long getId() {
+    public int getId() {
         return this.id;
     }
 

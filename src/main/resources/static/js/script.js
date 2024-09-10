@@ -52,3 +52,7 @@ function  downloadBeftnIncentive(){
     var url ="/downloadBeftnIncentive";
     get_cnt(url,"p.beftnIncentiveCount");
 }
+function GenerateDetailsReport(format) {
+    var url = '/downloadDetailsReport?type='+format;
+    window.location.href = url;
+}

@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface OnlineModelRepository extends JpaRepository<OnlineModel, Integer> {
     @Query("SELECT n FROM OnlineModel n WHERE n.fileInfoModel.id =?1")
-    List<OnlineModel> findAllOnlineModelHavingFileInfoId(long id);
+    List<OnlineModel> findAllOnlineModelHavingFileInfoId(int id);
     @Query("SELECT n FROM OnlineModel n")
     List<OnlineModel> findAllOnlineModel();
     @Query("SELECT n FROM OnlineModel n WHERE n.isProcessed= :isProcessed")

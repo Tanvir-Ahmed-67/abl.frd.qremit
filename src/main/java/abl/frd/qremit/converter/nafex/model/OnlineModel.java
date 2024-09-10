@@ -9,7 +9,7 @@ public class OnlineModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long id;
+    private int id;
     @Column(name = "transaction_no")
     private String transactionNo;
     @Column(name = "exchange_code")
@@ -61,11 +61,11 @@ public class OnlineModel {
 
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -157,7 +157,7 @@ public class OnlineModel {
         this.extraE = extraE;
     }
 
-    public OnlineModel(long id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
+    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.exchangeCode = exchangeCode;
