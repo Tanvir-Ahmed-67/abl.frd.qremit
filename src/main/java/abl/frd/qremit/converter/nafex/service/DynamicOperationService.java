@@ -82,7 +82,7 @@ public class DynamicOperationService {
                     Object modelInstance = constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getExtraC(), row.getCheckT24(), row.getCheckCoc(), row.getCheckAccPayee(), row.getCheckBeftn(), row.getFileInfoModel(), row.getUserModel());
                     repository.save(modelInstance);
                 } else {
-                    throw new IllegalArgumentException("No repository or model class found for cxchangeCode: " + exchangeCode);
+                    throw new IllegalArgumentException("No repository or model class found for exchangeCode: " + exchangeCode);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
