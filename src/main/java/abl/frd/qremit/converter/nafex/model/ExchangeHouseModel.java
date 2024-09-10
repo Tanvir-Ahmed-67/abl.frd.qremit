@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name="ex_house_list")
 public class ExchangeHouseModel {
     @Id
-    @Column(name = "row_id", nullable = false)
+    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
     @Column(nullable=false)
