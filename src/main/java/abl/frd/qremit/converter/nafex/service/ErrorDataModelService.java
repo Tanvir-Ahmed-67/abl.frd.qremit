@@ -50,12 +50,12 @@ public class ErrorDataModelService {
     } 
 
     //find errorDataModel 
-    public ErrorDataModel findErrorModelById(long id){
+    public ErrorDataModel findErrorModelById(int id){
         return errorDataModelRepository.findById(id);
     }
 
     // status 0- pending, 1- updated by user, 2- approve, 3- deny
-    public void updateErrorDataModelUpdateStatus(long id, int updateStatus){
+    public void updateErrorDataModelUpdateStatus(int id, int updateStatus){
         errorDataModelRepository.updateUpdateStatusById(id, updateStatus);
     }
 
@@ -63,7 +63,7 @@ public class ErrorDataModelService {
         Map<String, Object> resp = new HashMap<>();
         String exchangeCode = formData.get("exchangeCode");
         String id = formData.get("id");
-        ErrorDataModel errorDataModel = findErrorModelById(Long.valueOf(id));
+        ErrorDataModel errorDataModel = findErrorModelById(Integer.parseInt(id));
         entityManager.detach(errorDataModel); // Detach ErrorDataModel to prevent auto-updates
         if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
         if(errorDataModel.getUpdateStatus() != 0)   return CommonService.getResp(1, "Invalid Type for update data", null);  //for update status must be 0

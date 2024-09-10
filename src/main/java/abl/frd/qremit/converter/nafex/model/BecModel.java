@@ -7,7 +7,7 @@ public class BecModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long  id;
+    private int  id;
     @Column(name = "exchange_code")
     private String exchangeCode;
     @Column(name = "transaction_no", unique = true, nullable = false)
@@ -124,11 +124,11 @@ public class BecModel {
 
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -123,9 +123,10 @@ public class NafexModelService {
             String errorMessage = "";
             for (CSVRecord csvRecord : csvRecords) {
                 duplicateData = nafexModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    errorMessage = "Duplicate Reference No " + csvRecord.get(1) + " Found";
-                    CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                    //errorMessage = "Duplicate Reference No " + csvRecord.get(1) + " Found";
+                    //CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                     continue;
                 }
                 //a/c no, benficiary name, amount empty or null check
@@ -244,6 +245,10 @@ public class NafexModelService {
             }
             if (!errorDataModelList.isEmpty()) {
                 errorDataModelRepository.saveAll(errorDataModelList);
+            }
+            //if both model is empty then delete fileInfoModel
+            if(errorDataModelList.isEmpty() && nafexDataModelList.isEmpty()){
+                //fileInfoModel.getId()
             }
             return nafexDataModelList;
         } catch (IOException e) {

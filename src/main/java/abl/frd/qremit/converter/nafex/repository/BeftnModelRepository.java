@@ -12,10 +12,10 @@ import java.util.List;
 @Repository
 public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer> {
     @Query("SELECT n FROM BeftnModel n WHERE n.fileInfoModel.id =?1")
-    List<BeftnModel> findAllBeftnModelHavingFileInfoId(long id);
+    List<BeftnModel> findAllBeftnModelHavingFileInfoId(int id);
 
     @Query("SELECT n FROM BeftnModel n WHERE n.fileInfoModel.id =?1")
-    List<BeftnModel> findAllBeftnModelHavingFileInfoIdForIncentive(long id);
+    List<BeftnModel> findAllBeftnModelHavingFileInfoIdForIncentive(int id);
     @Query("SELECT n FROM BeftnModel n")
     List<BeftnModel> findAllBeftnModel();
 

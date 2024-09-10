@@ -101,9 +101,9 @@ public class DynamicOperationService {
                 Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, FileInfoModel.class, User.class);
                 
                 Double amount = updatedData.get("amount") != null ? Double.parseDouble(updatedData.get("amount").toString()) : null;
-                Long fileInfoId = updatedData.get("fileInfoId") != null ? Long.parseLong(updatedData.get("fileInfoId").toString()) : null;
-                Integer userId = updatedData.get("userId") != null ? Integer.parseInt(updatedData.get("userId").toString()) : null;
-                if(fileInfoId == null || userId == null)    return CommonService.getResp(1, "Invalid File Id or User Id", null);
+                int fileInfoId = updatedData.get("fileInfoId") != null ? Integer.parseInt(updatedData.get("fileInfoId").toString()) : 0;
+                int userId = updatedData.get("userId") != null ? Integer.parseInt(updatedData.get("userId").toString()) : 0;
+                if(fileInfoId == 0 || userId == 0)    return CommonService.getResp(1, "Invalid File Id or User Id", null);
 
                 String checkAccPayee = updatedData.get("checkAccPayee").toString();
                 String checkBeftn = updatedData.get("checkBeftn").toString();

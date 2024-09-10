@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeModel, Integer> {
     @Query("SELECT n FROM AccountPayeeModel n WHERE n.fileInfoModel.id =?1")
-    List<AccountPayeeModel> findAllAccountPayeeModelHavingFileInfoId(long id);
+    List<AccountPayeeModel> findAllAccountPayeeModelHavingFileInfoId(int id);
     @Query("SELECT n FROM AccountPayeeModel n")
     List<AccountPayeeModel> findAllAccountPayeeModel();
     Integer countByIsProcessed(String isProcessed);
