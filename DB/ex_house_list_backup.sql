@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `ex_house_list_backup` (
-  `row_id` int(11) NOT NULL,
+  `int` int(11) NOT NULL,
   `active_status` bit(1) DEFAULT NULL,
   `exchange_code` varchar(255) NOT NULL,
   `exchange_name` varchar(255) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE `ex_house_list_backup` (
 -- Dumping data for table `ex_house_list_backup`
 --
 
-INSERT INTO `ex_house_list_backup` (`row_id`, `active_status`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`) VALUES
+INSERT INTO `ex_house_list_backup` (`int`, `active_status`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`) VALUES
 (1, b'1', '7119', 'al raji', '', '7009'),
 (2, b'1', 'RMO', 'Agrani Exchange House Pte. Ltd', '', '7025'),
 (3, b'1', '7010226', 'Agrani Exchange House Singapore', '', '7025'),
@@ -158,7 +158,7 @@ INSERT INTO `ex_house_list_backup` (`row_id`, `active_status`, `exchange_code`, 
 -- Indexes for table `ex_house_list_backup`
 --
 ALTER TABLE `ex_house_list_backup`
-  ADD PRIMARY KEY (`row_id`);
+  ADD PRIMARY KEY (`int`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -168,7 +168,7 @@ ALTER TABLE `ex_house_list_backup`
 -- AUTO_INCREMENT for table `ex_house_list_backup`
 --
 ALTER TABLE `ex_house_list_backup`
-  MODIFY `row_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
+  MODIFY `int` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
