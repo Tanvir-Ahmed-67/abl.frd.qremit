@@ -137,7 +137,6 @@ public class ReportService {
         List<CocModel> cocData = cocModelRepository.findAll();
         List<AccountPayeeModel> accountPayeeData = accountPayeeModelRepository.findAll();
 
-        // Combine the Online data by exchangeCode
         Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
 
         // Process onlineData if it has valid data
@@ -233,6 +232,9 @@ public class ReportService {
         dto.setExchangeCode(onlineModel.getExchangeCode());
         dto.setAmount(onlineModel.getAmount());
         dto.setEnteredDate(onlineModel.getFileInfoModel().getUploadDateTime());
+        dto.setBeneficiaryName(onlineModel.getBeneficiaryName());
+        dto.setBeneficiaryAccount(onlineModel.getBeneficiaryAccount());
+        dto.setRemitterName(onlineModel.getRemitterName());
         // Set other fields as needed
         return dto;
     }
@@ -243,6 +245,8 @@ public class ReportService {
         dto.setExchangeCode(beftnModel.getExchangeCode());
         dto.setAmount(beftnModel.getAmount());
         dto.setEnteredDate(beftnModel.getFileInfoModel().getUploadDateTime());
+        dto.setBeneficiaryName(beftnModel.getBeneficiaryName());
+        dto.setBeneficiaryAccount(beftnModel.getBeneficiaryAccount());
         // Set other fields as needed
         return dto;
     }
@@ -253,6 +257,9 @@ public class ReportService {
         dto.setExchangeCode(cocModel.getExchangeCode());
         dto.setAmount(cocModel.getAmount());
         dto.setEnteredDate(cocModel.getFileInfoModel().getUploadDateTime());
+        dto.setBeneficiaryName(cocModel.getBeneficiaryName());
+        dto.setBeneficiaryAccount(cocModel.getBeneficiaryAccount());
+        dto.setRemitterName(cocModel.getRemitterName());
         // Set other fields as needed
         return dto;
     }
@@ -263,6 +270,9 @@ public class ReportService {
         dto.setExchangeCode(accountPayeeModel.getExchangeCode());
         dto.setAmount(accountPayeeModel.getAmount());
         dto.setEnteredDate(accountPayeeModel.getFileInfoModel().getUploadDateTime());
+        dto.setBeneficiaryName(accountPayeeModel.getBeneficiaryName());
+        dto.setBeneficiaryAccount(accountPayeeModel.getBeneficiaryAccount());
+        dto.setRemitterName(accountPayeeModel.getRemitterName());
         // Set other fields as needed
         return dto;
     }
