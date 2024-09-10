@@ -20,14 +20,14 @@ public class ExchangeHouseModel {
     @Column(nullable=false)
     private String baseTableName;
 
-    @Column
-    private boolean activeStatus;
+    @Column(name = "active_status", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int activeStatus = 0;
 
-    public boolean getActiveStatus() {
+    public int getActiveStatus() {
         return activeStatus;
     }
 
-    public void setActiveStatus(boolean isActive) {
+    public void setActiveStatus(int isActive) {
         this.activeStatus = isActive;
     }
 

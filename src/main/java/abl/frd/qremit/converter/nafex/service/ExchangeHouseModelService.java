@@ -33,7 +33,8 @@ public class ExchangeHouseModelService {
     }
 
     public boolean updateInactiveExchangeHouse(int id){
-        exchangeHouseModelRepository.setExchangeHouseActiveStatusTrueById(id);
+        //exchangeHouseModelRepository.setExchangeHouseActiveStatusTrueById(id);
+        exchangeHouseModelRepository.setExchangeHouseActiveStatusById(id, 1);
         return true;
     }
     public void editExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception {
