@@ -69,12 +69,21 @@ public class CommonService {
         this.dataSource = dataSource;
     }
 
-    public static boolean hasCSVFormat(MultipartFile file) {
+    public static boolean hasCSVFormat_previous(MultipartFile file) {
         if (TYPE.equals(file.getContentType())
                 || file.getContentType().equals("text/plain")) {
             return true;
         }
         return false;
+    }
+    public static boolean hasCSVFormat(MultipartFile file) {
+        String contentType = file.getContentType();
+        return contentType != null &&
+                (contentType.equalsIgnoreCase("text/csv") ||
+                        contentType.equalsIgnoreCase("application/csv") ||
+                        contentType.equalsIgnoreCase("application/vnd.ms-excel") ||
+                        contentType.equalsIgnoreCase("text/plain") ||
+                        contentType.equalsIgnoreCase("application/vnd.oasis.opendocument.spreadsheet"));
     }
     public boolean ifFileExist(String fileName){
         if (fileInfoModelRepository.findByFileName(fileName) != null) {
