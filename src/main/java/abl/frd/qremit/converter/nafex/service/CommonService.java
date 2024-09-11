@@ -58,7 +58,6 @@ public class CommonService {
     UserModelRepository userModelRepository;
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
-    public static String TYPE = "text/csv";
     public String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
     public String uploadApiSuccessPage = "/pages/user/userApiUploadSuccessPage";
     private final EntityManager entityManager;
@@ -67,14 +66,6 @@ public class CommonService {
     public CommonService(EntityManager entityManager,DataSource dataSource){
         this.entityManager = entityManager;
         this.dataSource = dataSource;
-    }
-
-    public static boolean hasCSVFormat_previous(MultipartFile file) {
-        if (TYPE.equals(file.getContentType())
-                || file.getContentType().equals("text/plain")) {
-            return true;
-        }
-        return false;
     }
     public static boolean hasCSVFormat(MultipartFile file) {
         String contentType = file.getContentType();
