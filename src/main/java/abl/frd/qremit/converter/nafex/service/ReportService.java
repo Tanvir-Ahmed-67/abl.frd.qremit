@@ -86,10 +86,10 @@ public class ReportService {
 
         // Parameters map if needed
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("ReportTitle", "Sample Report");
+        parameters.put("REPORT_DATA_SOURCE", dataSource);
         if (format.equalsIgnoreCase("pdf")) {
             // Load the JRXML file for PDF format
-            file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf.jrxml");
+            file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf_tabular.jrxml");
             jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
