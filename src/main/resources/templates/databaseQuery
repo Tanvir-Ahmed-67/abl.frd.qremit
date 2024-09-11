@@ -1,0 +1,19 @@
+truncate TABLE converted_data_online;
+truncate table converted_data_coc;
+truncate table converted_data_beftn;
+truncate table converted_data_account_payee;
+truncate TABLE base_data_table_nafex;
+truncate TABLE upload_file_info;
+
+
+
+drop TABLE converted_data_online;
+drop table converted_data_coc;
+drop table converted_data_beftn;
+drop table converted_data_account_payee;
+drop TABLE base_data_table_nafex;
+drop table upload_file_info_nafex_eh_mst_model;
+drop TABLE upload_file_info;
+
+https://codepen.io/n3k1t/pen/OJMGgyq
+

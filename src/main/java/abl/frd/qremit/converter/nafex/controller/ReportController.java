@@ -1,6 +1,9 @@
 package abl.frd.qremit.converter.nafex.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +13,7 @@ import java.util.Map;
 import abl.frd.qremit.converter.nafex.model.*;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,6 +49,7 @@ public class ReportController {
     ErrorDataModelService errorDataModelService;
     @Autowired
     LogModelService logModelService;
+    private static final String PDF_DIRECTORY = "D:/Report/";
     
 
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
@@ -334,4 +339,40 @@ public class ReportController {
             return ResponseEntity.status(500).build();
         }
     }
+
+    @GetMapping("/generateReport")
+    public ResponseEntity<?> viewPdf() {
+        String fileName = "Report" + "_" + CommonService.getCurrentDate();
+        try {
+            // Construct the full file path
+            File file = new File(PDF_DIRECTORY + fileName + ".pdf");
+            // Check if the file exists
+            if (!file.exists()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("PDF file not found.");
+            }
+
+            // Open the file as a resource
+            FileInputStream fileInputStream = new FileInputStream(file);
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+
+            // Prepare response with PDF content
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=" + file.getName());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(resource);
+
+        } catch (FileNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("File not found.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while reading the file.");
+        }
+    }
+
+
 }
