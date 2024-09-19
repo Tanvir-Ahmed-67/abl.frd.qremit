@@ -3,6 +3,8 @@ import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 @Entity
 @Table(name="error_data_table", 
@@ -62,6 +64,7 @@ public class ErrorDataModel {
     @Column(name = "error_message")
     private String errorMessage;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime uploadDateTime;
 
     @Column(name = "check_t24")

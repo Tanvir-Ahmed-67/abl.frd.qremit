@@ -76,7 +76,7 @@ public class EzRemitModelService {
                 fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
                 fileInfoModel.setTotalCount(String.valueOf(ezRemitModelList.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setIsSettlement(Integer.getInteger(type));
+                fileInfoModel.setIsSettlement(Integer.parseInt(type));
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
                 fileInfoModel.setEzRemitModel(ezRemitModelList);

@@ -207,6 +207,10 @@ public class CommonService {
             onlineModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             onlineModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             onlineModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            onlineModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
+            onlineModel.setBankName((String) getPropertyValue(model, "getBankName"));
+            onlineModel.setBranchCode((String) getPropertyValue(model, "getBranchCode"));
+            onlineModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
             onlineModel.setIsProcessed(flag);
             onlineModel.setIsDownloaded(flag);
             onlineModel.setDownloadDateTime(LocalDateTime.now());
@@ -398,6 +402,10 @@ public class CommonService {
             beftnModel.setUploadDateTime(uploadDateTime);
             beftnModel.setRoutingNo((String) getPropertyValue(model, "getBranchCode"));
             beftnModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            beftnModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
+            beftnModel.setBankName((String) getPropertyValue(model, "getBankName"));
+            beftnModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
+            beftnModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -724,6 +732,16 @@ public class CommonService {
         return formattedDate;
     }
 
-    
+    public static String convertDateToString(LocalDateTime date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = date.format(formatter);
+        return formattedDateTime;
+    }
+
+    public static LocalDateTime convertStringToDate(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(date, formatter);
+        return localDateTime;
+    }
 
 }

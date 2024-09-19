@@ -22,6 +22,14 @@ public class OnlineModel {
     private Double amount;
     @Column(name = "remitter_name")
     private String remitterName;
+    @Column(name = "bank_name")
+    private String bankName;
+    @Column(name = "bank_code")
+    private String bankCode;
+    @Column(name = "branch_name")
+    private String branchName;
+    @Column(name = "branch_code")
+    private String branchCode;
     @Column(name = "is_processed")
     private String isProcessed;
     @Column(name = "is_downloaded")
@@ -151,6 +159,38 @@ public class OnlineModel {
         this.downloadUserId = downloadUserId;
     }
 
+    public String getBankName() {
+        return this.bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getBankCode() {
+        return this.bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getBranchName() {
+        return this.branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public String getBranchCode() {
+        return this.branchCode;
+    }
+
+    public void setBranchCode(String branchCode) {
+        this.branchCode = branchCode;
+    }
+
     public LocalDateTime getUploadDateTime() {
         return this.uploadDateTime;
     }
@@ -159,7 +199,7 @@ public class OnlineModel {
         this.uploadDateTime = uploadDateTime;
     }
     
-    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
+    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.exchangeCode = exchangeCode;
@@ -172,6 +212,10 @@ public class OnlineModel {
         this.downloadDateTime = downloadDateTime;
         this.downloadUserId = downloadUserId;
         this.uploadDateTime = uploadDateTime;
+        this.bankCode = bankCode;
+        this.bankName = bankName;
+        this.branchCode = branchCode;
+        this.branchName = branchName;
     }
 
     @Override

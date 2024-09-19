@@ -98,12 +98,13 @@ public class DynamicOperationService {
             if (wrapper != null) {
                 JpaRepository repository = wrapper.getRepository();
                 Class<?> modelClass = wrapper.getModelClass();
-                Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, FileInfoModel.class, User.class);
+                Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, String.class, String.class, String.class, FileInfoModel.class, User.class);
                 
                 Double amount = updatedData.get("amount") != null ? Double.parseDouble(updatedData.get("amount").toString()) : null;
                 int fileInfoId = updatedData.get("fileInfoId") != null ? Integer.parseInt(updatedData.get("fileInfoId").toString()) : 0;
                 int userId = updatedData.get("userId") != null ? Integer.parseInt(updatedData.get("userId").toString()) : 0;
                 if(fileInfoId == 0 || userId == 0)    return CommonService.getResp(1, "Invalid File Id or User Id", null);
+                LocalDateTime uploadDateTime = CommonService.convertStringToDate(updatedData.get("uploadDateTime").toString());
 
                 String checkAccPayee = updatedData.get("checkAccPayee").toString();
                 String checkBeftn = updatedData.get("checkBeftn").toString();
@@ -127,7 +128,7 @@ public class DynamicOperationService {
                     updatedData.get("beneficiaryAccount"), updatedData.get("beneficiaryMobile"), updatedData.get("bankName"), updatedData.get("bankCode"), 
                     updatedData.get("branchName"), updatedData.get("branchCode"), updatedData.get("draweeBranchName"), updatedData.get("draweeBranchCode"), 
                     updatedData.get("purposeOfRemittance"), updatedData.get("sourceOfIncome"), updatedData.get("processFlag"), updatedData.get("typeFlag"), 
-                    updatedData.get("processedBy"), updatedData.get("processedDate"), "", checkT24, checkCoc, checkAccPayee, checkBeftn, fileInfoModel, user);
+                    updatedData.get("processedBy"), updatedData.get("processedDate"), uploadDateTime, checkT24, checkCoc, checkAccPayee, checkBeftn, fileInfoModel, user);
                 
                 List<OnlineModel> onlineModelList = CommonService.generatOnlineModelListFromErrorData(modelInstance,"getCheckT24","0", currentDateTime);
                 List<CocModel> cocModelList = CommonService.generatCocModelListFromErrorData(modelInstance, "getCheckCoc", currentDateTime);
