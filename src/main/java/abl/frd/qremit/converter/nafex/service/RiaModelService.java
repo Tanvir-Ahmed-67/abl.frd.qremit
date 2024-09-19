@@ -56,10 +56,10 @@ public class RiaModelService {
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(riaModelList, "getCheckT24","1");
-                List<CocModel> cocModelList = CommonService.generateCocModelList(riaModelList, "getCheckCoc");
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(riaModelList, "getCheckAccPayee");
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(riaModelList, "getCheckBeftn");
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(riaModelList, "getCheckT24","1", currentDateTime);
+                List<CocModel> cocModelList = CommonService.generateCocModelList(riaModelList, "getCheckCoc", currentDateTime);
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(riaModelList, "getCheckAccPayee", currentDateTime);
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(riaModelList, "getCheckBeftn", currentDateTime);
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -69,7 +69,7 @@ public class RiaModelService {
                 fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
                 fileInfoModel.setTotalCount(String.valueOf(riaModelList.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setProcessedCount("test");
+                fileInfoModel.setIsSettlement(1);
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
                 fileInfoModel.setRiaModel(riaModelList);
@@ -140,7 +140,7 @@ public class RiaModelService {
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",
+                        currentDateTime,
                         CommonService.putOnlineFlag(csvRecord.get(7).trim(), "Agrani"),  // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                        //checkCoc
                         "0",  //checkAccPayee

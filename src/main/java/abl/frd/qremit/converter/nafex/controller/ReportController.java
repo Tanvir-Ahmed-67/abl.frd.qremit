@@ -191,10 +191,13 @@ public class ReportController {
             List<Map<String, Object>> dataList = new ArrayList<>();
             int sl = 1;
             String action = "";
+            String btn = "";
             List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByIdAndUpdateStatus(userId, 0);
             for(ErrorDataModel emodel: errorDataModel){
                 Map<String, Object> dataMap = new HashMap<>();
-                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round edit_error",String.valueOf(emodel.getId()),"Edit");
+                btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit_error",String.valueOf(emodel.getId()),"Edit");
+                btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete_error",String.valueOf(emodel.getId()),"Delete");
+                action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
                 dataMap.put("sl", sl++);
                 dataMap.put("bankName", emodel.getBankName());
                 dataMap.put("branchName", emodel.getBranchName());

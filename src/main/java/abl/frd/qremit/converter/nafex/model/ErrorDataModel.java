@@ -1,4 +1,6 @@
 package abl.frd.qremit.converter.nafex.model;
+import java.time.LocalDateTime;
+
 import javax.persistence.*;
 
 
@@ -59,8 +61,8 @@ public class ErrorDataModel {
     private String processedDate;
     @Column(name = "error_message")
     private String errorMessage;
-    @Column(name = "error_generation_date")
-    private String errorGenerationDate;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
 
     @Column(name = "check_t24")
     private String checkT24;
@@ -70,18 +72,19 @@ public class ErrorDataModel {
     private String checkAccPayee;
     @Column(name = "check_beftn")
     private String checkBeftn;
+    @Column(name = "update_status", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int updateStatus = 0;
 
-    @ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade= { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
+    //@ManyToOne(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
     
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="user_id")
     private User userModel;
-
-    @Column(name = "update_status", columnDefinition = "TINYINT(1) DEFAULT 0")
-    private int updateStatus = 0;
-     
+          
     public User getUserModel() {
         return userModel;
     }
@@ -322,12 +325,12 @@ public class ErrorDataModel {
         return errorMessage;
     }
 
-    public void setErrorGenerationDate(String errorGenerationDate) {
-        this.errorGenerationDate = errorGenerationDate;
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
     }
 
-    public String getErrorGenerationDate() {
-        return errorGenerationDate;
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
     }
 
     public void setErrorMessage(String errorMessage) {
@@ -342,7 +345,7 @@ public class ErrorDataModel {
         this.updateStatus = updateStatus;
     }
 
-    public ErrorDataModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String errorMessage, String errorGenerationDate, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, int updateStatus) {
+    public ErrorDataModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String errorMessage, LocalDateTime uploadDateTime, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, int updateStatus) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -366,7 +369,7 @@ public class ErrorDataModel {
         this.processedBy = processedBy;
         this.processedDate = processedDate;
         this.errorMessage = errorMessage;
-        this.errorGenerationDate = errorGenerationDate;
+        this.uploadDateTime = uploadDateTime;
         this.checkT24 = checkT24;
         this.checkCoc = checkCoc;
         this.checkAccPayee = checkAccPayee;
@@ -401,7 +404,7 @@ public class ErrorDataModel {
                 ", processedBy='" + processedBy + '\'' +
                 ", processedDate='" + processedDate + '\'' +
                 ", errorMessage='" + errorMessage + '\'' +
-                ", errorGenerationDate='" + errorGenerationDate + '\'' +
+                ", uploadDateTime='" + uploadDateTime + '\'' +
                 ", checkT24='" + checkT24 + '\'' +
                 ", checkCoc='" + checkCoc + '\'' +
                 ", checkAccPayee='" + checkAccPayee + '\'' +

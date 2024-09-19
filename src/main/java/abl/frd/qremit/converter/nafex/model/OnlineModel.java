@@ -30,10 +30,11 @@ public class OnlineModel {
     private LocalDateTime downloadDateTime;
     @Column(name = "download_user_id")
     private int downloadUserId;
-    @Column(name = "extra_e")
-    private String extraE;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="upload_user_id")
     private User userModel;
 
@@ -45,7 +46,8 @@ public class OnlineModel {
         this.userModel = userModel;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
@@ -149,15 +151,15 @@ public class OnlineModel {
         this.downloadUserId = downloadUserId;
     }
 
-    public String getExtraE() {
-        return extraE;
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
     }
 
-    public void setExtraE(String extraE) {
-        this.extraE = extraE;
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
     }
-
-    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
+    
+    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.exchangeCode = exchangeCode;
@@ -169,7 +171,7 @@ public class OnlineModel {
         this.isDownloaded = extraB;
         this.downloadDateTime = downloadDateTime;
         this.downloadUserId = downloadUserId;
-        this.extraE = extraE;
+        this.uploadDateTime = uploadDateTime;
     }
 
     @Override
@@ -186,7 +188,7 @@ public class OnlineModel {
                 ", extraB='" + isDownloaded + '\'' +
                 ", extraC='" + downloadDateTime + '\'' +
                 ", extraD='" + downloadUserId + '\'' +
-                ", extraE='" + extraE + '\'' +
+                ", extraE='" + uploadDateTime + '\'' +
                 '}';
     }
 

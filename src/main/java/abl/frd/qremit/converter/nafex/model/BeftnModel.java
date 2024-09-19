@@ -44,8 +44,11 @@ public class BeftnModel {
     private int downloadUserId;
     @Column(name = "download_date_time")
     private LocalDateTime downloadDateTime;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="upload_user_id")
     private User userModel;
 
@@ -57,7 +60,8 @@ public class BeftnModel {
         this.userModel = userModel;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
@@ -217,7 +221,15 @@ public class BeftnModel {
         this.downloadDateTime = extraE;
     }
 
-    public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, int downloadUserId, LocalDateTime downloadDateTime) {
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
+    }
+
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
+    }
+
+    public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, int downloadUserId, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.orgCustomerNo = orgCustomerNo;
@@ -236,6 +248,7 @@ public class BeftnModel {
         this.isIncDownloaded = extraC;
         this.downloadUserId = downloadUserId;
         this.downloadDateTime = downloadDateTime;
+        this.uploadDateTime = uploadDateTime;
     }
 
     @Override

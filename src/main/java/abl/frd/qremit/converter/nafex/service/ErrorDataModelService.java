@@ -59,6 +59,10 @@ public class ErrorDataModelService {
         errorDataModelRepository.updateUpdateStatusById(id, updateStatus);
     }
 
+    public void deleteErrorDataById(int id){
+        errorDataModelRepository.deleteById(id);
+    }
+
     public Map<String, Object> processUpdateErrorDataById(@RequestParam Map<String, String> formData, HttpServletRequest request){
         Map<String, Object> resp = new HashMap<>();
         String exchangeCode = formData.get("exchangeCode");
@@ -165,7 +169,7 @@ public class ErrorDataModelService {
         resp.put("processedBy", errorDataModel.getProcessedBy());
         resp.put("processedDate", errorDataModel.getProcessedDate());
         resp.put("errorMessage", errorDataModel.getErrorMessage());
-        resp.put("errorGenerationDate", errorDataModel.getErrorGenerationDate());
+        resp.put("uploadDateTime", errorDataModel.getUploadDateTime());
         resp.put("checkT24", errorDataModel.getCheckT24());
         resp.put("checkCoc", errorDataModel.getCheckCoc());
         resp.put("checkAccPayee", errorDataModel.getCheckAccPayee());

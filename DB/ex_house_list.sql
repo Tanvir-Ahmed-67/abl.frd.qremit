@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 10, 2024 at 08:43 AM
+-- Generation Time: Sep 11, 2024 at 08:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,27 +29,28 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `ex_house_list` (
   `id` int(11) NOT NULL,
-  `active_status` bit(1) DEFAULT NULL,
+  `active_status` tinyint(1) NOT NULL DEFAULT 0,
+  `base_table_name` varchar(255) NOT NULL,
   `exchange_code` varchar(255) NOT NULL,
   `exchange_name` varchar(255) NOT NULL,
   `exchange_short_name` varchar(255) NOT NULL,
   `nrta_code` varchar(255) NOT NULL,
-  `base_table_name` varchar(255) NOT NULL
+  `is_api` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `ex_house_list`
 --
 
-INSERT INTO `ex_house_list` (`id`, `active_status`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `base_table_name`) VALUES
-(12, b'1', '7010231', 'Al Muzaini Exchange Company K', 'Al Muzaini', '7038', 'muzaini'),
-(22, b'1', '7010209', 'Bahrain Exchange Co Kuwait', 'BEC', '7012', 'bec'),
-(68, b'1', '7010234', 'National Finance and Exch. Co.', 'NAFEX', '7046', 'nafex'),
-(109, b'1', '7010226', 'Agrani Exchange House Singapore', 'Singapore', '7025', 'singapore'),
-(110, b'1', '7010299', 'Ezremit', 'EZ Remit', '7013', 'ezremit'),
-(111, b'1', '7010290', 'Continental Exchange Solution( Ria)', 'RIA', '7081', 'ria'),
-(112, b'1', '111111', 'API BEFTN', 'API BEFTN', '1000', 'apibeftn'),
-(113, b'1', '222222', 'API T24', 'API T24', '2000', 'apit24');
+INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `is_api`) VALUES
+(12, 1, 'muzaini', '7010231', 'Al Muzaini Exchange Company K', 'Al Muzaini', '7038', 0),
+(22, 1, 'bec', '7010209', 'Bahrain Exchange Co Kuwait', 'BEC', '7012', 0),
+(68, 1, 'nafex', '7010234', 'National Finance and Exch. Co.', 'NAFEX', '7046', 0),
+(109, 1, 'singapore', '7010226', 'Agrani Exchange House Singapore', 'Singapore', '7025', 1),
+(110, 1, 'ezremit', '7010299', 'Ezremit', 'EZ Remit', '7013', 1),
+(111, 1, 'ria', '7010290', 'Continental Exchange Solution( Ria)', 'RIA', '7081', 1),
+(112, 1, 'apibeftn', '111111', 'API BEFTN', 'API BEFTN', '1000', 0),
+(113, 1, 'apit24', '222222', 'API T24', 'API T24', '2000', 1);
 
 --
 -- Indexes for dumped tables

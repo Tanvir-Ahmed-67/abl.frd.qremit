@@ -1,0 +1,35 @@
+TRUNCATE `base_data_table_bec`;
+TRUNCATE `base_data_table_ezremit`;
+TRUNCATE `base_data_table_muzaini`;
+TRUNCATE `base_data_table_nafex`;
+TRUNCATE `base_data_table_ria`;
+TRUNCATE `base_data_table_singapore`;
+TRUNCATE `converted_data_account_payee`;
+TRUNCATE `converted_data_beftn`;
+TRUNCATE `converted_data_coc`;
+TRUNCATE `converted_data_online`;
+TRUNCATE `upload_file_info`;
+TRUNCATE`error_data_table`;
+TRUNCATE `log`;
+TRUNCATE `base_data_table_api_beftn`;
+TRUNCATE `base_data_table_api_t24`;
+
+
+DROP TABLE `base_data_table_bec`;
+DROP TABLE `base_data_table_ezremit`;
+DROP TABLE `base_data_table_muzaini`;
+DROP TABLE `base_data_table_nafex`;
+DROP TABLE `base_data_table_ria`;
+DROP TABLE `base_data_table_singapore`;
+DROP TABLE `converted_data_account_payee`;
+DROP TABLE `converted_data_beftn`;
+DROP TABLE `converted_data_coc`;
+DROP TABLE `converted_data_online`;
+DROP TABLE `upload_file_info`;
+DROP TABLE `error_data_table`;
+DROP TABLE `log`;
+DROP TABLE `base_data_table_api_beftn`;
+DROP TABLE `base_data_table_api_t24`;
+
+https://codepen.io/n3k1t/pen/OJMGgyq
+

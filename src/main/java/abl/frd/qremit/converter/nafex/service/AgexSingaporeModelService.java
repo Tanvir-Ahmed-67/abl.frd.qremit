@@ -59,10 +59,10 @@ public class AgexSingaporeModelService {
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, "getCheckT24",type);
-                List<CocModel> cocModelList = CommonService.generateCocModelList(agexSingaporeModelList, "getCheckCoc");
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(agexSingaporeModelList, "getCheckAccPayee");
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(agexSingaporeModelList, "getCheckBeftn");
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, "getCheckT24",type, currentDateTime);
+                List<CocModel> cocModelList = CommonService.generateCocModelList(agexSingaporeModelList, "getCheckCoc", currentDateTime);
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(agexSingaporeModelList, "getCheckAccPayee", currentDateTime);
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(agexSingaporeModelList, "getCheckBeftn", currentDateTime);
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -72,7 +72,7 @@ public class AgexSingaporeModelService {
                 fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
                 fileInfoModel.setTotalCount(String.valueOf(agexSingaporeModelList.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setProcessedCount("test");
+                fileInfoModel.setIsSettlement(Integer.getInteger(type));
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
                 fileInfoModel.setAgexSingaporeModel(agexSingaporeModelList);
@@ -143,7 +143,7 @@ public class AgexSingaporeModelService {
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",
+                        currentDateTime,
                         CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                             // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                                        //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee

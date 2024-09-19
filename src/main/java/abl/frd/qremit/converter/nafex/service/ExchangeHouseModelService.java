@@ -45,4 +45,8 @@ public class ExchangeHouseModelService {
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
         return exchangeHouseModel;
     }
+
+    public List<ExchangeHouseModel> loadAllIsApiExchangeHouse(int isApi){
+        return exchangeHouseModelRepository.findAllExchangeHouseByIsApi(isApi);
+    }
 }
