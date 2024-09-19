@@ -1,0 +1,196 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="Details_table" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<style name="Table_TH" mode="Opaque" backcolor="#F0FFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<dataset name="Dataset1">
+		<field name="transactionNo" class="java.lang.String">
+		</field>
+		<field name="exchangeCode" class="java.lang.String">
+		</field>
+		<field name="enteredDate" class="java.time.LocalDateTime">
+		</field>
+		<field name="amount" class="java.lang.Double">
+		</field>
+		<field name="beneficiaryName" class="java.lang.String">
+		</field>
+		<field name="beneficiaryAccount" class="java.lang.String">
+		</field>
+		<field name="remitterName" class="java.lang.String">
+		</field>
+	</dataset>
+	<background splitType="Stretch"/>
+	<title height="72" splitType="Stretch">
+		<element kind="textField"  x="0" y="0" width="555" height="30" fontSize="18.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Agrani Bank PLC"]]></expression>
+		</element>
+		<element kind="textField"  x="0" y="23" width="555" height="30" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Daily Remittance Details"]]></expression>
+		</element>
+		<element kind="textField"  x="0" y="41" width="555" height="30" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Date - 03-09-2024"]]></expression>
+		</element>
+	</title>
+	<pageHeader height="8" splitType="Stretch"/>
+	<columnHeader splitType="Stretch"/>
+	<detail>
+		<band height="222" splitType="Stretch">
+			<element kind="component"  x="2" y="10" width="553" height="88">
+				<component kind="table">
+					<datasetRun  subDataset="Dataset1">
+						<dataSourceExpression><![CDATA[$P{REPORT_DATA_SOURCE}]]></dataSourceExpression>
+					</datasetRun>
+					<column kind="single"  width="80">
+						<tableHeader height="30" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="80" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Transaction No"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="80" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{transactionNo}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single"  width="50">
+						<tableHeader height="30" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="50" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Ex. Code"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="50" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{exchangeCode}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single"  width="70">
+						<tableHeader height="30" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="70" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Date"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="70" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{enteredDate}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single"  width="60">
+						<tableHeader height="30" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="60" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Amount"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="60" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{amount}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single"  width="100">
+						<tableHeader height="30" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="100" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Beneficiary Name"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{beneficiaryName}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single"  width="93">
+						<tableHeader height="30" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="93" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Beneficiary A/C No"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="93" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{beneficiaryAccount}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single"  width="100">
+						<tableHeader height="30" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="100" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Remitter Name"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{remitterName}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+				</component>
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+				<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+				<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>

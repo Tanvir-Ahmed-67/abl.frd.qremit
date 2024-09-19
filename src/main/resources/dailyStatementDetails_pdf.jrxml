@@ -17,36 +17,68 @@
 	<field name="remitterName" class="java.lang.String">
 	</field>
 	<background splitType="Stretch"/>
-	<title height="79" splitType="Stretch"/>
+	<title height="80" splitType="Stretch">
+		<element kind="textField" x="0" y="0" width="555" height="30" fontSize="18.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Agrani Bank PLC"]]></expression>
+		</element>
+		<element kind="textField" x="0" y="23" width="555" height="30" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Daily Remittance Details"]]></expression>
+		</element>
+		<element kind="textField" x="0" y="41" width="555" height="30" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Date - 03-09-2024"]]></expression>
+		</element>
+	</title>
 	<pageHeader height="35" splitType="Stretch"/>
-	<columnHeader height="61" splitType="Stretch"/>
+	<columnHeader height="36" splitType="Stretch">
+		<element kind="textField"  x="0" y="0" width="67" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Transaction No"]]></expression>
+		</element>
+		<element kind="textField" x="80" y="1" width="89" height="30" fontSize="10.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Exchange Code"]]></expression>
+		</element>
+		<element kind="textField" x="180" y="0" width="61" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Date"]]></expression>
+		</element>
+		<element kind="textField" x="258" y="0" width="61" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Amount"]]></expression>
+		</element>
+		<element kind="textField" x="338" y="0" width="61" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Beneficiary Name"]]></expression>
+		</element>
+		<element kind="textField" x="418" y="0" width="61" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Beneficiary A/C No"]]></expression>
+		</element>
+		<element kind="textField" x="493" y="0" width="61" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Remitter Name"]]></expression>
+		</element>
+	</columnHeader>
 	<detail>
-		<band height="125" splitType="Stretch">
-			<element kind="textField" x="0" y="0" width="67" height="30">
+		<band height="31" splitType="Stretch">
+			<element kind="textField" x="0" y="0" width="67" height="30" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{transactionNo}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a3050547-49f1-4440-944a-fcd6a202210e"/>
 			</element>
-			<element kind="textField" x="67" y="0" width="61" height="30">
+			<element kind="textField" x="80" y="0" width="89" height="30" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{exchangeCode}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2ebe6ed9-b9bb-4663-9ce2-972f06289138"/>
 			</element>
-			<element kind="textField" x="128" y="0" width="61" height="30">
+			<element kind="textField" x="179" y="0" width="61" height="30" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{enteredDate}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f4184bf8-d51e-4c65-90c4-1f255cb3fa93"/>
 			</element>
-			<element kind="textField" x="189" y="0" width="61" height="30">
+			<element kind="textField" x="259" y="0" width="61" height="30" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{amount}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="debd5701-7fc6-4cad-9fd3-c1857d5d63a5"/>
 			</element>
-			<element kind="textField" x="250" y="0" width="61" height="30">
+			<element kind="textField" x="338" y="0" width="61" height="30" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{beneficiaryName}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="83967519-4597-4cdc-975d-bc0bed55475f"/>
 			</element>
-			<element kind="textField" x="311" y="0" width="61" height="30">
+			<element kind="textField" x="418" y="0" width="61" height="30" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{beneficiaryAccount}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="33446a68-69d2-44c4-a8b8-fbeaea8f6787"/>
 			</element>
-			<element kind="textField" x="372" y="0" width="61" height="30">
+			<element kind="textField" x="493" y="0" width="61" height="30" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{remitterName}]]></expression>
 				<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="dc5ca913-f53c-4caf-a12e-d3c4e242ca2e"/>
 			</element>
