@@ -42,10 +42,21 @@ public class BeftnModel {
     private String isIncDownloaded;
     @Column(name = "download_user_id")
     private int downloadUserId;
+    @Column(name = "remitter_name", length = 128)
+    private String remitterName;
+    @Column(name = "bank_name")
+    private String bankName;
+    @Column(name = "bank_code")
+    private String bankCode;
+    @Column(name = "branch_name")
+    private String branchName;
     @Column(name = "download_date_time")
     private LocalDateTime downloadDateTime;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="upload_user_id")
     private User userModel;
 
@@ -57,7 +68,8 @@ public class BeftnModel {
         this.userModel = userModel;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
@@ -209,6 +221,38 @@ public class BeftnModel {
         this.downloadUserId = downloadUserId;
     }
 
+    public String getRemitterName() {
+        return this.remitterName;
+    }
+
+    public void setRemitterName(String remitterName) {
+        this.remitterName = remitterName;
+    }
+
+    public String getBankName() {
+        return this.bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getBankCode() {
+        return this.bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getBranchName() {
+        return this.branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
     public LocalDateTime getDownloadDateTime() {
         return downloadDateTime;
     }
@@ -217,7 +261,15 @@ public class BeftnModel {
         this.downloadDateTime = extraE;
     }
 
-    public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String extraA, String extraB, String extraC, int downloadUserId, LocalDateTime downloadDateTime) {
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
+    }
+
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
+    }
+
+    public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String remitterName, String bankName, String bankCode, String branchName, String extraA, String extraB, String extraC, int downloadUserId, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.orgCustomerNo = orgCustomerNo;
@@ -236,6 +288,11 @@ public class BeftnModel {
         this.isIncDownloaded = extraC;
         this.downloadUserId = downloadUserId;
         this.downloadDateTime = downloadDateTime;
+        this.uploadDateTime = uploadDateTime;
+        this.remitterName = remitterName;
+        this.bankCode = bankCode;
+        this.bankName = bankName;
+        this.branchName = branchName;
     }
 
     @Override

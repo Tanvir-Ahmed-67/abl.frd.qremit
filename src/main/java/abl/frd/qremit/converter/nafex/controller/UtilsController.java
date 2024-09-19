@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,7 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
@@ -89,4 +94,29 @@ public class UtilsController {
         return "/pages/user/errorReport";
     }
     
+    @GetMapping("/uploadApi")
+    public String uploadApiUi(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsApiExchangeHouse(1);
+        model.addAttribute("exchangeHouseModelList", exchangeHouseModelList);
+        //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        return "/pages/admin/adminApiUpload";
+    }
+
+    @PostMapping("/uploadApiData")
+    //@ResponseBody
+    public String uploadApiData(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam Map<String, String> formData, @RequestParam("file") MultipartFile file, Model model, HttpServletRequest request){
+        String exchangeCode = formData.get("exchangeCode");
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
+        model.addAttribute("fileType", formData.get("fileType"));
+        model.addAttribute("exchangeCode", exchangeCode);
+        model.addAttribute("file", file);
+        System.out.println(exchangeHouseModel);
+        System.out.println(formData);
+        String redirectUrl = "";
+        if(exchangeHouseModel != null && exchangeCode.equals(exchangeHouseModel.getExchangeCode())){
+            redirectUrl = "/" + exchangeHouseModel.getBaseTableName() + "Upload";  //generate dynamic URL from database
+        }
+        return "forward:" + redirectUrl;
+        
+    }
 }

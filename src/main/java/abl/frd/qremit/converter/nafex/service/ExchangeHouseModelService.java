@@ -33,7 +33,8 @@ public class ExchangeHouseModelService {
     }
 
     public boolean updateInactiveExchangeHouse(int id){
-        exchangeHouseModelRepository.setExchangeHouseActiveStatusTrueById(id);
+        //exchangeHouseModelRepository.setExchangeHouseActiveStatusTrueById(id);
+        exchangeHouseModelRepository.setExchangeHouseActiveStatusById(id, 1);
         return true;
     }
     public void editExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception {
@@ -43,5 +44,9 @@ public class ExchangeHouseModelService {
     public ExchangeHouseModel findByExchangeCode(String exchangeCode){
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
         return exchangeHouseModel;
+    }
+
+    public List<ExchangeHouseModel> loadAllIsApiExchangeHouse(int isApi){
+        return exchangeHouseModelRepository.findAllExchangeHouseByIsApi(isApi);
     }
 }

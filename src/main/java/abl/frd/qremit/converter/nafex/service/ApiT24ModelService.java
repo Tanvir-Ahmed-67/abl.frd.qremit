@@ -56,7 +56,7 @@ public class ApiT24ModelService {
                 }
 
                 // Online DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(apiT24Models,"getCheckT24");
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(apiT24Models,"getCheckT24", currentDateTime);
 
                 // FILE INFO TABLE GENERATION HERE......
                 fileInfoModel.setAccountPayeeCount("0");
@@ -65,7 +65,7 @@ public class ApiT24ModelService {
                 fileInfoModel.setCocCount("0");
                 fileInfoModel.setTotalCount(String.valueOf(apiT24Models.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setProcessedCount("test");
+                fileInfoModel.setIsSettlement(1);
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
                 fileInfoModel.setApiT24Model(apiT24Models);
@@ -123,7 +123,7 @@ public class ApiT24ModelService {
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",
+                        currentDateTime,
                         CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                              // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                                         //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee

@@ -21,4 +21,5 @@ public interface ErrorDataModelRepository extends JpaRepository<ErrorDataModel, 
     @Modifying
     @Query("UPDATE ErrorDataModel e SET e.updateStatus= :updateStatus where e.id= :id")
     void updateUpdateStatusById(int id, int updateStatus);
+    void deleteById(int id);
 }

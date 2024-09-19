@@ -3,7 +3,9 @@ package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ex_house_list")
+@Table(name="ex_house_list",
+    indexes = { @Index(name = "idx_is_api", columnList = "is_api") }
+)
 public class ExchangeHouseModel {
     @Id
     @Column(name = "id", nullable = false)
@@ -20,14 +22,25 @@ public class ExchangeHouseModel {
     @Column(nullable=false)
     private String baseTableName;
 
-    @Column
-    private boolean activeStatus;
+    @Column(name = "active_status", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int activeStatus = 0;
+    @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isApi = 0;
 
-    public boolean getActiveStatus() {
+    public int getIsApi() {
+        return this.isApi;
+    }
+
+    public void setIsApi(int isApi) {
+        this.isApi = isApi;
+    }
+
+
+    public int getActiveStatus() {
         return activeStatus;
     }
 
-    public void setActiveStatus(boolean isActive) {
+    public void setActiveStatus(int isActive) {
         this.activeStatus = isActive;
     }
 

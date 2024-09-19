@@ -22,6 +22,14 @@ public class OnlineModel {
     private Double amount;
     @Column(name = "remitter_name")
     private String remitterName;
+    @Column(name = "bank_name")
+    private String bankName;
+    @Column(name = "bank_code")
+    private String bankCode;
+    @Column(name = "branch_name")
+    private String branchName;
+    @Column(name = "branch_code")
+    private String branchCode;
     @Column(name = "is_processed")
     private String isProcessed;
     @Column(name = "is_downloaded")
@@ -30,10 +38,11 @@ public class OnlineModel {
     private LocalDateTime downloadDateTime;
     @Column(name = "download_user_id")
     private int downloadUserId;
-    @Column(name = "extra_e")
-    private String extraE;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="upload_user_id")
     private User userModel;
 
@@ -45,7 +54,8 @@ public class OnlineModel {
         this.userModel = userModel;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
@@ -149,15 +159,47 @@ public class OnlineModel {
         this.downloadUserId = downloadUserId;
     }
 
-    public String getExtraE() {
-        return extraE;
+    public String getBankName() {
+        return this.bankName;
     }
 
-    public void setExtraE(String extraE) {
-        this.extraE = extraE;
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 
-    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
+    public String getBankCode() {
+        return this.bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getBranchName() {
+        return this.branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public String getBranchCode() {
+        return this.branchCode;
+    }
+
+    public void setBranchCode(String branchCode) {
+        this.branchCode = branchCode;
+    }
+
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
+    }
+
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
+    }
+    
+    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.exchangeCode = exchangeCode;
@@ -169,7 +211,11 @@ public class OnlineModel {
         this.isDownloaded = extraB;
         this.downloadDateTime = downloadDateTime;
         this.downloadUserId = downloadUserId;
-        this.extraE = extraE;
+        this.uploadDateTime = uploadDateTime;
+        this.bankCode = bankCode;
+        this.bankName = bankName;
+        this.branchCode = branchCode;
+        this.branchName = branchName;
     }
 
     @Override
@@ -186,7 +232,7 @@ public class OnlineModel {
                 ", extraB='" + isDownloaded + '\'' +
                 ", extraC='" + downloadDateTime + '\'' +
                 ", extraD='" + downloadUserId + '\'' +
-                ", extraE='" + extraE + '\'' +
+                ", extraE='" + uploadDateTime + '\'' +
                 '}';
     }
 

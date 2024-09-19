@@ -43,6 +43,8 @@ public class EzRemitModelService {
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<EzRemitModel> ezRemitModelList = new ArrayList<>();
+            String type = "0";
+            if(fileType.equalsIgnoreCase("API")) type = "1";
             if(fileType.equalsIgnoreCase("API")){
                ezRemitModelList = csvToEzRemitAccountPayeeModels(file.getInputStream(), exchangeCode);
             }else if(fileType.equalsIgnoreCase("BEFTN")){
@@ -61,10 +63,10 @@ public class EzRemitModelService {
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(ezRemitModelList, "getCheckT24");
-                List<CocModel> cocModelList = CommonService.generateCocModelList(ezRemitModelList, "getCheckCoc");
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(ezRemitModelList, "getCheckAccPayee");
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(ezRemitModelList, "getCheckBeftn");
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(ezRemitModelList, "getCheckT24", type, currentDateTime);
+                List<CocModel> cocModelList = CommonService.generateCocModelList(ezRemitModelList, "getCheckCoc", currentDateTime);
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(ezRemitModelList, "getCheckAccPayee", currentDateTime);
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(ezRemitModelList, "getCheckBeftn", currentDateTime);
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -74,7 +76,7 @@ public class EzRemitModelService {
                 fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
                 fileInfoModel.setTotalCount(String.valueOf(ezRemitModelList.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setProcessedCount("test");
+                fileInfoModel.setIsSettlement(Integer.parseInt(type));
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
                 fileInfoModel.setEzRemitModel(ezRemitModelList);
@@ -146,7 +148,7 @@ public class EzRemitModelService {
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",           // extra_c
+                        currentDateTime,           // extra_c
                         CommonService.putOnlineFlag(csvRecord.get(4).trim(), "Agrani"),        // checkT24
                         CommonService.putCocFlag(csvRecord.get(4).trim()),                              //checkCoc
                         "0",                                                                            //checkAccPayee
@@ -194,7 +196,7 @@ public class EzRemitModelService {
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",           // extra_c
+                        currentDateTime,           // extra_c
                         CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim()),                           // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                                       //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(9).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee

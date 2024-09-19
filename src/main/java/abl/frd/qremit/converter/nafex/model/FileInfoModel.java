@@ -14,28 +14,33 @@ public class FileInfoModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    @Column(name = "exchange_code")
+    @Column(name = "exchange_code", length = 10)
     private String exchangeCode;
-    @Column(name = "upload_date_time")
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;
     @Column(name = "file_name", unique = true, nullable = false)
     private String fileName;
-    @Column(name = "coc_count")
+    @Column(name = "coc_count", length = 10)
     private String cocCount;
-    @Column(name = "beftn_count")
+    @Column(name = "beftn_count", length = 10)
     private String beftnCount;
-    @Column(name = "online_count")
+    @Column(name = "online_count", length = 10)
     private String onlineCount;
-    @Column(name = "account_payee_count")
+    @Column(name = "account_payee_count", length = 10)
     private String accountPayeeCount;
-    @Column(name = "unprocessed_count")
+    @Column(name = "unprocessed_count", length = 10)
     private String unprocessedCount;
-    @Column(name = "processed_count")
-    private String processedCount;
-    @Column(name = "total_count")
+    @Column(name = "error_count", length = 10)
+    private String errorCount;
+    @Column(name = "total_count", length = 10)
     private String totalCount;
+    @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isProcessed;
+    @Column(name = "is_settlement", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isSettlement = 0;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    //@ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name="user_id")
     @JsonIgnore 
     private User userModel;
@@ -70,19 +75,23 @@ public class FileInfoModel {
     @JsonIgnore
     private List<MuzainiModel> muzainiModel;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    //@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<CocModel> cocModelList;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
+    //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<AccountPayeeModel> accountPayeeModelList;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
+    //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<BeftnModel> beftnModelList;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel")
+    @OneToMany(cascade= { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
+    //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<OnlineModel> onlineModelList;
 
@@ -130,7 +139,7 @@ public class FileInfoModel {
         this.errorDataModelList = errorDataModelList;
     }
 
-    public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, String processedCount, String totalCount) {
+    public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, int isProcessed, String totalCount, String errorCount, int isSettlement) {
         this.exchangeCode = exchangeCode;
         this.uploadDateTime = uploadDateTime;
         this.fileName = fileName;
@@ -139,8 +148,10 @@ public class FileInfoModel {
         this.onlineCount = onlineCount;
         this.accountPayeeCount = accountPayeeCount;
         this.unprocessedCount = unprocessedCount;
-        this.processedCount = processedCount;
+        this.isSettlement = isSettlement;
+        this.errorCount = errorCount;
         this.totalCount = totalCount;
+        this.isProcessed = isProcessed;
     }
 
     @Override
@@ -155,7 +166,7 @@ public class FileInfoModel {
                 ", onlineCount='" + onlineCount + '\'' +
                 ", accountPayeeCount='" + accountPayeeCount + '\'' +
                 ", unprocessedCount='" + unprocessedCount + '\'' +
-                ", processedCount='" + processedCount + '\'' +
+                ", errorCount='" + errorCount + '\'' +
                 ", totalCount='" + totalCount + '\'' +
                 '}';
     }
@@ -270,12 +281,41 @@ public class FileInfoModel {
         this.unprocessedCount = unprocessedCount;
     }
 
-    public String getProcessedCount() {
-        return processedCount;
+    public int getIsProcessed() {
+        return this.isProcessed;
     }
 
-    public void setProcessedCount(String processedCount) {
-        this.processedCount = processedCount;
+    public void setIsProcessed(int isProcessed) {
+        this.isProcessed = isProcessed;
+    }
+
+
+    public String getErrorCount() {
+        return this.errorCount;
+    }
+
+    public void setErrorCount(String errorCount) {
+        this.errorCount = errorCount;
+    }
+
+    public int getIsSettlement() {
+        return this.isSettlement;
+    }
+
+    public void setIsSettlement(int isSettlement) {
+        this.isSettlement = isSettlement;
+    }
+
+    public List<BecModel> getBecModel() {
+        return this.becModel;
+    }
+
+    public List<MuzainiModel> getMuzainiModel() {
+        return this.muzainiModel;
+    }
+
+    public void setErrorDataModelList(List<ErrorDataModel> errorDataModelList) {
+        this.errorDataModelList = errorDataModelList;
     }
 
     public List<AgexSingaporeModel> getAgexSingaporeModel() {
