@@ -164,14 +164,14 @@ public class CommonService {
         return resp;
     }
     
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, String isProcessed) {
+    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, String isProcessed, LocalDateTime uploadDateTime) {
         List<OnlineModel> onlineList = new ArrayList<>();
         for (T singleModel : models) {
             try {
                 Method checkT24Method = singleModel.getClass().getMethod(checkT24MethodName);
                 String checkT24Value = (String) checkT24Method.invoke(singleModel);
                 if ("1".equals(checkT24Value)) {
-                    onlineList.add(generateOnlineModel(singleModel,isProcessed));
+                    onlineList.add(generateOnlineModel(singleModel,isProcessed, uploadDateTime));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -180,13 +180,13 @@ public class CommonService {
         return onlineList;
     }
 
-    public static <T> List<OnlineModel> generatOnlineModelListFromErrorData(Object object, String checkT24MethodName, String isProcessed){
+    public static <T> List<OnlineModel> generatOnlineModelListFromErrorData(Object object, String checkT24MethodName, String isProcessed, LocalDateTime uploadDateTime){
         List<OnlineModel> onlineList = new ArrayList<>();
         try{
             Method checkT24Method = object.getClass().getMethod(checkT24MethodName);
             String checkT24Value = (String) checkT24Method.invoke(object);
             if ("1".equals(checkT24Value)) {
-                onlineList.add(generateOnlineModel(object, isProcessed));
+                onlineList.add(generateOnlineModel(object, isProcessed, uploadDateTime));
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -194,11 +194,11 @@ public class CommonService {
         return onlineList;
     }    
 
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName){
-        return generateOnlineModelList(models, checkT24MethodName,"0");
+    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, LocalDateTime uploadDateTime){
+        return generateOnlineModelList(models, checkT24MethodName,"0", uploadDateTime);
     }
 
-    public static <T> OnlineModel generateOnlineModel(T model,String flag) {
+    public static <T> OnlineModel generateOnlineModel(T model,String flag, LocalDateTime uploadDateTime) {
         OnlineModel onlineModel = new OnlineModel();
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
@@ -207,11 +207,15 @@ public class CommonService {
             onlineModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             onlineModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             onlineModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            onlineModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
+            onlineModel.setBankName((String) getPropertyValue(model, "getBankName"));
+            onlineModel.setBranchCode((String) getPropertyValue(model, "getBranchCode"));
+            onlineModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
             onlineModel.setIsProcessed(flag);
             onlineModel.setIsDownloaded(flag);
             onlineModel.setDownloadDateTime(LocalDateTime.now());
             onlineModel.setDownloadUserId(9999);
-            onlineModel.setExtraE("dump");
+            onlineModel.setUploadDateTime(uploadDateTime);
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -225,14 +229,14 @@ public class CommonService {
         return method.invoke(obj);
     }
 
-    public static <T> List<CocModel> generateCocModelList(List<T> models, String checkCocMethodName) {
+    public static <T> List<CocModel> generateCocModelList(List<T> models, String checkCocMethodName, LocalDateTime uploadDateTime) {
         List<CocModel> cocList = new ArrayList<>();
         for (T singleModel : models) {
             try {
                 Method checkCocMethod = singleModel.getClass().getMethod(checkCocMethodName);
                 String checkCocValue = (String) checkCocMethod.invoke(singleModel);
                 if ("1".equals(checkCocValue)) {
-                    cocList.add(generateCocModel(singleModel));
+                    cocList.add(generateCocModel(singleModel, uploadDateTime));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -242,13 +246,13 @@ public class CommonService {
         return cocList;
     }
 
-    public static <T> List<CocModel> generatCocModelListFromErrorData(Object object, String checkCocMethodName){
+    public static <T> List<CocModel> generatCocModelListFromErrorData(Object object, String checkCocMethodName, LocalDateTime uploadDateTime){
         List<CocModel> cocList = new ArrayList<>();
         try{
             Method checkCocMethod = object.getClass().getMethod(checkCocMethodName);
             String checkCocValue = (String) checkCocMethod.invoke(object);
             if ("1".equals(checkCocValue)) {
-               cocList.add(generateCocModel(object));
+               cocList.add(generateCocModel(object, uploadDateTime));
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -256,7 +260,7 @@ public class CommonService {
         return cocList;
     }
 
-    public static <T> CocModel generateCocModel(T model) {
+    public static <T> CocModel generateCocModel(T model, LocalDateTime uploadDateTime) {
         CocModel cocModel = new CocModel();
         try {
             cocModel.setAmount((Double) getPropertyValue(model, "getAmount"));
@@ -275,7 +279,7 @@ public class CommonService {
             cocModel.setIsDownloaded("0");
             cocModel.setDownloadDateTime(LocalDateTime.now());
             cocModel.setDownloadUserId(9999);
-            cocModel.setExtraE("dummy");
+            cocModel.setUploadDateTime(uploadDateTime);
             cocModel.setIncentive(00.00);
             cocModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             cocModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
@@ -285,14 +289,14 @@ public class CommonService {
         }
         return cocModel;
     }
-    public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, String checkAccPayeeMethodName) {
+    public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, String checkAccPayeeMethodName, LocalDateTime uploadDateTime) {
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
         for (T singleModel : models) {
             try {
                 Method checkAccPayeeMethod = singleModel.getClass().getMethod(checkAccPayeeMethodName);
                 String checkAccPayeeValue = (String) checkAccPayeeMethod.invoke(singleModel);
                 if ("1".equals(checkAccPayeeValue)) {
-                    accountPayeeModelList.add(generateAccountPayeeModel(singleModel));
+                    accountPayeeModelList.add(generateAccountPayeeModel(singleModel, uploadDateTime));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -302,13 +306,13 @@ public class CommonService {
         return accountPayeeModelList;
     }
 
-    public static <T> List<AccountPayeeModel> generatAccountPayeeModelListFromErrorData(Object object, String checkAccPayeeMethodName){
+    public static <T> List<AccountPayeeModel> generatAccountPayeeModelListFromErrorData(Object object, String checkAccPayeeMethodName, LocalDateTime uploadDateTime){
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
         try{
             Method checkAccPayeeMethod = object.getClass().getMethod(checkAccPayeeMethodName);
             String checkAccPayeeValue = (String) checkAccPayeeMethod.invoke(object);
             if ("1".equals(checkAccPayeeValue)) {
-               accountPayeeModelList.add(generateAccountPayeeModel(object));
+               accountPayeeModelList.add(generateAccountPayeeModel(object, uploadDateTime));
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -316,7 +320,7 @@ public class CommonService {
         return accountPayeeModelList;
     }
 
-    public static <T> AccountPayeeModel generateAccountPayeeModel(T model) {
+    public static <T> AccountPayeeModel generateAccountPayeeModel(T model, LocalDateTime uploadDateTime) {
         AccountPayeeModel accountPayeeModel = new AccountPayeeModel();
         try {
             accountPayeeModel.setAmount((Double) getPropertyValue(model, "getAmount"));
@@ -335,7 +339,7 @@ public class CommonService {
             accountPayeeModel.setIsDownloaded("0");
             accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
             accountPayeeModel.setDownloadUserId(9999);
-            accountPayeeModel.setExtraE("dummy");
+            accountPayeeModel.setUploadDateTime(uploadDateTime);
             accountPayeeModel.setIncentive(00.00);
             accountPayeeModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             accountPayeeModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
@@ -346,14 +350,14 @@ public class CommonService {
         return accountPayeeModel;
     }
 
-    public static <T> List<BeftnModel> generateBeftnModelList(List<T> models, String checkBeftnMethodName) {
+    public static <T> List<BeftnModel> generateBeftnModelList(List<T> models, String checkBeftnMethodName, LocalDateTime uploadDateTime) {
         List<BeftnModel> beftnModelList = new ArrayList<>();
         for (T singleModel : models) {
             try {
                 Method checkBeftnMethod = singleModel.getClass().getMethod(checkBeftnMethodName);
                 String checkBeftnValue = (String) checkBeftnMethod.invoke(singleModel);
                 if ("1".equals(checkBeftnValue)) {
-                    beftnModelList.add(generateBeftnModel(singleModel));
+                    beftnModelList.add(generateBeftnModel(singleModel, uploadDateTime));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -363,13 +367,13 @@ public class CommonService {
         return beftnModelList;
     }
 
-    public static <T> List<BeftnModel> generateBeftnModelListFromErrorData(Object object, String checkBeftnMethodName){
+    public static <T> List<BeftnModel> generateBeftnModelListFromErrorData(Object object, String checkBeftnMethodName, LocalDateTime uploadDateTime){
         List<BeftnModel> beftnModelList = new ArrayList<>();
         try{
             Method checkBeftnMethod = object.getClass().getMethod(checkBeftnMethodName);
             String checkBeftnValue = (String) checkBeftnMethod.invoke(object);
             if ("1".equals(checkBeftnValue)) {
-                beftnModelList.add(generateBeftnModel(object));
+                beftnModelList.add(generateBeftnModel(object, uploadDateTime));
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -377,7 +381,7 @@ public class CommonService {
         return beftnModelList;
     }
 
-    public static <T> BeftnModel generateBeftnModel(T model) {
+    public static <T> BeftnModel generateBeftnModel(T model, LocalDateTime uploadDateTime) {
         BeftnModel beftnModel = new BeftnModel();
         try {
             beftnModel.setAmount((Double) getPropertyValue(model, "getAmount"));
@@ -395,8 +399,13 @@ public class CommonService {
             beftnModel.setOrgAccountType("CA");
             beftnModel.setOrgCustomerNo("7892");
             beftnModel.setOrgName("FRD Remittance");
+            beftnModel.setUploadDateTime(uploadDateTime);
             beftnModel.setRoutingNo((String) getPropertyValue(model, "getBranchCode"));
             beftnModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            beftnModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
+            beftnModel.setBankName((String) getPropertyValue(model, "getBankName"));
+            beftnModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
+            beftnModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -550,11 +559,11 @@ public class CommonService {
     }
 
     public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
-        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, "0", "0", "0", "0", currentDateTime.toString(), user, fileInfoModel);
+        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, "0", "0", "0", "0", currentDateTime, user, fileInfoModel);
         errorDataModelList.add(errorDataModel);
     }
     
-    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String exchangeCode, String errorMessage, String checkT24, String checkCoc, String checkAccPayee, String checkBEFTN, String currentDateTime, User user, FileInfoModel fileInfoModel){
+    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String exchangeCode, String errorMessage, String checkT24, String checkCoc, String checkAccPayee, String checkBEFTN, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
         double amount;
         try{
             amount = Double.parseDouble(csvRecord.get(3));
@@ -723,6 +732,16 @@ public class CommonService {
         return formattedDate;
     }
 
-    
+    public static String convertDateToString(LocalDateTime date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = date.format(formatter);
+        return formattedDateTime;
+    }
+
+    public static LocalDateTime convertStringToDate(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(date, formatter);
+        return localDateTime;
+    }
 
 }

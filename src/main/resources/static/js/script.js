@@ -56,3 +56,16 @@ function GenerateDetailsReport(format) {
     var url = '/downloadDetailsReport?type='+format;
     window.location.href = url;
 }
+
+$( function() {
+    $(document).on('focusin',".dpicker",function(){
+      $(this).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd-mm-yy",
+        minDate: "-100Y",
+        maxDate: "+0d",
+        yearRange: "1900:2035" 
+      });
+    });
+});

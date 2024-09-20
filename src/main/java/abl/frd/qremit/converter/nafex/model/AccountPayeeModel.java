@@ -46,13 +46,14 @@ public class AccountPayeeModel {
     private String isDownloaded;
     @Column(name = "download_date_time")
     private LocalDateTime downloadDateTime;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
 
     @Column(name = "download_user_id")
     private int downloadUserId;
-    @Column(name = "extra_e")
-    private String extraE;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="upload_user_id")
     private User userModel;
 
@@ -64,7 +65,8 @@ public class AccountPayeeModel {
         this.userModel = userModel;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
@@ -240,15 +242,17 @@ public class AccountPayeeModel {
         this.downloadUserId = downloadUserId;
     }
 
-    public String getExtraE() {
-        return extraE;
+
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
     }
 
-    public void setExtraE(String extraE) {
-        this.extraE = extraE;
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
     }
+    
 
-    public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
+    public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;
@@ -269,7 +273,7 @@ public class AccountPayeeModel {
         this.isDownloaded = extraB;
         this.downloadDateTime = downloadDateTime;
         this.downloadUserId = downloadUserId;
-        this.extraE = extraE;
+        this.uploadDateTime = uploadDateTime;
     }
 
     @Override
@@ -295,7 +299,7 @@ public class AccountPayeeModel {
                 ", extraB='" + isDownloaded + '\'' +
                 ", extraC='" + downloadDateTime + '\'' +
                 ", extraD='" + downloadUserId + '\'' +
-                ", extraE='" + extraE + '\'' +
+                ", uploadDateTime='" + uploadDateTime + '\'' +
                 '}';
     }
 

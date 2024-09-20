@@ -58,10 +58,10 @@ public class MuzainiModelService {
                 }
 
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(muzainiModels,"getCheckT24");
-                List<CocModel> cocModelList = CommonService.generateCocModelList(muzainiModels,"getCheckCoc");
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(muzainiModels,"getCheckAccPayee");
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(muzainiModels,"getCheckBeftn");
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(muzainiModels,"getCheckT24", currentDateTime);
+                List<CocModel> cocModelList = CommonService.generateCocModelList(muzainiModels,"getCheckCoc", currentDateTime);
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(muzainiModels,"getCheckAccPayee", currentDateTime);
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(muzainiModels,"getCheckBeftn", currentDateTime);
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -71,7 +71,6 @@ public class MuzainiModelService {
                 fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
                 fileInfoModel.setTotalCount(String.valueOf(muzainiModels.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setProcessedCount("test");
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
                 fileInfoModel.setMuzainiModel(muzainiModels);
@@ -144,7 +143,7 @@ public class MuzainiModelService {
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",           // extra_c
+                        currentDateTime,           // extra_c
                         CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                          // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                                       //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee

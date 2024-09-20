@@ -1,5 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.*;
 
 @Entity
@@ -53,8 +55,8 @@ public class AgexSingaporeModel {
     private String processedBy;
     @Column(name = "processed_date")
     private String processedDate;
-    @Column(name = "extra_c")
-    private String extraC;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
 
     @Column(name = "check_t24")
     private String checkT24;
@@ -261,12 +263,12 @@ public class AgexSingaporeModel {
         this.processedDate = processedDate;
     }
 
-    public String getExtraC() {
-        return extraC;
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
     }
 
-    public void setExtraC(String extraC) {
-        this.extraC = extraC;
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
     }
 
     public String getCheckT24() {
@@ -317,7 +319,7 @@ public class AgexSingaporeModel {
         this.userModel = userModel;
     }
 
-    public AgexSingaporeModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public AgexSingaporeModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -340,15 +342,15 @@ public class AgexSingaporeModel {
         this.typeFlag = typeFlag;
         this.processedBy = processedBy;
         this.processedDate = processedDate;
-        this.extraC = extraC;
+        this.uploadDateTime = uploadDateTime;
         this.checkT24 = checkT24;
         this.checkCoc = checkCoc;
         this.checkAccPayee = checkAccPayee;
         this.checkBeftn = checkBeftn;
     }
 
-    public AgexSingaporeModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, FileInfoModel fileInfoModel, User user) {
-        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, extraC, checkT24, checkCoc, checkAccPayee, checkBeftn);
+    public AgexSingaporeModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, FileInfoModel fileInfoModel, User user) {
+        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, uploadDateTime, checkT24, checkCoc, checkAccPayee, checkBeftn);
         this.fileInfoModel = fileInfoModel;
         this.userModel = user;
     }
@@ -379,7 +381,7 @@ public class AgexSingaporeModel {
                 ", typeFlag='" + typeFlag + '\'' +
                 ", processedBy='" + processedBy + '\'' +
                 ", processedDate='" + processedDate + '\'' +
-                ", extraC='" + extraC + '\'' +
+                ", uploadDateTime='" + uploadDateTime + '\'' +
                 ", checkT24='" + checkT24 + '\'' +
                 ", checkCoc='" + checkCoc + '\'' +
                 ", checkAccPayee='" + checkAccPayee + '\'' +

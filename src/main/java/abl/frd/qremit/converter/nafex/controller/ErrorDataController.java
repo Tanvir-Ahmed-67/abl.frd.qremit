@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,6 +79,15 @@ public class ErrorDataController {
             errorDataModelService.updateErrorDataModelUpdateStatus(errorDataId,2);
             resp = CommonService.getResp(0, "Information saved succesfully", null);
         }
+        return ResponseEntity.ok(resp);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteErrorDataById(@PathVariable int id){
+        Map<String, Object> resp = new HashMap<>();
+        errorDataModelService.deleteErrorDataById(id);
+        resp = CommonService.getResp(0,"Information Deleted", null);
         return ResponseEntity.ok(resp);
     }
 

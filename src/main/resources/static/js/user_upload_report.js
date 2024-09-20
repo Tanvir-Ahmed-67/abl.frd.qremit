@@ -2,6 +2,9 @@ $(document).ready(function(){
     var type = getParameterByName("type");
     var tbl = "#user_upload_tbl";
     var page_header = "";
+    var csrf_token = $("meta[name='_csrf']").attr("content");
+    var csrf_header = $("meta[name='_csrf_header']").attr("content");
+    
     switch(type){
         case '1':
         default:
@@ -71,5 +74,17 @@ $(document).ready(function(){
         var data = {'id': id};
         var params = {'success_reload': 'true', 'tbl': tbl, };
         get_ajax(url,data,success_alert,fail_func,"get","json",params);
+    });
+
+    $(document).off('click',".delete_error");
+    $(document).on('click',".delete_error",function(e){
+        e.preventDefault();
+        var id = $(this).attr("id");
+        var url  = "/error/delete/" + id;
+        var params = {'success_reload': 'true', 'tbl': tbl, };
+        var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
+        if(confirm("Are you sure you want to delete this data?")){
+            get_ajax(url,data,success_alert,fail_func,"DELETE","json",params);
+        }
     });
 });

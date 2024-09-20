@@ -58,10 +58,10 @@ public class BecModelService {
             }
 
             // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-            List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(becModels,"getCheckT24");
-            List<CocModel> cocModelList = CommonService.generateCocModelList(becModels,"getCheckCoc");
-            List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(becModels,"getCheckAccPayee");
-            List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(becModels,"getCheckBeftn");
+            List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(becModels,"getCheckT24", currentDateTime);
+            List<CocModel> cocModelList = CommonService.generateCocModelList(becModels,"getCheckCoc", currentDateTime);
+            List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(becModels,"getCheckAccPayee", currentDateTime);
+            List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(becModels,"getCheckBeftn", currentDateTime);
 
 
             // FILE INFO TABLE GENERATION HERE......
@@ -71,7 +71,6 @@ public class BecModelService {
             fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
             fileInfoModel.setTotalCount(String.valueOf(becModels.size()));
             fileInfoModel.setFileName(file.getOriginalFilename());
-            fileInfoModel.setProcessedCount("test");
             fileInfoModel.setUnprocessedCount("test");
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModel.setBecModel(becModels);
@@ -143,7 +142,7 @@ public class BecModelService {
                         "type",             // type_flag
                         "processedBy",      // Processed_by
                         "dummy",            // processed_date
-                        "extraC",
+                        currentDateTime,
                         CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                                 // checkT24
                         CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
