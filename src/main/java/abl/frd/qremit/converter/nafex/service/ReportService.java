@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import abl.frd.qremit.converter.nafex.repository.ErrorDataModelRepository;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
-import abl.frd.qremit.converter.nafex.repository.ReportRepository;
 import org.springframework.util.ResourceUtils;
 
 @Service
