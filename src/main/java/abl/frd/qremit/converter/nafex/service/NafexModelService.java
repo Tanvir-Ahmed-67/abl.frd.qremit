@@ -55,7 +55,6 @@ public class NafexModelService {
             if(nafexModels.size()!=0) {
             
                 for (NafexEhMstModel nafexModel : nafexModels) {
-                    //nafexModel.setExchangeCode(exchangeCode);
                     nafexModel.setFileInfoModel(fileInfoModel);
                     nafexModel.setUserModel(user);
                 }
