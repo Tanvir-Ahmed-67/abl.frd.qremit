@@ -8,7 +8,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name="upload_file_info", uniqueConstraints = @UniqueConstraint(columnNames = "file_name"))
+@Table(name="upload_file_info", 
+    uniqueConstraints = @UniqueConstraint(columnNames = "file_name"),
+    indexes = { @Index(name = "idx_exchange_code", columnList = "exchange_code"),
+        @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
+        @Index(name = "idx_is_settlement", columnList = "is_settlement"),
+        @Index(name = "idx_total_count", columnList = "total_count"),
+        @Index(name = "idx_error_count", columnList = "error_count"),
+    }
+)
 public class FileInfoModel {
     @Id
     @Column(name = "id")
