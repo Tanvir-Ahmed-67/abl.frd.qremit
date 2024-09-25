@@ -47,7 +47,8 @@ public class TemporaryReportService {
                 try{
                     String transactionNo = (String) CommonService.getPropertyValue(model, "getTransactionNo");
                     String exchangeCode = (String) CommonService.getPropertyValue(model, "getExchangeCode");
-                    Optional<TemporaryReportModel> temporaryReport = temporaryReportRepository.findByExchangeCodeAndTransactionNo(exchangeCode, transactionNo);
+                    Double amount = (Double) CommonService.getPropertyValue(model, "getAmount");
+                    Optional<TemporaryReportModel> temporaryReport = temporaryReportRepository.findByExchangeCodeAndTransactionNoAndAmount(exchangeCode, transactionNo, amount);
                     if(temporaryReport.isPresent()) continue;
 
                     String branchMethod = (("3").matches(type)) ? "getRoutingNo": "getBranchCode";
@@ -57,7 +58,7 @@ public class TemporaryReportService {
                     temporaryReportModel.setBankName((String) CommonService.getPropertyValue(model, "getBankName"));
                     temporaryReportModel.setBranchCode((String) CommonService.getPropertyValue(model, branchMethod));
                     temporaryReportModel.setBranchName((String) CommonService.getPropertyValue(model, "getBranchName"));
-                    temporaryReportModel.setAmount((Double) CommonService.getPropertyValue(model, "getAmount"));
+                    temporaryReportModel.setAmount(amount);
                     temporaryReportModel.setBeneficiaryName((String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
                     temporaryReportModel.setBeneficiaryAccount((String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
                     temporaryReportModel.setIncentive((Double) CommonService.getPropertyValue(model, "getIncentive"));

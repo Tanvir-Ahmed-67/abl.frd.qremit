@@ -5,7 +5,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "temporary_report",
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), },
-    uniqueConstraints = @UniqueConstraint(name = "idx_transaction_no_exchange_code", columnNames = {"exchange_code", "transaction_no"})
+    uniqueConstraints = @UniqueConstraint(name = "idx_transaction_no_exchange_code", columnNames = {"exchange_code", "transaction_no", "amount"})
 )
 
 public class TemporaryReportModel {
