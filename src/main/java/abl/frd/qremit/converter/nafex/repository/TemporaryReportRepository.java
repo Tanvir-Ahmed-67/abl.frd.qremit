@@ -10,5 +10,5 @@ import abl.frd.qremit.converter.nafex.model.TemporaryReportModel;
 
 @Repository
 public interface TemporaryReportRepository extends JpaRepository<TemporaryReportModel, Integer>{
-    Optional<TemporaryReportModel> findByExchangeCodeAndTransactionNo(String exchangeCode, String transactionNo);
+    Optional<TemporaryReportModel> findByExchangeCodeAndTransactionNoAndAmount(String exchangeCode, String transactionNo, Double amount);
 }
