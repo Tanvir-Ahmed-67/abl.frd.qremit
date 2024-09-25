@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.OnlineModelServiceHelper;
+import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.OnlineModel;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,5 +69,9 @@ public class OnlineModelService {
     }
     public int countRemainingOnlineData(){
         return onlineModelRepository.countByIsProcessed(0);
+    }
+
+    public List<OnlineModel> getTemopraryReportData(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return onlineModelRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, starDateTime, enDateTime);
     }
 }

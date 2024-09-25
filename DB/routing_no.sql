@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 25, 2024 at 08:22 AM
+-- Generation Time: Sep 25, 2024 at 08:52 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -11744,7 +11744,8 @@ INSERT INTO `routing_no` (`id`, `routing_no`, `bank_code`, `bank_name`, `dist_co
 -- Indexes for table `routing_no`
 --
 ALTER TABLE `routing_no`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `routing_no` (`routing_no`);
 
 --
 -- AUTO_INCREMENT for dumped tables

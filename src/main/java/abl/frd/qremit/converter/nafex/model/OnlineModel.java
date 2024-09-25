@@ -4,7 +4,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="converted_data_online")
+@Table(name="converted_data_online",
+    indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
+        @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time")
+    }
+)
 public class OnlineModel {
     @Id
     @Column(name = "id")
@@ -30,6 +34,8 @@ public class OnlineModel {
     private String branchName;
     @Column(name = "branch_code")
     private String branchCode;
+    @Column(name = "incentive", length = 12)
+    private Double incentive;
     @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isProcessed = 0;
     @Column(name = "is_downloaded", columnDefinition = "TINYINT(1) DEFAULT 0")
@@ -217,6 +223,14 @@ public class OnlineModel {
 
     public void setReportDate(LocalDateTime reportDate) {
         this.reportDate = reportDate;
+    }
+
+    public Double getIncentive() {
+        return this.incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
     }
     
     public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {

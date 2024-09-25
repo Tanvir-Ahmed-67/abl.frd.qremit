@@ -4,7 +4,12 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="converted_data_coc")
+@Table(name="converted_data_coc",
+    indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
+        @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
+        @Index(name = "idx_is_downloaded", columnList = "is_downloaded")
+    }
+)
 public class CocModel {
     @Id
     @Column(name = "id")
