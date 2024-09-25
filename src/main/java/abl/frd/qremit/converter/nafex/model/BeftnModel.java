@@ -4,7 +4,12 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="converted_data_beftn")
+@Table(name="converted_data_beftn", 
+    indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
+        @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
+        @Index(name = "idx_is_processed_main", columnList = "is_processed_main"), @Index(name = "idx_is_processed_incentive", columnList = "is_processed_incentive")
+    }
+)
 public class BeftnModel {
     @Id
     @Column(name = "id")

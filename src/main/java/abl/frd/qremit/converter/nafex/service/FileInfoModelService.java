@@ -45,10 +45,10 @@ public class FileInfoModelService {
         String startDate = date + " 00:00:00";
         String endDate = date + " 23:59:59";
         LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
-        LocalDateTime enDateTime = CommonService.convertStringToDate(endDate);
+        LocalDateTime endDateTime = CommonService.convertStringToDate(endDate);
         //Integer count = fileInfoModelRepository.getSettlementCountByExchangeCode(startDateTime, enDateTime, exchangeCode, isSettlement);
         //return count != null ? count : 0;
-        return fileInfoModelRepository.getSettlementDataByExchangeCode(startDateTime, enDateTime, exchangeCode, isSettlement);
+        return fileInfoModelRepository.getSettlementDataByExchangeCode(startDateTime, endDateTime, exchangeCode, isSettlement);
     }
 
     public List<Map<String, Object>> getSettlementList(List<ExchangeHouseModel> exchangeHouseModelList, String date){

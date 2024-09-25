@@ -61,5 +61,9 @@ public class AccountPayeeModelService {
         return accountPayeeModelRepository.countByIsProcessed(0);
     }
 
+    public List<AccountPayeeModel> getTemopraryReportData(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return accountPayeeModelRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
 
 }

@@ -102,4 +102,8 @@ public class BeftnModelService {
         return beftnModelRepository.countByIsProcessedIncentive(0);
     }
 
+    public List<BeftnModel> getTemopraryReportData(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return beftnModelRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
 }
