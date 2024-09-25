@@ -119,6 +119,7 @@ public class CommonService {
                     }
                     rows.add(row);
                 }while(rs.next());
+                con.close();
                 return getResp(0, "Data Found", rows);
             }
         }catch(Exception e){
@@ -226,7 +227,7 @@ public class CommonService {
     }
 
 
-    private static Object getPropertyValue(Object obj, String methodName) throws Exception {
+    public static Object getPropertyValue(Object obj, String methodName) throws Exception {
         Method method = obj.getClass().getMethod(methodName);
         return method.invoke(obj);
     }
@@ -744,5 +745,26 @@ public class CommonService {
         LocalDateTime localDateTime = LocalDateTime.parse(date, formatter);
         return localDateTime;
     }
+
+    public static Map<String, LocalDateTime> getStartAndEndDateTime(String date){
+        Map<String, LocalDateTime> dateTimeRange = new HashMap<>();
+        String startDate = date + " 00:00:00";
+        String endDate = date + " 23:59:59";
+        LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
+        LocalDateTime endDateTime = CommonService.convertStringToDate(endDate);
+        dateTimeRange.put("startDateTime", startDateTime);
+        dateTimeRange.put("endDateTime", endDateTime);
+        return dateTimeRange;
+    }
+
+    public static Map<String, Object> getRemittanceTypes(){
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("1", "Online");
+        resp.put("2", "Account Payee");
+        resp.put("3", "BEFTN");
+        resp.put("4", "COC");
+        return resp;
+    }
+    
 
 }

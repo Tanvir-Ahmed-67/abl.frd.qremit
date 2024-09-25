@@ -22,4 +22,11 @@ public class ReportRepository {
         return commonService.getData(queryStr,params);
     }
 
+    public Map<String,Object> getRoutingNo(String routingNo){
+        Map<String, Object> params = new HashMap<>();
+        String queryStr = String.format("SELECT * FROM routing_no where routing_no = ?", routingNo);
+        params.put("1", routingNo);
+        return commonService.getData(queryStr,params);
+    }
+
 }

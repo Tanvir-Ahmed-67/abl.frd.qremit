@@ -1,15 +1,6 @@
 package abl.frd.qremit.converter.nafex.controller;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.io.*;
+import java.util.*;
 import abl.frd.qremit.converter.nafex.model.*;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
+import abl.frd.qremit.converter.nafex.repository.ReportRepository;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.ErrorDataModelService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
@@ -49,6 +41,8 @@ public class ReportController {
     ErrorDataModelService errorDataModelService;
     @Autowired
     LogModelService logModelService;
+    @Autowired
+    ReportRepository reportRepository;
     private static final String PDF_DIRECTORY = "D:/Report/";
     
 
@@ -375,6 +369,14 @@ public class ReportController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error occurred while reading the file.");
         }
+    }
+
+    @GetMapping("/getRoutingNo")
+    @ResponseBody
+    public Map<String, Object> getRoutingNo(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam String id){
+        Map<String, Object> routing = reportRepository.getRoutingNo(id);
+        //System.out.println(routing);
+        return routing;
     }
 
 
