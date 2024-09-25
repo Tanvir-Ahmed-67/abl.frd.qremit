@@ -190,7 +190,9 @@ public class NafexModelService {
                 nafexDataModelList.add(nafexDataModel);
             }
             if (!errorDataModelList.isEmpty()) {
-                errorDataModelRepository.saveAll(errorDataModelList);
+                List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
+                int errorCount = errorDataModels.size();
+                fileInfoModel.setErrorCount(errorCount);
             }
             //if both model is empty then delete fileInfoModel
             if(errorDataModelList.isEmpty() && nafexDataModelList.isEmpty()){

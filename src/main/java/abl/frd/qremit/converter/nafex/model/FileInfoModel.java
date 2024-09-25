@@ -39,7 +39,7 @@ public class FileInfoModel {
     @Column(name = "unprocessed_count", length = 10)
     private String unprocessedCount;
     @Column(name = "error_count", length = 10)
-    private String errorCount;
+    private int errorCount = 0;
     @Column(name = "total_count", length = 10)
     private String totalCount;
     @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
@@ -147,7 +147,7 @@ public class FileInfoModel {
         this.errorDataModelList = errorDataModelList;
     }
 
-    public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, int isProcessed, String totalCount, String errorCount, int isSettlement) {
+    public FileInfoModel(String exchangeCode, LocalDateTime uploadDateTime, String fileName, String cocCount, String beftnCount, String onlineCount, String accountPayeeCount, String unprocessedCount, int isProcessed, String totalCount, int errorCount, int isSettlement) {
         this.exchangeCode = exchangeCode;
         this.uploadDateTime = uploadDateTime;
         this.fileName = fileName;
@@ -297,15 +297,14 @@ public class FileInfoModel {
         this.isProcessed = isProcessed;
     }
 
-
-    public String getErrorCount() {
+    public int getErrorCount() {
         return this.errorCount;
     }
 
-    public void setErrorCount(String errorCount) {
+    public void setErrorCount(int errorCount) {
         this.errorCount = errorCount;
     }
-
+    
     public int getIsSettlement() {
         return this.isSettlement;
     }

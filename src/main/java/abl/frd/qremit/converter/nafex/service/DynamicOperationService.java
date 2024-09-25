@@ -121,6 +121,8 @@ public class DynamicOperationService {
                 fileInfoModel.setCocCount(String.valueOf(cocCount));
                 fileInfoModel.setOnlineCount(String.valueOf(t24Count));
                 fileInfoModel.setTotalCount(String.valueOf(totalCount));
+                int erroCount = fileInfoModel.getErrorCount() - 1;
+                fileInfoModel.setErrorCount(erroCount);
                 User user = userModelRepository.findByUserId(userId);
 
                 Object modelInstance = constructor.newInstance(exchangeCode, updatedData.get("transactionNo"), updatedData.get("currency"), amount, 
