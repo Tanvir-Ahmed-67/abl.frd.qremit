@@ -14,7 +14,7 @@ public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeM
     List<AccountPayeeModel> findAllAccountPayeeModelHavingFileInfoId(int id);
     @Query("SELECT n FROM AccountPayeeModel n")
     List<AccountPayeeModel> findAllAccountPayeeModel();
-    Integer countByIsProcessed(String isProcessed);
+    Integer countByIsProcessed(int isProcessed);
     @Query("SELECT n FROM AccountPayeeModel n WHERE n.isProcessed= :isProcessed")
-    List<AccountPayeeModel> loadUnprocessedAccountPayeeData(@Param("isProcessed") String isProcessed);
+    List<AccountPayeeModel> loadUnprocessedAccountPayeeData(@Param("isProcessed") int isProcessed);
 }

@@ -17,9 +17,9 @@ public interface OnlineModelRepository extends JpaRepository<OnlineModel, Intege
     @Query("SELECT n FROM OnlineModel n")
     List<OnlineModel> findAllOnlineModel();
     @Query("SELECT n FROM OnlineModel n WHERE n.isProcessed= :isProcessed")
-    List<OnlineModel> loadUnprocessedOnlineData(@Param("isProcessed") String isProcessed);
+    List<OnlineModel> loadUnprocessedOnlineData(@Param("isProcessed") int isProcessed);
     @Query("SELECT n FROM OnlineModel n WHERE n.isProcessed= :isProcessed")
-    List<OnlineModel> loadProcessedOnlineData(@Param("isProcessed") String isProcessed);
-    Integer countByIsProcessed(String isProcessed);
+    List<OnlineModel> loadProcessedOnlineData(@Param("isProcessed") int isProcessed);
+    Integer countByIsProcessed(int isProcessed);
 
 }

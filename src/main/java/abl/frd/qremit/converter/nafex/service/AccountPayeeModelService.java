@@ -31,13 +31,13 @@ public class AccountPayeeModelService {
         ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(accountPayeeModes);
         return in;
     }
-    public ByteArrayInputStream loadAndUpdateUnprocessedAccountPayeeData(String isProcessed) {
+    public ByteArrayInputStream loadAndUpdateUnprocessedAccountPayeeData(int isProcessed) {
         List<AccountPayeeModel> unprocessedAccountPayeeModels = accountPayeeModelRepository.loadUnprocessedAccountPayeeData(isProcessed);
-        List<AccountPayeeModel> processedAndUpdatedAccountPayeeModels = updateAndReturn(unprocessedAccountPayeeModels, "1");
+        List<AccountPayeeModel> processedAndUpdatedAccountPayeeModels = updateAndReturn(unprocessedAccountPayeeModels, 1);
         ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(processedAndUpdatedAccountPayeeModels);
         return in;
     }
-    public List<AccountPayeeModel> updateAndReturn(List<AccountPayeeModel> entitiesToUpdate, String processed) {
+    public List<AccountPayeeModel> updateAndReturn(List<AccountPayeeModel> entitiesToUpdate, int processed) {
         // Retrieve the entities you want to update
         List<AccountPayeeModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -58,7 +58,7 @@ public class AccountPayeeModelService {
         return updatedEntities;
     }
     public int countRemainingAccountPayeeData(){
-        return accountPayeeModelRepository.countByIsProcessed("0");
+        return accountPayeeModelRepository.countByIsProcessed(0);
     }
 
 

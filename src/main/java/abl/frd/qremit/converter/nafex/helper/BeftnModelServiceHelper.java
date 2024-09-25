@@ -179,7 +179,8 @@ public class BeftnModelServiceHelper {
             cell8.setCellValue(beftnModel.getRoutingNo().trim());
 
             Cell cell9 = row.createCell(9);
-            cell9.setCellValue(calculatePercentage(beftnModel.getAmount()));
+            //cell9.setCellValue(calculatePercentage(beftnModel.getIncentive()));
+            cell9.setCellValue(beftnModel.getIncentive());
 
             Cell cell10 = row.createCell(10);
             cell10.setCellValue(beftnModel.getTransactionNo());

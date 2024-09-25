@@ -28,13 +28,13 @@ public class CocModelService {
         ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(cocModels);
         return in;
     }
-    public ByteArrayInputStream loadAndUpdateUnprocessedCocData(String isProcessed) {
-        List<CocModel> unprocessedCocModels = CocModelRepository.loadUnprocessedCocData(isProcessed);
-        List<CocModel> processedAndUpdatedCocModels = updateAndReturn(unprocessedCocModels, "1");
+    public ByteArrayInputStream loadAndUpdateUnprocessedCocData(int isProcessed, int isDownloaded) {
+        List<CocModel> unprocessedCocModels = CocModelRepository.loadUnprocessedCocData(isProcessed, isDownloaded);
+        List<CocModel> processedAndUpdatedCocModels = updateAndReturn(unprocessedCocModels, 0, 1);
         ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(processedAndUpdatedCocModels);
         return in;
     }
-    public List<CocModel> updateAndReturn(List<CocModel> entitiesToUpdate, String processed) {
+    public List<CocModel> updateAndReturn(List<CocModel> entitiesToUpdate, int processed, int downloaded) {
         // Retrieve the entities you want to update
         List<CocModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -42,7 +42,7 @@ public class CocModelService {
             for (CocModel updatedEntity : entitiesToUpdate) {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessed(processed);
-                    existingEntity.setIsDownloaded(processed);
+                    existingEntity.setIsDownloaded(downloaded);
                     existingEntity.setDownloadDateTime(LocalDateTime.now());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     // Update other properties as needed
@@ -55,7 +55,8 @@ public class CocModelService {
         return updatedEntities;
     }
     public int countRemainingCocData(){
-        return CocModelRepository.countByIsProcessed("0");
+        //return CocModelRepository.countByIsProcessed(0);
+        return CocModelRepository.countByIsDownloaded(0);
     }
 
 }

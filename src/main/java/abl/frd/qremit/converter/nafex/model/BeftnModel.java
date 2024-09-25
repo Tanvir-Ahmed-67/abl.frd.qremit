@@ -34,12 +34,10 @@ public class BeftnModel {
     private String routingNo;
     @Column(name = "incentive")
     private Double incentive;
-    @Column(name = "is_processed_main")
-    private String isProcessedMain;
-    @Column(name = "is_processed_incentive")
-    private String isProcessedIncentive;
-    @Column(name = "is_inc_downloaded")
-    private String isIncDownloaded;
+    @Column(name = "is_processed_main", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isProcessedMain = 0;
+    @Column(name = "is_processed_incentive", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isProcessedIncentive = 0;
     @Column(name = "download_user_id")
     private int downloadUserId;
     @Column(name = "remitter_name", length = 128)
@@ -54,6 +52,14 @@ public class BeftnModel {
     private LocalDateTime downloadDateTime;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;
+    @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isVoucherGenerated = 0;
+    @Column(name = "report_date", columnDefinition = "DATETIME")
+    private LocalDateTime reportDate;
+    @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isProcessed = 0;
+    @Column(name = "is_downloaded", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isDownloaded = 0;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
@@ -141,6 +147,22 @@ public class BeftnModel {
         this.amount = amount;
     }
 
+    public int getIsProcessed() {
+        return this.isProcessed;
+    }
+
+    public void setIsProcessed(int isProcessed) {
+        this.isProcessed = isProcessed;
+    }
+
+    public int getIsDownloaded() {
+        return this.isDownloaded;
+    }
+
+    public void setIsDownloaded(int isDownloaded) {
+        this.isDownloaded = isDownloaded;
+    }
+
     public String getBeneficiaryName() {
         return beneficiaryName;
     }
@@ -189,29 +211,22 @@ public class BeftnModel {
         this.incentive = incentive;
     }
 
-    public String getIsProcessedMain() {
-        return isProcessedMain;
+    public int getIsProcessedMain() {
+        return this.isProcessedMain;
     }
 
-    public void setIsProcessedMain(String extraA) {
-        this.isProcessedMain = extraA;
+    public void setIsProcessedMain(int isProcessedMain) {
+        this.isProcessedMain = isProcessedMain;
     }
 
-    public String getIsProcessedIncentive() {
-        return isProcessedIncentive;
+    public int getIsProcessedIncentive() {
+        return this.isProcessedIncentive;
     }
 
-    public void setIsProcessedIncentive(String extraB) {
-        this.isProcessedIncentive = extraB;
+    public void setIsProcessedIncentive(int isProcessedIncentive) {
+        this.isProcessedIncentive = isProcessedIncentive;
     }
 
-    public String getIsIncDownloaded() {
-        return isIncDownloaded;
-    }
-
-    public void setIsIncDownloaded(String extraC) {
-        this.isIncDownloaded = extraC;
-    }
 
     public int getDownloadUserId() {
         return downloadUserId;
@@ -269,7 +284,23 @@ public class BeftnModel {
         this.uploadDateTime = uploadDateTime;
     }
 
-    public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String remitterName, String bankName, String bankCode, String branchName, String extraA, String extraB, String extraC, int downloadUserId, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime) {
+    public int getIsVoucherGenerated() {
+        return this.isVoucherGenerated;
+    }
+
+    public void setIsVoucherGenerated(int isVoucherGenerated) {
+        this.isVoucherGenerated = isVoucherGenerated;
+    }
+
+    public LocalDateTime getReportDate() {
+        return this.reportDate;
+    }
+
+    public void setReportDate(LocalDateTime reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String remitterName, String bankName, String bankCode, String branchName, int extraA, int extraB, int downloadUserId, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.orgCustomerNo = orgCustomerNo;
@@ -285,7 +316,6 @@ public class BeftnModel {
         this.incentive = incentive;
         this.isProcessedMain = extraA;
         this.isProcessedIncentive = extraB;
-        this.isIncDownloaded = extraC;
         this.downloadUserId = downloadUserId;
         this.downloadDateTime = downloadDateTime;
         this.uploadDateTime = uploadDateTime;
@@ -313,7 +343,6 @@ public class BeftnModel {
                 ", incentive=" + incentive +
                 ", extraA='" + isProcessedMain + '\'' +
                 ", extraB='" + isProcessedIncentive + '\'' +
-                ", extraC='" + isIncDownloaded + '\'' +
                 ", extraD='" + downloadUserId + '\'' +
                 ", extraE='" + downloadDateTime + '\'' +
                 '}';

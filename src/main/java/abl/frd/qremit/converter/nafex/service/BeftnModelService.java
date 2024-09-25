@@ -37,19 +37,19 @@ public class BeftnModelService {
         return in;
     }
 
-    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnMainData(String isProcessed) {
+    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnMainData(int isProcessed) {
         List<BeftnModel> unprocessedBeftnModels = beftnModelRepository.loadUnprocessedBeftnMainData(isProcessed);
-        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnMainData(unprocessedBeftnModels, "1");
+        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnMainData(unprocessedBeftnModels, 1);
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(processedAndUpdatedBeftnModels);
         return in;
     }
-    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnIncentiveData(String isProcessed) {
+    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnIncentiveData(int isProcessed) {
         List<BeftnModel> unprocessedBeftnModels = beftnModelRepository.loadUnprocessedBeftnIncentiveData(isProcessed);
-        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnIncentiveData(unprocessedBeftnModels, "1");
+        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnIncentiveData(unprocessedBeftnModels, 1);
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(processedAndUpdatedBeftnModels);
         return in;
     }
-    public List<BeftnModel> updateAndReturnMainData(List<BeftnModel> entitiesToUpdate, String processed) {
+    public List<BeftnModel> updateAndReturnMainData(List<BeftnModel> entitiesToUpdate, int processed) {
         // Retrieve the entities you want to update
         List<BeftnModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -59,6 +59,10 @@ public class BeftnModelService {
                     existingEntity.setIsProcessedMain(processed);
                     existingEntity.setDownloadDateTime(LocalDateTime.now());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
+                    if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
+                        existingEntity.setIsDownloaded(1);
+                        existingEntity.setIsProcessed(1);
+                    }
                     // Update other properties as needed
                     break;
                 }
@@ -68,7 +72,7 @@ public class BeftnModelService {
         List<BeftnModel> updatedEntities = beftnModelRepository.saveAll(existingEntities);
         return updatedEntities;
     }
-    public List<BeftnModel> updateAndReturnIncentiveData(List<BeftnModel> entitiesToUpdate, String processed) {
+    public List<BeftnModel> updateAndReturnIncentiveData(List<BeftnModel> entitiesToUpdate, int processed) {
         // Retrieve the entities you want to update
         List<BeftnModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -78,6 +82,10 @@ public class BeftnModelService {
                     existingEntity.setIsProcessedIncentive(processed);
                     existingEntity.setDownloadDateTime(LocalDateTime.now());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
+                    if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
+                        existingEntity.setIsDownloaded(1);
+                        existingEntity.setIsProcessed(1);
+                    }
                     // Update other properties as needed
                     break;
                 }
@@ -88,10 +96,10 @@ public class BeftnModelService {
         return updatedEntities;
     }
     public int countRemainingBeftnDataMain(){
-        return beftnModelRepository.countByIsProcessedMain("0");
+        return beftnModelRepository.countByIsProcessedMain(0);
     }
     public int countRemainingBeftnDataIncentive(){
-        return beftnModelRepository.countByIsProcessedIncentive("0");
+        return beftnModelRepository.countByIsProcessedIncentive(0);
     }
 
 }

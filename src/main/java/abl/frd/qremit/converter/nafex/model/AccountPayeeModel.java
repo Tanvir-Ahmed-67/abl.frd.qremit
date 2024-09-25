@@ -40,14 +40,18 @@ public class AccountPayeeModel {
     private Double incentive;
     @Column(name = "account_payee_code")
     private String accountPayeeCode;
-    @Column(name = "is_processed")
-    private String isProcessed;
-    @Column(name = "is_downloaded")
-    private String isDownloaded;
+    @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isProcessed = 0;
+    @Column(name = "is_downloaded", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isDownloaded = 0;
     @Column(name = "download_date_time")
     private LocalDateTime downloadDateTime;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;
+    @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isVoucherGenerated = 0;
+    @Column(name = "report_date", columnDefinition = "DATETIME")
+    private LocalDateTime reportDate;
 
     @Column(name = "download_user_id")
     private int downloadUserId;
@@ -210,21 +214,23 @@ public class AccountPayeeModel {
         this.accountPayeeCode = accountPayeeCode;
     }
 
-    public String getIsProcessed() {
-        return isProcessed;
+
+    public int getIsProcessed() {
+        return this.isProcessed;
     }
 
-    public void setIsProcessed(String extraA) {
-        this.isProcessed = extraA;
+    public void setIsProcessed(int isProcessed) {
+        this.isProcessed = isProcessed;
     }
 
-    public String getIsDownloaded() {
-        return isDownloaded;
+    public int getIsDownloaded() {
+        return this.isDownloaded;
     }
 
-    public void setIsDownloaded(String extraB) {
-        this.isDownloaded = extraB;
+    public void setIsDownloaded(int isDownloaded) {
+        this.isDownloaded = isDownloaded;
     }
+    
 
     public LocalDateTime getDownloadDateTime() {
         return downloadDateTime;
@@ -242,7 +248,6 @@ public class AccountPayeeModel {
         this.downloadUserId = downloadUserId;
     }
 
-
     public LocalDateTime getUploadDateTime() {
         return this.uploadDateTime;
     }
@@ -250,9 +255,24 @@ public class AccountPayeeModel {
     public void setUploadDateTime(LocalDateTime uploadDateTime) {
         this.uploadDateTime = uploadDateTime;
     }
-    
 
-    public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
+    public int getIsVoucherGenerated() {
+        return this.isVoucherGenerated;
+    }
+
+    public void setIsVoucherGenerated(int isVoucherGenerated) {
+        this.isVoucherGenerated = isVoucherGenerated;
+    }
+
+    public LocalDateTime getReportDate() {
+        return this.reportDate;
+    }
+
+    public void setReportDate(LocalDateTime reportDate) {
+        this.reportDate = reportDate;
+    }    
+
+    public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;
