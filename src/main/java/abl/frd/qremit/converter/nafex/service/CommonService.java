@@ -84,11 +84,12 @@ public class CommonService {
     }
     public List<Integer> CountAllFourTypesOfData(){
         List<Integer> count = new ArrayList<Integer>(5);
-        count.add(onlineModelRepository.countByIsProcessed("0"));
-        count.add(cocModelRepository.countByIsProcessed("0"));
-        count.add(accountPayeeModelRepository.countByIsProcessed("0"));
-        count.add(beftnModelRepository.countByIsProcessedMain("0"));
-        count.add(beftnModelRepository.countByIsProcessedIncentive("0"));
+        count.add(onlineModelRepository.countByIsProcessed(0));
+        //count.add(cocModelRepository.countByIsProcessed(0));
+        count.add(cocModelRepository.countByIsDownloaded(0));
+        count.add(accountPayeeModelRepository.countByIsProcessed(0));
+        count.add(beftnModelRepository.countByIsProcessedMain(0));
+        count.add(beftnModelRepository.countByIsProcessedIncentive(0));
         return count;
     }
 
@@ -200,6 +201,7 @@ public class CommonService {
 
     public static <T> OnlineModel generateOnlineModel(T model,String flag, LocalDateTime uploadDateTime) {
         OnlineModel onlineModel = new OnlineModel();
+        int flagInt = Integer.parseInt(flag);
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -211,8 +213,8 @@ public class CommonService {
             onlineModel.setBankName((String) getPropertyValue(model, "getBankName"));
             onlineModel.setBranchCode((String) getPropertyValue(model, "getBranchCode"));
             onlineModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
-            onlineModel.setIsProcessed(flag);
-            onlineModel.setIsDownloaded(flag);
+            onlineModel.setIsProcessed(flagInt);
+            onlineModel.setIsDownloaded(flagInt);
             onlineModel.setDownloadDateTime(LocalDateTime.now());
             onlineModel.setDownloadUserId(9999);
             onlineModel.setUploadDateTime(uploadDateTime);
@@ -275,8 +277,6 @@ public class CommonService {
             cocModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             cocModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             cocModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            cocModel.setIsProcessed("0");
-            cocModel.setIsDownloaded("0");
             cocModel.setDownloadDateTime(LocalDateTime.now());
             cocModel.setDownloadUserId(9999);
             cocModel.setUploadDateTime(uploadDateTime);
@@ -335,8 +335,6 @@ public class CommonService {
             accountPayeeModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             accountPayeeModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             accountPayeeModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            accountPayeeModel.setIsProcessed("0");
-            accountPayeeModel.setIsDownloaded("0");
             accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
             accountPayeeModel.setDownloadUserId(9999);
             accountPayeeModel.setUploadDateTime(uploadDateTime);
@@ -389,9 +387,6 @@ public class CommonService {
             beftnModel.setBeneficiaryAccountType("SA");
             beftnModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             beftnModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            beftnModel.setIsProcessedMain("0");
-            beftnModel.setIsProcessedIncentive("0");
-            beftnModel.setIsIncDownloaded("0");
             beftnModel.setDownloadUserId(9999);
             beftnModel.setDownloadDateTime(LocalDateTime.now());
             beftnModel.setIncentive(calculatePercentage((Double) getPropertyValue(model, "getAmount")));
@@ -724,16 +719,22 @@ public class CommonService {
         return errorMessage;
     }
     //check validation error message ends
-
     public static String getCurrentDate(){
+        return getCurrentDate("ddMMyyyy");
+    }
+    public static String getCurrentDate(String format){
         LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         String formattedDate = currentDate.format(formatter);
         return formattedDate;
     }
 
     public static String convertDateToString(LocalDateTime date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return convertDateToString(date, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static String convertDateToString(LocalDateTime date, String format){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         String formattedDateTime = date.format(formatter);
         return formattedDateTime;
     }

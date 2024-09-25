@@ -3,16 +3,11 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "report",
-    indexes = { @Index(name = "idx_report_date", columnList = "report_date"), 
-        @Index(name = "idx_exchange_code", columnList = "exchange_code"), @Index(name = "idx_zone_code", columnList = "zone_code"),
-        @Index(name = "idx_circle_code", columnList = "circle_code"), @Index(name = "idx_type", columnList = "type"), 
-        @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id"), @Index(name = "idx_upload_user_id", columnList = "upload_user_id"),
-        @Index(name = "idx_branch_code", columnList = "branch_code"),
-    }
+@Table(name = "temporary_report",
+    indexes = { @Index(name = "idx_report_date", columnList = "report_date"), }
 )
 
-public class ReportModel {
+public class TemporaryReportModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -58,7 +53,7 @@ public class ReportModel {
     @Column(name = "district_code", length = 10)
     private String districtCode;
     @Column(name = "report_date", columnDefinition = "DATE")
-    private LocalDateTime reportDate; 
+    private LocalDateTime reportDate;
 
     public int getId() {
         return this.id;
@@ -140,7 +135,6 @@ public class ReportModel {
         this.beneficiaryAccount = beneficiaryAccount;
     }
 
-
     public Double getIncentive() {
         return this.incentive;
     }
@@ -157,6 +151,13 @@ public class ReportModel {
         this.remitterName = remitterName;
     }
 
+    public LocalDateTime getDownloadDateTime() {
+        return this.downloadDateTime;
+    }
+
+    public void setDownloadDateTime(LocalDateTime downloadDateTime) {
+        this.downloadDateTime = downloadDateTime;
+    }
 
     public LocalDateTime getUploadDateTime() {
         return this.uploadDateTime;
@@ -164,22 +165,6 @@ public class ReportModel {
 
     public void setUploadDateTime(LocalDateTime uploadDateTime) {
         this.uploadDateTime = uploadDateTime;
-    }
-
-    public String getDistrictCode() {
-        return this.districtCode;
-    }
-
-    public void setDistrictCode(String districtCode) {
-        this.districtCode = districtCode;
-    }
-
-    public LocalDateTime getDownloadDateTime() {
-        return this.downloadDateTime;
-    }
-
-    public void setDownloadDateTime(LocalDateTime downloadDateTime) {
-        this.downloadDateTime = downloadDateTime;
     }
 
     public int getUploadUserId() {
@@ -230,6 +215,14 @@ public class ReportModel {
         this.countryCode = countryCode;
     }
 
+    public String getDistrictCode() {
+        return this.districtCode;
+    }
+
+    public void setDistrictCode(String districtCode) {
+        this.districtCode = districtCode;
+    }
+
     public LocalDateTime getReportDate() {
         return this.reportDate;
     }
@@ -238,11 +231,11 @@ public class ReportModel {
         this.reportDate = reportDate;
     }
 
-    public ReportModel() {
+    public TemporaryReportModel() {
     }
 
 
-    public ReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDateTime reportDate) {
+    public TemporaryReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDateTime reportDate) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.bankCode = bankCode;
@@ -266,6 +259,35 @@ public class ReportModel {
         this.reportDate = reportDate;
     }
     
-    
+
+    @Override
+    public String toString() {
+        return "TemporaryReportModel{" +
+            " id='" + getId() + "'" +
+            ", exchangeCode='" + getExchangeCode() + "'" +
+            ", transactionNo='" + getTransactionNo() + "'" +
+            ", bankCode='" + getBankCode() + "'" +
+            ", bankName='" + getBankName() + "'" +
+            ", branchName='" + getBranchName() + "'" +
+            ", branchCode='" + getBranchCode() + "'" +
+            ", amount='" + getAmount() + "'" +
+            ", beneficiaryName='" + getBeneficiaryName() + "'" +
+            ", beneficiaryAccount='" + getBeneficiaryAccount() + "'" +
+            ", incentive='" + getIncentive() + "'" +
+            ", remitterName='" + getRemitterName() + "'" +
+            ", downloadDateTime='" + getDownloadDateTime() + "'" +
+            ", uploadDateTime='" + getUploadDateTime() + "'" +
+            ", uploadUserId='" + getUploadUserId() + "'" +
+            ", fileInfoModelId='" + getFileInfoModelId() + "'" +
+            ", type='" + getType() + "'" +
+            ", zoneCode='" + getZoneCode() + "'" +
+            ", circleCode='" + getCircleCode() + "'" +
+            ", countryCode='" + getCountryCode() + "'" +
+            ", districtCode='" + getDistrictCode() + "'" +
+            ", reportDate='" + getReportDate() + "'" +
+            "}";
+    }
+
+
 
 }

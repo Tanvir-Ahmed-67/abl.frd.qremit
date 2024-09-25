@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.nafex.controller;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,15 +10,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 import javax.servlet.http.HttpServletRequest;
-
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
+import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
+import abl.frd.qremit.converter.nafex.model.FileInfoModel;
+import abl.frd.qremit.converter.nafex.model.FileInfoModelDTO;
 
 @Controller
 @RequestMapping("/utils")
@@ -29,6 +32,8 @@ public class UtilsController {
     ExchangeHouseModelService exchangeHouseModelService;
     @Autowired
     CommonService commonService;
+    @Autowired
+    FileInfoModelService fileInfoModelService;
     private String fileUploadPage = "/fragments/file_upload_form";
     public UtilsController(MyUserDetailsService myUserDetailsService){
         this.myUserDetailsService = myUserDetailsService;
@@ -96,27 +101,39 @@ public class UtilsController {
     
     @GetMapping("/uploadApi")
     public String uploadApiUi(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsApiExchangeHouse(1);
-        model.addAttribute("exchangeHouseModelList", exchangeHouseModelList);
+        //model.addAttribute("exchangeHouseModelList", exchangeHouseModelList);
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        model.addAttribute("currentDate", currentDate);
         return "/pages/admin/adminApiUpload";
     }
 
-    @PostMapping("/uploadApiData")
-    //@ResponseBody
-    public String uploadApiData(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam Map<String, String> formData, @RequestParam("file") MultipartFile file, Model model, HttpServletRequest request){
-        String exchangeCode = formData.get("exchangeCode");
-        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
-        model.addAttribute("fileType", formData.get("fileType"));
-        model.addAttribute("exchangeCode", exchangeCode);
-        model.addAttribute("file", file);
-        System.out.println(exchangeHouseModel);
-        System.out.println(formData);
-        String redirectUrl = "";
-        if(exchangeHouseModel != null && exchangeCode.equals(exchangeHouseModel.getExchangeCode())){
-            redirectUrl = "/" + exchangeHouseModel.getBaseTableName() + "Upload";  //generate dynamic URL from database
+    @GetMapping("/getSettlement")
+    @ResponseBody
+    public Map<String, Object> getSettlement(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @RequestParam(defaultValue = "") String currentDate){
+        Map<String, Object> resp = new HashMap<>();
+        if(currentDate == null || currentDate.trim().isEmpty())   currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        else currentDate = currentDate.trim();
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsApiExchangeHouse(1);
+        List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        int i = 1;
+        String action = "";
+        for(Map<String, Object> settlement: settlementList){
+            Map<String, Object> dataMap = new HashMap<>();
+            int count = (int) settlement.get("count");
+            if(count == 1){
+                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-success btn-sm", "","Processed");
+            }else action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm", "","Not Processed");
+            dataMap.put("sl", i++);
+            dataMap.put("currentDate", currentDate);
+            dataMap.put("exchangeName", settlement.get("exchangeName"));
+            dataMap.put("action", action);
+            dataList.add(dataMap);
         }
-        return "forward:" + redirectUrl;
-        
+        resp = CommonService.getResp(0, "", dataList);
+        return resp;
     }
+
+    
 }

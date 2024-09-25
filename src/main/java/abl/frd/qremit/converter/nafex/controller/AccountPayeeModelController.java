@@ -30,7 +30,7 @@ public class AccountPayeeModelController {
     }
     @GetMapping("/downloadaccountpayee")
     public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(accountPayeeModelService.loadAndUpdateUnprocessedAccountPayeeData("0"));
+        InputStreamResource file = new InputStreamResource(accountPayeeModelService.loadAndUpdateUnprocessedAccountPayeeData(0));
         int countRemainingAccountPayeeData = accountPayeeModelService.countRemainingAccountPayeeData();
         String fileName = "Account_Payee";  // Have to attch date with file name here.
         return ResponseEntity.ok()

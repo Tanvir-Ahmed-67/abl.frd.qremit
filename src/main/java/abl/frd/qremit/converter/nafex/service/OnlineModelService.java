@@ -27,26 +27,26 @@ public class OnlineModelService {
         ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModes);
         return in;
     }
-    public ByteArrayInputStream loadAndUpdateUnprocessedOnlineData(String isProcessed) {
+    public ByteArrayInputStream loadAndUpdateUnprocessedOnlineData(int isProcessed) {
         List<OnlineModel> unprocessedOnlineModels = onlineModelRepository.loadUnprocessedOnlineData(isProcessed);
-        List<OnlineModel> processedAndUpdatedOnlineModels = updateAndReturn(unprocessedOnlineModels, "1");
+        List<OnlineModel> processedAndUpdatedOnlineModels = updateAndReturn(unprocessedOnlineModels, 1);
         ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(processedAndUpdatedOnlineModels);
         return in;
     }
 
-    public ByteArrayInputStream loadProcessedOnlineData(String isProcessed) {
+    public ByteArrayInputStream loadProcessedOnlineData(int isProcessed) {
         List<OnlineModel> onlineModels = onlineModelRepository.loadProcessedOnlineData(isProcessed);
         ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModels);
         return in;
     }
 
-    public int countProcessedOnlineData(String isProcessed){
+    public int countProcessedOnlineData(int isProcessed){
         return onlineModelRepository.countByIsProcessed(isProcessed);
     }
-    public int countUnProcessedOnlineData(String isProcessed){
+    public int countUnProcessedOnlineData(int isProcessed){
         return onlineModelRepository.countByIsProcessed(isProcessed);
     }
-    public List<OnlineModel> updateAndReturn(List<OnlineModel> entitiesToUpdate, String processed) {
+    public List<OnlineModel> updateAndReturn(List<OnlineModel> entitiesToUpdate, int processed) {
         // Retrieve the entities you want to update
         List<OnlineModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -67,6 +67,6 @@ public class OnlineModelService {
         return updatedEntities;
     }
     public int countRemainingOnlineData(){
-        return onlineModelRepository.countByIsProcessed("0");
+        return onlineModelRepository.countByIsProcessed(0);
     }
 }

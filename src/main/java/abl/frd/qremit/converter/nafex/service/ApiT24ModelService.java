@@ -72,8 +72,8 @@ public class ApiT24ModelService {
                 fileInfoModel.setOnlineModelList(onlineModelList);
 
                 for (OnlineModel onlineModel:onlineModelList){
-                    onlineModel.setIsProcessed("1");
-                    onlineModel.setIsDownloaded("1");
+                    onlineModel.setIsProcessed(1);
+                    onlineModel.setIsDownloaded(1);
                     onlineModel.setFileInfoModel(fileInfoModel);
                     onlineModel.setUserModel(user);
                 }

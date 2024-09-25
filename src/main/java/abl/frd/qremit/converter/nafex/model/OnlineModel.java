@@ -30,16 +30,20 @@ public class OnlineModel {
     private String branchName;
     @Column(name = "branch_code")
     private String branchCode;
-    @Column(name = "is_processed")
-    private String isProcessed;
-    @Column(name = "is_downloaded")
-    private String isDownloaded;
+    @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isProcessed = 0;
+    @Column(name = "is_downloaded", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isDownloaded = 0;
     @Column(name = "download_date_time")
     private LocalDateTime downloadDateTime;
     @Column(name = "download_user_id")
     private int downloadUserId;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;
+    @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isVoucherGenerated = 0;
+    @Column(name = "report_date", columnDefinition = "DATETIME")
+    private LocalDateTime reportDate;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
@@ -127,20 +131,20 @@ public class OnlineModel {
         this.remitterName = remitterName;
     }
 
-    public String getIsProcessed() {
-        return isProcessed;
+    public int getIsProcessed() {
+        return this.isProcessed;
     }
 
-    public void setIsProcessed(String extraA) {
-        this.isProcessed = extraA;
+    public void setIsProcessed(int isProcessed) {
+        this.isProcessed = isProcessed;
     }
 
-    public String getIsDownloaded() {
-        return isDownloaded;
+    public int getIsDownloaded() {
+        return this.isDownloaded;
     }
 
-    public void setIsDownloaded(String extraB) {
-        this.isDownloaded = extraB;
+    public void setIsDownloaded(int isDownloaded) {
+        this.isDownloaded = isDownloaded;
     }
 
     public LocalDateTime getDownloadDateTime() {
@@ -198,8 +202,24 @@ public class OnlineModel {
     public void setUploadDateTime(LocalDateTime uploadDateTime) {
         this.uploadDateTime = uploadDateTime;
     }
+
+    public int getIsVoucherGenerated() {
+        return this.isVoucherGenerated;
+    }
+
+    public void setIsVoucherGenerated(int isVoucherGenerated) {
+        this.isVoucherGenerated = isVoucherGenerated;
+    }
+
+    public LocalDateTime getReportDate() {
+        return this.reportDate;
+    }
+
+    public void setReportDate(LocalDateTime reportDate) {
+        this.reportDate = reportDate;
+    }
     
-    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
+    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.exchangeCode = exchangeCode;

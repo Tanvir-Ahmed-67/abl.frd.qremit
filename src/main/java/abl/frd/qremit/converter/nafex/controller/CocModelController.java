@@ -31,7 +31,7 @@ public class CocModelController {
     }
     @GetMapping("/downloadcoc")
     public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(cocModelService.loadAndUpdateUnprocessedCocData("0"));
+        InputStreamResource file = new InputStreamResource(cocModelService.loadAndUpdateUnprocessedCocData(0,0));
         int countRemainingCocData = cocModelService.countRemainingCocData();
         String fileName = "Coc";  // Have to attch date with file name here.
         return ResponseEntity.ok()
