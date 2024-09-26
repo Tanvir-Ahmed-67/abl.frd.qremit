@@ -74,4 +74,8 @@ public class OnlineModelService {
     public List<OnlineModel> getTemopraryReportData(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
         return onlineModelRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, starDateTime, enDateTime);
     }
+
+    public List<OnlineModel> getProcessedDataByFileId(int fileInfoModelId,int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return onlineModelRepository.getProcessedDataByUploadDateAndFileId(fileInfoModelId,isProcessed,isVoucherGenerated,starDateTime,enDateTime);
+    }
 }

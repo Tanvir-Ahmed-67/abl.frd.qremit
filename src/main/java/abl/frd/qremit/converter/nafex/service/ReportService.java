@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,10 @@ public class ReportService {
     AccountPayeeModelRepository accountPayeeModelRepository;
     @Autowired
     ExchangeHouseModelService exchangeHouseModelService;
+    @Autowired
+    FileInfoModelService fileInfoModelService;
+    @Autowired
+    OnlineModelService onlineModelService;
 
     public Map<String, Object> getFileDetails(String tableName, String fileInfoId) {
         return reportRepository.getFileDetails(tableName, fileInfoId);
@@ -311,5 +316,36 @@ public class ReportService {
         }
         return branchCode;
     }
+
+    public Map<String, Object> processReport(String currentDate){
+        Map<String, Object> resp = new HashMap<>();
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsApiExchangeHouse(1);
+        List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        System.out.println(settlementList);
+        int totalCount = 0;
+        //check all settlement file uploaded
+        for(Map<String, Object> settlement: settlementList){
+            int count = (int) settlement.get("count");
+            if(count == 1)  totalCount++;
+        }
+        if(totalCount !=5)  return CommonService.getResp(1, "Please upload all settlement file", null);
+
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
+        //parse data
+        for(Map<String, Object> settlement: settlementList){
+            FileInfoModel fileInfoModel = (FileInfoModel) settlement.get("fileInfoModel");
+            int onlineCount = Integer.parseInt(fileInfoModel.getOnlineCount());
+            int beftnCount = Integer.parseInt(fileInfoModel.getBeftnCount());
+            int accPayeeCount = Integer.parseInt(fileInfoModel.getAccountPayeeCount());
+            if(onlineCount >= 1){
+                List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
+                System.out.println(onlineModelList);
+            }
+        }
+
+        return resp;
+    }
+
 
 }

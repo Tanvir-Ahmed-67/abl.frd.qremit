@@ -371,4 +371,13 @@ public class ReportController {
         }
     }
 
+    @GetMapping("/processReport")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> generateReport(@AuthenticationPrincipal MyUserDetails userDetails){
+        Map<String, Object> resp = new HashMap<>();
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        resp = reportService.processReport(currentDate);
+        return ResponseEntity.ok(resp);
+    }
+
 }
