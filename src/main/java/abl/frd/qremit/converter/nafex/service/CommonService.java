@@ -2,15 +2,12 @@ package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
-
 import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
@@ -22,12 +19,14 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.DataFormatException;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -58,8 +57,10 @@ public class CommonService {
     UserModelRepository userModelRepository;
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
+
     public String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
     public String uploadApiSuccessPage = "/pages/user/userApiUploadSuccessPage";
+
     private final EntityManager entityManager;
     private final DataSource dataSource;
 
@@ -67,6 +68,7 @@ public class CommonService {
         this.entityManager = entityManager;
         this.dataSource = dataSource;
     }
+    
     public static boolean hasCSVFormat(MultipartFile file) {
         String contentType = file.getContentType();
         return contentType != null &&
@@ -97,7 +99,7 @@ public class CommonService {
         Map<String, Object> resp = new HashMap<>();
         List<Map<String, Object>> rows = new ArrayList<>();
         try{
-            Connection con = dataSource.getConnection();            
+            Connection con = dataSource.getConnection();         
             PreparedStatement pstmt = con.prepareStatement(sql);
             int j = 1;
             for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -203,6 +205,7 @@ public class CommonService {
     public static <T> OnlineModel generateOnlineModel(T model,String flag, LocalDateTime uploadDateTime) {
         OnlineModel onlineModel = new OnlineModel();
         int flagInt = Integer.parseInt(flag);
+          
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -216,7 +219,9 @@ public class CommonService {
             onlineModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
             onlineModel.setIsProcessed(flagInt);
             onlineModel.setIsDownloaded(flagInt);
-            onlineModel.setDownloadDateTime(LocalDateTime.now());
+            if(flagInt == 1){
+                onlineModel.setDownloadDateTime(LocalDateTime.now());
+            }
             onlineModel.setDownloadUserId(9999);
             onlineModel.setUploadDateTime(uploadDateTime);
         } catch (Exception e) {
@@ -278,7 +283,7 @@ public class CommonService {
             cocModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             cocModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             cocModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            cocModel.setDownloadDateTime(LocalDateTime.now());
+            //cocModel.setDownloadDateTime(LocalDateTime.now());
             cocModel.setDownloadUserId(9999);
             cocModel.setUploadDateTime(uploadDateTime);
             cocModel.setIncentive(00.00);
@@ -336,7 +341,7 @@ public class CommonService {
             accountPayeeModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             accountPayeeModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             accountPayeeModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
+            //accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
             accountPayeeModel.setDownloadUserId(9999);
             accountPayeeModel.setUploadDateTime(uploadDateTime);
             accountPayeeModel.setIncentive(00.00);
@@ -389,7 +394,7 @@ public class CommonService {
             beftnModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             beftnModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             beftnModel.setDownloadUserId(9999);
-            beftnModel.setDownloadDateTime(LocalDateTime.now());
+            //beftnModel.setDownloadDateTime(LocalDateTime.now());
             beftnModel.setIncentive(calculatePercentage((Double) getPropertyValue(model, "getAmount")));
             beftnModel.setOrgAccountNo("160954");
             beftnModel.setOrgAccountType("CA");
@@ -682,6 +687,30 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static String fixABLRoutingNo(String routingNo){
+        if(!routingNo.isEmpty() && routingNo.length() == 8){
+            routingNo = "0" + routingNo;
+        }
+        if(routingNo.length() != 9)  return "";
+        return routingNo;
+    }
+
+    
+/* 
+    public String getABLBranchFromRouting(String routingNo){
+        String branchCode = "";
+        routingNo = CommonService.fixABLRoutingNo(routingNo);
+        Map<String, Object> routingDetails = reportService.getRoutingDetails(routingNo);
+        System.out.println(routingDetails);
+        if((Integer) routingDetails.get("err") == 0){
+            for(Map<String,Object> rdata: (List<Map<String, Object>>) routingDetails.get("data")){
+                branchCode = rdata.get("abl_branch_code").toString();
+            }
+        }
+        return branchCode;
+    }
+        */
+
     public static String checkBEFTNRouting(String routingNo){
         String errorMessage = "";
         if(routingNo.length() != 9 || checkAgraniRoutingNo(routingNo)){
@@ -742,8 +771,19 @@ public class CommonService {
 
     public static LocalDateTime convertStringToDate(String date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime localDateTime = LocalDateTime.parse(date, formatter);
-        return localDateTime;
+        DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // Handles milliseconds too
+        try{
+            return LocalDateTime.parse(date, formatter);
+        }catch(DateTimeParseException e){
+            try{
+                return LocalDateTime.parse(date, isoFormatter);
+            }catch(DateTimeParseException e2){
+                e2.printStackTrace();
+                return null;
+            }
+            
+        }
+        
     }
 
     public static Map<String, LocalDateTime> getStartAndEndDateTime(String date){
@@ -765,6 +805,4 @@ public class CommonService {
         resp.put("4", "COC");
         return resp;
     }
-    
-
 }

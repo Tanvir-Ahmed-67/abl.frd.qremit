@@ -22,7 +22,7 @@ public interface OnlineModelRepository extends JpaRepository<OnlineModel, Intege
     @Query("SELECT n FROM OnlineModel n WHERE n.isProcessed= :isProcessed")
     List<OnlineModel> loadProcessedOnlineData(@Param("isProcessed") int isProcessed);
     Integer countByIsProcessed(int isProcessed);
-    @Query("SELECT n FROM OnlineModel n WHERE n.isProcessed= :isProcessed and n.isVoucherGenerated= :isVoucherGenerated and n.uploadDateTime BETWEEN :startDate AND :endDate")
+    @Query("SELECT n FROM OnlineModel n WHERE n.isProcessed= :isProcessed and n.isVoucherGenerated= :isVoucherGenerated and n.downloadDateTime BETWEEN :startDate AND :endDate")
     List<OnlineModel> getProcessedDataByUploadDate(@Param("isProcessed") int isProcessed, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 }

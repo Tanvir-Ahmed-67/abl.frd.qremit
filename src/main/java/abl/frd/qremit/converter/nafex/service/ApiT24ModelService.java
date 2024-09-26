@@ -56,7 +56,7 @@ public class ApiT24ModelService {
                 }
 
                 // Online DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(apiT24Models,"getCheckT24", currentDateTime);
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(apiT24Models,"getCheckT24", "1", currentDateTime);
 
                 // FILE INFO TABLE GENERATION HERE......
                 fileInfoModel.setAccountPayeeCount("0");
@@ -72,8 +72,6 @@ public class ApiT24ModelService {
                 fileInfoModel.setOnlineModelList(onlineModelList);
 
                 for (OnlineModel onlineModel:onlineModelList){
-                    onlineModel.setIsProcessed(1);
-                    onlineModel.setIsDownloaded(1);
                     onlineModel.setFileInfoModel(fileInfoModel);
                     onlineModel.setUserModel(user);
                 }

@@ -371,13 +371,4 @@ public class ReportController {
         }
     }
 
-    @GetMapping("/getRoutingNo")
-    @ResponseBody
-    public Map<String, Object> getRoutingNo(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam String id){
-        Map<String, Object> routing = reportRepository.getRoutingNo(id);
-        //System.out.println(routing);
-        return routing;
-    }
-
-
 }

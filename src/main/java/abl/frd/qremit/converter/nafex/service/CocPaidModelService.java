@@ -13,14 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CocPaidModelService {
@@ -32,6 +27,10 @@ public class CocPaidModelService {
     UserModelRepository userModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
+    //@Autowired
+    //CommonService commonService;
+    @Autowired
+    ReportService reportService;
     LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file, int userId, String exchangeCode){
         try{
@@ -53,9 +52,16 @@ public class CocPaidModelService {
             else {
                 return null;
             }
+            int totalCount = cocPaidModelList.size();
             fileInfoModel.setCocPaidModelList(cocPaidModelList);
             fileInfoModel.setFileName(file.getOriginalFilename());
             fileInfoModel.setUploadDateTime(currentDateTime);
+            fileInfoModel.setIsSettlement(1);
+            fileInfoModel.setCocCount(String.valueOf(totalCount));
+            fileInfoModel.setAccountPayeeCount("0");
+            fileInfoModel.setOnlineCount("0");
+            fileInfoModel.setBeftnCount("0");
+            fileInfoModel.setTotalCount(String.valueOf(totalCount));
             fileInfoModelRepository.save(fileInfoModel);
             return fileInfoModel;
         }
@@ -74,17 +80,21 @@ public class CocPaidModelService {
                 if (duplicateData.isPresent()) {  // Checking Duplicate Transaction No in this block
                     continue;
                 }
+                String routingNo = CommonService.fixABLRoutingNo(csvRecord.get(8));
+                String branchCode = reportService.getABLBranchFromRouting(routingNo);
+                
                 CocPaidModel cocPaidModel = new CocPaidModel(
                         csvRecord.get(0), //exCode
                         csvRecord.get(1), //Tranno
                         Double.parseDouble(csvRecord.get(4)), //Amount
-                        csvRecord.get(3), //Entered Date
-                        csvRecord.get(11), //Paid Date
+                        CommonService.convertStringToDate(csvRecord.get(3)), //Entered Date
+                        CommonService.convertStringToDate(csvRecord.get(11)), //Paid Date
                         csvRecord.get(5), //remitter Name
                         csvRecord.get(6), // beneficiary Name
                         csvRecord.get(7), //beneficiaryAccount
+                        routingNo, //routingNo
                         csvRecord.get(10), //beneficiary Mobile
-                        "",// branch code have to put here
+                        branchCode,// branch code have to put here
                         csvRecord.get(12), //tr mode
                         currentDateTime);  //uploadDateTime
                 cocPaidModelList.add(cocPaidModel);

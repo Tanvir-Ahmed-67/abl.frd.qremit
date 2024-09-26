@@ -5,8 +5,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import abl.frd.qremit.converter.nafex.service.CommonService;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class ReportRepository {
@@ -22,7 +21,7 @@ public class ReportRepository {
         return commonService.getData(queryStr,params);
     }
 
-    public Map<String,Object> getRoutingNo(String routingNo){
+    public Map<String,Object> getRoutingDetails(String routingNo){
         Map<String, Object> params = new HashMap<>();
         String queryStr = String.format("SELECT * FROM routing_no where routing_no = ?", routingNo);
         params.put("1", routingNo);
