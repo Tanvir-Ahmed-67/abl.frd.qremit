@@ -19,8 +19,6 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import abl.frd.qremit.converter.nafex.repository.ErrorDataModelRepository;
-import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
 import org.springframework.util.ResourceUtils;
 
 @Service
@@ -297,6 +295,21 @@ public class ReportService {
             mergedList.add(convertAccountPayeeModelToDTO(accountPayee));
         }
         return mergedList;
+    }
+
+    public Map<String, Object> getRoutingDetails(String routingNo){
+        return reportRepository.getRoutingDetails(routingNo);
+    }
+
+    public String getABLBranchFromRouting(String routingNo){
+        String branchCode = "";
+        Map<String, Object> routingDetails = getRoutingDetails(routingNo);
+        if((Integer) routingDetails.get("err") == 0){
+            for(Map<String,Object> rdata: (List<Map<String, Object>>) routingDetails.get("data")){
+                branchCode = rdata.get("abl_branch_code").toString();
+            }
+        }
+        return branchCode;
     }
 
 }

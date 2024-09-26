@@ -10,27 +10,29 @@ public class CocPaidModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int  id;
-    @Column(name = "exchange_code")
+    @Column(name = "exchange_code", length = 10)
     private String exchangeCode;
-    @Column(name = "transaction_no", unique = true, nullable = false)
+    @Column(name = "transaction_no", unique = true, nullable = false, length=64)
     private String transactionNo;
-    @Column(name = "amount", nullable = false)
+    @Column(name = "amount", length = 20, nullable = false)
     private Double amount;
-    @Column(name = "entered_date")
-    private String enteredDate;
-    @Column(name = "paid_date")
-    private String paidDate;
-    @Column(name = "remitter_name")
+    @Column(name = "entered_date", columnDefinition = "DATETIME")
+    private LocalDateTime enteredDate;
+    @Column(name = "paid_date", columnDefinition = "DATETIME")
+    private LocalDateTime paidDate;
+    @Column(name = "remitter_name", length = 128)
     private String remitterName;
-    @Column(name = "beneficiary_name")
+    @Column(name = "beneficiary_name", length = 128)
     private String beneficiaryName;
-    @Column(name = "beneficiary_account_no", nullable = false)
+    @Column(name = "beneficiary_account_no", length = 20, nullable = false)
     private String beneficiaryAccount;
-    @Column(name = "beneficiary_mobile_no")
+    @Column(name = "beneficiary_mobile_no", length = 15)
     private String beneficiaryMobile;
-    @Column(name = "branch_code")
+    @Column(name = "branch_code", length = 5)
     private String branchCode;
-    @Column(name = "tr_mode")
+    @Column(name = "routing_no", length = 10)
+    private String routingNo;
+    @Column(name = "tr_mode", length = 2)
     private String trMode;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;
@@ -81,20 +83,28 @@ public class CocPaidModel {
         this.amount = amount;
     }
 
-    public String getEnteredDate() {
-        return enteredDate;
+    public LocalDateTime getEnteredDate() {
+        return this.enteredDate;
     }
 
-    public void setEnteredDate(String enteredDate) {
+    public void setEnteredDate(LocalDateTime enteredDate) {
         this.enteredDate = enteredDate;
     }
 
-    public String getPaidDate() {
-        return paidDate;
+    public LocalDateTime getPaidDate() {
+        return this.paidDate;
     }
 
-    public void setPaidDate(String paidDate) {
+    public void setPaidDate(LocalDateTime paidDate) {
         this.paidDate = paidDate;
+    }
+
+    public String getRoutingNo() {
+        return this.routingNo;
+    }
+
+    public void setRoutingNo(String routingNo) {
+        this.routingNo = routingNo;
     }
 
     public String getRemitterName() {
@@ -185,7 +195,7 @@ public class CocPaidModel {
         this.fileInfoModel = fileInfoModel;
     }
 
-    public CocPaidModel(String exchangeCode, String transactionNo, Double amount, String enteredDate, String paidDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String branchCode, String trMode, LocalDateTime uploadDateTime) {
+    public CocPaidModel(String exchangeCode, String transactionNo, Double amount, LocalDateTime enteredDate, LocalDateTime paidDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String routingNo, String beneficiaryMobile, String branchCode, String trMode, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.amount = amount;
@@ -198,6 +208,7 @@ public class CocPaidModel {
         this.branchCode = branchCode;
         this.trMode = trMode;
         this.uploadDateTime = uploadDateTime;
+        this.routingNo = routingNo;
     }
 
     @Override
