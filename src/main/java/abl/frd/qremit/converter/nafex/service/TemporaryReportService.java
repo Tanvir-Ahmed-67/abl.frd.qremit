@@ -3,6 +3,7 @@ package abl.frd.qremit.converter.nafex.service;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,8 @@ public class TemporaryReportService {
     @Autowired
     AccountPayeeModelService accountPayeeModelService;
 
-    public void processTemporaryReport(){
+    public Map<String, Object> processTemporaryReport(){
+        Map<String, Object> resp = new HashMap<>();
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
 
@@ -37,11 +39,12 @@ public class TemporaryReportService {
         setTemporaryModelData(onlineModelList, "1");
         setTemporaryModelData(accountPayeeModelList, "2");
         setTemporaryModelData(beftnModelList, "3");
-
-
+        resp = CommonService.getResp(0, "Data Processed successfully", null);
+        return resp;
     }
 
-    public <T> void setTemporaryModelData(List<T> modelList, String type){
+    public <T> Map<String, Object> setTemporaryModelData(List<T> modelList, String type){
+        Map<String, Object> resp = new HashMap<>();
         if(modelList != null && !modelList.isEmpty()){
             for(T model: modelList){
                 TemporaryReportModel temporaryReportModel = new TemporaryReportModel();
@@ -76,9 +79,14 @@ public class TemporaryReportService {
                     temporaryReportRepository.save(temporaryReportModel);
                 }catch(Exception e){
                     e.printStackTrace();
+                    return CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }
             }
+            resp = CommonService.getResp(0, "Data processed successfully", null);
+        }else{
+            resp = CommonService.getResp(1, "Model can not be null or empty", null);
         }
+        return resp;
     }
 
     @Transactional

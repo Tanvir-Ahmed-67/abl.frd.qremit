@@ -11,6 +11,8 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -305,7 +307,6 @@ public class ReportService {
         Map<String, Object> resp = new HashMap<>();
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsApiExchangeHouse(1);
         List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
-        List<Map<String, Object>> dataList = new ArrayList<>();
         int totalCount = 0;
         //check all settlement file uploaded
         for(Map<String, Object> settlement: settlementList){
@@ -323,32 +324,31 @@ public class ReportService {
             int accPayeeCount = Integer.parseInt(fileInfoModel.getAccountPayeeCount());
             if(onlineCount >= 1){
                 List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                setReportModelData(onlineModelList, "1");
+                resp = setReportModelData(onlineModelList, "1");
             }
             if(accPayeeCount >= 1){
                 List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                setReportModelData(accountPayeeModelList, "2");
+                resp = setReportModelData(accountPayeeModelList, "2");
             }
             if(beftnCount >= 1){
                 List<BeftnModel> beftnModelList = beftnModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                setReportModelData(beftnModelList, "3");
+                resp = setReportModelData(beftnModelList, "3");
             }
             if(("333333").equals(fileInfoModel.getExchangeCode())){
                 List<CocPaidModel> cocPaidModelList = cocPaidModelService.getProcessedDataByFileId(fileInfoModel.getId(), 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                setReportModelData(cocPaidModelList, "4");
+                resp = setReportModelData(cocPaidModelList, "4");
             }
 
             //insert data from temporary table
             List<TemporaryReportModel> temporaryReportModelList = temporaryReportRepository.findAll();
-            setReportModelData(temporaryReportModelList, "");
-            //System.out.println(temporaryReportModelList);
-
+            resp = setReportModelData(temporaryReportModelList, "");
         }
-
+        resp = CommonService.getResp(0, "Data Processed successfully", null);
         return resp;
     }
 
-    public <T> void setReportModelData(List<T> modelList, String type){
+    public <T> Map<String, Object> setReportModelData(List<T> modelList, String type){
+        Map<String, Object> resp = new HashMap<>();
         String types = type;
         if(modelList != null && !modelList.isEmpty()){
             for(T model: modelList){
@@ -395,10 +395,15 @@ public class ReportService {
                     setIsVoucherGenerated(types, id, currentDateTime);
                 }catch(Exception e){
                     e.printStackTrace();
+                    return CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }
             }
             if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
+            resp = CommonService.getResp(0, "Data processed successfully", null);
+        }else{
+            resp = CommonService.getResp(1, "Model can not be null or empty", null);
         }
+        return resp;
     }
 
     public void setIsVoucherGenerated(String type, int id, LocalDateTime reportDate){
