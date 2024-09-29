@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import abl.frd.qremit.converter.nafex.model.AccountPayeeModel;
 import abl.frd.qremit.converter.nafex.model.BeftnModel;
@@ -70,6 +71,7 @@ public class TemporaryReportService {
                     FileInfoModel fileInfoModel= (FileInfoModel) CommonService.getPropertyValue(model, "getFileInfoModel");
                     temporaryReportModel.setFileInfoModelId((int) fileInfoModel.getId());
                     temporaryReportModel.setType(type);
+                    temporaryReportModel.setDataModelId((int) CommonService.getPropertyValue(model, "getId"));
                     //System.out.println(temporaryReportModel);
                     temporaryReportRepository.save(temporaryReportModel);
                 }catch(Exception e){
@@ -78,4 +80,10 @@ public class TemporaryReportService {
             }
         }
     }
+
+    @Transactional
+    public void truncateTemporaryReportModel(){
+        temporaryReportRepository.truncateTemporaryReport();
+    }
+     
 }

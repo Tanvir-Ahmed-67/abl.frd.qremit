@@ -4,7 +4,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "temporary_report",
-    indexes = { @Index(name = "idx_report_date", columnList = "report_date"), },
+    indexes = { 
+        @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id"),
+        @Index(name = "idx_upload_user_id", columnList = "upload_user_id")
+    },
     uniqueConstraints = @UniqueConstraint(name = "idx_transaction_no_exchange_code", columnNames = {"exchange_code", "transaction_no", "amount"})
 )
 
@@ -55,6 +58,8 @@ public class TemporaryReportModel {
     private String districtCode;
     @Column(name = "report_date", columnDefinition = "DATE")
     private LocalDateTime reportDate;
+    @Column(name = "data_model_id")
+    private int dataModelId;
 
     public int getId() {
         return this.id;
@@ -232,11 +237,19 @@ public class TemporaryReportModel {
         this.reportDate = reportDate;
     }
 
+    public int getDataModelId() {
+        return this.dataModelId;
+    }
+
+    public void setDataModelId(int dataModelId) {
+        this.dataModelId = dataModelId;
+    }
+
     public TemporaryReportModel() {
     }
 
 
-    public TemporaryReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDateTime reportDate) {
+    public TemporaryReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDateTime reportDate, int dataModelId) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.bankCode = bankCode;
@@ -258,6 +271,7 @@ public class TemporaryReportModel {
         this.countryCode = countryCode;
         this.districtCode = districtCode;
         this.reportDate = reportDate;
+        this.dataModelId = dataModelId;
     }
     
 

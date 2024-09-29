@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
-import abl.frd.qremit.converter.nafex.repository.ReportRepository;
+import abl.frd.qremit.converter.nafex.repository.CustomQueryRepository;
 import abl.frd.qremit.converter.nafex.service.CommonService;
+import abl.frd.qremit.converter.nafex.service.CustomQueryService;
 import abl.frd.qremit.converter.nafex.service.ErrorDataModelService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
@@ -42,7 +43,7 @@ public class ReportController {
     @Autowired
     LogModelService logModelService;
     @Autowired
-    ReportRepository reportRepository;
+    CustomQueryService customQueryService;
     private static final String PDF_DIRECTORY = "D:/Report/";
     
 
@@ -123,7 +124,7 @@ public class ReportController {
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         
-        Map<String,Object> fileInfo = reportService.getFileDetails(tbl,id);
+        Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
         if((Integer) fileInfo.get("err") == 1)  return ResponseEntity.ok(fileInfo);
 
         List<Map<String, Object>> dataList = new ArrayList<>();

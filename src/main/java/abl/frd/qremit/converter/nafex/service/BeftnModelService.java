@@ -9,6 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 @Service
 public class BeftnModelService {
     @Autowired
@@ -108,6 +110,11 @@ public class BeftnModelService {
 
     public List<BeftnModel> getProcessedDataByFileId(int fileInfoModelId,int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
         return beftnModelRepository.getProcessedDataByUploadDateAndFileId(fileInfoModelId, isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
+    @Transactional
+    public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
+        beftnModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
 
 }

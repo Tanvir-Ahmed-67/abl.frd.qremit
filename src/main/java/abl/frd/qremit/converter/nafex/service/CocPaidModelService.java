@@ -17,6 +17,8 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import javax.transaction.Transactional;
+
 @Service
 public class CocPaidModelService {
     @Autowired
@@ -27,10 +29,8 @@ public class CocPaidModelService {
     UserModelRepository userModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
-    //@Autowired
-    //CommonService commonService;
     @Autowired
-    ReportService reportService;
+    CustomQueryService customQueryService;
     LocalDateTime currentDateTime = LocalDateTime.now();
     public FileInfoModel save(MultipartFile file, int userId, String exchangeCode){
         try{
@@ -81,7 +81,7 @@ public class CocPaidModelService {
                     continue;
                 }
                 String routingNo = CommonService.fixABLRoutingNo(csvRecord.get(8));
-                String branchCode = reportService.getABLBranchFromRouting(routingNo);
+                Map<String, Object> routingMap = customQueryService.getABLBranchFromRouting(routingNo);
                 
                 CocPaidModel cocPaidModel = new CocPaidModel(
                         csvRecord.get(0), //exCode
@@ -94,7 +94,10 @@ public class CocPaidModelService {
                         csvRecord.get(7), //beneficiaryAccount
                         routingNo, //routingNo
                         csvRecord.get(10), //beneficiary Mobile
-                        branchCode,// branch code have to put here
+                        "Agrani Bank",
+                        "11",
+                        routingMap.get("branch_name").toString(),
+                        routingMap.get("abl_branch_code").toString(),// branch code have to put here
                         csvRecord.get(12), //tr mode
                         currentDateTime);  //uploadDateTime
                 cocPaidModelList.add(cocPaidModel);
@@ -103,5 +106,14 @@ public class CocPaidModelService {
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
+    }
+
+    public List<CocPaidModel> getProcessedDataByFileId(int fileInfoModelId, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return cocPaidModelRepository.getProcessedDataByUploadDateAndFileId(fileInfoModelId, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
+    @Transactional
+    public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
+        cocPaidModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
 }
