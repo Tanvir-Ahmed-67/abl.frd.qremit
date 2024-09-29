@@ -10,6 +10,7 @@ import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
 import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
@@ -67,6 +68,11 @@ public class AccountPayeeModelService {
 
     public List<AccountPayeeModel> getProcessedDataByFileId(int fileInfoModelId,int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
         return accountPayeeModelRepository.getProcessedDataByUploadDateAndFileId(fileInfoModelId, isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
+    @Transactional
+    public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
+        accountPayeeModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
 
 

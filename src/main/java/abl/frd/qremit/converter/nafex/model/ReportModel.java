@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "report",
+    uniqueConstraints = @UniqueConstraint(name = "idx_transaction_no_exchange_code", columnNames = {"exchange_code", "transaction_no", "amount"}),
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), 
         @Index(name = "idx_exchange_code", columnList = "exchange_code"), @Index(name = "idx_zone_code", columnList = "zone_code"),
         @Index(name = "idx_circle_code", columnList = "circle_code"), @Index(name = "idx_type", columnList = "type"), 
@@ -266,6 +267,33 @@ public class ReportModel {
         this.reportDate = reportDate;
     }
     
+    @Override
+    public String toString() {
+        return "{" +
+            " id='" + getId() + "'" +
+            ", exchangeCode='" + getExchangeCode() + "'" +
+            ", transactionNo='" + getTransactionNo() + "'" +
+            ", bankCode='" + getBankCode() + "'" +
+            ", bankName='" + getBankName() + "'" +
+            ", branchName='" + getBranchName() + "'" +
+            ", branchCode='" + getBranchCode() + "'" +
+            ", amount='" + getAmount() + "'" +
+            ", beneficiaryName='" + getBeneficiaryName() + "'" +
+            ", beneficiaryAccount='" + getBeneficiaryAccount() + "'" +
+            ", incentive='" + getIncentive() + "'" +
+            ", remitterName='" + getRemitterName() + "'" +
+            ", downloadDateTime='" + getDownloadDateTime() + "'" +
+            ", uploadDateTime='" + getUploadDateTime() + "'" +
+            ", uploadUserId='" + getUploadUserId() + "'" +
+            ", fileInfoModelId='" + getFileInfoModelId() + "'" +
+            ", type='" + getType() + "'" +
+            ", zoneCode='" + getZoneCode() + "'" +
+            ", circleCode='" + getCircleCode() + "'" +
+            ", countryCode='" + getCountryCode() + "'" +
+            ", districtCode='" + getDistrictCode() + "'" +
+            ", reportDate='" + getReportDate() + "'" +
+            "}";
+    }
     
 
 }

@@ -30,8 +30,14 @@ public class CocPaidModel {
     private String beneficiaryMobile;
     @Column(name = "branch_code", length = 5)
     private String branchCode;
+    @Column(name = "branch_name", length = 64)
+    private String branchName;
     @Column(name = "routing_no", length = 10)
     private String routingNo;
+    @Column(name = "bank_code", length = 5)
+    private String bankCode;
+    @Column(name = "bank_name", length = 64)
+    private String bankName;
     @Column(name = "tr_mode", length = 2)
     private String trMode;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
@@ -40,6 +46,10 @@ public class CocPaidModel {
     private LocalDateTime reportDate;
     @Column(name = "is_updated", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isUpdated = 0;
+    @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isVoucherGenerated = 0;
+    @Column(name = "incentive", length = 15)
+    private Double incentive;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
@@ -195,7 +205,49 @@ public class CocPaidModel {
         this.fileInfoModel = fileInfoModel;
     }
 
-    public CocPaidModel(String exchangeCode, String transactionNo, Double amount, LocalDateTime enteredDate, LocalDateTime paidDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String routingNo, String beneficiaryMobile, String branchCode, String trMode, LocalDateTime uploadDateTime) {
+    public int getIsVoucherGenerated() {
+        return this.isVoucherGenerated;
+    }
+
+    public void setIsVoucherGenerated(int isVoucherGenerated) {
+        this.isVoucherGenerated = isVoucherGenerated;
+    }
+
+    public String getBranchName() {
+        return this.branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public String getBankCode() {
+        return this.bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getBankName() {
+        return this.bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public Double getIncentive() {
+        return this.incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
+    }
+
+    public CocPaidModel(String exchangeCode, String transactionNo, Double amount, LocalDateTime enteredDate, LocalDateTime paidDate, String remitterName, 
+        String beneficiaryName, String beneficiaryAccount, String routingNo, String beneficiaryMobile, String bankName, String bankCode, String branchName, 
+        String branchCode, String trMode, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.amount = amount;
@@ -209,26 +261,37 @@ public class CocPaidModel {
         this.trMode = trMode;
         this.uploadDateTime = uploadDateTime;
         this.routingNo = routingNo;
+        this.bankCode = bankCode;
+        this.bankName = bankName;
+        this.branchName = branchName;
     }
 
     @Override
     public String toString() {
-        return "CocPaidModel{" +
-                "id=" + id +
-                ", exchangeCode='" + exchangeCode + '\'' +
-                ", transactionNo='" + transactionNo + '\'' +
-                ", amount=" + amount +
-                ", enteredDate='" + enteredDate + '\'' +
-                ", paidDate='" + paidDate + '\'' +
-                ", remitterName='" + remitterName + '\'' +
-                ", beneficiaryName='" + beneficiaryName + '\'' +
-                ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
-                ", beneficiaryMobile='" + beneficiaryMobile + '\'' +
-                ", branchCode='" + branchCode + '\'' +
-                ", trMode='" + trMode + '\'' +
-                ", uploadDateTime=" + uploadDateTime +
-                ", reportDate=" + reportDate +
-                ", isUpdated=" + isUpdated +
-                '}';
+        return "{" +
+            " id='" + getId() + "'" +
+            ", exchangeCode='" + getExchangeCode() + "'" +
+            ", transactionNo='" + getTransactionNo() + "'" +
+            ", amount='" + getAmount() + "'" +
+            ", enteredDate='" + getEnteredDate() + "'" +
+            ", paidDate='" + getPaidDate() + "'" +
+            ", remitterName='" + getRemitterName() + "'" +
+            ", beneficiaryName='" + getBeneficiaryName() + "'" +
+            ", beneficiaryAccount='" + getBeneficiaryAccount() + "'" +
+            ", beneficiaryMobile='" + getBeneficiaryMobile() + "'" +
+            ", branchCode='" + getBranchCode() + "'" +
+            ", branchName='" + getBranchName() + "'" +
+            ", routingNo='" + getRoutingNo() + "'" +
+            ", bankCode='" + getBankCode() + "'" +
+            ", bankName='" + getBankName() + "'" +
+            ", trMode='" + getTrMode() + "'" +
+            ", uploadDateTime='" + getUploadDateTime() + "'" +
+            ", reportDate='" + getReportDate() + "'" +
+            ", isUpdated='" + getIsUpdated() + "'" +
+            ", isVoucherGenerated='" + getIsVoucherGenerated() + "'" +
+            ", userModel='" + getUserModel() + "'" +
+            ", fileInfoModel='" + getFileInfoModel() + "'" +
+            "}";
     }
+    
 }

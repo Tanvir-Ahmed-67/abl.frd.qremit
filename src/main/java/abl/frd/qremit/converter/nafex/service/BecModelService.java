@@ -128,12 +128,12 @@ public class BecModelService {
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
+                        csvRecord.get(12), //beneficiaryMobile
 
                         csvRecord.get(8), //bankName
                         csvRecord.get(9), //bankCode
                         csvRecord.get(10), //branchName
                         csvRecord.get(11), // branchCode
-                        csvRecord.get(12), //beneficiaryMobile
                         csvRecord.get(13), //draweeBranchName
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance

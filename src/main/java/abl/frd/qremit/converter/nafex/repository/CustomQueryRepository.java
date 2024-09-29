@@ -8,7 +8,7 @@ import abl.frd.qremit.converter.nafex.service.CommonService;
 import java.util.*;
 
 @Repository
-public class ReportRepository {
+public class CustomQueryRepository {
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired

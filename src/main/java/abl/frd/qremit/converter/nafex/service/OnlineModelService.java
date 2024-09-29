@@ -11,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 @Service
 public class OnlineModelService {
     @Autowired
@@ -77,5 +79,9 @@ public class OnlineModelService {
 
     public List<OnlineModel> getProcessedDataByFileId(int fileInfoModelId,int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
         return onlineModelRepository.getProcessedDataByUploadDateAndFileId(fileInfoModelId,isProcessed,isVoucherGenerated,starDateTime,enDateTime);
+    }
+    @Transactional
+    public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
+        onlineModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
 }
