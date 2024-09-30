@@ -3,6 +3,8 @@ package abl.frd.qremit.converter.nafex.service;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import net.sf.jasperreports.engine.*;
@@ -130,8 +132,55 @@ public class ReportService {
         }
         return outputStream.toByteArray();
     }
-
+    public List<ExchangeReportDTO> getAllDailyReportData(){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        List<ReportModel> reportModelsList = reportModelRepository.findAll(); // Have to apply logic to fetch specefic data based on date and processed flag
+        Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
+        if(isListValid(reportModelsList)){
+            for(ReportModel reportModel:reportModelsList){
+                ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
+                exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
+                exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
+                exchangeReportDTO.setAmount(reportModel.getAmount());
+                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
+                exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
+                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime());
+                report.add(exchangeReportDTO);
+            }
+        }
+        return report;
+    }
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement() {
+        List<ExchangeReportDTO> report = getAllDailyReportData();
+        report = aggregateExchangeReports(report);
+        return report;
+    }
+    public static List<ExchangeReportDTO> aggregateExchangeReports(List<ExchangeReportDTO> exchangeReports) {
+        // Group by exchangeCode
+        return exchangeReports.stream()
+                .collect(Collectors.groupingBy(ExchangeReportDTO::getExchangeCode))
+                .entrySet().stream()
+                .map(entry -> {
+                    String exchangeCode = entry.getKey();
+                    List<ExchangeReportDTO> reportsWithSameCode = entry.getValue();
+
+                    // Create a new ExchangeReportDTO for the aggregated result
+                    ExchangeReportDTO aggregatedReport = new ExchangeReportDTO();
+                    aggregatedReport.setExchangeCode(exchangeCode);
+                    aggregatedReport.setExchangeName(reportsWithSameCode.get(0).getExchangeName());  // Assuming same exchangeName
+
+                    // Aggregate amount and count the rows
+                    reportsWithSameCode.forEach(report -> {
+                        aggregatedReport.doSum(report.getAmount());
+                        aggregatedReport.doCount();
+                    });
+                    return aggregatedReport;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<ExchangeReportDTO> generateSummaryOfDailyStatement_1() {
         List<ExchangeReportDTO> report = new ArrayList<>();
 
         // Fetch data from each table
@@ -217,6 +266,10 @@ public class ReportService {
         return list != null && !list.isEmpty() && list.size() > 0;
     }
     public List<ExchangeReportDTO> generateDetailsOfDailyStatement() {
+        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportData();
+        return exchangeReportDTOSList;
+    }
+    public List<ExchangeReportDTO> generateDetailsOfDailyStatement_1() {
         // Fetch data from each table
         List<OnlineModel> onlineData = onlineModelRepository.findAll();
         List<BeftnModel> beftnData = beftnModelRepository.findAll();

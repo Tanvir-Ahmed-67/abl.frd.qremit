@@ -29,7 +29,7 @@
 				<expression><![CDATA[$F{exchangeCode}.toString()]]></expression>
 			</element>
 			<element kind="textField" x="128" y="0" width="61" height="30" blankWhenNull="true">
-				<expression><![CDATA[$F{enteredDate}]]></expression>
+				<expression><![CDATA[$F{enteredDate}.toLocalDate()]]></expression>
 			</element>
 			<element kind="textField" x="189" y="0" width="61" height="30" blankWhenNull="true">
 				<expression><![CDATA[$F{amount}]]></expression>

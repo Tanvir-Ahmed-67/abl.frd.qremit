@@ -24,3 +24,8 @@ DROP TABLE `base_data_table_api_beftn`,`base_data_table_api_t24`,`base_data_tabl
 
 https://codepen.io/n3k1t/pen/OJMGgyq
 
+delete FROM `report` WHERE exchange_code="7010266";
+delete FROM `report` WHERE exchange_code="7010203";
+delete FROM `report` WHERE exchange_code="7010248";
+delete FROM `report` WHERE exchange_code="7010204";
+delete FROM `report` WHERE exchange_code="7010274";

@@ -1,11 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 
-import javax.persistence.Column;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Locale;
 
 public class ExchangeReportDTO {
     private String exchangeCode;
