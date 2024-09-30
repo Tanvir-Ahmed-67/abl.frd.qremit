@@ -126,7 +126,7 @@
 						<tableFooter height="30" style="Table 1_TH"/>
 						<detailCell height="30" style="Table 1_TD">
 							<element kind="textField"  x="0" y="0" width="70" height="30" hTextAlign="Center" vTextAlign="Middle">
-								<expression><![CDATA[$F{enteredDate}]]></expression>
+								<expression><![CDATA[$F{enteredDate}.toLocalDate()]]></expression>
 							</element>
 						</detailCell>
 					</column>
