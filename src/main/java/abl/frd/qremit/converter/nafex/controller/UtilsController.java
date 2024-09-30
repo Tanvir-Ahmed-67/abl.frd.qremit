@@ -64,7 +64,7 @@ public class UtilsController {
                     fileType = "";
                     break;
             }
-            if(fileType == ""){
+            if(fileType.equals("")){
                 String message = "Please select file type";
                 model.addAttribute("message", message);
                 return commonService.uploadSuccesPage;
@@ -75,7 +75,8 @@ public class UtilsController {
         String redirectUrl ="";
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         if(exchangeHouseModel != null && exchangeCode.equals(exchangeHouseModel.getExchangeCode())){
-            redirectUrl = "/" + exchangeHouseModel.getBaseTableName() + "Upload";  //generate dynamic URL from database
+            model.addAttribute("nrtaCode", exchangeHouseModel.getNrtaCode());
+            redirectUrl = "/" + exchangeHouseModel.getBaseTableName() + "Upload?nrtaCode=" + exchangeHouseModel.getNrtaCode();  //generate dynamic URL from database
         }
         return "forward:" + redirectUrl;
     }

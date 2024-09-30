@@ -26,7 +26,7 @@ public class ApiT24ModelController {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
-    @PostMapping("/apit24Upload")
+    @PostMapping("/api_t24Upload")
     public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 

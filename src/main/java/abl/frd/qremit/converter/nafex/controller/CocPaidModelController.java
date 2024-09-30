@@ -28,7 +28,7 @@ public class CocPaidModelController {
         this.myUserDetailsService = myUserDetailsService;
         this.commonService = commonService;
     }
-    @PostMapping("/cocPaidUpload")
+    @PostMapping("/coc_paidUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 

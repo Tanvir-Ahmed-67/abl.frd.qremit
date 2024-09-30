@@ -39,9 +39,10 @@ public class NafexModelService {
     @Autowired
     FileInfoModelService fileInfoModelService;
     LocalDateTime currentDateTime = LocalDateTime.now();
-    public FileInfoModel save(MultipartFile file, int userId, String exchangeCode) {
-        try
-        {
+    //public FileInfoModel save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+        Map<String, Object> resp = new HashMap<>();
+        try{
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
@@ -51,7 +52,17 @@ public class NafexModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
             
-            List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream(), user, fileInfoModel, file.getOriginalFilename(), exchangeCode);
+            Map<String, Object> nafexData = csvToNafexModels(file.getInputStream(), user, fileInfoModel, file.getOriginalFilename(), exchangeCode, nrtaCode);
+            List<NafexEhMstModel> nafexModels = (List<NafexEhMstModel>) nafexData.get("nafexDataModelList");
+            if(nafexData.containsKey("errorMessage")){
+                String errorMessage = (String) nafexData.get("errorMessage");
+                if(!CommonService.checkEmptyString(errorMessage)){
+                    resp.put("errorMessage", errorMessage);
+                    return resp;
+                }
+            }
+            
+            //List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream(), user, fileInfoModel, file.getOriginalFilename(), exchangeCode, nrtaCode);
             if(nafexModels.size()!=0) {
             
                 for (NafexEhMstModel nafexModel : nafexModels) {
@@ -99,19 +110,25 @@ public class NafexModelService {
                 }
                 // SAVING TO MySql Data Table
                 fileInfoModelRepository.save(fileInfoModel);                
-                return fileInfoModel;
+                resp.put("fileInfoModel", fileInfoModel);
+                //return fileInfoModel;
             }
             else {
-                return null;
+                //return null;
+                return resp;
             }
         } catch (IOException e) {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
+        return resp;
     }
-    public List<NafexEhMstModel> csvToNafexModels(InputStream is, User user, FileInfoModel fileInfoModel, String fileName, String exchangeCode) {
+    
+    //public List<NafexEhMstModel> csvToNafexModels(InputStream is, User user, FileInfoModel fileInfoModel, String fileName, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToNafexModels(InputStream is, User user, FileInfoModel fileInfoModel, String fileName, String exchangeCode, String nrtaCode) {
+        Map<String, Object> resp = new HashMap<>();
         Optional<NafexEhMstModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
+            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
             List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
@@ -124,6 +141,10 @@ public class NafexModelService {
                     //CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                     continue;
                 }
+                //check exchange code
+                errorMessage = CommonService.checkExchangeCode(csvRecord.get(0), exchangeCode, nrtaCode);
+                if(!errorMessage.isEmpty())  break;
+
                 //a/c no, benficiary name, amount empty or null check
                 errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(csvRecord.get(7), csvRecord.get(6), csvRecord.get(3));
                 if(!errorMessage.isEmpty()){
@@ -158,7 +179,6 @@ public class NafexModelService {
                 }else if(CommonService.isOnlineAccoutNumberFound(csvRecord.get(7))){
                     
                 }
-                
                 NafexEhMstModel nafexDataModel = new NafexEhMstModel(
                         exchangeCode, //exCode
                         csvRecord.get(1), //Tranno
@@ -178,13 +198,13 @@ public class NafexModelService {
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance
                         csvRecord.get(16), //sourceOfIncome
-                        "Not Processed",    // processed_flag
-                        "type",             // type_flag
-                        "processedBy",      // Processed_by
-                        "dummy",            // processed_date
+                        "Not Processed",    //processed_flag
+                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim(), csvRecord.get(11).trim()), //type_flag
+                        "processedBy", //Processed_by
+                        "dummy",     //processed_date
                         currentDateTime,
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                                 // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
+                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),  //checkT24
+                        CommonService.putCocFlag(csvRecord.get(7).trim()),  //checkCoc
                         CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
                         CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(), csvRecord.get(11)));        // Checking Beftn
                 nafexDataModelList.add(nafexDataModel);
@@ -198,7 +218,10 @@ public class NafexModelService {
             if(errorDataModelList.isEmpty() && nafexDataModelList.isEmpty()){
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
-            return nafexDataModelList;
+            resp.put("nafexDataModelList", nafexDataModelList);
+            if(!errorMessage.isEmpty()) resp.put("errorMessage", errorMessage);
+            return resp;
+            //return nafexDataModelList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
