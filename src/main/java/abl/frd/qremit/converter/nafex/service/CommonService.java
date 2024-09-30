@@ -559,6 +559,26 @@ public class CommonService {
         return false;
     }
 
+    public static String setTypeFlag(String benificiaryAccount, String bankName, String branchCode){
+        String typeFlag = "0";
+        String onlineFlag = putOnlineFlag(benificiaryAccount, bankName);
+        String cocFlag = putCocFlag(benificiaryAccount);
+        String accountPayeeFlag = putAccountPayeeFlag(bankName, benificiaryAccount, branchCode);
+        String beftnFlag = putBeftnFlag(bankName, benificiaryAccount, branchCode);
+        if(("1").equals(onlineFlag))   typeFlag = "1";
+        else if(("1").equals(accountPayeeFlag))   typeFlag = "2";
+        else if(("1").equals(beftnFlag))   typeFlag = "3";
+        else if(("1").equals(cocFlag))   typeFlag = "4";
+        return typeFlag;
+    }
+
+    public static String checkExchangeCode(String data, String exchangeCode, String nrtaCode){
+        String errorMessage = "";
+        //if(!data.equals(exchangeCode))  errorMessage = "Please Upload the Correct File";
+        //if(!data.equals(nrtaCode))  errorMessage = "Please Upload the Correct File";  
+        return errorMessage;
+    }
+
     public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
         ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, "0", "0", "0", "0", currentDateTime, user, fileInfoModel);
         errorDataModelList.add(errorDataModel);

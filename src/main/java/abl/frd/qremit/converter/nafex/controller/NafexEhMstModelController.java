@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.*;;
 
 
 @Controller
@@ -30,10 +31,10 @@ public class NafexEhMstModelController {
     }
     
     @PostMapping("/nafexUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, 
+        @RequestParam("nrtaCode") String nrtaCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));        
-
-
+        
         int userId = 000000000;
         // Getting Logged In user Details in this block
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -47,9 +48,16 @@ public class NafexEhMstModelController {
         if (commonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = nafexModelService.save(file, userId, exchangeCode);
+                    Map<String, Object> resp = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
+                    fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
+                    //fileInfoModelObject = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
+                        return commonService.uploadSuccesPage;
+                    }
+                    else if(resp.containsKey("errorMessage")){
+                        message = (String) resp.get("errorMessage");
+                        model.addAttribute("message", message);
                         return commonService.uploadSuccesPage;
                     }
                     else{

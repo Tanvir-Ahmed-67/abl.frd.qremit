@@ -105,6 +105,10 @@ public class DynamicOperationService {
                 int userId = updatedData.get("userId") != null ? Integer.parseInt(updatedData.get("userId").toString()) : 0;
                 if(fileInfoId == 0 || userId == 0)    return CommonService.getResp(1, "Invalid File Id or User Id", null);
                 //LocalDateTime uploadDateTime = CommonService.convertStringToDate(updatedData.get("uploadDateTime").toString());
+                String beneficiaryAccount= String.valueOf(updatedData.get("beneficiaryAccount"));
+                String branchCode = String.valueOf(updatedData.get("branchCode"));
+                String bankName = String.valueOf(updatedData.get("bankName"));
+                String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
 
                 String checkAccPayee = updatedData.get("checkAccPayee").toString();
                 String checkBeftn = updatedData.get("checkBeftn").toString();
@@ -127,9 +131,9 @@ public class DynamicOperationService {
 
                 Object modelInstance = constructor.newInstance(exchangeCode, updatedData.get("transactionNo"), updatedData.get("currency"), amount, 
                     updatedData.get("enteredDate"), updatedData.get("remitterName"), updatedData.get("remitterMobile"), updatedData.get("beneficiaryName"), 
-                    updatedData.get("beneficiaryAccount"), updatedData.get("beneficiaryMobile"), updatedData.get("bankName"), updatedData.get("bankCode"), 
-                    updatedData.get("branchName"), updatedData.get("branchCode"), updatedData.get("draweeBranchName"), updatedData.get("draweeBranchCode"), 
-                    updatedData.get("purposeOfRemittance"), updatedData.get("sourceOfIncome"), updatedData.get("processFlag"), updatedData.get("typeFlag"), 
+                    beneficiaryAccount, updatedData.get("beneficiaryMobile"), bankName, updatedData.get("bankCode"), 
+                    updatedData.get("branchName"), branchCode, updatedData.get("draweeBranchName"), updatedData.get("draweeBranchCode"), 
+                    updatedData.get("purposeOfRemittance"), updatedData.get("sourceOfIncome"), updatedData.get("processFlag"), typeFlag, 
                     updatedData.get("processedBy"), updatedData.get("processedDate"), currentDateTime, checkT24, checkCoc, checkAccPayee, checkBeftn, fileInfoModel, user);
                 
                 List<OnlineModel> onlineModelList = CommonService.generatOnlineModelListFromErrorData(modelInstance,"getCheckT24","0", currentDateTime);

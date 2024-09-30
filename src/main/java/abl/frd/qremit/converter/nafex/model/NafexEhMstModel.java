@@ -48,7 +48,7 @@ public class NafexEhMstModel {
     private String sourceOfIncome;
     @Column(name = "process_flag")
     private String processFlag;
-    @Column(name = "type_flag")
+    @Column(name = "type_flag", length = 4)
     private String typeFlag;
     @Column(name = "processed_by")
     private String processedBy;
@@ -115,7 +115,7 @@ public class NafexEhMstModel {
     public void setCheckAccPayee(String checkAccPayee) {
         this.checkAccPayee = checkAccPayee;
     }
-
+    
     public String getCheckBeftn() {
         return checkBeftn;
     }
