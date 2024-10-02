@@ -57,14 +57,6 @@ public class EzRemitModel {
     private String processedDate;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;
-    @Column(name = "check_t24")
-    private String checkT24;
-    @Column(name = "check_coc")
-    private String checkCoc;
-    @Column(name = "check_account_payee")
-    private String checkAccPayee;
-    @Column(name = "check_beftn")
-    private String checkBeftn;
 
     @ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="file_info_model_id")
@@ -269,38 +261,6 @@ public class EzRemitModel {
     public void setUploadDateTime(LocalDateTime uploadDateTime) {
         this.uploadDateTime = uploadDateTime;
     }
- 
-    public String getCheckT24() {
-        return checkT24;
-    }
-
-    public void setCheckT24(String checkT24) {
-        this.checkT24 = checkT24;
-    }
-
-    public String getCheckCoc() {
-        return checkCoc;
-    }
-
-    public void setCheckCoc(String checkCoc) {
-        this.checkCoc = checkCoc;
-    }
-
-    public String getCheckAccPayee() {
-        return checkAccPayee;
-    }
-
-    public void setCheckAccPayee(String checkAccPayee) {
-        this.checkAccPayee = checkAccPayee;
-    }
-
-    public String getCheckBeftn() {
-        return checkBeftn;
-    }
-
-    public void setCheckBeftn(String checkBeftn) {
-        this.checkBeftn = checkBeftn;
-    }
 
     public FileInfoModel getFileInfoModel() {
         return fileInfoModel;
@@ -318,7 +278,7 @@ public class EzRemitModel {
         this.userModel = userModel;
     }
 
-    public EzRemitModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+    public EzRemitModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -342,14 +302,10 @@ public class EzRemitModel {
         this.processedBy = processedBy;
         this.processedDate = processedDate;
         this.uploadDateTime = uploadDateTime;
-        this.checkT24 = checkT24;
-        this.checkCoc = checkCoc;
-        this.checkAccPayee = checkAccPayee;
-        this.checkBeftn = checkBeftn;
     }
 
-    public EzRemitModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, FileInfoModel fileInfoModel, User user) {
-        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, uploadDateTime, checkT24, checkCoc, checkAccPayee, checkBeftn);
+    public EzRemitModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime, FileInfoModel fileInfoModel, User user) {
+        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, uploadDateTime);
         this.fileInfoModel = fileInfoModel;
         this.userModel = user;
     }
@@ -381,10 +337,6 @@ public class EzRemitModel {
                 ", processedBy='" + processedBy + '\'' +
                 ", processedDate='" + processedDate + '\'' +
                 ", uploadDateTime='" + uploadDateTime + '\'' +
-                ", checkT24='" + checkT24 + '\'' +
-                ", checkCoc='" + checkCoc + '\'' +
-                ", checkAccPayee='" + checkAccPayee + '\'' +
-                ", checkBeftn='" + checkBeftn + '\'' +
                 ", fileInfoModel=" + fileInfoModel +
                 ", userModel=" + userModel +
                 '}';

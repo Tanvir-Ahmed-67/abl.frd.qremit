@@ -70,11 +70,16 @@ public class NafexModelService {
                     nafexModel.setUserModel(user);
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
+                /*
                 List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(nafexModels,"getCheckT24", currentDateTime);
                 List<CocModel> cocModelList = CommonService.generateCocModelList(nafexModels,"getCheckCoc", currentDateTime);
                 List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(nafexModels,"getCheckAccPayee", currentDateTime);
                 List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(nafexModels,"getCheckBeftn", currentDateTime);
-
+                */
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(nafexModels, currentDateTime, 0);
+                List<CocModel> cocModelList = CommonService.generateCocModelList(nafexModels, currentDateTime);
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(nafexModels, currentDateTime);
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(nafexModels, currentDateTime);
 
                 // FILE INFO TABLE GENERATION HERE......
                 fileInfoModel.setAccountPayeeCount(String.valueOf(accountPayeeModelList.size()));
@@ -198,15 +203,15 @@ public class NafexModelService {
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance
                         csvRecord.get(16), //sourceOfIncome
-                        "Not Processed",    //processed_flag
+                        "",    //processed_flag
                         CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim(), csvRecord.get(11).trim()), //type_flag
-                        "processedBy", //Processed_by
-                        "dummy",     //processed_date
-                        currentDateTime,
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),  //checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),  //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(), csvRecord.get(11)));        // Checking Beftn
+                        "", //Processed_by
+                        "",     //processed_date
+                        currentDateTime);
+                        //CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),  //checkT24
+                        //CommonService.putCocFlag(csvRecord.get(7).trim()),  //checkCoc
+                        //CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
+                        //CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(), csvRecord.get(11)));        // Checking Beftn
                 nafexDataModelList.add(nafexDataModel);
             }
             if (!errorDataModelList.isEmpty()) {

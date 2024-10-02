@@ -43,8 +43,8 @@ public class AgexSingaporeModelService {
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
 
-            String type = "0";
-            if(fileType.equalsIgnoreCase("API")) type = "1";
+            int type = 0;
+            if(fileType.equalsIgnoreCase("API")) type = 1;
             List<AgexSingaporeModel> agexSingaporeModelList = csvToAgexSingaporeModels(file.getInputStream(),type);
 
             if(agexSingaporeModelList.size()!=0) {
@@ -59,10 +59,16 @@ public class AgexSingaporeModelService {
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
+                /*
                 List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, "getCheckT24",type, currentDateTime);
                 List<CocModel> cocModelList = CommonService.generateCocModelList(agexSingaporeModelList, "getCheckCoc", currentDateTime);
                 List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(agexSingaporeModelList, "getCheckAccPayee", currentDateTime);
                 List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(agexSingaporeModelList, "getCheckBeftn", currentDateTime);
+                */
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, currentDateTime, type);
+                List<CocModel> cocModelList = CommonService.generateCocModelList(agexSingaporeModelList, currentDateTime);
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(agexSingaporeModelList, currentDateTime);
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(agexSingaporeModelList, currentDateTime);
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -72,7 +78,7 @@ public class AgexSingaporeModelService {
                 fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
                 fileInfoModel.setTotalCount(String.valueOf(agexSingaporeModelList.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setIsSettlement(Integer.parseInt(type));
+                fileInfoModel.setIsSettlement(type);
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
                 fileInfoModel.setAgexSingaporeModel(agexSingaporeModelList);
@@ -108,7 +114,7 @@ public class AgexSingaporeModelService {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
     }
-    public List<AgexSingaporeModel> csvToAgexSingaporeModels(InputStream is, String type) {
+    public List<AgexSingaporeModel> csvToAgexSingaporeModels(InputStream is, int type) {
         Optional<AgexSingaporeModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
@@ -119,6 +125,8 @@ public class AgexSingaporeModelService {
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
                     continue;
                 }
+                String bankName = (type == 1) ? csvRecord.get(8): csvRecord.get(9);
+                String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 AgexSingaporeModel agexSingaporeModel = new AgexSingaporeModel(
                         csvRecord.get(0), //exCode
                         csvRecord.get(1), //Tranno
@@ -126,28 +134,23 @@ public class AgexSingaporeModelService {
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
-                        "Remitter Mobile", // remitterMobile
-
+                        "", // remitterMobile
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
-                        "beneficiary Mobile", // beneficiaryMobile
-                        csvRecord.get(8), //bankName
-                        csvRecord.get(9), //bankCode
+                        "", // beneficiaryMobile
+                        bankName, //bankName
+                        bankCode, //bankCode
                         csvRecord.get(10), //branchName
                         csvRecord.get(11), // branchCode
-                        "Drawee Branch Name", //Drawee Branch Name
-                        "Drawee Branch Code", // Drawee Branch Code
-                        "Purpose Of Remittance", // purposeOfRemittance
-                        "Source Of Income", // sourceOfIncome
-                        "Not Processed",    // processed_flag
-                        "type",             // type_flag
-                        "processedBy",      // Processed_by
-                        "dummy",            // processed_date
-                        currentDateTime,
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                             // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                                        //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(),csvRecord.get(11)));         // Checking Beftn
+                        "", //Drawee Branch Name
+                        "", // Drawee Branch Code
+                        "", // purposeOfRemittance
+                        "", // sourceOfIncome
+                        "",    // processed_flag
+                        CommonService.setTypeFlag(csvRecord.get(7).trim(), bankName, csvRecord.get(11).trim()), //type_flag
+                        "",      // Processed_by
+                        "",    // processed_date
+                        currentDateTime);
                 agexSingaporeModelList.add(agexSingaporeModel);
             }
             return agexSingaporeModelList;

@@ -56,7 +56,8 @@ public class ApiT24ModelService {
                 }
 
                 // Online DATA TABLE GENERATION GOING ON HERE
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(apiT24Models,"getCheckT24", "1", currentDateTime);
+                //List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(apiT24Models,"getCheckT24", "1", currentDateTime);
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(apiT24Models, currentDateTime, 1);
 
                 // FILE INFO TABLE GENERATION HERE......
                 fileInfoModel.setAccountPayeeCount("0");
@@ -104,28 +105,23 @@ public class ApiT24ModelService {
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
-                        "Remiter Mobile", //remitterMobile
-
+                        "", //remitterMobile
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
-                        "Beneficiary Mobile", //beneficiaryMobile
+                        "", //beneficiaryMobile
                         csvRecord.get(8), //bankName
                         csvRecord.get(9), //bankCode
                         csvRecord.get(10), //branchName
                         csvRecord.get(11), // branchCode
-                        "Drawee Branch Name", //draweeBranchName
-                        "Drawee Branch Code", //draweeBranchCode
-                        "Purpose of Remitance", //purposeOfRemittance
-                        "Source Of Income", //sourceOfIncome
-                        "Not Processed",    // processed_flag
-                        "type",             // type_flag
-                        "processedBy",      // Processed_by
-                        "dummy",            // processed_date
-                        currentDateTime,
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                              // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                                         //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(), csvRecord.get(11)));        //checkBeftn
+                        "", //draweeBranchName
+                        "", //draweeBranchCode
+                        "", //purposeOfRemittance
+                        "", //sourceOfIncome
+                        "",    // processed_flag
+                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim(), csvRecord.get(11).trim()), //type_flag
+                        "",      // Processed_by
+                        "",            // processed_date
+                        currentDateTime);
                 apiT24ModelList.add(apiT24Model);
             }
             return apiT24ModelList;
