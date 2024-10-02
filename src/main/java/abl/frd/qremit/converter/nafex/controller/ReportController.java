@@ -144,15 +144,8 @@ public class ReportController {
             dataMap.put("exchangeCode",fdata.get("exchange_code"));
             dataMap.put("amount",fdata.get("amount"));
             totalAmount += Double.parseDouble(String.valueOf(fdata.get("amount")));
-            
-            //check flag status = 1
-            Map<String, String> type = new HashMap<>();
-            type.put("check_beftn",String.valueOf(fdata.get("check_beftn")));
-            type.put("check_coc",String.valueOf(fdata.get("check_coc")));
-            type.put("check_account_payee",String.valueOf(fdata.get("check_account_payee")));
-            type.put("check_t24",String.valueOf(fdata.get("check_t24")));
-            dataMap.put("remType", getRemittanceType(type));
-
+            Map<String, Object> types = CommonService.getRemittanceTypes();
+            dataMap.put("remType", types.get(fdata.get("type_flag")));
             dataList.add(dataMap);
         }
         //System.out.println(totalAmount);
@@ -254,22 +247,6 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-    public String getRemittanceType(Map<String, String> type){
-        Map<String, String> remType = new HashMap<>();
-        remType.put("check_beftn","BEFTN");
-        remType.put("check_coc","COC");
-        remType.put("check_account_payee","A/C Payee");
-        remType.put("check_t24","Online");
-
-        for(Map.Entry<String, String> entry: type.entrySet()){
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if ("1".equals(value)) {
-                return remType.get(key);
-            }
-        }
-        return "";
-    }
     @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET)
     public String generateSummaryOfDailyStatement(Model model) {
         List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyStatement();

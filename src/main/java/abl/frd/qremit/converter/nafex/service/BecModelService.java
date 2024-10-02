@@ -58,12 +58,17 @@ public class BecModelService {
             }
 
             // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
+            /*
             List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(becModels,"getCheckT24", currentDateTime);
             List<CocModel> cocModelList = CommonService.generateCocModelList(becModels,"getCheckCoc", currentDateTime);
             List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(becModels,"getCheckAccPayee", currentDateTime);
             List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(becModels,"getCheckBeftn", currentDateTime);
-
-
+            */
+            List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(becModels, currentDateTime, 0);
+            List<CocModel> cocModelList = CommonService.generateCocModelList(becModels, currentDateTime);
+            List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(becModels, currentDateTime);
+            List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(becModels, currentDateTime);
+            
             // FILE INFO TABLE GENERATION HERE......
             fileInfoModel.setAccountPayeeCount(String.valueOf(accountPayeeModelList.size()));
             fileInfoModel.setOnlineCount(String.valueOf(onlineModelList.size()));
@@ -125,11 +130,9 @@ public class BecModelService {
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
                         csvRecord.get(17), //remitterMobile
-
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
                         csvRecord.get(12), //beneficiaryMobile
-
                         csvRecord.get(8), //bankName
                         csvRecord.get(9), //bankCode
                         csvRecord.get(10), //branchName
@@ -138,15 +141,11 @@ public class BecModelService {
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance
                         csvRecord.get(16), //sourceOfIncome
-                        "Not Processed",    // processed_flag
-                        "type",             // type_flag
-                        "processedBy",      // Processed_by
-                        "dummy",            // processed_date
-                        currentDateTime,
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim()),                                 // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                    //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(8).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(8).trim(), csvRecord.get(7).trim(), csvRecord.get(11)));        //checkBeftn
+                        "",    // processed_flag
+                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim(), csvRecord.get(11).trim()), //type_flag
+                        "",      // Processed_by
+                        "",            // processed_date
+                        currentDateTime);
                 becDataModelList.add(becDataModel);
             }
             return becDataModelList;

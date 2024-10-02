@@ -112,10 +112,7 @@ public class ErrorDataModelService {
         errorDataModel.setBranchName(formData.get("branchName"));
         errorDataModel.setBeneficiaryAccount(formData.get("beneficiaryAccount"));
         errorDataModel.setBeneficiaryName(formData.get("beneficiaryName"));
-        errorDataModel.setCheckCoc(CommonService.putCocFlag(beneficiaryAccount));
-        errorDataModel.setCheckBeftn(CommonService.putBeftnFlag(bankName, beneficiaryAccount, branchCode));
-        errorDataModel.setCheckT24(CommonService.putOnlineFlag(beneficiaryAccount, bankName));
-        errorDataModel.setCheckAccPayee(CommonService.putAccountPayeeFlag(bankName, beneficiaryAccount, branchCode));
+        errorDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
         
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel);
         info.put("updatedData", updatedData);
@@ -174,10 +171,7 @@ public class ErrorDataModelService {
         resp.put("errorMessage", errorDataModel.getErrorMessage());
         //resp.put("uploadDateTime", errorDataModel.getUploadDateTime());
         resp.put("uploadDateTime", uploadDateTime);
-        resp.put("checkT24", errorDataModel.getCheckT24());
-        resp.put("checkCoc", errorDataModel.getCheckCoc());
-        resp.put("checkAccPayee", errorDataModel.getCheckAccPayee());
-        resp.put("checkBeftn", errorDataModel.getCheckBeftn());
+        resp.put("typeFlag", errorDataModel.getTypeFlag());
         resp.put("userId", errorDataModel.getUserModel().getId());
         resp.put("fileInfoId", errorDataModel.getFileInfoModel().getId());
         return resp;
