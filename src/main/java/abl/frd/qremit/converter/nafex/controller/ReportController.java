@@ -160,15 +160,16 @@ public class ReportController {
 
     @GetMapping("/errorReport")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
+    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, 
+        @RequestParam(defaultValue = "") String id){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
 
-        String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
-        String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
-        List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
+        List<Map<String, String>> columns = commonService.getErrorReportColumn();
         resp.put("columns", columns);
-        
+        int fileInfoModelId = 0;
+        if(!id.isEmpty())  fileInfoModelId = Integer.parseInt(id);
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         int userId;
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
@@ -180,7 +181,7 @@ public class ReportController {
             int sl = 1;
             String action = "";
             String btn = "";
-            List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByIdAndUpdateStatus(userId, 0);
+            List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
             for(ErrorDataModel emodel: errorDataModel){
                 Map<String, Object> dataMap = new HashMap<>();
                 btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit_error",String.valueOf(emodel.getId()),"Edit");
@@ -209,13 +210,11 @@ public class ReportController {
 
     @GetMapping("/getErrorUpdateReport")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getErrorUpdateReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
+    public ResponseEntity<Map<String, Object>> getErrorUpdateReport(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
 
-        String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
-        String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
-        List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
+        List<Map<String, String>> columns = commonService.getErrorReportColumn();
         resp.put("columns", columns);
 
         List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByUpdateStatus(1);

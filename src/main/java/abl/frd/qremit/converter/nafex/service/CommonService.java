@@ -58,7 +58,7 @@ public class CommonService {
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
-    public String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
+    public static String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
     public String uploadApiSuccessPage = "/pages/user/userApiUploadSuccessPage";
 
     private final EntityManager entityManager;
@@ -765,16 +765,15 @@ public class CommonService {
         return errorMessage;
     }
 
-    public static String fixABLRoutingNo(String routingNo){
+    public static String fixRoutingNo(String routingNo){
         if(!routingNo.isEmpty() && routingNo.length() == 8){
             routingNo = "0" + routingNo;
         }
-        if(routingNo.length() != 9)  return "";
         return routingNo;
     }
 
     
-/* 
+    /* 
     public String getABLBranchFromRouting(String routingNo){
         String branchCode = "";
         routingNo = CommonService.fixABLRoutingNo(routingNo);
@@ -787,7 +786,7 @@ public class CommonService {
         }
         return branchCode;
     }
-        */
+    */
 
     public static String checkBEFTNRouting(String routingNo){
         String errorMessage = "";
@@ -882,5 +881,12 @@ public class CommonService {
         resp.put("3", "BEFTN");
         resp.put("4", "COC");
         return resp;
+    }
+
+    //column for error Reporting
+    public List<Map<String, String>> getErrorReportColumn(){
+        String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
+        String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+        return createColumns(columnData, columnTitles);
     }
 }

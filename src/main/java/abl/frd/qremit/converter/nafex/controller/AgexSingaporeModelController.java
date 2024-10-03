@@ -43,37 +43,37 @@ public class AgexSingaporeModelController {
         }
         String message = "";
         FileInfoModel fileInfoModelObject;
-        if (commonService.hasCSVFormat(file)) {
+        if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
                     fileInfoModelObject = agexSingaporeModelService.save(file, userId, exchangeCode,fileType);
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
-                        return commonService.uploadSuccesPage;
+                        return CommonService.uploadSuccesPage;
                     }
                     else{
                         message = "All Data From Your Selected File Already Exists!";
                         model.addAttribute("message", message);
-                        return commonService.uploadSuccesPage;
+                        return CommonService.uploadSuccesPage;
                     }
                 }
                 catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return CommonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadSuccesPage;
+            return CommonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadSuccesPage;
+        return CommonService.uploadSuccesPage;
     }
 }

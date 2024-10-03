@@ -4,6 +4,7 @@ $(document).ready(function(){
     var page_header = "";
     var csrf_token = $("meta[name='_csrf']").attr("content");
     var csrf_header = $("meta[name='_csrf_header']").attr("content");
+    var pid = getParameterByName("id");
     
     switch(type){
         case '1':
@@ -12,11 +13,10 @@ $(document).ready(function(){
             break;
         case '2':
             var exchangeCode = getParameterByName("exchangeCode");
-            var pid = getParameterByName("id");
             var url = "/fileReport?exchangeCode=" + exchangeCode + "&id=" + pid;
             break;
         case '3':
-            var url = "/errorReport";
+            var url = "/errorReport?id=" + pid;
             page_header = "Error Data Report";
             break;
         case '4':

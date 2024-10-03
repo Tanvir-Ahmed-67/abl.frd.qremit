@@ -46,8 +46,10 @@ public class ErrorDataModelService {
     }
 
     //find errorDataModel by using userId and updateStatus
-    public List<ErrorDataModel> findUserModelListByIdAndUpdateStatus(int userId, int updateStatus){
-        return errorDataModelRepository.findByUserModelIdAndUpdateStatus(userId, updateStatus);
+    public List<ErrorDataModel> findUserModelListByIdAndUpdateStatus(int userId, int updateStatus, int fileInfoModelId){
+        if(fileInfoModelId != 0){
+            return errorDataModelRepository.findByUserModelIdAndUpdateStatusAndFileInfoModelId(userId, updateStatus, fileInfoModelId);
+        }else return errorDataModelRepository.findByUserModelIdAndUpdateStatus(userId, updateStatus);
     } 
 
     //find errorDataModel 

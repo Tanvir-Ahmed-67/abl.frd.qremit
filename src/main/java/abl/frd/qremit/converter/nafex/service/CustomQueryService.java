@@ -23,7 +23,6 @@ public class CustomQueryService {
         Map<String, Object> routingDetails = getRoutingDetails(routingNo);
         if((Integer) routingDetails.get("err") == 0){
             for(Map<String,Object> rdata: (List<Map<String, Object>>) routingDetails.get("data")){
-                //branchCode = rdata.get("abl_branch_code").toString();
                 return rdata;
             }
         }
