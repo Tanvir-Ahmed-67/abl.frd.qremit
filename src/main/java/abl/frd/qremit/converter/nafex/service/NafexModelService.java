@@ -54,17 +54,13 @@ public class NafexModelService {
             
             Map<String, Object> nafexData = csvToNafexModels(file.getInputStream(), user, fileInfoModel, file.getOriginalFilename(), exchangeCode, nrtaCode);
             List<NafexEhMstModel> nafexModels = (List<NafexEhMstModel>) nafexData.get("nafexDataModelList");
+
             if(nafexData.containsKey("errorMessage")){
-                String errorMessage = (String) nafexData.get("errorMessage");
-                if(!CommonService.checkEmptyString(errorMessage)){
-                    resp.put("errorMessage", errorMessage);
-                    return resp;
-                }
+                resp.put("errorMessage", nafexData.get("errorMessage"));
             }
-            
+
             //List<NafexEhMstModel> nafexModels = csvToNafexModels(file.getInputStream(), user, fileInfoModel, file.getOriginalFilename(), exchangeCode, nrtaCode);
             if(nafexModels.size()!=0) {
-            
                 for (NafexEhMstModel nafexModel : nafexModels) {
                     nafexModel.setFileInfoModel(fileInfoModel);
                     nafexModel.setUserModel(user);
@@ -136,10 +132,18 @@ public class NafexModelService {
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
             List<NafexEhMstModel> nafexDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            List<String> transactionList = new ArrayList<>();
+            String duplicateMessage = "";
+            String exchangeMessage = "";
             String errorMessage = "";
+            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            
             for (CSVRecord csvRecord : csvRecords) {
                 duplicateData = nafexModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                String beneficiaryAccount = csvRecord.get(7).trim();
+                String bankName = csvRecord.get(8).trim();
+                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
+                String transactionNo = csvRecord.get(1).trim();
                 
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
                     //errorMessage = "Duplicate Reference No " + csvRecord.get(1) + " Found";
@@ -147,64 +151,68 @@ public class NafexModelService {
                     continue;
                 }
                 //check exchange code
-                errorMessage = CommonService.checkExchangeCode(csvRecord.get(0), exchangeCode, nrtaCode);
-                if(!errorMessage.isEmpty())  break;
+                exchangeMessage = CommonService.checkExchangeCode(csvRecord.get(0), exchangeCode, nrtaCode);
+                if(!exchangeMessage.isEmpty())  break;
 
                 //a/c no, benficiary name, amount empty or null check
-                errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(csvRecord.get(7), csvRecord.get(6), csvRecord.get(3));
+                errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, csvRecord.get(6), csvRecord.get(3));
                 if(!errorMessage.isEmpty()){
                     CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                     continue;
                 }
-                if(CommonService.isBeftnFound(csvRecord.get(8), csvRecord.get(7), csvRecord.get(11))){
-                    errorMessage = CommonService.checkBEFTNRouting(csvRecord.get(11));
+                if(CommonService.isBeftnFound(bankName, beneficiaryAccount, branchCode)){
+                    errorMessage = CommonService.checkBEFTNRouting(branchCode);
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
-                }else if(CommonService.isCocFound(csvRecord.get(7))){
-                    errorMessage = CommonService.checkCOCBankName(csvRecord.get(8));
+                }else if(CommonService.isCocFound(beneficiaryAccount)){
+                    errorMessage = CommonService.checkCOCBankName(bankName);
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
-                }else if(CommonService.isAccountPayeeFound(csvRecord.get(8), csvRecord.get(7), csvRecord.get(11))){
+                }else if(CommonService.isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
                     //check ABL A/C starts with 02** and routing no is not matched with ABL
-                    errorMessage = CommonService.checkABLAccountAndRoutingNo(csvRecord.get(7), csvRecord.get(11), csvRecord.get(8));
+                    errorMessage = CommonService.checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
                     //abl routing number a/c starts 02** which isn't 13 digits
-                    errorMessage = CommonService.checkCOString(csvRecord.get(7));
+                    errorMessage = CommonService.checkCOString(beneficiaryAccount);
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
-                }else if(CommonService.isOnlineAccoutNumberFound(csvRecord.get(7))){
+                }else if(CommonService.isOnlineAccoutNumberFound(beneficiaryAccount)){
                     
                 }
+                if(transactionList.contains(transactionNo)){
+                    duplicateMessage += "Duplicate Transaction No " + transactionNo + " Found <br>";
+                    continue;
+                }else transactionList.add(transactionNo);
                 NafexEhMstModel nafexDataModel = new NafexEhMstModel(
                         exchangeCode, //exCode
-                        csvRecord.get(1), //Tranno
+                        transactionNo, //Tranno
                         csvRecord.get(2), //Currency
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
                         csvRecord.get(17), //remitterMobile
                         csvRecord.get(6), // beneficiary
-                        csvRecord.get(7), //beneficiaryAccount
+                        beneficiaryAccount, //beneficiaryAccount
                         csvRecord.get(12), //beneficiaryMobile
-                        csvRecord.get(8), //bankName
+                        bankName, //bankName
                         csvRecord.get(9), //bankCode
                         csvRecord.get(10), //branchName
-                        csvRecord.get(11), // branchCode
+                        branchCode, // branchCode
                         csvRecord.get(13), //draweeBranchName
                         csvRecord.get(14), //draweeBranchCode
                         csvRecord.get(15), //purposeOfRemittance
                         csvRecord.get(16), //sourceOfIncome
                         "",    //processed_flag
-                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim(), csvRecord.get(11).trim()), //type_flag
+                        CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode), //type_flag
                         "", //Processed_by
                         "",     //processed_date
                         currentDateTime);
@@ -224,7 +232,8 @@ public class NafexModelService {
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
             resp.put("nafexDataModelList", nafexDataModelList);
-            if(!errorMessage.isEmpty()) resp.put("errorMessage", errorMessage);
+            if(!duplicateMessage.isEmpty())  resp.put("errorMessage", duplicateMessage);
+            if(!exchangeMessage.isEmpty())  resp.put("errorMessage", exchangeMessage);
             return resp;
             //return nafexDataModelList;
         } catch (IOException e) {

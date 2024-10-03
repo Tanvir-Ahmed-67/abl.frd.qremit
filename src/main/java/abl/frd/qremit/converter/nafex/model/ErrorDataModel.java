@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name="error_data_table", 
-    uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}),
-    indexes = { @Index(name = "idx_update_status", columnList = "update_status")}
+    //uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}),
+    indexes = { @Index(name = "idx_update_status", columnList = "update_status"), @Index(name = "idx_transaction_no", columnList = "transaction_no")}
 )
 
 public class ErrorDataModel {
@@ -19,7 +19,7 @@ public class ErrorDataModel {
     private int  id;
     @Column(name = "exchange_code")
     private String exchangeCode;
-    @Column(name = "transaction_no", unique = true, nullable = false)
+    @Column(name = "transaction_no", nullable = false)
     private String transactionNo;
     @Column(name = "currency")
     private String currency;

@@ -49,9 +49,28 @@ $(document).ready(function(){
             $("#up-data").html(resp);
             $(".card-header").html("");
             $(".order-last h3").html("Uploaded File Statistics");
+            view_data(resp);
         }).fail(function(){
             alert("Error Getting from server");
         });
    
     });
+
+    function view_data(resp){
+        var tbl = "#error_data_tbl";
+        if($(tbl).length){
+            var uid = $('#id').val();
+            console.log(uid);
+            var url = "/errorReport?id=" + uid;
+            page_header = "Error Data Report";
+            var params = {'tbl': tbl,'url': url};
+            $.ajax({
+                "url" : params.url,
+            }).done(function(resp){
+                get_simple_dataTable(params.tbl,resp.columns,resp);
+            }).fail(function(){
+                alert("Eroor getting from server");
+            });
+        }
+    }
 });

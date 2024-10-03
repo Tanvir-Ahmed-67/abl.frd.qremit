@@ -10,19 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
-import abl.frd.qremit.converter.nafex.model.FileInfoModelDTO;
+
 
 @Controller
 @RequestMapping("/utils")
@@ -67,7 +62,7 @@ public class UtilsController {
             if(fileType.equals("")){
                 String message = "Please select file type";
                 model.addAttribute("message", message);
-                return commonService.uploadSuccesPage;
+                return CommonService.uploadSuccesPage;
             } 
             model.addAttribute("fileType", fileType); 
         }
