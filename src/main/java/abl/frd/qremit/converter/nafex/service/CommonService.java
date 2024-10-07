@@ -58,7 +58,7 @@ public class CommonService {
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
-    public String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
+    public static String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
     public String uploadApiSuccessPage = "/pages/user/userApiUploadSuccessPage";
 
     private final EntityManager entityManager;
@@ -167,7 +167,12 @@ public class CommonService {
         resp.put(totalDetails,"Total");
         return resp;
     }
-    
+        
+    /*
+    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, LocalDateTime uploadDateTime){
+        return generateOnlineModelList(models, checkT24MethodName,"0", uploadDateTime);
+    }
+
     public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, String isProcessed, LocalDateTime uploadDateTime) {
         List<OnlineModel> onlineList = new ArrayList<>();
         for (T singleModel : models) {
@@ -183,7 +188,7 @@ public class CommonService {
         }
         return onlineList;
     }
-
+    
     public static <T> List<OnlineModel> generatOnlineModelListFromErrorData(Object object, String checkT24MethodName, String isProcessed, LocalDateTime uploadDateTime){
         List<OnlineModel> onlineList = new ArrayList<>();
         try{
@@ -197,14 +202,22 @@ public class CommonService {
         }
         return onlineList;
     }    
-
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, LocalDateTime uploadDateTime){
-        return generateOnlineModelList(models, checkT24MethodName,"0", uploadDateTime);
+    */
+    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, LocalDateTime uploadDateTime, int isProcessed){
+        List<OnlineModel> onlineList = new ArrayList<>();
+        for (T singleModel : models) {
+            try {
+                String typeFlag = (String) getPropertyValue(singleModel, "getTypeFlag");
+                if(("1").equals(typeFlag))  onlineList.add(generateOnlineModel(singleModel, uploadDateTime, isProcessed));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return onlineList;
     }
 
-    public static <T> OnlineModel generateOnlineModel(T model,String flag, LocalDateTime uploadDateTime) {
+    public static <T> OnlineModel generateOnlineModel(T model, LocalDateTime uploadDateTime, int flag) {
         OnlineModel onlineModel = new OnlineModel();
-        int flagInt = Integer.parseInt(flag);
           
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
@@ -217,9 +230,9 @@ public class CommonService {
             onlineModel.setBankName((String) getPropertyValue(model, "getBankName"));
             onlineModel.setBranchCode((String) getPropertyValue(model, "getBranchCode"));
             onlineModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
-            onlineModel.setIsProcessed(flagInt);
-            onlineModel.setIsDownloaded(flagInt);
-            if(flagInt == 1){
+            onlineModel.setIsProcessed(flag);
+            onlineModel.setIsDownloaded(flag);
+            if(flag == 1){
                 onlineModel.setDownloadDateTime(LocalDateTime.now());
             }
             onlineModel.setDownloadUserId(9999);
@@ -237,6 +250,21 @@ public class CommonService {
         return method.invoke(obj);
     }
 
+    public static <T> List<CocModel> generateCocModelList(List<T> models, LocalDateTime uploadDateTime) {
+        List<CocModel> cocList = new ArrayList<>();
+        for (T singleModel : models) {
+            try {
+                String typeFlag = (String) getPropertyValue(singleModel, "getTypeFlag");
+                if(("4").equals(typeFlag))  cocList.add(generateCocModel(singleModel, uploadDateTime));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exception
+            }
+        }
+        return cocList;
+    }
+
+    /*
     public static <T> List<CocModel> generateCocModelList(List<T> models, String checkCocMethodName, LocalDateTime uploadDateTime) {
         List<CocModel> cocList = new ArrayList<>();
         for (T singleModel : models) {
@@ -253,6 +281,7 @@ public class CommonService {
         }
         return cocList;
     }
+    
 
     public static <T> List<CocModel> generatCocModelListFromErrorData(Object object, String checkCocMethodName, LocalDateTime uploadDateTime){
         List<CocModel> cocList = new ArrayList<>();
@@ -267,6 +296,7 @@ public class CommonService {
         }
         return cocList;
     }
+    */
 
     public static <T> CocModel generateCocModel(T model, LocalDateTime uploadDateTime) {
         CocModel cocModel = new CocModel();
@@ -295,6 +325,7 @@ public class CommonService {
         }
         return cocModel;
     }
+    /*
     public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, String checkAccPayeeMethodName, LocalDateTime uploadDateTime) {
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
         for (T singleModel : models) {
@@ -322,6 +353,21 @@ public class CommonService {
             }
         }catch(Exception e){
             e.printStackTrace();
+        }
+        return accountPayeeModelList;
+    }
+    */
+
+    public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, LocalDateTime uploadDateTime) {
+        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
+        for (T singleModel : models) {
+            try {
+                String typeFlag = (String) getPropertyValue(singleModel, "getTypeFlag");
+                if(("2").equals(typeFlag))  accountPayeeModelList.add(generateAccountPayeeModel(singleModel, uploadDateTime));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exception
+            }
         }
         return accountPayeeModelList;
     }
@@ -354,6 +400,7 @@ public class CommonService {
         return accountPayeeModel;
     }
 
+    /*
     public static <T> List<BeftnModel> generateBeftnModelList(List<T> models, String checkBeftnMethodName, LocalDateTime uploadDateTime) {
         List<BeftnModel> beftnModelList = new ArrayList<>();
         for (T singleModel : models) {
@@ -381,6 +428,21 @@ public class CommonService {
             }
         }catch(Exception e){
             e.printStackTrace();
+        }
+        return beftnModelList;
+    }
+    */
+
+    public static <T> List<BeftnModel> generateBeftnModelList(List<T> models, LocalDateTime uploadDateTime) {
+        List<BeftnModel> beftnModelList = new ArrayList<>();
+        for (T singleModel : models) {
+            try {
+                String typeFlag = (String) getPropertyValue(singleModel, "getTypeFlag");
+                if(("3").equals(typeFlag))  beftnModelList.add(generateBeftnModel(singleModel, uploadDateTime));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exception
+            }
         }
         return beftnModelList;
     }
@@ -559,12 +621,32 @@ public class CommonService {
         return false;
     }
 
+    public static String setTypeFlag(String benificiaryAccount, String bankName, String branchCode){
+        String typeFlag = "0";
+        String onlineFlag = putOnlineFlag(benificiaryAccount, bankName);
+        String cocFlag = putCocFlag(benificiaryAccount);
+        String accountPayeeFlag = putAccountPayeeFlag(bankName, benificiaryAccount, branchCode);
+        String beftnFlag = putBeftnFlag(bankName, benificiaryAccount, branchCode);
+        if(("1").equals(onlineFlag))   typeFlag = "1";
+        else if(("1").equals(accountPayeeFlag))   typeFlag = "2";
+        else if(("1").equals(beftnFlag))   typeFlag = "3";
+        else if(("1").equals(cocFlag))   typeFlag = "4";
+        return typeFlag;
+    }
+
+    public static String checkExchangeCode(String data, String exchangeCode, String nrtaCode){
+        String errorMessage = "";
+        //if(!data.equals(exchangeCode))  errorMessage = "Please Upload the Correct File";
+        //if(!data.equals(nrtaCode))  errorMessage = "Please Upload the Correct File";  
+        return errorMessage;
+    }
+
     public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
-        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, "0", "0", "0", "0", currentDateTime, user, fileInfoModel);
+        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
         errorDataModelList.add(errorDataModel);
     }
     
-    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String exchangeCode, String errorMessage, String checkT24, String checkCoc, String checkAccPayee, String checkBEFTN, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
+    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
         double amount;
         try{
             amount = Double.parseDouble(csvRecord.get(3));
@@ -590,16 +672,12 @@ public class CommonService {
             csvRecord.get(14), //draweeBranchCode
             csvRecord.get(15), //purposeOfRemittance
             csvRecord.get(16), //sourceOfIncome
-            "Not Processed",    // processed_flag
-            "type",             // type_flag
-            "processedBy",      // Processed_by
-            "dummy",            // processed_date
+            "",    // processed_flag
+            "0",    // type_flag
+            "",      // Processed_by
+            "",            // processed_date
             errorMessage, //error_message
             currentDateTime, //error_generation_date
-            checkT24, // checkT24
-            checkCoc,  //checkCoc
-            checkAccPayee, //checkAccPayee
-            checkBEFTN, // Checking Beftn
             0
         );
         errorDataModel.setUserModel(user);
@@ -687,16 +765,15 @@ public class CommonService {
         return errorMessage;
     }
 
-    public static String fixABLRoutingNo(String routingNo){
+    public static String fixRoutingNo(String routingNo){
         if(!routingNo.isEmpty() && routingNo.length() == 8){
             routingNo = "0" + routingNo;
         }
-        if(routingNo.length() != 9)  return "";
         return routingNo;
     }
 
     
-/* 
+    /* 
     public String getABLBranchFromRouting(String routingNo){
         String branchCode = "";
         routingNo = CommonService.fixABLRoutingNo(routingNo);
@@ -709,7 +786,7 @@ public class CommonService {
         }
         return branchCode;
     }
-        */
+    */
 
     public static String checkBEFTNRouting(String routingNo){
         String errorMessage = "";
@@ -804,5 +881,12 @@ public class CommonService {
         resp.put("3", "BEFTN");
         resp.put("4", "COC");
         return resp;
+    }
+
+    //column for error Reporting
+    public List<Map<String, String>> getErrorReportColumn(){
+        String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
+        String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+        return createColumns(columnData, columnTitles);
     }
 }

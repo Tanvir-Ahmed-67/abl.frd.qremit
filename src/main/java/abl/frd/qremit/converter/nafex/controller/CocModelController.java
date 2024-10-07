@@ -19,7 +19,6 @@ public class CocModelController {
         this.cocModelService = cocModelService;
     }
 
-
     @GetMapping("/downloadcoc/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(cocModelService.load(fileId, fileType));

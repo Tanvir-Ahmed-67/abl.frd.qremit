@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name="error_data_table", 
-    uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}),
-    indexes = { @Index(name = "idx_update_status", columnList = "update_status")}
+    //uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}),
+    indexes = { @Index(name = "idx_update_status", columnList = "update_status"), @Index(name = "idx_transaction_no", columnList = "transaction_no")}
 )
 
 public class ErrorDataModel {
@@ -19,7 +19,7 @@ public class ErrorDataModel {
     private int  id;
     @Column(name = "exchange_code")
     private String exchangeCode;
-    @Column(name = "transaction_no", unique = true, nullable = false)
+    @Column(name = "transaction_no", nullable = false)
     private String transactionNo;
     @Column(name = "currency")
     private String currency;
@@ -66,15 +66,6 @@ public class ErrorDataModel {
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime uploadDateTime;
-
-    @Column(name = "check_t24")
-    private String checkT24;
-    @Column(name = "check_coc")
-    private String checkCoc;
-    @Column(name = "check_account_payee")
-    private String checkAccPayee;
-    @Column(name = "check_beftn")
-    private String checkBeftn;
     @Column(name = "update_status", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int updateStatus = 0;
 
@@ -102,38 +93,6 @@ public class ErrorDataModel {
 
     public void setFileInfoModel(FileInfoModel fileInfoModel) {
         this.fileInfoModel = fileInfoModel;
-    }
-
-    public String getCheckT24() {
-        return checkT24;
-    }
-
-    public void setCheckT24(String checkT24) {
-        this.checkT24 = checkT24;
-    }
-
-    public String getCheckCoc() {
-        return checkCoc;
-    }
-
-    public void setCheckCoc(String checkCoc) {
-        this.checkCoc = checkCoc;
-    }
-
-    public String getCheckAccPayee() {
-        return checkAccPayee;
-    }
-
-    public void setCheckAccPayee(String checkAccPayee) {
-        this.checkAccPayee = checkAccPayee;
-    }
-
-    public String getCheckBeftn() {
-        return checkBeftn;
-    }
-
-    public void setCheckBeftn(String checkBeftn) {
-        this.checkBeftn = checkBeftn;
     }
 
     public ErrorDataModel() {
@@ -348,7 +307,7 @@ public class ErrorDataModel {
         this.updateStatus = updateStatus;
     }
 
-    public ErrorDataModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String errorMessage, LocalDateTime uploadDateTime, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn, int updateStatus) {
+    public ErrorDataModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, String errorMessage, LocalDateTime uploadDateTime, int updateStatus) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -373,11 +332,6 @@ public class ErrorDataModel {
         this.processedDate = processedDate;
         this.errorMessage = errorMessage;
         this.uploadDateTime = uploadDateTime;
-        this.checkT24 = checkT24;
-        this.checkCoc = checkCoc;
-        this.checkAccPayee = checkAccPayee;
-        this.checkBeftn = checkBeftn;
-        this.updateStatus = updateStatus;
     }
 
     @Override
@@ -408,10 +362,6 @@ public class ErrorDataModel {
                 ", processedDate='" + processedDate + '\'' +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", uploadDateTime='" + uploadDateTime + '\'' +
-                ", checkT24='" + checkT24 + '\'' +
-                ", checkCoc='" + checkCoc + '\'' +
-                ", checkAccPayee='" + checkAccPayee + '\'' +
-                ", checkBeftn='" + checkBeftn + '\'' +
                 '}';
     }
 }

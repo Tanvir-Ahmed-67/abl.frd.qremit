@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.*;;
 
 
 @Controller
@@ -30,10 +31,10 @@ public class NafexEhMstModelController {
     }
     
     @PostMapping("/nafexUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, 
+        @RequestParam("nrtaCode") String nrtaCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));        
-
-
+        
         int userId = 000000000;
         // Getting Logged In user Details in this block
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -44,37 +45,43 @@ public class NafexEhMstModelController {
         }
         String message = "";
         FileInfoModel fileInfoModelObject;
-        if (commonService.hasCSVFormat(file)) {
+        if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = nafexModelService.save(file, userId, exchangeCode);
+                    Map<String, Object> resp = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
+                    fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
+                    //fileInfoModelObject = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
+                    if(resp.containsKey("errorMessage")){
+                        model.addAttribute("message", resp.get("errorMessage"));
+                    }
                     if(fileInfoModelObject!=null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
-                        return commonService.uploadSuccesPage;
+                        int errorCount = fileInfoModelObject.getErrorCount();
+                        if(errorCount >= 1){
+                            model.addAttribute("errorData", fileInfoModelObject.getId());
+                        }
                     }
-                    else{
-                        message = "All Data From Your Selected File Already Exists!";
-                        model.addAttribute("message", message);
-                        return commonService.uploadSuccesPage;
+                    else if(fileInfoModelObject == null && !resp.containsKey("errorMessage")){
+                        model.addAttribute("message", "All Data From Your Selected File Already Exists!");
                     }
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (IllegalArgumentException e) {
-                    message = e.getMessage();
-                    model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    model.addAttribute("message", e.getMessage());
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return CommonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadSuccesPage;
+            return CommonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadSuccesPage;
+        return CommonService.uploadSuccesPage;
     }
 }

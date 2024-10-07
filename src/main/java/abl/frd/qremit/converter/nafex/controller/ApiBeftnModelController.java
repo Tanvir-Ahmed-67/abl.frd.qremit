@@ -28,7 +28,7 @@ public class ApiBeftnModelController {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
-    @PostMapping("/apibeftnUpload")
+    @PostMapping("/api_beftnUpload")
     public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 

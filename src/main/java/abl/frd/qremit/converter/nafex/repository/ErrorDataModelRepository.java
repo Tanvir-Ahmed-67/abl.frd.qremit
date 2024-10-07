@@ -15,6 +15,7 @@ public interface ErrorDataModelRepository extends JpaRepository<ErrorDataModel, 
 
     List<ErrorDataModel> findByUserModelId(int userId);
     List<ErrorDataModel> findByUserModelIdAndUpdateStatus(int userId, int updateStatus);
+    List<ErrorDataModel> findByUserModelIdAndUpdateStatusAndFileInfoModelId(int userId, int updateStatus, int fileInfoModelId);
     List<ErrorDataModel> findByUpdateStatus(int updateStatus);
     ErrorDataModel findById(int id);
     @Transactional

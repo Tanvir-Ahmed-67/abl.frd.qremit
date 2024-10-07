@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.nafex.controller;
-
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
@@ -28,7 +27,7 @@ public class CocPaidModelController {
         this.myUserDetailsService = myUserDetailsService;
         this.commonService = commonService;
     }
-    @PostMapping("/cocPaidUpload")
+    @PostMapping("/coc_paidUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 
@@ -42,35 +41,35 @@ public class CocPaidModelController {
         }
         String message = "";
         FileInfoModel fileInfoModelObject;
-        if (commonService.hasCSVFormat(file)) {
+        if (CommonService.hasCSVFormat(file)) {
             if (!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
                     fileInfoModelObject = cocPaidModelService.save(file, userId, exchangeCode);
                     if (fileInfoModelObject != null) {
                         model.addAttribute("fileInfo", fileInfoModelObject);
-                        return commonService.uploadSuccesPage;
+                        return CommonService.uploadSuccesPage;
                     } else {
                         message = "All Data From Your Selected File Already Exists!";
                         model.addAttribute("message", message);
-                        return commonService.uploadSuccesPage;
+                        return CommonService.uploadSuccesPage;
                     }
                 } catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return CommonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadSuccesPage;
+            return CommonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadSuccesPage;
+        return CommonService.uploadSuccesPage;
     }
 }

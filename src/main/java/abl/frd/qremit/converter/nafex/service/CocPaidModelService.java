@@ -80,7 +80,7 @@ public class CocPaidModelService {
                 if (duplicateData.isPresent()) {  // Checking Duplicate Transaction No in this block
                     continue;
                 }
-                String routingNo = CommonService.fixABLRoutingNo(csvRecord.get(8));
+                String routingNo = CommonService.fixRoutingNo(csvRecord.get(8));
                 Map<String, Object> routingMap = customQueryService.getABLBranchFromRouting(routingNo);
                 
                 CocPaidModel cocPaidModel = new CocPaidModel(

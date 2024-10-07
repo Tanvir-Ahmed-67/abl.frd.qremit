@@ -56,10 +56,16 @@ public class RiaModelService {
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
+                /*
                 List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(riaModelList, "getCheckT24","1", currentDateTime);
                 List<CocModel> cocModelList = CommonService.generateCocModelList(riaModelList, "getCheckCoc", currentDateTime);
                 List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(riaModelList, "getCheckAccPayee", currentDateTime);
                 List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(riaModelList, "getCheckBeftn", currentDateTime);
+                */
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(riaModelList, currentDateTime, 1);
+                List<CocModel> cocModelList = CommonService.generateCocModelList(riaModelList, currentDateTime);
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(riaModelList, currentDateTime);
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(riaModelList, currentDateTime);
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -116,6 +122,7 @@ public class RiaModelService {
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
                     continue;
                 }
+                String bankName = "Agrani Bank";
                 RiaModel riaModel = new RiaModel(
                         exchangeCode, //exCode
                         csvRecord.get(0), //Tranno
@@ -123,28 +130,23 @@ public class RiaModelService {
                         Double.parseDouble(csvRecord.get(1)), //Amount
                         csvRecord.get(10), //enteredDate
                         csvRecord.get(3), //remitter
-                        "Remitter Mobile", // remitterMobile
-
+                        "", // remitterMobile
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
-                        "Beneficiary Mobile", // beneficiaryMobile
-                        "Bank Name", //bankName
-                        "Bank Code", //bankCode
-                        "Branch Name", //branchName
-                        "Branch Code", // branchCode
-                        "Drawee Branch Name", //Drawee Branch Name
-                        "Drawee Branch Code", // Drawee Branch Code
-                        "Purpose Of Remittance", // purposeOfRemittance
-                        "Source Of Income", // sourceOfIncome
-                        "Not Processed",    // processed_flag
-                        "type",             // type_flag
-                        "processedBy",      // Processed_by
-                        "dummy",            // processed_date
-                        currentDateTime,
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), "Agrani"),  // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                        //checkCoc
-                        "0",  //checkAccPayee
-                        "0"); // Checking Beftn
+                        "", // beneficiaryMobile
+                        bankName, //bankName
+                        "11", //bankCode
+                        "", //branchName
+                        "", // branchCode
+                        "", //Drawee Branch Name
+                        "", // Drawee Branch Code
+                        "", // purposeOfRemittance
+                        "", // sourceOfIncome
+                        "",    // processed_flag
+                        CommonService.setTypeFlag(csvRecord.get(7).trim(), bankName, csvRecord.get(11).trim()), //type_flag
+                        "",      // Processed_by
+                        "",            // processed_date
+                        currentDateTime);
                 riaModelList.add(riaModel);
             }
             return riaModelList;

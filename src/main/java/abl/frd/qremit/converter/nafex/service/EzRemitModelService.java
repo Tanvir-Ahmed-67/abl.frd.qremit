@@ -43,8 +43,8 @@ public class EzRemitModelService {
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
             List<EzRemitModel> ezRemitModelList = new ArrayList<>();
-            String type = "0";
-            if(fileType.equalsIgnoreCase("API")) type = "1";
+            int type = 0;
+            if(fileType.equalsIgnoreCase("API")) type = 1;
             if(fileType.equalsIgnoreCase("API")){
                ezRemitModelList = csvToEzRemitAccountPayeeModels(file.getInputStream(), exchangeCode);
             }else if(fileType.equalsIgnoreCase("BEFTN")){
@@ -63,10 +63,16 @@ public class EzRemitModelService {
                     }
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
+                /*
                 List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(ezRemitModelList, "getCheckT24", type, currentDateTime);
                 List<CocModel> cocModelList = CommonService.generateCocModelList(ezRemitModelList, "getCheckCoc", currentDateTime);
                 List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(ezRemitModelList, "getCheckAccPayee", currentDateTime);
                 List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(ezRemitModelList, "getCheckBeftn", currentDateTime);
+                */
+                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(ezRemitModelList, currentDateTime, type);
+                List<CocModel> cocModelList = CommonService.generateCocModelList(ezRemitModelList, currentDateTime);
+                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(ezRemitModelList, currentDateTime);
+                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(ezRemitModelList, currentDateTime);
 
 
                 // FILE INFO TABLE GENERATION HERE......
@@ -76,7 +82,7 @@ public class EzRemitModelService {
                 fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
                 fileInfoModel.setTotalCount(String.valueOf(ezRemitModelList.size()));
                 fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setIsSettlement(Integer.parseInt(type));
+                fileInfoModel.setIsSettlement(type);
                 fileInfoModel.setUnprocessedCount("test");
                 fileInfoModel.setUploadDateTime(currentDateTime);
                 fileInfoModel.setEzRemitModel(ezRemitModelList);
@@ -123,6 +129,7 @@ public class EzRemitModelService {
                 if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
                     continue;
                 }
+                String bankName = "Agrani Bank";
                 EzRemitModel ezRemitModel = new EzRemitModel(
                         exchangeCode, //exCode
                         csvRecord.get(0), //Tranno
@@ -130,29 +137,23 @@ public class EzRemitModelService {
                         Double.parseDouble(csvRecord.get(5)), //Amount
                         csvRecord.get(7), //enteredDate
                         csvRecord.get(1), //remitter
-                        "Remitter Mobile", // remitterMobile
-
+                        "", // remitterMobile
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(4), //beneficiaryAccount
-                        "beneficiary Mobile", // beneficiaryMobile
-
-                        "Bank Name", //bankName
-                        "Bank Code", //bankCode
-                        "Branch Name", //branchName
-                        "Branch Code", // branchCode
-                        "Drawee Branch Name", //Drawee Branch Name
-                        "Drawee Branch Code", // Drawee Branch Code
-                        "Purpose Of Remittance", // purposeOfRemittance
-                        "Source Of Income", // sourceOfIncome
-                        "Not Processed",    // processed_flag
-                        "type",             // type_flag
-                        "processedBy",      // Processed_by
-                        "dummy",            // processed_date
-                        currentDateTime,           // extra_c
-                        CommonService.putOnlineFlag(csvRecord.get(4).trim(), "Agrani"),        // checkT24
-                        CommonService.putCocFlag(csvRecord.get(4).trim()),                              //checkCoc
-                        "0",                                                                            //checkAccPayee
-                        "0");                                                                           // Checking Beftn
+                        "", // beneficiaryMobile
+                        bankName, //bankName
+                        "11", //bankCode
+                        "", //branchName
+                        "", // branchCode
+                        "", //Drawee Branch Name
+                        "", // Drawee Branch Code
+                        "", // purposeOfRemittance
+                        "", // sourceOfIncome
+                        "",    // processed_flag
+                        CommonService.setTypeFlag(csvRecord.get(4).trim(), bankName, ""), //type_flag
+                        "",      // Processed_by
+                        "",            // processed_date
+                        currentDateTime);
                 ezRemitModelList.add(ezRemitModel);
             }
             return ezRemitModelList;
@@ -178,29 +179,25 @@ public class EzRemitModelService {
                         Double.parseDouble(csvRecord.get(3)), //Amount
                         csvRecord.get(4), //enteredDate
                         csvRecord.get(5), //remitter
-                        "Remitter Mobile", // remitterMobile
+                        "", // remitterMobile
 
                         csvRecord.get(6), // beneficiary
                         csvRecord.get(7), //beneficiaryAccount
-                        "beneficiary Mobile", // beneficiaryMobile
+                        "", // beneficiaryMobile
 
-                        csvRecord.get(8),  //bankCode
                         csvRecord.get(9),  //bankName
+                        csvRecord.get(8),  //bankCode
                         csvRecord.get(10), //branchName
                         csvRecord.get(11), // branchCode
-                        "Drawee Branch Name", //Drawee Branch Name
-                        "Drawee Branch Code", // Drawee Branch Code
-                        "Purpose Of Remittance", // purposeOfRemittance
-                        "Source Of Income", // sourceOfIncome
-                        "Not Processed",    // processed_flag
-                        "type",             // type_flag
-                        "processedBy",      // Processed_by
-                        "dummy",            // processed_date
-                        currentDateTime,           // extra_c
-                        CommonService.putOnlineFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim()),                           // checkT24
-                        CommonService.putCocFlag(csvRecord.get(7).trim()),                                                       //checkCoc
-                        CommonService.putAccountPayeeFlag(csvRecord.get(9).trim(),csvRecord.get(7).trim(), csvRecord.get(11)),   //checkAccPayee
-                        CommonService.putBeftnFlag(csvRecord.get(9).trim(), csvRecord.get(7).trim(),csvRecord.get(11)));        // check beftn                                                // Checking Beftn
+                        "", //Drawee Branch Name
+                        "", // Drawee Branch Code
+                        "", // purposeOfRemittance
+                        "", // sourceOfIncome
+                        "",    // processed_flag
+                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim(), csvRecord.get(11).trim()), //type_flag
+                        "",      // Processed_by
+                        "",            // processed_date
+                        currentDateTime);
                 ezRemitModelList.add(ezRemitModel);
             }
             return ezRemitModelList;

@@ -399,6 +399,7 @@ public class ReportService {
 
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
         //parse data
+        int count = 0;
         for(Map<String, Object> settlement: settlementList){
             FileInfoModel fileInfoModel = (FileInfoModel) settlement.get("fileInfoModel");
             int onlineCount = Integer.parseInt(fileInfoModel.getOnlineCount());
@@ -407,24 +408,35 @@ public class ReportService {
             if(onlineCount >= 1){
                 List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(onlineModelList, "1");
+                count += resp.size();
+                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
             }
             if(accPayeeCount >= 1){
                 List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(accountPayeeModelList, "2");
+                count += resp.size();
+                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
             }
             if(beftnCount >= 1){
                 List<BeftnModel> beftnModelList = beftnModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(beftnModelList, "3");
+                count += resp.size();
+                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
             }
             if(("333333").equals(fileInfoModel.getExchangeCode())){
                 List<CocPaidModel> cocPaidModelList = cocPaidModelService.getProcessedDataByFileId(fileInfoModel.getId(), 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(cocPaidModelList, "4");
+                count += resp.size();
+                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
             }
 
             //insert data from temporary table
             List<TemporaryReportModel> temporaryReportModelList = temporaryReportRepository.findAll();
             resp = setReportModelData(temporaryReportModelList, "");
+            count += resp.size();
+            if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
         }
+        if(count == 0)  return CommonService.getResp(0, "No data found for processing report", null);
         resp = CommonService.getResp(0, "Data Processed successfully", null);
         return resp;
     }
@@ -433,6 +445,7 @@ public class ReportService {
         Map<String, Object> resp = new HashMap<>();
         String types = type;
         if(modelList != null && !modelList.isEmpty()){
+            int count = 0;
             for(T model: modelList){
                 ReportModel reportModel = new ReportModel();
                 try{
@@ -475,15 +488,15 @@ public class ReportService {
                     //System.out.println(reportModel);
                     reportModelRepository.save(reportModel);
                     setIsVoucherGenerated(types, id, currentDateTime);
+                    count++;
                 }catch(Exception e){
                     e.printStackTrace();
                     return CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }
             }
             if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
+            if(count == 0)  return CommonService.getResp(0, "No data found for processing report", null);
             resp = CommonService.getResp(0, "Data processed successfully", null);
-        }else{
-            resp = CommonService.getResp(1, "Model can not be null or empty", null);
         }
         return resp;
     }
@@ -505,6 +518,5 @@ public class ReportService {
                 break;
         }
     }
-
 
 }
