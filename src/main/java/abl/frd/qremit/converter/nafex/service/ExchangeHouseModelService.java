@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ExchangeHouseModelService {
@@ -48,5 +49,9 @@ public class ExchangeHouseModelService {
 
     public List<ExchangeHouseModel> loadAllIsApiExchangeHouse(int isApi){
         return exchangeHouseModelRepository.findAllExchangeHouseByIsApi(isApi);
+    }
+
+    public List<ExchangeHouseModel> findAllByExchangeCodeIn(Set<String> exchangeCodes){
+        return exchangeHouseModelRepository.findAllByExchangeCodeIn(exchangeCodes);
     }
 }

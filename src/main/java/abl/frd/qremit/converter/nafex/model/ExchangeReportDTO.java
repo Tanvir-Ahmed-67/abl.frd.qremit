@@ -15,12 +15,32 @@ public class ExchangeReportDTO {
     private String beneficiaryName;
     private String beneficiaryAccount;
     private String beneficiaryMobile;
-
-
+    private String nrtAccountNo;
     private Double sumOfAmount = 0.00;
     private int totalRowCount = 0;
+    private String totalAmountInWords;
 
     public DecimalFormat formattedAmount = new DecimalFormat("#,##,###.00");
+
+    public String getTotalAmountInWords() {
+        return totalAmountInWords;
+    }
+
+    public void setTotalAmountInWords(String totalAmountInWords) {
+        this.totalAmountInWords = totalAmountInWords;
+    }
+
+    public String getNrtAccountNo() {
+        return nrtAccountNo;
+    }
+
+    public void setNrtAccountNo(String nrtAccountNo) {
+        this.nrtAccountNo = nrtAccountNo;
+    }
+
+    public void setTotalRowCount(int totalRowCount) {
+        this.totalRowCount = totalRowCount;
+    }
 
     public String doFormatAmount(Double amount){
         return formattedAmount.format(amount);

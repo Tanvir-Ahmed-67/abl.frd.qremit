@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface ExchangeHouseModelRepository extends JpaRepository<ExchangeHouseModel, Integer> {
@@ -34,4 +35,5 @@ public interface ExchangeHouseModelRepository extends JpaRepository<ExchangeHous
     ExchangeHouseModel findExchangeCodeByBaseTableName(String baseTableName);
     List<ExchangeHouseModel> findAllExchangeHouseByIsApi(int isApi);
     ExchangeHouseModel findExchangeHouseByIsApi(int isApi);
+    List<ExchangeHouseModel> findAllByExchangeCodeIn(Set<String> exchangeCodes);
 }
