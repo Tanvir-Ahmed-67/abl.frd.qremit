@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public class RepositoryModelWrapper<T>  {
     private final JpaRepository<T, ?> repository;
+    //private final Object repository;
     private final Class<T> modelClass;
 
     public RepositoryModelWrapper(JpaRepository<T, ?> repository, Class<T> modelClass) {

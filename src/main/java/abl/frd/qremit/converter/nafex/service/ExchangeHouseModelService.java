@@ -46,7 +46,7 @@ public class ExchangeHouseModelService {
         return exchangeHouseModel;
     }
 
-    public List<ExchangeHouseModel> loadAllIsApiExchangeHouse(int isApi){
-        return exchangeHouseModelRepository.findAllExchangeHouseByIsApi(isApi);
+    public List<ExchangeHouseModel> loadAllIsSettlementExchangeHouse(int isSettlement){
+        return exchangeHouseModelRepository.findAllExchangeHouseByIsSettlement(isSettlement);
     }
 }

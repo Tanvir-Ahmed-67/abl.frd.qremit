@@ -110,7 +110,7 @@ public class UtilsController {
         Map<String, Object> resp = new HashMap<>();
         if(currentDate == null || currentDate.trim().isEmpty())   currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         else currentDate = currentDate.trim();
-        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsApiExchangeHouse(1);
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsSettlementExchangeHouse(1);
         List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
         List<Map<String, Object>> dataList = new ArrayList<>();
         int i = 1;

@@ -60,17 +60,10 @@ $(document).ready(function(){
         var tbl = "#error_data_tbl";
         if($(tbl).length){
             var uid = $('#id').val();
-            console.log(uid);
+            var reportColumns = $("#reportColumns").val();
+            var cols = JSON.parse(reportColumns);
             var url = "/errorReport?id=" + uid;
-            page_header = "Error Data Report";
-            var params = {'tbl': tbl,'url': url};
-            $.ajax({
-                "url" : params.url,
-            }).done(function(resp){
-                get_simple_dataTable(params.tbl,resp.columns,resp);
-            }).fail(function(){
-                alert("Eroor getting from server");
-            });
+            get_dynamic_dataTable(tbl, url, cols);
         }
     }
 });

@@ -3,7 +3,10 @@ package abl.frd.qremit.converter.nafex.service;
 import abl.frd.qremit.converter.nafex.helper.RepositoryModelWrapper;
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
+
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -27,25 +30,30 @@ public class DynamicOperationService {
     private ApiT24ModelRepository apiT24ModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
+    @Autowired
+    private ApplicationContext context; // To fetch repositories dynamically
     
     LocalDateTime currentDateTime = LocalDateTime.now();
     private Map<String, RepositoryModelWrapper<?>> repositoryModelMap = new HashMap<>();
-
+    private String packageName = "abl.frd.qremit.converter.nafex.model.";
 
     @Bean
-    public Map<String, RepositoryModelWrapper<?>> repositoryModelMap(
-            AgexSingaporeModelRepository agexSingaporeModelRepository,
-            BecModelRepository becModelRepository,
-            EzRemitModelRepository ezRemitModelRepository,
-            MuzainiModelRepository muzainiModelRepository,
-            NafexModelRepository nafexModelRepository,
-            RiaModelRepository riaModelRepository) {
-        repositoryModelMap.put("7010226", new RepositoryModelWrapper<>(agexSingaporeModelRepository, AgexSingaporeModel.class));
-        repositoryModelMap.put("7010209", new RepositoryModelWrapper<>(becModelRepository, BecModel.class));
-        repositoryModelMap.put("7010299", new RepositoryModelWrapper<>(ezRemitModelRepository, EzRemitModel.class));
-        repositoryModelMap.put("7010231", new RepositoryModelWrapper<>(muzainiModelRepository, MuzainiModel.class));
-        repositoryModelMap.put("7010234", new RepositoryModelWrapper<>(nafexModelRepository, NafexEhMstModel.class));
-        repositoryModelMap.put("7010290", new RepositoryModelWrapper<>(riaModelRepository, RiaModel.class));
+    public Map<String, RepositoryModelWrapper<?>> repositoryModelMap(){
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAll();
+        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+            String className = packageName + exchangeHouseModel.getClassName();
+            String repositoryName = exchangeHouseModel.getRepositoryName();
+            String exchangeCode = exchangeHouseModel.getExchangeCode();
+            if(!CommonService.checkEmptyString(className) && !CommonService.checkEmptyString(repositoryName)){
+                try{
+                    JpaRepository<?, ?> repository = (JpaRepository<?, ?>) context.getBean(repositoryName);
+                    Class<?> modelClass = Class.forName(className);
+                    repositoryModelMap.put(exchangeCode, new RepositoryModelWrapper<>((JpaRepository) repository, modelClass));
+                }catch(ClassNotFoundException | BeansException e){
+                    e.printStackTrace();
+                }
+            }else continue;
+        }
         return repositoryModelMap;
     }
 
@@ -136,12 +144,7 @@ public class DynamicOperationService {
                     updatedData.get("branchName"), branchCode, updatedData.get("draweeBranchName"), updatedData.get("draweeBranchCode"), 
                     updatedData.get("purposeOfRemittance"), updatedData.get("sourceOfIncome"), updatedData.get("processFlag"), typeFlag, 
                     updatedData.get("processedBy"), updatedData.get("processedDate"), currentDateTime, fileInfoModel, user);
-                /*
-                List<OnlineModel> onlineModelList = CommonService.generatOnlineModelListFromErrorData(modelInstance,"getCheckT24","0", currentDateTime);
-                List<CocModel> cocModelList = CommonService.generatCocModelListFromErrorData(modelInstance, "getCheckCoc", currentDateTime);
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generatAccountPayeeModelListFromErrorData(modelInstance, "getCheckAccPayee", currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelListFromErrorData(modelInstance, "getCheckBeftn", currentDateTime);
-                */
+
                 List<Object> modelInstanceList = new ArrayList<>();
                 modelInstanceList.add(modelInstance);
                 List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(modelInstanceList, currentDateTime, 0);
@@ -168,8 +171,7 @@ public class DynamicOperationService {
                 for (OnlineModel onlineModel : onlineModelList) {
                     onlineModel.setFileInfoModel(fileInfoModel);
                     onlineModel.setUserModel(user);
-                }
-                                
+                }             
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved succesfully", null);
             } else {

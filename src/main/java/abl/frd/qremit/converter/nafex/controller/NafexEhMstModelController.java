@@ -14,6 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.*;;
 
 
@@ -58,6 +61,10 @@ public class NafexEhMstModelController {
                         model.addAttribute("fileInfo", fileInfoModelObject);
                         int errorCount = fileInfoModelObject.getErrorCount();
                         if(errorCount >= 1){
+                            List<Map<String, String>> columns = ReportController.getReportColumn("3");
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            String reportColumn = objectMapper.writeValueAsString(columns);
+                            model.addAttribute("reportColumn", reportColumn);
                             model.addAttribute("errorData", fileInfoModelObject.getId());
                         }
                     }

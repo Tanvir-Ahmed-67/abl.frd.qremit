@@ -173,10 +173,13 @@ public class UserController {
         }
         return "redirect:/showInactiveUsers";
     }
-
+    
     @GetMapping("/userFileUploadReport")
-    public String userFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
+    public String userFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String type){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        List<Map<String, String>> reportColumn = ReportController.getReportColumn(type);
+        System.out.println(reportColumn);
+        System.out.println(type);
         return "/pages/user/userFileUploadReport";
     }
 

@@ -18,6 +18,7 @@ function checkDataTable(tbl){
     checkDataTable(tbl);
     if(!url) return false;
     var data = DataTableColumns(cols);
+    console.log(data);
     var oSettings = {
       "ajax": {
         "url": url,
@@ -50,6 +51,19 @@ function checkDataTable(tbl){
       "sort": sort,
     });
  
+  }
+
+  function get_dynamic_dataTable(tbl,url,columns,sfun,lazy, RequestType = 'get', PostParams = [],exportTbl){
+    checkDataTable(tbl);
+    var data = [];
+    var func = [];
+    var keys = '';
+    for(var i in columns) {
+      keys = columns[i].data;
+      data.push(keys);
+    }
+    $(tbl).DataTable({"columns": columns });
+    get_dataTable(url,tbl,data,sfun,'',PostParams,RequestType,exportTbl);
   }
 
   function dataTable_reload(tbl,pagination = true){

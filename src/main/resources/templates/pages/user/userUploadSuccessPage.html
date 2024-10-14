@@ -40,6 +40,7 @@
     </div>
     <div th:if="${errorData !=null}">
         <input type="hidden" name="id" id="id" th:value="${errorData}" />
+        <input type="hidden" name="reportColumns" id="reportColumns" th:value="${reportColumn}" />
         <h4>Error Data Report</h4>
         <div class="card">
             <div class="card-body">

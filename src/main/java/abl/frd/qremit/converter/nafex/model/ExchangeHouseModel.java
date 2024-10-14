@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="ex_house_list",
-    indexes = { @Index(name = "idx_is_api", columnList = "is_api") }
+    indexes = { @Index(name = "idx_is_settlement", columnList = "is_settlement") }
 )
 public class ExchangeHouseModel {
     @Id
@@ -24,15 +24,35 @@ public class ExchangeHouseModel {
 
     @Column(name = "active_status", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int activeStatus = 0;
-    @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
-    private int isApi = 0;
+    @Column(name = "is_settlement", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isSettlement = 0;
 
-    public int getIsApi() {
-        return this.isApi;
+    @Column(name = "class_name", length = 32, nullable = false)
+    private String className;
+    @Column(name = "repository_name", length = 32, nullable = false)
+    private String repositoryName;
+    public String getClassName() {
+        return this.className;
+    }
+    public void setClassName(String className) {
+        this.className = className;
     }
 
-    public void setIsApi(int isApi) {
-        this.isApi = isApi;
+    public String getRepositoryName() {
+        return this.repositoryName;
+    }
+
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
+
+    public int getIsSettlement() {
+        return this.isSettlement;
+    }
+
+    public void setIsSettlement(int isSettlement) {
+        this.isSettlement = isSettlement;
     }
 
 

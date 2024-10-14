@@ -32,6 +32,6 @@ public interface ExchangeHouseModelRepository extends JpaRepository<ExchangeHous
     @Query("SELECT n FROM ExchangeHouseModel n WHERE n.exchangeCode = :exchangeCode")
     ExchangeHouseModel findByExchangeCode(String exchangeCode);
     ExchangeHouseModel findExchangeCodeByBaseTableName(String baseTableName);
-    List<ExchangeHouseModel> findAllExchangeHouseByIsApi(int isApi);
-    ExchangeHouseModel findExchangeHouseByIsApi(int isApi);
+    List<ExchangeHouseModel> findAllExchangeHouseByIsSettlement(int isSettlement);
+    ExchangeHouseModel findExchangeHouseByIsSettlement(int isSettlement);
 }

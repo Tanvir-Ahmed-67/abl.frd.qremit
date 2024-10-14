@@ -26,17 +26,12 @@ $(document).ready(function(){
     }
     if(page_header)  $(".page-header").html(page_header);
     var params = {'tbl': tbl,'url': url};
+    var url = "/getReportColumn?type=" + type;
+    get_ajax(url,"",get_user_upload_report,fail_func,"get","json",params);
 
-    function get_user_upload_report(params){
-        $.ajax({
-            "url" : params.url,
-        }).done(function(resp){
-            get_simple_dataTable(params.tbl,resp.columns,resp);
-        }).fail(function(){
-            alert("Eroor getting from server");
-        });
+    function get_user_upload_report(resp,params){
+        get_dynamic_dataTable(params.tbl, params.url, resp.column);        
     }
-    get_user_upload_report(params);
 
     $(document).off('click',".view_exchange");
     $(document).on('click',".view_exchange",function(e){
@@ -63,8 +58,8 @@ $(document).ready(function(){
         var header = $('#_csrf_header').val();
         var data = $(this).serialize();
         var url = "/error/update";
-        var params = {'success_reload': 'true', 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
-        get_ajax(url,data,success_alert,fail_func,"post","json",params);
+        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
+        get_ajax(url,data,success_modal,fail_func,"post","json",params);
     });
     $(document).off('click',".approve_error");
     $(document).on('click',".approve_error",function(e){
@@ -72,8 +67,8 @@ $(document).ready(function(){
         var id = $(this).attr("id");
         var url  = "/error/approve";
         var data = {'id': id};
-        var params = {'success_reload': 'true', 'tbl': tbl, };
-        get_ajax(url,data,success_alert,fail_func,"get","json",params);
+        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
+        get_ajax(url,data,success_modal,fail_func,"get","json",params);
     });
 
     $(document).off('click',".delete_error");
@@ -81,10 +76,10 @@ $(document).ready(function(){
         e.preventDefault();
         var id = $(this).attr("id");
         var url  = "/error/delete/" + id;
-        var params = {'success_reload': 'true', 'tbl': tbl, };
+        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
         var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
         if(confirm("Are you sure you want to delete this data?")){
-            get_ajax(url,data,success_alert,fail_func,"DELETE","json",params);
+            get_ajax(url,data,success_modal,fail_func,"DELETE","json",params);
         }
     });
 });
