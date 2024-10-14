@@ -3,6 +3,7 @@ package abl.frd.qremit.converter.nafex.service;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import abl.frd.qremit.converter.nafex.model.*;
@@ -53,6 +54,8 @@ public class ReportService {
     TemporaryReportRepository temporaryReportRepository;
     @Autowired
     TemporaryReportService temporaryReportService;
+    @Autowired
+    CommonService commonService;
     LocalDateTime currentDateTime = LocalDateTime.now();
 
     public List<ErrorDataModel> findByUserModelId(int userId) {
@@ -74,6 +77,32 @@ public class ReportService {
         // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Summary_Report.pdf");
+        // Export to PDF
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList) throws JRException, FileNotFoundException {
+        // Collect all unique exchange codes from dataList
+        Set<String> exchangeCodes = dataList.stream()
+                .map(ExchangeReportDTO::getExchangeCode)
+                .collect(Collectors.toSet());
+        // Fetch all ExchangeHouseModels for these exchange codes in one go
+        Map<String, ExchangeHouseModel> exchangeHouseMap = exchangeHouseModelService.findAllByExchangeCodeIn(exchangeCodes).stream().collect(Collectors.toMap(ExchangeHouseModel::getExchangeCode, Function.identity()));
+        for(int i =0; i<dataList.size();i++){
+            dataList.get(i).setExchangeName(exchangeHouseMap.get(dataList.get(i).getExchangeCode()).getExchangeName());
+            dataList.get(i).setNrtAccountNo(exchangeHouseMap.get(dataList.get(i).getExchangeCode()).getNrtaCode());
+            dataList.get(i).setEnteredDate(currentDateTime);
+        }
+        // Load File And Compile It.
+        File file = ResourceUtils.getFile("classpath:dailyVoucher.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        // Convert data into a JasperReports data source
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
+        // Parameters map if needed
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("ReportTitle", "Sample Report");
+        // Fill the report
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Daily_Voucher.pdf");
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }

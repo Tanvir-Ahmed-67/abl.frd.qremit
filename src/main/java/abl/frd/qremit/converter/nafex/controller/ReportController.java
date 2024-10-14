@@ -1,6 +1,9 @@
 package abl.frd.qremit.converter.nafex.controller;
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.*;
+
+import abl.frd.qremit.converter.nafex.helper.NumberToWords;
 import abl.frd.qremit.converter.nafex.model.*;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -235,7 +238,7 @@ public class ReportController {
         return "/report/detailsOfDailyRemittance";
     }
 
-    @RequestMapping(value="/downloadDailyStatementInPdfFormat", method= RequestMethod.GET)
+    @RequestMapping(value="/downloadSummaryOfDailyStatementInPdfFormat", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat() throws JRException, FileNotFoundException {
         // Getting the data as List
         List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement();
@@ -253,7 +256,7 @@ public class ReportController {
                 .headers(headers)
                 .body(pdfReport);
     }
-    @RequestMapping(value = "/downloadDetailsReport", method= RequestMethod.GET)
+    @RequestMapping(value = "/downloadDetailsOfDailyStatement", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format){
         try {
             // Prepare parameters and data source as needed
@@ -273,6 +276,28 @@ public class ReportController {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
+    }
+
+    @RequestMapping(value="/downloaDailyVoucherInPdfFormat", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloaDailyVoucherInPdfFormat() throws JRException, FileNotFoundException {
+        NumberToWords numberToWords = new NumberToWords();
+        // Getting the data as List
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement();
+        for(int i=0; i<data.size();i++){
+            data.get(i).setTotalAmountInWords(numberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
+        }
+
+        // Generating the PDF report and storing here - D:\\Report"+"\\DailyVoucher.pdf
+        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data);
+        // Set the headers for file download
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"DailyVoucher.pdf\"");
+
+        // Return the response with the PDF as a byte array
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
     }
 
     @GetMapping("/generateReport")
