@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 14, 2024 at 08:03 AM
+-- Generation Time: Oct 14, 2024 at 08:15 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,7 +59,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (114, 1, '', '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', '', '7053', '', '', 0),
 (115, 1, '', '7010246', 'Al jadeed Exchange', '', '7058', '', '', 0),
 (116, 1, '', '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '', '', 0),
-(117, 1, '', '7010240', 'Al Rostamani Int\'l Ex. Co. Abu', '', '7052', '', '', 0),
+(117, 1, '', '7010240', 'Al Rostamani Intl Ex. Co. Abu', '', '7052', '', '', 0),
 (118, 1, '', '7010245', 'Al Zaman Ex. , Qatar', '', '7057', '', '', 0),
 (119, 1, '', '7010262', 'ALAWANEH EX. JORDAN', '', '7082', '', '', 0),
 (120, 1, '', '7010205', 'Al-Fardan Exchange  Co. Doha, ', '', '7002', '', '', 0),
@@ -73,7 +73,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (128, 1, '', '7010279', 'Belhasa Global Ex', '', '7098', '', '', 0),
 (129, 1, '', '7010278', 'Brac Saajjan Exchange', '', '7091', '', '', 0),
 (130, 1, '', '7010251', 'Choice Money Ex. , USA', '', '7066', '', '', 0),
-(131, 1, '', '7010211', 'City Int\'l Exchange Co, Kuwait', '', '7016', '', '', 0),
+(131, 1, '', '7010211', 'City Intl Exchange Co, Kuwait', '', '7016', '', '', 0),
 (132, 1, '', '7010288', 'City pay Malysia', '', '7071', '', '', 0),
 (133, 1, '', '7010254', 'Dollarco Exchange Co. Kuwait', '', '7019', '', '', 0),
 (134, 1, '', '7010206', 'Eastern Exchange Est. Doha, Qa', '', '7000', '', '', 0),
@@ -91,7 +91,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (146, 1, '', '7010258', 'Joyalukkas Ex Oman', '', '7078', '', '', 0),
 (147, 1, '', '7010264', 'Joyalukkas Ex WLL,KUWAIT', '', '7085', '', '', 0),
 (148, 1, '', '7010271', 'K & H Remittance Services Brun', '', '7092', '', '', 0),
-(149, 1, '', '7010207', 'Kuwait Bahrain Int\'l Ex. Kuwai', '', '7006', '', '', 0),
+(149, 1, '', '7010207', 'Kuwait Bahrain Intl Ex. Kuwai', '', '7006', '', '', 0),
 (150, 1, '', '7010242', 'Lari Exchange  (Abu Dhabi, UAE', '', '7054', '', '', 0),
 (151, 1, '', '7010237', 'Lulu Exchange Co', '', '7050', '', '', 0),
 (152, 1, '', '7010295', 'MaxMoney', '', '7094', '', '', 0),
@@ -105,7 +105,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (160, 1, '', '7010241', 'NCBJ, Jeddah, KSA', '', '7055', '', '', 0),
 (161, 1, '', '7010272', 'NEC Money Transfer, UK', '', '7087', '', '', 0),
 (162, 1, '', '7010208', 'Oman Exchange Co, Kuwait', '', '7008', '', '', 0),
-(163, 1, '', '7010215', 'Oman Int\'l Exchange Ltd. Oman', '', '7021', '', '', 0),
+(163, 1, '', '7010215', 'Oman Intl Exchange Ltd. Oman', '', '7021', '', '', 0),
 (164, 1, '', '7010286', 'Placid NK orp', '', '7065', '', '', 0),
 (165, 1, '', '7010238', 'Prabhu Group Inc. U S A', '', '7051', '', '', 0),
 (166, 1, '', '7010296', 'SG Quick Pay, PTE LTD, SNG', '', '7107', '', '', 0),
