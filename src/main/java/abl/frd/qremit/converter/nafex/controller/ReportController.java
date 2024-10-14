@@ -16,10 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
-import abl.frd.qremit.converter.nafex.repository.CustomQueryRepository;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.CustomQueryService;
 import abl.frd.qremit.converter.nafex.service.ErrorDataModelService;
@@ -28,8 +25,6 @@ import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.ReportService;
-
-import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class ReportController {
@@ -55,17 +50,43 @@ public class ReportController {
         this.fileInfoModelService = fileInfoModelService;
         this.reportService = reportService;
     }
+
+    @GetMapping("/getReportColumn")
+    @ResponseBody
+    public Map<String, Object> getReportColumnUrl(String type){
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, String>> column = getReportColumn(type);
+        resp.put("column", column);
+        return resp;
+    }
+
+    public static List<Map<String, String>> getReportColumn(String type){
+        String[] columnData = null;
+        String[] columnTitles = null;
+        switch(type){
+            case "1":
+            default:
+                columnData = new String[] {"sl", "exchangeCode", "uploadDateTime", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount","action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total","Action"};
+                break;
+            case "2":
+                columnData = new String[] {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "remitterName","remType"};
+                columnTitles = new String[] {"SL", "Bank Name", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Remitter Name","Type"};
+                break;
+            case "3":
+            case "4":
+                columnData = new String[] {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
+                columnTitles = new String[] {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+                break;
+        }
+        return CommonService.createColumns(columnData, columnTitles);
+    }
     
     @GetMapping("/report")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
-
-        String[] columnData = {"sl", "exchangeCode", "uploadDateTime", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount","action"};
-        String[] columnTitles = {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total","Action"};
-        List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
-        resp.put("columns", columns);
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         int userId;
@@ -112,10 +133,6 @@ public class ReportController {
         Map<String, Object> resp = new HashMap<>();
         
         String[] columnData = {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "remitterName","remType"};
-        String[] columnTitles = {"SL", "Bank Name", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Remitter Name","Type"};
-        List<Map<String, String>> columns = commonService.createColumns(columnData, columnTitles);
-        resp.put("columns", columns);
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         int userId;
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
@@ -135,7 +152,6 @@ public class ReportController {
         double totalAmount = 0;
 
         for(Map<String,Object> fdata: (List<Map<String, Object>>) fileInfo.get("data")){
-            
             Map<String, Object> dataMap = new HashMap<>();
             dataMap.put("sl", sl++);
             dataMap.put("bankName",fdata.get("bank_name"));
@@ -167,9 +183,6 @@ public class ReportController {
         @RequestParam(defaultValue = "") String id){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
-
-        List<Map<String, String>> columns = commonService.getErrorReportColumn();
-        resp.put("columns", columns);
         int fileInfoModelId = 0;
         if(!id.isEmpty())  fileInfoModelId = Integer.parseInt(id);
 
@@ -179,31 +192,7 @@ public class ReportController {
             MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
             User user = myUserDetails.getUser();
             userId = user.getId();
-
-            List<Map<String, Object>> dataList = new ArrayList<>();
-            int sl = 1;
-            String action = "";
-            String btn = "";
-            List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
-            for(ErrorDataModel emodel: errorDataModel){
-                Map<String, Object> dataMap = new HashMap<>();
-                btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit_error",String.valueOf(emodel.getId()),"Edit");
-                btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete_error",String.valueOf(emodel.getId()),"Delete");
-                action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
-                dataMap.put("sl", sl++);
-                dataMap.put("bankName", emodel.getBankName());
-                dataMap.put("branchName", emodel.getBranchName());
-                dataMap.put("routingNo", emodel.getBranchCode());
-                dataMap.put("beneficiaryName", emodel.getBeneficiaryName());
-                dataMap.put("beneficiaryAccountNo", emodel.getBeneficiaryAccount());
-                dataMap.put("transactionNo", emodel.getTransactionNo());
-                dataMap.put("amount", emodel.getAmount());
-                dataMap.put("exchangeCode", emodel.getExchangeCode());
-                dataMap.put("errorMessage", emodel.getErrorMessage());
-                dataMap.put("action", action);
-
-                dataList.add(dataMap);
-            }
+            List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId);
             resp.put("data", dataList);
         }else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -216,35 +205,7 @@ public class ReportController {
     public ResponseEntity<Map<String, Object>> getErrorUpdateReport(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
-
-        List<Map<String, String>> columns = commonService.getErrorReportColumn();
-        resp.put("columns", columns);
-
-        List<ErrorDataModel> errorDataModel = errorDataModelService.findUserModelListByUpdateStatus(1);
-        List<Map<String, Object>> dataList = new ArrayList<>();
-        int sl = 1;
-        String action = "";
-        for(ErrorDataModel emodel: errorDataModel){
-            String errorDataId = String.valueOf(emodel.getId());
-            List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(errorDataId);
-            Map<String, Object> dataMap = new HashMap<>();
-            Map<String, Object> updatedDataMap = logModelService.fetchLogDataByKey(logData, "updatedData");
-            action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round approve_error", errorDataId,"Approve");
-            
-            dataMap.put("sl", sl++);
-            dataMap.put("bankName", updatedDataMap.get("bankName"));
-            dataMap.put("branchName", updatedDataMap.get("branchName"));
-            dataMap.put("routingNo", updatedDataMap.get("branchCode"));
-            dataMap.put("beneficiaryName", updatedDataMap.get("beneficiaryName"));
-            dataMap.put("beneficiaryAccountNo", updatedDataMap.get("beneficiaryAccount"));
-            dataMap.put("transactionNo", updatedDataMap.get("transactionNo"));
-            dataMap.put("amount", updatedDataMap.get("amount"));
-            dataMap.put("exchangeCode", emodel.getExchangeCode());
-            dataMap.put("errorMessage", emodel.getErrorMessage());
-            dataMap.put("action", action);
-
-            dataList.add(dataMap);
-        }
+        List<Map<String, Object>> dataList = errorDataModelService.getErrorUpdateReport();
         resp.put("data", dataList);
         return ResponseEntity.ok(resp);
     }

@@ -139,7 +139,7 @@ public class CommonService {
 	}
 
     // Helper method to create columns dynamically from arrays
-    public List<Map<String, String>> createColumns(String[] columnData, String[] columnTitles) {
+    public static List<Map<String, String>> createColumns(String[] columnData, String[] columnTitles) {
         List<Map<String, String>> columns = new ArrayList<>();
         for (int i = 0; i < columnData.length; i++) {
             columns.add(createColumn(columnData[i], columnTitles[i]));
@@ -148,7 +148,7 @@ public class CommonService {
     }
         
     // Helper method to create a column map for table
-    private Map<String, String> createColumn(String data, String title) {
+    private static Map<String, String> createColumn(String data, String title) {
         Map<String, String> column = new HashMap<>();
         column.put("data", data);
         column.put("title", title);
@@ -743,6 +743,11 @@ public class CommonService {
         String remoteAddr = request.getRemoteAddr();
         String xForwardedFor = request.getHeader("X-Forwarded-For");
 
+         // Handle the IPv6 localhost address (::1)
+        if ("0:0:0:0:0:0:0:1".equals(remoteAddr)) {
+            remoteAddr = "127.0.0.1";
+        }
+
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
             // The X-Forwarded-For header can contain multiple IPs, the first one is the client IP
             return xForwardedFor.split(",")[0];
@@ -771,22 +776,6 @@ public class CommonService {
         }
         return routingNo;
     }
-
-    
-    /* 
-    public String getABLBranchFromRouting(String routingNo){
-        String branchCode = "";
-        routingNo = CommonService.fixABLRoutingNo(routingNo);
-        Map<String, Object> routingDetails = reportService.getRoutingDetails(routingNo);
-        System.out.println(routingDetails);
-        if((Integer) routingDetails.get("err") == 0){
-            for(Map<String,Object> rdata: (List<Map<String, Object>>) routingDetails.get("data")){
-                branchCode = rdata.get("abl_branch_code").toString();
-            }
-        }
-        return branchCode;
-    }
-    */
 
     public static String checkBEFTNRouting(String routingNo){
         String errorMessage = "";

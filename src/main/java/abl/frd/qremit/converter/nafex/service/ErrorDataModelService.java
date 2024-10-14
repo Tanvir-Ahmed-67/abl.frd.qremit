@@ -1,23 +1,16 @@
 package abl.frd.qremit.converter.nafex.service;
-
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.LogModel;
@@ -34,6 +27,8 @@ public class ErrorDataModelService {
     LogModelRepository logModelRepository;
     @Autowired
     ExchangeHouseModelService exchangeHouseModelService;
+    @Autowired
+    LogModelService logModelService;
 
     //find errorDataModel by userID
     public List<ErrorDataModel> findUserModelListById(int userId){
@@ -177,5 +172,61 @@ public class ErrorDataModelService {
         resp.put("userId", errorDataModel.getUserModel().getId());
         resp.put("fileInfoId", errorDataModel.getFileInfoModel().getId());
         return resp;
+    }
+
+    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId){
+        List<ErrorDataModel> errorDataModel = findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
+        int sl = 1;
+        String action = "";
+        String btn = "";
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        for(ErrorDataModel emodel: errorDataModel){
+            Map<String, Object> dataMap = new HashMap<>();
+            btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit_error",String.valueOf(emodel.getId()),"Edit");
+            btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete_error",String.valueOf(emodel.getId()),"Delete");
+            action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
+
+            dataMap.put("sl", sl++);
+            dataMap.put("bankName", emodel.getBankName());
+            dataMap.put("branchName", emodel.getBranchName());
+            dataMap.put("routingNo", emodel.getBranchCode());
+            dataMap.put("beneficiaryName", emodel.getBeneficiaryName());
+            dataMap.put("beneficiaryAccountNo", emodel.getBeneficiaryAccount());
+            dataMap.put("transactionNo", emodel.getTransactionNo());
+            dataMap.put("amount", emodel.getAmount());
+            dataMap.put("exchangeCode", emodel.getExchangeCode());
+            dataMap.put("errorMessage", emodel.getErrorMessage());
+            dataMap.put("action", action);
+            dataList.add(dataMap);
+        }
+        return dataList;
+    }
+
+    public List<Map<String, Object>> getErrorUpdateReport(){
+        List<ErrorDataModel> errorDataModel = findUserModelListByUpdateStatus(1);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        int sl = 1;
+        String action = "";
+        for(ErrorDataModel emodel: errorDataModel){
+            String errorDataId = String.valueOf(emodel.getId());
+            List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(errorDataId);
+            Map<String, Object> dataMap = new HashMap<>();
+            Map<String, Object> updatedDataMap = logModelService.fetchLogDataByKey(logData, "updatedData");
+            action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round approve_error", errorDataId,"Approve");
+            
+            dataMap.put("sl", sl++);
+            dataMap.put("bankName", updatedDataMap.get("bankName"));
+            dataMap.put("branchName", updatedDataMap.get("branchName"));
+            dataMap.put("routingNo", updatedDataMap.get("branchCode"));
+            dataMap.put("beneficiaryName", updatedDataMap.get("beneficiaryName"));
+            dataMap.put("beneficiaryAccountNo", updatedDataMap.get("beneficiaryAccount"));
+            dataMap.put("transactionNo", updatedDataMap.get("transactionNo"));
+            dataMap.put("amount", updatedDataMap.get("amount"));
+            dataMap.put("exchangeCode", emodel.getExchangeCode());
+            dataMap.put("errorMessage", emodel.getErrorMessage());
+            dataMap.put("action", action);
+            dataList.add(dataMap);
+        }
+        return dataList;
     }
 }

@@ -387,7 +387,7 @@ public class ReportService {
 
     public Map<String, Object> processReport(String currentDate){
         Map<String, Object> resp = new HashMap<>();
-        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsApiExchangeHouse(1);
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsSettlementExchangeHouse(1);
         List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
         int totalCount = 0;
         //check all settlement file uploaded
