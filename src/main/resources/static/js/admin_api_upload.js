@@ -16,6 +16,6 @@ $(document).ready(function(){
     $(document).on('click',".process_report", function(e){
         e.preventDefault();
         var url = "/processReport";
-        get_ajax(url,"",success_alert, fail_func, "get");
+        get_ajax(url,"",success_alert, fail_func, "get","json","",9000000);
     });
 });

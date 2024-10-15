@@ -54,7 +54,7 @@ public class TemporaryReportService {
 
     public <T> Map<String, Object> setTemporaryModelData(List<T> modelList, String type){
         Map<String, Object> resp = new HashMap<>();
-        System.out.println(modelList);
+        //System.out.println(modelList);
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
             for(T model: modelList){

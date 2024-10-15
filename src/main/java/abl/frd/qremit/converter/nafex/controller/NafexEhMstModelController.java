@@ -14,11 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.*;;
-
+import java.util.*;
 
 @Controller
 public class NafexEhMstModelController {
@@ -57,7 +54,7 @@ public class NafexEhMstModelController {
                     if(resp.containsKey("errorMessage")){
                         model.addAttribute("message", resp.get("errorMessage"));
                     }
-                    if(fileInfoModelObject!=null){
+                    if(fileInfoModelObject != null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
                         int errorCount = fileInfoModelObject.getErrorCount();
                         if(errorCount >= 1){
@@ -68,9 +65,11 @@ public class NafexEhMstModelController {
                             model.addAttribute("errorData", fileInfoModelObject.getId());
                         }
                     }
+                    /*
                     else if(fileInfoModelObject == null && !resp.containsKey("errorMessage")){
                         model.addAttribute("message", "All Data From Your Selected File Already Exists!");
                     }
+                    */
                     return CommonService.uploadSuccesPage;
                 }
                 catch (IllegalArgumentException e) {
