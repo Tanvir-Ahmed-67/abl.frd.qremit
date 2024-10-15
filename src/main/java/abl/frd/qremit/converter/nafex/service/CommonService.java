@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
 import java.sql.Connection;
@@ -605,8 +606,14 @@ public class CommonService {
     }
 
     public static boolean checkEmptyString(String str){
-        if(str == null || str.trim().isEmpty() || str.trim().equals("0.0")) return true;
-        else return false;
+        if(str == null || str.trim().isEmpty()) return true;
+        try{
+            //check number
+            double number = Double.parseDouble(str);
+            return number == 0.0;
+        }catch(NumberFormatException e){
+            return false;
+        }
     }
 
     public static boolean checkAgraniRoutingNo(String routingNo){
@@ -641,12 +648,116 @@ public class CommonService {
         return errorMessage;
     }
 
-    public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
-        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+    public static <T> Map<String, Object> generateFourConvertedDataModel(List<T> model, FileInfoModel fileInfoModel, User user, LocalDateTime currentDateTime, int isProcessed){
+        Map<String, Object> resp = new HashMap<>();
+        List<OnlineModel> onlineModelList = generateOnlineModelList(model, currentDateTime, isProcessed);
+        List<CocModel> cocModelList = generateCocModelList(model, currentDateTime);
+        List<AccountPayeeModel> accountPayeeModelList = generateAccountPayeeModelList(model, currentDateTime);
+        List<BeftnModel> beftnModelList = generateBeftnModelList(model, currentDateTime);
+        
+        fileInfoModel.setCocModelList(cocModelList);
+        fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
+        fileInfoModel.setBeftnModelList(beftnModelList);
+        fileInfoModel.setOnlineModelList(onlineModelList);
+
+        for (CocModel cocModel : cocModelList) {
+            cocModel.setFileInfoModel(fileInfoModel);
+            cocModel.setUserModel(user);
+        }
+        for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
+            accountPayeeModel.setFileInfoModel(fileInfoModel);
+            accountPayeeModel.setUserModel(user);
+        }
+        for (BeftnModel beftnModel : beftnModelList) {
+            beftnModel.setFileInfoModel(fileInfoModel);
+            beftnModel.setUserModel(user);
+        }
+        for (OnlineModel onlineModel : onlineModelList) {
+            onlineModel.setFileInfoModel(fileInfoModel);
+            onlineModel.setUserModel(user);
+        }
+        resp.put("fileInfoModel", fileInfoModel);
+        resp.put("onlineModelList", onlineModelList);
+        resp.put("cocModelList", cocModelList);
+        resp.put("accountPayeeModelList", accountPayeeModelList);
+        resp.put("beftnModelList", beftnModelList);
+        return resp;
+    }
+
+    public static FileInfoModel countFourConvertedDataModel(Map<String, Object> data){
+        FileInfoModel fileInfoModel = (FileInfoModel)  data.get("fileInfoModel");
+        List<OnlineModel> onlineModelList = (List<OnlineModel>) data.get("onlineModelList");
+        List<CocModel> cocModelList = (List<CocModel>) data.get("cocModelList");
+        List<AccountPayeeModel> accountPayeeModelList = (List<AccountPayeeModel>) data.get("accountPayeeModelList");
+        List<BeftnModel> beftnModelList = (List<BeftnModel>) data.get("beftnModelList");
+        fileInfoModel.setAccountPayeeCount(String.valueOf(accountPayeeModelList.size()));
+        fileInfoModel.setOnlineCount(String.valueOf(onlineModelList.size()));
+        fileInfoModel.setBeftnCount(String.valueOf(beftnModelList.size()));
+        fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
+        return fileInfoModel;
+    }
+
+    public static <T> T createDataModel(T model, Map<String, Object> data){
+        for(Map.Entry<String, Object> entry: data.entrySet()){
+            String fieldName = entry.getKey();
+            Object fieldValue = entry.getValue();
+            try{
+                Field field = model.getClass().getDeclaredField(fieldName);
+                field.setAccessible(true);
+                if(field.getType().equals(String.class)){
+                    field.set(model, (String) fieldValue);
+                }
+                if(field.getType().equals(Double.class)){
+                    double doubleField;
+                    try{
+                        doubleField = Double.parseDouble((String) fieldValue);
+                    }catch(Exception e){
+                        doubleField = 0;
+                    } 
+                    field.set(model, doubleField);
+                }
+                if(field.getType().equals(Integer.class)){
+                    field.set(model, Integer.parseInt((String) fieldValue));
+                }
+            }catch(NoSuchFieldException | IllegalAccessException e){
+                e.printStackTrace();
+            }
+        }
+        return model;
+    }
+
+    public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
+        ErrorDataModel errorDataModel = getErrorDataModel(data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
         errorDataModelList.add(errorDataModel);
     }
     
-    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
+    public static ErrorDataModel getErrorDataModel(Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
+        double amount;
+        try{
+            amount = Double.parseDouble((String) data.get("amount"));
+        }catch(Exception e){
+            amount = 0;
+        }
+
+        ErrorDataModel errorDataModel = new ErrorDataModel();
+        errorDataModel = createDataModel(errorDataModel, data);
+        errorDataModel.setErrorMessage(errorMessage);
+        errorDataModel.setUploadDateTime(currentDateTime);
+        errorDataModel.setTypeFlag("0");
+
+        /*
+        ErrorDataModel errorDataModel = new ErrorDataModel(
+            (String) data.get("exchangeCode"), (String) data.get("transactionNo"), (String) data.get("currency"), amount,
+            (String) data.get("enteredDate"), (String) data.get("remitterName"), (String) data.get("remitterMobile"), (String) data.get("beneficiaryName"), 
+            (String) data.get("beneficiaryAccount"), (String) data.get("beneficiaryMobile"), (String) data.get("bankName"), (String) data.get("bankCode"), 
+            (String) data.get("branchName"), (String) data.get("branchCode"), (String) data.get("draweeBranchName"), (String) data.get("draweeBranchCode"), 
+            (String) data.get("purposeOfRemittance"), (String) data.get("sourceOfIncome"),"","0","","", errorMessage, currentDateTime, 0
+        );
+        */
+        errorDataModel.setUserModel(user);
+        errorDataModel.setFileInfoModel(fileInfoModel);
+        return errorDataModel;
+        /* 
         double amount;
         try{
             amount = Double.parseDouble(csvRecord.get(3));
@@ -683,6 +794,7 @@ public class CommonService {
         errorDataModel.setUserModel(user);
         errorDataModel.setFileInfoModel(fileInfoModel);
         return errorDataModel;
+        */
     }
 
     //generate template from file 

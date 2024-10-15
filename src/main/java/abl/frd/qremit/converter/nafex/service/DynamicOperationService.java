@@ -147,31 +147,8 @@ public class DynamicOperationService {
 
                 List<Object> modelInstanceList = new ArrayList<>();
                 modelInstanceList.add(modelInstance);
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(modelInstanceList, currentDateTime, 0);
-                List<CocModel> cocModelList = CommonService.generateCocModelList(modelInstanceList, currentDateTime);
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(modelInstanceList, currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(modelInstanceList, currentDateTime);
-
-                fileInfoModel.setOnlineModelList(onlineModelList);
-                fileInfoModel.setCocModelList(cocModelList);
-                fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
-                fileInfoModel.setBeftnModelList(beftnModelList);
-                for (CocModel cocModel : cocModelList) {
-                    cocModel.setFileInfoModel(fileInfoModel);
-                    cocModel.setUserModel(user);
-                }
-                for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
-                    accountPayeeModel.setFileInfoModel(fileInfoModel);
-                    accountPayeeModel.setUserModel(user);
-                }
-                for (BeftnModel beftnModel : beftnModelList) {
-                    beftnModel.setFileInfoModel(fileInfoModel);
-                    beftnModel.setUserModel(user);
-                }
-                for (OnlineModel onlineModel : onlineModelList) {
-                    onlineModel.setFileInfoModel(fileInfoModel);
-                    onlineModel.setUserModel(user);
-                }             
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
+                fileInfoModel = (FileInfoModel)  convertedDataModels.get("fileInfoModel");           
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved succesfully", null);
             } else {
