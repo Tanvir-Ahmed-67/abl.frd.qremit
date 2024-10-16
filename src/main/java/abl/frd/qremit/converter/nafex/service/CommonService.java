@@ -21,13 +21,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.DataFormatException;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -732,69 +728,14 @@ public class CommonService {
     }
     
     public static ErrorDataModel getErrorDataModel(Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
-        double amount;
-        try{
-            amount = Double.parseDouble((String) data.get("amount"));
-        }catch(Exception e){
-            amount = 0;
-        }
-
         ErrorDataModel errorDataModel = new ErrorDataModel();
         errorDataModel = createDataModel(errorDataModel, data);
         errorDataModel.setErrorMessage(errorMessage);
         errorDataModel.setUploadDateTime(currentDateTime);
         errorDataModel.setTypeFlag("0");
-
-        /*
-        ErrorDataModel errorDataModel = new ErrorDataModel(
-            (String) data.get("exchangeCode"), (String) data.get("transactionNo"), (String) data.get("currency"), amount,
-            (String) data.get("enteredDate"), (String) data.get("remitterName"), (String) data.get("remitterMobile"), (String) data.get("beneficiaryName"), 
-            (String) data.get("beneficiaryAccount"), (String) data.get("beneficiaryMobile"), (String) data.get("bankName"), (String) data.get("bankCode"), 
-            (String) data.get("branchName"), (String) data.get("branchCode"), (String) data.get("draweeBranchName"), (String) data.get("draweeBranchCode"), 
-            (String) data.get("purposeOfRemittance"), (String) data.get("sourceOfIncome"),"","0","","", errorMessage, currentDateTime, 0
-        );
-        */
         errorDataModel.setUserModel(user);
         errorDataModel.setFileInfoModel(fileInfoModel);
         return errorDataModel;
-        /* 
-        double amount;
-        try{
-            amount = Double.parseDouble(csvRecord.get(3));
-        }catch(Exception e){
-            amount = 0;
-        }
-        ErrorDataModel errorDataModel = new ErrorDataModel(
-            exchangeCode, //exCode
-            csvRecord.get(1), //Tranno
-            csvRecord.get(2), //Currency
-            amount, //Amount
-            csvRecord.get(4), //enteredDate
-            csvRecord.get(5), //remitter
-            csvRecord.get(17), //remitterMobile
-            csvRecord.get(6), // beneficiary
-            csvRecord.get(7), //beneficiaryAccount
-            csvRecord.get(12), //beneficiaryMobile
-            csvRecord.get(8), //bankName
-            csvRecord.get(9), //bankCode
-            csvRecord.get(10), //branchName
-            csvRecord.get(11), // branchCode
-            csvRecord.get(13), //draweeBranchName
-            csvRecord.get(14), //draweeBranchCode
-            csvRecord.get(15), //purposeOfRemittance
-            csvRecord.get(16), //sourceOfIncome
-            "",    // processed_flag
-            "0",    // type_flag
-            "",      // Processed_by
-            "",            // processed_date
-            errorMessage, //error_message
-            currentDateTime, //error_generation_date
-            0
-        );
-        errorDataModel.setUserModel(user);
-        errorDataModel.setFileInfoModel(fileInfoModel);
-        return errorDataModel;
-        */
     }
 
     //generate template from file 
@@ -927,6 +868,92 @@ public class CommonService {
         return errorMessage;
     }
     //check validation error message ends
+    //error checking
+    public static <T> Map<String, Object> checkError(Map<String, Object> data, List<ErrorDataModel> errorDataModelList, String nrtaCode, FileInfoModel fileInfoModel, 
+        User user, LocalDateTime currentDateTime, String userExCode, Optional<T> duplicateData, List<String> transactionList){
+        //userExCode- csv file first column
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("err", 0);
+        String errorMessage = "";
+        String beneficiaryName = data.get("beneficiaryName").toString();
+        String amount = data.get("amount").toString();
+        String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+        String bankName = data.get("bankName").toString();
+        String branchCode = data.get("branchCode").toString();
+        String exchangeCode = data.get("exchangeCode").toString();
+        String transactionNo = data.get("transactionNo").toString(); 
+
+        //check duplicate data exists in database
+        if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
+            return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
+        }
+        //check exchange code
+        String exchangeMessage = CommonService.checkExchangeCode(userExCode, exchangeCode, nrtaCode);
+        if(!exchangeMessage.isEmpty()){
+            return getResp(2, exchangeMessage, null);
+        }
+        //a/c no, benficiary name, amount empty or null check
+        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
+        if(!errorMessage.isEmpty()){
+            addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+            resp = getResp(1, errorMessage, null);
+            resp.put("errorDataModelList", errorDataModelList);
+            return resp;
+        }
+        if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = checkBEFTNRouting(branchCode);
+            if(!errorMessage.isEmpty()){
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
+        }else if(isCocFound(beneficiaryAccount)){
+            errorMessage = checkCOCBankName(bankName);
+            if(!errorMessage.isEmpty()){
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
+        }else if(isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
+            if(!errorMessage.isEmpty()){
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
+            errorMessage = checkCOString(beneficiaryAccount);
+            if(!errorMessage.isEmpty()){
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
+        }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
+            
+        }
+        //check duplicate data exists in csv data
+        if(transactionList.contains(transactionNo)){
+            return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
+        }else{
+            transactionList.add(transactionNo);
+            resp.put("transactionList", transactionList);
+        }
+        return resp;
+    }
+    //error message
+    public static String setErrorMessage(String duplicateMessage, int duplicateCount, int totalCount){
+        String errorMessage = "";
+        if(!duplicateMessage.isEmpty())  errorMessage = duplicateMessage;
+        if(totalCount == duplicateCount){
+            //resp.put("errorMessage", "All Data From Your Selected File Already Exists!");
+            errorMessage = "All Data From Your Selected File Already Exists!";
+        }else if(duplicateCount >= 1) errorMessage = duplicateMessage;
+        return errorMessage;
+    }
+
     public static String getCurrentDate(){
         return getCurrentDate("ddMMyyyy");
     }
@@ -981,6 +1008,13 @@ public class CommonService {
         resp.put("2", "Account Payee");
         resp.put("3", "BEFTN");
         resp.put("4", "COC");
+        return resp;
+    }
+
+    public static Map<String, Object> getErrorType(){
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("1", "benificiaryName,amount,beneficiaryAccount");
+        resp.put("2", "");
         return resp;
     }
 

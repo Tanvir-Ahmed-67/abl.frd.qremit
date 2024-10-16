@@ -14,7 +14,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;;
 
 
 @Controller
@@ -29,9 +33,10 @@ public class BecModelController {
         this.becModelService = becModelService;
         this.commonService = commonService;
     }
-
+    
     @PostMapping("/becUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode,
+        @RequestParam("nrtaCode") String nrtaCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));  
         int userId = 000000000;
         // Getting Logged In user Details in this block
@@ -46,19 +51,25 @@ public class BecModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
-                    fileInfoModelObject = becModelService.save(file, userId, exchangeCode);
-                    if(fileInfoModelObject!=null){
+                    Map<String, Object> resp = becModelService.save(file, userId, exchangeCode, nrtaCode);
+                    fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
+                    if(resp.containsKey("errorMessage")){
+                        model.addAttribute("message", resp.get("errorMessage"));
+                    }
+                    if(fileInfoModelObject != null){
                         model.addAttribute("fileInfo", fileInfoModelObject);
-                        return CommonService.uploadSuccesPage;
+                        int errorCount = fileInfoModelObject.getErrorCount();
+                        if(errorCount >= 1){
+                            List<Map<String, String>> columns = ReportController.getReportColumn("3");
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            String reportColumn = objectMapper.writeValueAsString(columns);
+                            model.addAttribute("reportColumn", reportColumn);
+                            model.addAttribute("errorData", fileInfoModelObject.getId());
+                        }
                     }
-                    else{
-                        message = "All Data From Your Selected File Already Exists!";
-                        model.addAttribute("message", message);
-                        return CommonService.uploadSuccesPage;
-                    }
+                    return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {
-                    message = e.getMessage();
-                    model.addAttribute("message", message);
+                    model.addAttribute("message", e.getMessage());
                     return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
@@ -75,4 +86,6 @@ public class BecModelController {
         model.addAttribute("message", message);
         return CommonService.uploadSuccesPage;
     }
+
+    
 }

@@ -1,0 +1,65 @@
+<div th:if="${message}" class="alert alert-danger text-center">
+    <span th:utext="${message}"></span> 
+</div>
+<div th:if="${updatedDataMap}">
+    <table class='table table-striped' id="table1">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center">Field Name</th>
+                <th scope="col" class="text-center">Old Data</th>
+                <th scope="col" class="text-center">Corrected Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Reference Number</td>
+                <td><span th:text="${oldDataMap['transactionNo']}"></span></td>
+                <td><span th:text="${updatedDataMap['transactionNo']}"></span></td>
+            </tr>
+            <tr>
+                <td>Amount</td>
+                <td><span th:text="${oldDataMap['amount']}"></span></td>
+                <td><span th:text="${updatedDataMap['amount']}"></span></td>
+            </tr>
+            <tr>
+                <td>Beneficiary Name</td>
+                <td><span th:text="${oldDataMap['beneficiaryName']}"></span></td>
+                <td><span th:text="${updatedDataMap['beneficiaryName']}"></span></td>
+            </tr>
+            <tr>
+                <td>Beneficiary Account No</td>
+                <td><span th:text="${oldDataMap['beneficiaryAccount']}"></span></td>
+                <td><span th:text="${updatedDataMap['beneficiaryAccount']}"></span></td>
+            </tr>
+            <tr>
+                <td>Bank Name</td>
+                <td><span th:text="${oldDataMap['bankName']}"></span></td>
+                <td><span th:text="${updatedDataMap['bankName']}"></span></td>
+            </tr>
+            <tr>
+                <td>Bank Code</td>
+                <td><span th:text="${oldDataMap['bankCode']}"></span></td>
+                <td><span th:text="${updatedDataMap['bankCode']}"></span></td>
+            </tr>
+            <tr>
+                <td>Branch Code/ Routing No</td>
+                <td><span th:text="${oldDataMap['branchCode']}"></span></td>
+                <td><span th:text="${updatedDataMap['branchCode']}"></span></td>
+            </tr>
+            <tr>
+                <td>Branch Name</td>
+                <td><span th:text="${oldDataMap['branchName']}"></span></td>
+                <td><span th:text="${updatedDataMap['branchName']}"></span></td>
+            </tr>
+        </tbody>
+    </table>
+    <form id="approve_error_form" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="id" id="id" th:value="${id}"/>
+        <div class="col-12 text-center">
+            <div class="btn-group">
+                <input type="submit" id="approve_error" value="Approve" class="btn btn-success btn-sm"/>
+                <button type="button" class="btn btn-danger btn-sm delete_error" th:id="${id}">Delete</button>
+            </div>
+        </div>
+    </form>
+</div>

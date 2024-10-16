@@ -50,7 +50,6 @@ public class NafexEhMstModelController {
                 try {
                     Map<String, Object> resp = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
                     fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
-                    //fileInfoModelObject = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
                     if(resp.containsKey("errorMessage")){
                         model.addAttribute("message", resp.get("errorMessage"));
                     }
@@ -65,11 +64,6 @@ public class NafexEhMstModelController {
                             model.addAttribute("errorData", fileInfoModelObject.getId());
                         }
                     }
-                    /*
-                    else if(fileInfoModelObject == null && !resp.containsKey("errorMessage")){
-                        model.addAttribute("message", "All Data From Your Selected File Already Exists!");
-                    }
-                    */
                     return CommonService.uploadSuccesPage;
                 }
                 catch (IllegalArgumentException e) {
