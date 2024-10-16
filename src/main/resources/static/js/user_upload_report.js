@@ -61,14 +61,24 @@ $(document).ready(function(){
         var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
         get_ajax(url,data,success_modal,fail_func,"post","json",params);
     });
-    $(document).off('click',".approve_error");
-    $(document).on('click',".approve_error",function(e){
+
+    $(document).off('click',".view_error");
+    $(document).on('click',".view_error",function(e){
         e.preventDefault();
         var id = $(this).attr("id");
+        var params = { tdiv: '.modal-body'};
+        var mparams = { 'modalID': 'myModal', 'modal_wrap':'#modal_wrap','modal_class':'modal-md', 'modal_title': 'View Error Data' };
+        var url = "/error/viewError/" + id;
+        gen_modal(url,params,mparams);
+    });
+
+    $(document).on("submit","#approve_error_form",function(e){
+        e.preventDefault();
+        var id = $("#id").val();
+        var data = {'id':id, '_csrf': csrf_token, '_csrf_header': csrf_header};
         var url  = "/error/approve";
-        var data = {'id': id};
         var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
-        get_ajax(url,data,success_modal,fail_func,"get","json",params);
+        get_ajax(url,data,success_modal,fail_func,"post","json",params);
     });
 
     $(document).off('click',".delete_error");
