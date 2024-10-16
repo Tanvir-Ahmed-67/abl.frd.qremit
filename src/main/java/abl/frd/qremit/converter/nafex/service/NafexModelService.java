@@ -197,8 +197,8 @@ public class NafexModelService {
             */
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
-            resp.put("errorCount", saveError.get("errorCount"));
-            if(!(saveError.get("errorMessage").toString()).isEmpty()){
+            if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
+            if(saveError.containsKey("errorMessage")){
                 resp.put("errorMessage", saveError.get("errorMessage"));
                 return resp;
             }

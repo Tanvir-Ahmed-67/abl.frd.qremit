@@ -231,18 +231,15 @@ public class ErrorDataModelService {
 
     public Map<String, Object> saveErrorModelList(List<ErrorDataModel> errorDataModelList){
         Map<String, Object> resp = new HashMap<>();
-        int errorCount = 0;
-        String errorMessage = "";
         if (!errorDataModelList.isEmpty()) {
             try{
                 List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
-                errorCount = errorDataModels.size();
+                int errorCount = errorDataModels.size();
+                resp.put("errorCount", errorCount);
             }catch(Exception e){
-                errorMessage = e.getMessage();
+                resp.put("errorMessage", e.getMessage());
             }
         }
-        resp.put("errorCount", errorCount);
-        resp.put("errorMessage", errorMessage);
         return resp;
     }
 }

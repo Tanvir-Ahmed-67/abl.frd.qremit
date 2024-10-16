@@ -1,6 +1,8 @@
 <section class="section">
-    <div th:if="${message}" class="alert alert-danger text-center">
-        <span th:utext="${message}"></span> 
+    <div th:if="${message !=null and !message.isEmpty()}">
+        <div class="alert alert-danger text-center">
+            <span th:utext="${message}"></span>
+        </div> 
     </div>
     <div th:if="${fileInfo}">
         <h4>Uploaded File Statistics</h4>

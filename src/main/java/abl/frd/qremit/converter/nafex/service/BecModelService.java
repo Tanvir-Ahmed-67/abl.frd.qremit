@@ -134,40 +134,12 @@ public class BecModelService {
                 becDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 becDataModel.setUploadDateTime(currentDateTime);
                 becDataModelList.add(becDataModel);
-                
-                /*
-                BecModel becDataModel = new BecModel(
-                        csvRecord.get(0), //exCode
-                        csvRecord.get(1), //Tranno
-                        csvRecord.get(2), //Currency
-                        Double.parseDouble(csvRecord.get(3)), //Amount
-                        csvRecord.get(4), //enteredDate
-                        csvRecord.get(5), //remitter
-                        csvRecord.get(17), //remitterMobile
-                        csvRecord.get(6), // beneficiary
-                        csvRecord.get(7), //beneficiaryAccount
-                        csvRecord.get(12), //beneficiaryMobile
-                        csvRecord.get(8), //bankName
-                        csvRecord.get(9), //bankCode
-                        csvRecord.get(10), //branchName
-                        csvRecord.get(11), // branchCode
-                        csvRecord.get(13), //draweeBranchName
-                        csvRecord.get(14), //draweeBranchCode
-                        csvRecord.get(15), //purposeOfRemittance
-                        csvRecord.get(16), //sourceOfIncome
-                        "",    // processed_flag
-                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(8).trim(), csvRecord.get(11).trim()), //type_flag
-                        "",      // Processed_by
-                        "",            // processed_date
-                        currentDateTime);
-                becDataModelList.add(becDataModel);
-                */
             }
 
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
-            resp.put("errorCount", saveError.get("errorCount"));
-            if(!(saveError.get("errorMessage").toString()).isEmpty()){
+            if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
+            if(saveError.containsKey("errorMessage")){
                 resp.put("errorMessage", saveError.get("errorMessage"));
                 return resp;
             }
@@ -185,7 +157,6 @@ public class BecModelService {
         return resp;
     }
     
-
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
