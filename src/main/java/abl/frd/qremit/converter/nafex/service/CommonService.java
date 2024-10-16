@@ -1,13 +1,18 @@
 package abl.frd.qremit.converter.nafex.service;
 
+import abl.frd.qremit.converter.nafex.controller.ReportController;
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -1024,4 +1029,24 @@ public class CommonService {
         String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
         return createColumns(columnData, columnTitles);
     }
+
+    public static Model viewUploadStatus(Map<String, Object> resp, Model model) throws JsonProcessingException{
+        FileInfoModel fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
+        if(resp.containsKey("errorMessage")){
+            model.addAttribute("message", resp.get("errorMessage"));
+        }
+        if(fileInfoModelObject != null){
+            model.addAttribute("fileInfo", fileInfoModelObject);
+            int errorCount = fileInfoModelObject.getErrorCount();
+            if(errorCount >= 1){
+            List<Map<String, String>> columns = ReportController.getReportColumn("3");
+                ObjectMapper objectMapper = new ObjectMapper();
+                String reportColumn = objectMapper.writeValueAsString(columns);
+                model.addAttribute("reportColumn", reportColumn);
+                model.addAttribute("errorData", fileInfoModelObject.getId());
+            }
+        }
+        return model;
+    }
+
 }

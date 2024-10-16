@@ -47,32 +47,16 @@ public class BecModelController {
             userId = user.getId();
         }
         String message = "";
-        FileInfoModel fileInfoModelObject;
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
                     Map<String, Object> resp = becModelService.save(file, userId, exchangeCode, nrtaCode);
-                    fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
-                    if(resp.containsKey("errorMessage")){
-                        model.addAttribute("message", resp.get("errorMessage"));
-                    }
-                    if(fileInfoModelObject != null){
-                        model.addAttribute("fileInfo", fileInfoModelObject);
-                        int errorCount = fileInfoModelObject.getErrorCount();
-                        if(errorCount >= 1){
-                            List<Map<String, String>> columns = ReportController.getReportColumn("3");
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            String reportColumn = objectMapper.writeValueAsString(columns);
-                            model.addAttribute("reportColumn", reportColumn);
-                            model.addAttribute("errorData", fileInfoModelObject.getId());
-                        }
-                    }
+                    model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
-                } catch (IllegalArgumentException e) {
+                }catch (IllegalArgumentException e) {
                     model.addAttribute("message", e.getMessage());
                     return CommonService.uploadSuccesPage;
-                }
-                catch (Exception e) {
+                }catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
                     return CommonService.uploadSuccesPage;
