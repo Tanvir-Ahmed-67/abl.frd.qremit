@@ -1,14 +1,20 @@
 package abl.frd.qremit.converter.nafex.service;
 
+import abl.frd.qremit.converter.nafex.controller.ReportController;
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
 import java.sql.Connection;
@@ -20,13 +26,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.DataFormatException;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -605,8 +607,14 @@ public class CommonService {
     }
 
     public static boolean checkEmptyString(String str){
-        if(str == null || str.trim().isEmpty() || str.trim().equals("0.0")) return true;
-        else return false;
+        if(str == null || str.trim().isEmpty()) return true;
+        try{
+            //check number
+            double number = Double.parseDouble(str);
+            return number == 0.0;
+        }catch(NumberFormatException e){
+            return false;
+        }
     }
 
     public static boolean checkAgraniRoutingNo(String routingNo){
@@ -641,45 +649,95 @@ public class CommonService {
         return errorMessage;
     }
 
-    public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
-        ErrorDataModel errorDataModel = getErrorDataModel(csvRecord, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+    public static <T> Map<String, Object> generateFourConvertedDataModel(List<T> model, FileInfoModel fileInfoModel, User user, LocalDateTime currentDateTime, int isProcessed){
+        Map<String, Object> resp = new HashMap<>();
+        List<OnlineModel> onlineModelList = generateOnlineModelList(model, currentDateTime, isProcessed);
+        List<CocModel> cocModelList = generateCocModelList(model, currentDateTime);
+        List<AccountPayeeModel> accountPayeeModelList = generateAccountPayeeModelList(model, currentDateTime);
+        List<BeftnModel> beftnModelList = generateBeftnModelList(model, currentDateTime);
+        
+        fileInfoModel.setCocModelList(cocModelList);
+        fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
+        fileInfoModel.setBeftnModelList(beftnModelList);
+        fileInfoModel.setOnlineModelList(onlineModelList);
+
+        for (CocModel cocModel : cocModelList) {
+            cocModel.setFileInfoModel(fileInfoModel);
+            cocModel.setUserModel(user);
+        }
+        for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
+            accountPayeeModel.setFileInfoModel(fileInfoModel);
+            accountPayeeModel.setUserModel(user);
+        }
+        for (BeftnModel beftnModel : beftnModelList) {
+            beftnModel.setFileInfoModel(fileInfoModel);
+            beftnModel.setUserModel(user);
+        }
+        for (OnlineModel onlineModel : onlineModelList) {
+            onlineModel.setFileInfoModel(fileInfoModel);
+            onlineModel.setUserModel(user);
+        }
+        resp.put("fileInfoModel", fileInfoModel);
+        resp.put("onlineModelList", onlineModelList);
+        resp.put("cocModelList", cocModelList);
+        resp.put("accountPayeeModelList", accountPayeeModelList);
+        resp.put("beftnModelList", beftnModelList);
+        return resp;
+    }
+
+    public static FileInfoModel countFourConvertedDataModel(Map<String, Object> data){
+        FileInfoModel fileInfoModel = (FileInfoModel)  data.get("fileInfoModel");
+        List<OnlineModel> onlineModelList = (List<OnlineModel>) data.get("onlineModelList");
+        List<CocModel> cocModelList = (List<CocModel>) data.get("cocModelList");
+        List<AccountPayeeModel> accountPayeeModelList = (List<AccountPayeeModel>) data.get("accountPayeeModelList");
+        List<BeftnModel> beftnModelList = (List<BeftnModel>) data.get("beftnModelList");
+        fileInfoModel.setAccountPayeeCount(String.valueOf(accountPayeeModelList.size()));
+        fileInfoModel.setOnlineCount(String.valueOf(onlineModelList.size()));
+        fileInfoModel.setBeftnCount(String.valueOf(beftnModelList.size()));
+        fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
+        return fileInfoModel;
+    }
+
+    public static <T> T createDataModel(T model, Map<String, Object> data){
+        for(Map.Entry<String, Object> entry: data.entrySet()){
+            String fieldName = entry.getKey();
+            Object fieldValue = entry.getValue();
+            try{
+                Field field = model.getClass().getDeclaredField(fieldName);
+                field.setAccessible(true);
+                if(field.getType().equals(String.class)){
+                    field.set(model, (String) fieldValue);
+                }
+                if(field.getType().equals(Double.class)){
+                    double doubleField;
+                    try{
+                        doubleField = Double.parseDouble((String) fieldValue);
+                    }catch(Exception e){
+                        doubleField = 0;
+                    } 
+                    field.set(model, doubleField);
+                }
+                if(field.getType().equals(Integer.class)){
+                    field.set(model, Integer.parseInt((String) fieldValue));
+                }
+            }catch(NoSuchFieldException | IllegalAccessException e){
+                e.printStackTrace();
+            }
+        }
+        return model;
+    }
+
+    public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
+        ErrorDataModel errorDataModel = getErrorDataModel(data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
         errorDataModelList.add(errorDataModel);
     }
     
-    public static ErrorDataModel getErrorDataModel(CSVRecord csvRecord, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
-        double amount;
-        try{
-            amount = Double.parseDouble(csvRecord.get(3));
-        }catch(Exception e){
-            amount = 0;
-        }
-        ErrorDataModel errorDataModel = new ErrorDataModel(
-            exchangeCode, //exCode
-            csvRecord.get(1), //Tranno
-            csvRecord.get(2), //Currency
-            amount, //Amount
-            csvRecord.get(4), //enteredDate
-            csvRecord.get(5), //remitter
-            csvRecord.get(17), //remitterMobile
-            csvRecord.get(6), // beneficiary
-            csvRecord.get(7), //beneficiaryAccount
-            csvRecord.get(12), //beneficiaryMobile
-            csvRecord.get(8), //bankName
-            csvRecord.get(9), //bankCode
-            csvRecord.get(10), //branchName
-            csvRecord.get(11), // branchCode
-            csvRecord.get(13), //draweeBranchName
-            csvRecord.get(14), //draweeBranchCode
-            csvRecord.get(15), //purposeOfRemittance
-            csvRecord.get(16), //sourceOfIncome
-            "",    // processed_flag
-            "0",    // type_flag
-            "",      // Processed_by
-            "",            // processed_date
-            errorMessage, //error_message
-            currentDateTime, //error_generation_date
-            0
-        );
+    public static ErrorDataModel getErrorDataModel(Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
+        ErrorDataModel errorDataModel = new ErrorDataModel();
+        errorDataModel = createDataModel(errorDataModel, data);
+        errorDataModel.setErrorMessage(errorMessage);
+        errorDataModel.setUploadDateTime(currentDateTime);
+        errorDataModel.setTypeFlag("0");
         errorDataModel.setUserModel(user);
         errorDataModel.setFileInfoModel(fileInfoModel);
         return errorDataModel;
@@ -815,6 +873,92 @@ public class CommonService {
         return errorMessage;
     }
     //check validation error message ends
+    //error checking
+    public static <T> Map<String, Object> checkError(Map<String, Object> data, List<ErrorDataModel> errorDataModelList, String nrtaCode, FileInfoModel fileInfoModel, 
+        User user, LocalDateTime currentDateTime, String userExCode, Optional<T> duplicateData, List<String> transactionList){
+        //userExCode- csv file first column
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("err", 0);
+        String errorMessage = "";
+        String beneficiaryName = data.get("beneficiaryName").toString();
+        String amount = data.get("amount").toString();
+        String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+        String bankName = data.get("bankName").toString();
+        String branchCode = data.get("branchCode").toString();
+        String exchangeCode = data.get("exchangeCode").toString();
+        String transactionNo = data.get("transactionNo").toString(); 
+
+        //check duplicate data exists in database
+        if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
+            return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
+        }
+        //check exchange code
+        String exchangeMessage = CommonService.checkExchangeCode(userExCode, exchangeCode, nrtaCode);
+        if(!exchangeMessage.isEmpty()){
+            return getResp(2, exchangeMessage, null);
+        }
+        //a/c no, benficiary name, amount empty or null check
+        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
+        if(!errorMessage.isEmpty()){
+            addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+            resp = getResp(1, errorMessage, null);
+            resp.put("errorDataModelList", errorDataModelList);
+            return resp;
+        }
+        if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = checkBEFTNRouting(branchCode);
+            if(!errorMessage.isEmpty()){
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
+        }else if(isCocFound(beneficiaryAccount)){
+            errorMessage = checkCOCBankName(bankName);
+            if(!errorMessage.isEmpty()){
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
+        }else if(isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
+            if(!errorMessage.isEmpty()){
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
+            errorMessage = checkCOString(beneficiaryAccount);
+            if(!errorMessage.isEmpty()){
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
+        }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
+            
+        }
+        //check duplicate data exists in csv data
+        if(transactionList.contains(transactionNo)){
+            return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
+        }else{
+            transactionList.add(transactionNo);
+            resp.put("transactionList", transactionList);
+        }
+        return resp;
+    }
+    //error message
+    public static String setErrorMessage(String duplicateMessage, int duplicateCount, int totalCount){
+        String errorMessage = "";
+        if(!duplicateMessage.isEmpty())  errorMessage = duplicateMessage;
+        if(totalCount == duplicateCount){
+            //resp.put("errorMessage", "All Data From Your Selected File Already Exists!");
+            errorMessage = "All Data From Your Selected File Already Exists!";
+        }else if(duplicateCount >= 1) errorMessage = duplicateMessage;
+        return errorMessage;
+    }
+
     public static String getCurrentDate(){
         return getCurrentDate("ddMMyyyy");
     }
@@ -872,10 +1016,37 @@ public class CommonService {
         return resp;
     }
 
+    public static Map<String, Object> getErrorType(){
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("1", "benificiaryName,amount,beneficiaryAccount");
+        resp.put("2", "");
+        return resp;
+    }
+
     //column for error Reporting
     public List<Map<String, String>> getErrorReportColumn(){
         String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
         String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
         return createColumns(columnData, columnTitles);
     }
+
+    public static Model viewUploadStatus(Map<String, Object> resp, Model model) throws JsonProcessingException{
+        FileInfoModel fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
+        if(resp.containsKey("errorMessage")){
+            model.addAttribute("message", resp.get("errorMessage"));
+        }
+        if(fileInfoModelObject != null){
+            model.addAttribute("fileInfo", fileInfoModelObject);
+            int errorCount = fileInfoModelObject.getErrorCount();
+            if(errorCount >= 1){
+            List<Map<String, String>> columns = ReportController.getReportColumn("3");
+                ObjectMapper objectMapper = new ObjectMapper();
+                String reportColumn = objectMapper.writeValueAsString(columns);
+                model.addAttribute("reportColumn", reportColumn);
+                model.addAttribute("errorData", fileInfoModelObject.getId());
+            }
+        }
+        return model;
+    }
+
 }

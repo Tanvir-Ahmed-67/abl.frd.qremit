@@ -18,7 +18,6 @@ function checkDataTable(tbl){
     checkDataTable(tbl);
     if(!url) return false;
     var data = DataTableColumns(cols);
-    console.log(data);
     var oSettings = {
       "ajax": {
         "url": url,

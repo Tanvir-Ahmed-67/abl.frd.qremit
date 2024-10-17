@@ -30,7 +30,13 @@ $(document).ready(function(){
     get_ajax(url,"",get_user_upload_report,fail_func,"get","json",params);
 
     function get_user_upload_report(resp,params){
-        get_dynamic_dataTable(params.tbl, params.url, resp.column);        
+        var sfun = [upload_report_ui]
+        get_dynamic_dataTable(params.tbl, params.url, resp.column, sfun);        
+    }
+
+    function upload_report_ui(resp){
+        edit_error_data(tbl);
+        delete_error(tbl,csrf_token,csrf_header);
     }
 
     $(document).off('click',".view_exchange");
@@ -42,7 +48,7 @@ $(document).ready(function(){
         var url = "/user-home-page?type=2&exchangeCode=" + exCode + "&id=" + id;
         window.location.href = url;
     });
-
+    /*
     $(document).off('click',".edit_error");
     $(document).on('click',".edit_error",function(e){
         e.preventDefault();
@@ -61,16 +67,28 @@ $(document).ready(function(){
         var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
         get_ajax(url,data,success_modal,fail_func,"post","json",params);
     });
-    $(document).off('click',".approve_error");
-    $(document).on('click',".approve_error",function(e){
+    */
+
+    $(document).off('click',".view_error");
+    $(document).on('click',".view_error",function(e){
         e.preventDefault();
         var id = $(this).attr("id");
-        var url  = "/error/approve";
-        var data = {'id': id};
-        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
-        get_ajax(url,data,success_modal,fail_func,"get","json",params);
+        var params = { tdiv: '.modal-body'};
+        var mparams = { 'modalID': 'myModal', 'modal_wrap':'#modal_wrap','modal_class':'modal-md', 'modal_title': 'View Error Data' };
+        var url = "/error/viewError/" + id;
+        gen_modal(url,params,mparams);
     });
 
+    $(document).on("submit","#approve_error_form",function(e){
+        e.preventDefault();
+        var id = $("#id").val();
+        var data = {'id':id, '_csrf': csrf_token, '_csrf_header': csrf_header};
+        var url  = "/error/approve";
+        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
+        get_ajax(url,data,success_modal,fail_func,"post","json",params);
+    });
+
+    /*
     $(document).off('click',".delete_error");
     $(document).on('click',".delete_error",function(e){
         e.preventDefault();
@@ -82,4 +100,5 @@ $(document).ready(function(){
             get_ajax(url,data,success_modal,fail_func,"DELETE","json",params);
         }
     });
+    */
 });

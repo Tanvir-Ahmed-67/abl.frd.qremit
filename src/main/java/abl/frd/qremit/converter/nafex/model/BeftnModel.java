@@ -25,15 +25,15 @@ public class BeftnModel {
     private String orgAccountNo;
     @Column(name = "org_account_type")
     private String orgAccountType;
-    @Column(name = "amount")
+    @Column(name = "amount", length = 15)
     private Double amount;
-    @Column(name = "beneficiary_name")
+    @Column(name = "beneficiary_name", length=128)
     private String beneficiaryName;
     @Column(name = "beneficiary_account")
     private String beneficiaryAccount;
     @Column(name = "beneficiary_account_type")
     private String beneficiaryAccountType;
-    @Column(name = "exchange_code")
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
     @Column(name = "routing_no")
     private String routingNo;
@@ -47,11 +47,11 @@ public class BeftnModel {
     private int downloadUserId;
     @Column(name = "remitter_name", length = 128)
     private String remitterName;
-    @Column(name = "bank_name")
+    @Column(name = "bank_name", length=64)
     private String bankName;
-    @Column(name = "bank_code")
+    @Column(name = "bank_code", length=10)
     private String bankCode;
-    @Column(name = "branch_name")
+    @Column(name = "branch_name", length=128)
     private String branchName;
     @Column(name = "download_date_time")
     private LocalDateTime downloadDateTime;

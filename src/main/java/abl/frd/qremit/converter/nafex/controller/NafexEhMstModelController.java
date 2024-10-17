@@ -14,11 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.*;;
-
+import java.util.*;
 
 @Controller
 public class NafexEhMstModelController {
@@ -47,30 +44,11 @@ public class NafexEhMstModelController {
             userId = user.getId();
         }
         String message = "";
-        FileInfoModel fileInfoModelObject;
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
                     Map<String, Object> resp = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
-                    fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
-                    //fileInfoModelObject = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
-                    if(resp.containsKey("errorMessage")){
-                        model.addAttribute("message", resp.get("errorMessage"));
-                    }
-                    if(fileInfoModelObject!=null){
-                        model.addAttribute("fileInfo", fileInfoModelObject);
-                        int errorCount = fileInfoModelObject.getErrorCount();
-                        if(errorCount >= 1){
-                            List<Map<String, String>> columns = ReportController.getReportColumn("3");
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            String reportColumn = objectMapper.writeValueAsString(columns);
-                            model.addAttribute("reportColumn", reportColumn);
-                            model.addAttribute("errorData", fileInfoModelObject.getId());
-                        }
-                    }
-                    else if(fileInfoModelObject == null && !resp.containsKey("errorMessage")){
-                        model.addAttribute("message", "All Data From Your Selected File Already Exists!");
-                    }
+                    model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 }
                 catch (IllegalArgumentException e) {

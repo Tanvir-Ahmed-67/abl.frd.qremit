@@ -23,6 +23,7 @@ import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 
+@SuppressWarnings("unchecked")
 @Controller
 @RequestMapping("/error")
 public class ErrorDataController {
@@ -58,19 +59,31 @@ public class ErrorDataController {
         return ResponseEntity.ok(resp);
     }
 
-    @GetMapping("/approve")
+    @GetMapping("/viewError/{id}")
+    public String viewError(@AuthenticationPrincipal MyUserDetails userDetails, @PathVariable("id") String id, Model model){
+        //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        String page = "/pages/admin/viewError";
+        Map<String, Object> resp = getLogData(id);
+        if((Integer) resp.get("err") == 1){
+            model.addAttribute("message", (String) resp.get("msg"));
+            return page;
+        }
+        List<Map<String, Object>> logData = (List<Map<String, Object>>) resp.get("data");
+        Map<String, Object> updatedDataMap = logModelService.fetchLogDataByKey(logData, "updatedData");
+        Map<String, Object> oldDataMap = logModelService.fetchLogDataByKey(logData, "oldData");
+        model.addAttribute("updatedDataMap", updatedDataMap);
+        model.addAttribute("oldDataMap",oldDataMap);
+        model.addAttribute("id", id);
+        return page;
+    }
+
+    @PostMapping("/approve")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> approveErrorDataById(@RequestParam String id){
-        Map<String, Object> resp = new HashMap<>();
         int errorDataId = Integer.parseInt(id);
-        ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(errorDataId);
-        if(errorDataModel == null)  return ResponseEntity.ok(CommonService.getResp(1, "No data found following Error Model", null));
-        if(errorDataModel.getUpdateStatus() != 1)   return ResponseEntity.ok(CommonService.getResp(1, "Invalid Type for approve data", null));  //for approve status must be 1
-        if(CommonService.checkEmptyString(id)){
-            resp = CommonService.getResp(1, "Invalid Id", null);
-            return ResponseEntity.ok(resp);
-        }
-        List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(id);
+        Map<String, Object> resp = getLogData(id);
+        if((Integer) resp.get("err") == 1)  return ResponseEntity.ok(resp);
+        List<Map<String, Object>> logData = (List<Map<String, Object>>) resp.get("data");
         Map<String, Object> updatedDataMap = logModelService.fetchLogDataByKey(logData, "updatedData");
         resp = dynamicOperationService.transferErrorData(updatedDataMap);
         Integer err = (Integer) resp.get("err");
@@ -79,6 +92,20 @@ public class ErrorDataController {
             resp = CommonService.getResp(0, "Information saved succesfully", null);
         }
         return ResponseEntity.ok(resp);
+    }
+
+    public Map<String, Object> getLogData(String id){
+        Map<String, Object> resp = new HashMap<>();
+        if(CommonService.checkEmptyString(id)){
+            resp = CommonService.getResp(1, "Invalid Id", null);
+            return resp;
+        }
+        int errorDataId = Integer.parseInt(id);
+        ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(errorDataId);
+        if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
+        if(errorDataModel.getUpdateStatus() != 1)   return CommonService.getResp(1, "Invalid Type for approve data", null);  //for approve status must be 1
+        List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(id);
+        return CommonService.getResp(0, "", logData);
     }
 
     @DeleteMapping("/delete/{id}")

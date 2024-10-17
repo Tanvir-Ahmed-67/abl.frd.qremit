@@ -11,49 +11,49 @@ public class AgexSingaporeModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int  id;
-    @Column(name = "exchange_code")
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "transaction_no", unique = true, nullable = false)
+    @Column(name = "transaction_no", length=30, unique = true, nullable = false)
     private String transactionNo;
-    @Column(name = "currency")
+    @Column(name = "currency", length=32)
     private String currency;
-    @Column(name = "amount", nullable = false)
+    @Column(name = "amount", length = 15, nullable = false)
     private Double amount;
-    @Column(name = "entered_date")
+    @Column(name = "entered_date", length=30)
     private String enteredDate;
-    @Column(name = "remitter_name")
+    @Column(name = "remitter_name", length=128)
     private String remitterName;
-    @Column(name = "remitter_mobile_no")
+    @Column(name = "remitter_mobile_no", length=30)
     private String remitterMobile;
-    @Column(name = "beneficiary_name")
+    @Column(name = "beneficiary_name", length=128)
     private String beneficiaryName;
-    @Column(name = "beneficiary_account_no", nullable = false)
+    @Column(name = "beneficiary_account_no", nullable = false, length=32)
     private String beneficiaryAccount;
-    @Column(name = "beneficiary_mobile_no")
+    @Column(name = "beneficiary_mobile_no", length=20)
     private String beneficiaryMobile;
-    @Column(name = "bank_name")
+    @Column(name = "bank_name", length=64)
     private String bankName;
-    @Column(name = "bank_code")
+    @Column(name = "bank_code", length=10)
     private String bankCode;
-    @Column(name = "branch_name")
+    @Column(name = "branch_name", length=128)
     private String branchName;
-    @Column(name = "branch_code")
+    @Column(name = "branch_code", length=15)
     private String branchCode;
-    @Column(name = "drawee_branch_name")
+    @Column(name = "drawee_branch_name", length=32)
     private String draweeBranchName;
-    @Column(name = "drawee_branch_code")
+    @Column(name = "drawee_branch_code", length=10)
     private String draweeBranchCode;
-    @Column(name = "purpose_of_remittance")
+    @Column(name = "purpose_of_remittance", length=32)
     private String purposeOfRemittance;
-    @Column(name = "source_of_income")
+    @Column(name = "source_of_income", length=32)
     private String sourceOfIncome;
-    @Column(name = "process_flag")
+    @Column(name = "process_flag", length=10)
     private String processFlag;
     @Column(name = "type_flag")
     private String typeFlag;
-    @Column(name = "processed_by")
+    @Column(name = "processed_by", length=32)
     private String processedBy;
-    @Column(name = "processed_date")
+    @Column(name = "processed_date", length=32)
     private String processedDate;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;

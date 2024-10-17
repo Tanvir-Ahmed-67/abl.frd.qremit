@@ -1,10 +1,8 @@
 package abl.frd.qremit.converter.nafex.service;
-import java.time.LocalDateTime;
 import java.util.*;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -75,7 +73,6 @@ public class ErrorDataModelService {
         String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         Map<String, Object> info = new HashMap<>();
         info.put("oldData", errorDataMap);
-        info.put("tableName",tbl);
         String ipAddress = request.getRemoteAddr();
         String bankName = formData.get("bankName").trim();
         String beneficiaryAccount =formData.get("beneficiaryAccount").trim();
@@ -212,7 +209,7 @@ public class ErrorDataModelService {
             List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(errorDataId);
             Map<String, Object> dataMap = new HashMap<>();
             Map<String, Object> updatedDataMap = logModelService.fetchLogDataByKey(logData, "updatedData");
-            action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round approve_error", errorDataId,"Approve");
+            action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_error", errorDataId,"View");
             
             dataMap.put("sl", sl++);
             dataMap.put("bankName", updatedDataMap.get("bankName"));
@@ -228,5 +225,19 @@ public class ErrorDataModelService {
             dataList.add(dataMap);
         }
         return dataList;
+    }
+
+    public Map<String, Object> saveErrorModelList(List<ErrorDataModel> errorDataModelList){
+        Map<String, Object> resp = new HashMap<>();
+        if (!errorDataModelList.isEmpty()) {
+            try{
+                List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
+                int errorCount = errorDataModels.size();
+                resp.put("errorCount", errorCount);
+            }catch(Exception e){
+                resp.put("errorMessage", e.getMessage());
+            }
+        }
+        return resp;
     }
 }

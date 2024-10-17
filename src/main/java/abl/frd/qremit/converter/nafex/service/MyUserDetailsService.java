@@ -1,25 +1,16 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import java.util.*;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
