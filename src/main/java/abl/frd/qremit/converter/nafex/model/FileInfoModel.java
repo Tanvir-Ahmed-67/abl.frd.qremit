@@ -67,11 +67,13 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<RiaModel> riaModel;
-
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<BecModel> becModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<NecModel> necModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)    
     @JsonIgnore
     private List<ApiBeftnModel> apiBeftnModel;
 
@@ -206,6 +208,15 @@ public class FileInfoModel {
         this.muzainiModel = muzainiModelSet;
     }
 
+
+
+    public List<NecModel> getNecModel() {
+        return this.necModel;
+    }
+
+    public void setNecModel(List<NecModel> necModel) {
+        this.necModel = necModel;
+    }
     
 
     public String getTotalCount() {
