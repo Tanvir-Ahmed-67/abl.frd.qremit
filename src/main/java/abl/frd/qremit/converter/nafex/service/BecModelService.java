@@ -78,7 +78,6 @@ public class BecModelService {
                 }catch(Exception e){
                     resp.put("errorMessage", e.getMessage());
                 }
-
             }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();

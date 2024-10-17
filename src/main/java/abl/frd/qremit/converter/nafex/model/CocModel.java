@@ -19,27 +19,27 @@ public class CocModel {
     private String transactionNo;
     @Column(name = "credit_mark")
     private String creditMark;
-    @Column(name = "entered_date")
+    @Column(name = "entered_date", length=30)
     private String enteredDate;
-    @Column(name = "currency")
+    @Column(name = "currency", length=32)
     private String currency;
-    @Column(name = "amount")
+    @Column(name = "amount", length = 15)
     private Double amount;
-    @Column(name = "beneficiary_name")
+    @Column(name = "beneficiary_name", length=128)
     private String beneficiaryName;
-    @Column(name = "exchange_code")
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "bank_name")
+    @Column(name = "bank_name", length=64)
     private String bankName;
-    @Column(name = "bank_code")
+    @Column(name = "bank_code", length=10)
     private String bankCode;
-    @Column(name = "branch_name")
+    @Column(name = "branch_name", length=128)
     private String branchName;
-    @Column(name = "branch_code")
+    @Column(name = "branch_code", length=15)
     private String branchCode;
-    @Column(name = "beneficiary_account_no")
+    @Column(name = "beneficiary_account_no",  length=32)
     private String beneficiaryAccount;
-    @Column(name = "remitter_name")
+    @Column(name = "remitter_name", length=128)
     private String remitterName;
     @Column(name = "incentive")
     private Double incentive;

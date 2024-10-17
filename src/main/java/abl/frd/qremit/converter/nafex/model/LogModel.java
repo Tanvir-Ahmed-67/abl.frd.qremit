@@ -10,7 +10,7 @@ public class LogModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    @Column(name = "exchange_code", length = 10)
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
     @Column(name = "user_id", length = 10)
     private String userId;

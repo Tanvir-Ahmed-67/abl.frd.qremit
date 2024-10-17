@@ -23,6 +23,7 @@ import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 
+@SuppressWarnings("unchecked")
 @Controller
 @RequestMapping("/error")
 public class ErrorDataController {
