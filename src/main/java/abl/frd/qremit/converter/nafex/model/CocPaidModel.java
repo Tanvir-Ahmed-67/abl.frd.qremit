@@ -10,7 +10,7 @@ public class CocPaidModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int  id;
-    @Column(name = "exchange_code", length = 10)
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
     @Column(name = "transaction_no", unique = true, nullable = false, length=64)
     private String transactionNo;

@@ -1,10 +1,8 @@
 package abl.frd.qremit.converter.nafex.service;
-import java.time.LocalDateTime;
 import java.util.*;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.core.JsonProcessingException;

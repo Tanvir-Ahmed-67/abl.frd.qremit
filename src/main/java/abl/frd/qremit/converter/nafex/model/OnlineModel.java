@@ -16,23 +16,23 @@ public class OnlineModel {
     private int id;
     @Column(name = "transaction_no")
     private String transactionNo;
-    @Column(name = "exchange_code")
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "beneficiary_name")
+    @Column(name = "beneficiary_name", length=128)
     private String beneficiaryName;
     @Column(name = "beneficiary_account")
     private String beneficiaryAccount;
-    @Column(name = "amount")
+    @Column(name = "amount", length = 15)
     private Double amount;
-    @Column(name = "remitter_name")
+    @Column(name = "remitter_name", length=128)
     private String remitterName;
-    @Column(name = "bank_name")
+    @Column(name = "bank_name", length=64)
     private String bankName;
-    @Column(name = "bank_code")
+    @Column(name = "bank_code", length=10)
     private String bankCode;
-    @Column(name = "branch_name")
+    @Column(name = "branch_name", length=128)
     private String branchName;
-    @Column(name = "branch_code")
+    @Column(name = "branch_code", length=15)
     private String branchCode;
     @Column(name = "incentive", length = 12)
     private Double incentive;

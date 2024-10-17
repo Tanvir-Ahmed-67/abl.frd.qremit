@@ -1,36 +1,8 @@
 $(document).ready(function(){
-    var title = $(".order-last h3").text();
-
+    var csrf_token = $("meta[name='_csrf']").attr("content");
+    var csrf_header = $("meta[name='_csrf_header']").attr("content");
     var params = getParameterByName("id");
     $("#exchangeCode").val(params);
-    
-    /*
-    $('.exCode').on('click',function(e){ 
-        e.preventDefault();
-        $("#up-form").show();
-        $("#up-data").hide();
-        $(".order-last h3").html("Upload the CSV File");
-        console.log(params);
-    });
-    */
-    //console.log(params);
-
-    //console.log(title);
-    /*
-    $('.exCode').on('click',function(e){ 
-        e.preventDefault();
-        $("#up-form").show();
-        $("#up-data").hide();
-        $(".order-last h3").html("Upload the CSV File");
-        var url = $(this).attr('href'); 
-        //var params = url.replace(/#/g, "");
-        var params = getParameterByName("id");
-        console.log(params);
-        $("#exName").val(params);
-        console.log(url); 
-    });
-    */
-
     $('form').on('submit',function(e){
         e.preventDefault();
         var data = new FormData($(this)[0]);
@@ -41,9 +13,6 @@ $(document).ready(function(){
             contentType: false,
             processData: false,
         }).done(function(resp){
-            //console.log(resp);
-            //title = $(".order-last h3").text();
-            
             $("#up-form").hide();
             $("#up-data").show();
             $("#up-data").html(resp);
@@ -63,7 +32,13 @@ $(document).ready(function(){
             var reportColumns = $("#reportColumns").val();
             var cols = JSON.parse(reportColumns);
             var url = "/errorReport?id=" + uid;
-            get_dynamic_dataTable(tbl, url, cols);
+            var sfun = [error_report_ui];
+            get_dynamic_dataTable(tbl, url, cols, sfun);
+
+            function error_report_ui(resp){
+                edit_error_data(tbl);
+                delete_error(tbl,csrf_token,csrf_header);
+            }
         }
     }
 });

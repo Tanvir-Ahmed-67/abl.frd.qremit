@@ -18,9 +18,9 @@ public class ReportModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    @Column(name = "exchange_code", length = 10)
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "transaction_no", length = 20)
+    @Column(name = "transaction_no", length = 30)
     private String transactionNo;
     @Column(name = "bank_code", length = 10)
     private String bankCode;

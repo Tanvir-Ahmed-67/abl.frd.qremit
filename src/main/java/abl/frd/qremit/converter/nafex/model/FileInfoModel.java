@@ -22,7 +22,7 @@ public class FileInfoModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    @Column(name = "exchange_code", length = 10)
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;

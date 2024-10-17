@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.nafex.controller;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.BecModelService;
 import abl.frd.qremit.converter.nafex.service.CommonService;
@@ -16,11 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.*;;
-
-
+import java.util.*;
 @Controller
 public class BecModelController {
     private final MyUserDetailsService myUserDetailsService;
