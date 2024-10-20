@@ -75,6 +75,9 @@ public class FileInfoModel {
     private List<NecModel> necModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<AlansariModel> alansariModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<EasternModel> easternModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)    
     @JsonIgnore
@@ -227,6 +230,14 @@ public class FileInfoModel {
 
     public void setNecModel(List<NecModel> necModel) {
         this.necModel = necModel;
+    }
+
+    public List<AlansariModel> getAlansariModel() {
+        return this.alansariModel;
+    }
+
+    public void setAlansariModel(List<AlansariModel> alansariModel) {
+        this.alansariModel = alansariModel;
     }
     
 
