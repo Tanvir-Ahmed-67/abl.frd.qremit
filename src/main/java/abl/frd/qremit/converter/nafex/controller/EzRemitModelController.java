@@ -1,7 +1,6 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.EzRemitModelService;
@@ -15,7 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.*;
 
 @Controller
 public class EzRemitModelController {
@@ -30,7 +31,7 @@ public class EzRemitModelController {
     }
     @PostMapping("/ezremitUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("fileType") String fileType, 
-         @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
+         @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         
         int userId = 000000000;
@@ -42,38 +43,28 @@ public class EzRemitModelController {
             userId = user.getId();
         }
         String message = "";
-        FileInfoModel fileInfoModelObject;
-        if (commonService.hasCSVFormat(file)) {
+        if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = ezRemitModelService.save(file, userId, exchangeCode, fileType);
-                    if(fileInfoModelObject!=null){
-                        model.addAttribute("fileInfo", fileInfoModelObject);
-                        return commonService.uploadSuccesPage;
-                    }
-                    else{
-                        message = "All Data From Your Selected File Already Exists!";
-                        model.addAttribute("message", message);
-                        return commonService.uploadSuccesPage;
-                    }
+                    Map<String, Object> resp = ezRemitModelService.save(file, userId, exchangeCode, fileType, nrtaCode);
+                    model = CommonService.viewUploadStatus(resp, model);
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (IllegalArgumentException e) {
-                    message = e.getMessage();
-                    model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    model.addAttribute("message", e.getMessage());
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
-                    message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
-                    model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    model.addAttribute("message", "Could Not Upload The File: " + file.getOriginalFilename() +"");
+                    return CommonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadSuccesPage;
+            return CommonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadSuccesPage;
+        return CommonService.uploadSuccesPage;
     }
 }
