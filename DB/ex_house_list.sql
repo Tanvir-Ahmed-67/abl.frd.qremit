@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 20, 2024 at 12:22 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Oct 20, 2024 at 01:12 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -56,7 +56,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (9, 1, 'coc_paid', '333333', 'COC Paid', 'COC Paid', '3000', '', '', 1),
 (112, 1, '', '7010291', 'Aftab Currency Exchange Ltd.UK', '', '7100', '', '', 0),
 (113, 1, '', '7010221', 'Al Ahalia Money Ex. ', '', '7047', '', '', 0),
-(114, 1, 'alansari', '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', 'AlansariModel', 'AlansariModelRepository', 0),
+(114, 1, 'alansari', '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', 'AlansariModel', 'alansariModelRepository', 0),
 (115, 1, '', '7010246', 'Al jadeed Exchange', '', '7058', '', '', 0),
 (116, 1, '', '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '', '', 0),
 (117, 1, '', '7010240', 'Al Rostamani Intl Ex. Co. Abu', '', '7052', '', '', 0),

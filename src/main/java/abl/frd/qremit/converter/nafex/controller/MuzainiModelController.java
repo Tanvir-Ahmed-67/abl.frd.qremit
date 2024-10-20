@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.nafex.controller;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.MuzainiModelService;
@@ -44,8 +43,7 @@ public class MuzainiModelController {
             userId = user.getId();
         }
         String message = "";
-        FileInfoModel fileInfoModelObject;
-        if (commonService.hasCSVFormat(file)) {
+        if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
                     Map<String, Object> resp = muzainiModelService.save(file, userId, exchangeCode, nrtaCode);
@@ -54,21 +52,21 @@ public class MuzainiModelController {
                 } catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadSuccesPage;
+                    return CommonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadSuccesPage;
+            return CommonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadSuccesPage;
+        return CommonService.uploadSuccesPage;
     }
 
 }
