@@ -204,11 +204,9 @@ public class AlansariModelService {
     public String getUniqueHeader(BufferedReader fileReader) throws IOException{
         String uniqueHeaderLine = "";
         String headerLine = fileReader.readLine();
-    
         // Split header and handle duplicates by appending a counter
         String[] headers = headerLine.split("\\|");
         Map<String, Integer> headerCountMap = new HashMap<>();
-        
         for (int i = 0; i < headers.length; i++) {
             String header = headers[i].trim();
             // If header is "0", or any other duplicate header, rename it
@@ -220,7 +218,6 @@ public class AlansariModelService {
                 headerCountMap.put(header, 1);
             }
         }
-    
         // Reconstruct the header line
         uniqueHeaderLine = String.join("|", headers);
         return uniqueHeaderLine;
