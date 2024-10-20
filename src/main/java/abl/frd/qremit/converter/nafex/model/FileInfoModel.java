@@ -73,6 +73,9 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<NecModel> necModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<EasternModel> easternModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)    
     @JsonIgnore
     private List<ApiBeftnModel> apiBeftnModel;
@@ -146,6 +149,14 @@ public class FileInfoModel {
 
     public List<ErrorDataModel> getErrorDataModelList() {
         return errorDataModelList;
+    }
+
+    public List<EasternModel> getEasternModel() {
+        return this.easternModel;
+    }
+
+    public void setEasternModel(List<EasternModel> easternModel) {
+        this.easternModel = easternModel;
     }
 
     public void seterrorDataModelList(List<ErrorDataModel> errorDataModelList ) {
