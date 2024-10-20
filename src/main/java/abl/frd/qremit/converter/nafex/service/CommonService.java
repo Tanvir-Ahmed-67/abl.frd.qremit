@@ -545,6 +545,9 @@ public class CommonService {
         return false;
     }
     public static boolean isBeftnFound(String bankName, String accountNumber, String routingNo){
+        if(!checkAgraniBankName(bankName)){
+            return true; //if not ABL it will be beftn
+        }
         if(routingNo.isEmpty() || routingNo.length() != 9 || checkAgraniRoutingNo(routingNo)){
             return false;
         }
@@ -854,6 +857,13 @@ public class CommonService {
     //check ABL A/C starts with 02** and routing no is not matched with ABL
     public static String checkABLAccountAndRoutingNo(String accountNo, String routingNo, String bankName){
         String errorMessage = "";
+        /* 
+        if(!checkAgraniBankName(bankName) || !checkAgraniRoutingNo(routingNo)){
+            errorMessage = "Invalid Routing Number or Bank Name";
+        }else{
+            if()
+        }
+        */
         if(isOnlineAccoutNumberFound(accountNo) && (!checkAgraniRoutingNo(routingNo) || !checkAgraniBankName(bankName))){
             errorMessage = "Invalid Routing Number or Bank Name";
         }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02") && accountNo.length() != 13){

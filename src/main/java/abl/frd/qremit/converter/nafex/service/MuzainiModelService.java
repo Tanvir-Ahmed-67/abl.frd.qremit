@@ -46,7 +46,6 @@ public class MuzainiModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            //List<MuzainiModel> muzainiModels = csvToMuzainiModels(file.getInputStream());
             Map<String, Object> muzainiData = csvToMuzainiModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
             List<MuzainiModel> muzainiModels = (List<MuzainiModel>) muzainiData.get("muzainiDataModelList");
 
