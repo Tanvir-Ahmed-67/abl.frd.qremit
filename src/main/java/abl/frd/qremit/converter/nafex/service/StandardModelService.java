@@ -113,7 +113,7 @@ public class StandardModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = standardModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(2));
+                duplicateData = standardModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
