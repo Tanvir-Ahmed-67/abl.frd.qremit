@@ -22,6 +22,7 @@ import abl.frd.qremit.converter.nafex.repository.AlansariModelRepository;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import java.util.*;
+import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 @Service
 public class AlansariModelService {
@@ -102,64 +103,70 @@ public class AlansariModelService {
     public Map<String, Object> csvToAlansariModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
         Optional<AlansariModel> duplicateData;
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
-            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<AlansariModel> alansariDataModelList = new ArrayList<>();
-            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
-            int i = 0;
-            int duplicateCount = 0;
-            for (CSVRecord csvRecord : csvRecords) {
-                i++;
-                duplicateData = alansariModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
-                String beneficiaryAccount = csvRecord.get(7).trim();
-                String bankName = csvRecord.get(8).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"))){
+            String uniqueHeaderLine = getUniqueHeader(fileReader);
+            String fileContentWithUniqueHeader = uniqueHeaderLine + "\n" + fileReader.lines().collect(Collectors.joining("\n"));
+            try(CSVParser csvParser = new CSVParser(new StringReader(fileContentWithUniqueHeader),CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())){
+            //CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())){
+                Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+                List<AlansariModel> alansariDataModelList = new ArrayList<>();
+                List<ErrorDataModel> errorDataModelList = new ArrayList<>();
+                List<String> transactionList = new ArrayList<>();
+                String duplicateMessage = "";
+                int i = 0;
+                int duplicateCount = 0;
+                for (CSVRecord csvRecord : csvRecords) {
+                    i++;
+                    duplicateData = alansariModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                    String beneficiaryAccount = csvRecord.get(7).trim();
+                    String bankName = csvRecord.get(8).trim();
+                    String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
+                    String transactionNo = csvRecord.get(1).trim();
+                    Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
 
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
+                    Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
+                    if((Integer) errResp.get("err") == 1){
+                        errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
+                        continue;
+                    }
+                    if((Integer) errResp.get("err") == 2){
+                        resp.put("errorMessage", errResp.get("msg"));
+                        break;
+                    }
+                    if((Integer) errResp.get("err") == 3){
+                        duplicateMessage += errResp.get("msg");
+                        duplicateCount++;
+                        continue;
+                    }
+                    if((Integer) errResp.get("err") == 4){
+                        duplicateMessage += errResp.get("msg");
+                        continue;
+                    }
+                    if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
 
-                AlansariModel alansariDataModel = new AlansariModel();
-                alansariDataModel = CommonService.createDataModel(alansariDataModel, data);
-                alansariDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                alansariDataModel.setUploadDateTime(currentDateTime);
-                alansariDataModelList.add(alansariDataModel);
-            }
+                    AlansariModel alansariDataModel = new AlansariModel();
+                    alansariDataModel = CommonService.createDataModel(alansariDataModel, data);
+                    alansariDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                    alansariDataModel.setUploadDateTime(currentDateTime);
+                    alansariDataModelList.add(alansariDataModel);
+                }
 
-            //save error data
-            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
-            if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
-            if(saveError.containsKey("errorMessage")){
-                resp.put("errorMessage", saveError.get("errorMessage"));
-                return resp;
+                //save error data
+                Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
+                if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
+                if(saveError.containsKey("errorMessage")){
+                    resp.put("errorMessage", saveError.get("errorMessage"));
+                    return resp;
+                }
+                //if both model is empty then delete fileInfoModel
+                if(errorDataModelList.isEmpty() && alansariDataModelList.isEmpty()){
+                    fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
+                }
+                resp.put("alansariDataModelList", alansariDataModelList);
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }catch (IOException e) {
+                resp.put("errorMessage", "fail to store csv data: " + e.getMessage());
             }
-            //if both model is empty then delete fileInfoModel
-            if(errorDataModelList.isEmpty() && alansariDataModelList.isEmpty()){
-                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
-            }
-            resp.put("alansariDataModelList", alansariDataModelList);
-            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);
@@ -192,6 +199,31 @@ public class AlansariModelService {
         data.put("processedBy", "");
         data.put("processedDate", "");
         return data;
+    }
+
+    public String getUniqueHeader(BufferedReader fileReader) throws IOException{
+        String uniqueHeaderLine = "";
+        String headerLine = fileReader.readLine();
+    
+        // Split header and handle duplicates by appending a counter
+        String[] headers = headerLine.split("\\|");
+        Map<String, Integer> headerCountMap = new HashMap<>();
+        
+        for (int i = 0; i < headers.length; i++) {
+            String header = headers[i].trim();
+            // If header is "0", or any other duplicate header, rename it
+            if (headerCountMap.containsKey(header)) {
+                int count = headerCountMap.get(header) + 1;
+                headerCountMap.put(header, count);
+                headers[i] = header + "_" + count;  // Rename duplicate header
+            } else {
+                headerCountMap.put(header, 1);
+            }
+        }
+    
+        // Reconstruct the header line
+        uniqueHeaderLine = String.join("|", headers);
+        return uniqueHeaderLine;
     }
 
 

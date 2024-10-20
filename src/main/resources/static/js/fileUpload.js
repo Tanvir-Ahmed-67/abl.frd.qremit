@@ -1,8 +1,9 @@
 $(document).ready(function(){
     var csrf_token = $("meta[name='_csrf']").attr("content");
     var csrf_header = $("meta[name='_csrf_header']").attr("content");
-    var params = getParameterByName("id");
-    $("#exchangeCode").val(params);
+    var exchange_code = getParameterByName("id");
+    if(exchange_code == '7010272') alert("Please send 8 cup of Doi");
+    $("#exchangeCode").val(exchange_code);
     $('form').on('submit',function(e){
         e.preventDefault();
         var data = new FormData($(this)[0]);

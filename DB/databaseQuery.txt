@@ -16,11 +16,14 @@ TRUNCATE `base_data_table_api_t24`;
 TRUNCATE `base_data_table_coc_paid`;
 TRUNCATE `report`;
 TRUNCATE `temporary_report`;
+TRUNCATE `base_data_table_nec`;
+TRUNCATE `base_data_table_eastern`;
+TRUNCATE `base_data_table_alansari`;
 
 
 DROP TABLE `base_data_table_bec`,`base_data_table_ezremit`,`base_data_table_muzaini`, `base_data_table_nafex`, `base_data_table_ria`,`base_data_table_singapore`;
 DROP TABLE `converted_data_account_payee`,`converted_data_beftn`,`converted_data_coc`,`converted_data_online`,`upload_file_info`,`error_data_table`,`log`;
-DROP TABLE `base_data_table_api_beftn`,`base_data_table_api_t24`,`base_data_table_coc_paid`, `report`, `temporary_report`;
+DROP TABLE `base_data_table_api_beftn`,`base_data_table_api_t24`,`base_data_table_coc_paid`, `report`, `temporary_report`,`base_data_table_nec`,`base_data_table_eastern`,`base_data_table_alansari`;
 
 https://codepen.io/n3k1t/pen/OJMGgyq
 
