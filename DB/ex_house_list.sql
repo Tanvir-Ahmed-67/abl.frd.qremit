@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 14, 2024 at 08:15 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Oct 20, 2024 at 12:22 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -56,7 +56,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (9, 1, 'coc_paid', '333333', 'COC Paid', 'COC Paid', '3000', '', '', 1),
 (112, 1, '', '7010291', 'Aftab Currency Exchange Ltd.UK', '', '7100', '', '', 0),
 (113, 1, '', '7010221', 'Al Ahalia Money Ex. ', '', '7047', '', '', 0),
-(114, 1, '', '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', '', '7053', '', '', 0),
+(114, 1, 'alansari', '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', 'AlansariModel', 'AlansariModelRepository', 0),
 (115, 1, '', '7010246', 'Al jadeed Exchange', '', '7058', '', '', 0),
 (116, 1, '', '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '', '', 0),
 (117, 1, '', '7010240', 'Al Rostamani Intl Ex. Co. Abu', '', '7052', '', '', 0),
@@ -76,7 +76,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (131, 1, '', '7010211', 'City Intl Exchange Co, Kuwait', '', '7016', '', '', 0),
 (132, 1, '', '7010288', 'City pay Malysia', '', '7071', '', '', 0),
 (133, 1, '', '7010254', 'Dollarco Exchange Co. Kuwait', '', '7019', '', '', 0),
-(134, 1, '', '7010206', 'Eastern Exchange Est. Doha, Qa', '', '7000', '', '', 0),
+(134, 1, 'eastern', '7010206', 'Eastern Exchange Est. Doha, Qa', 'Eastern Ex', '7000', 'EasternModel', 'easternModelRepository', 0),
 (135, 1, '', '7010244', 'Emirates India Int. Ex. , UAE', '', '7056', '', '', 0),
 (136, 1, '', '7010301', 'Finshot Inc. South Korea', '', '7110', '', '', 0),
 (137, 1, '', '7010269', 'Global Money Exchange,Oman', '', '7089', '', '', 0),
@@ -103,14 +103,14 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (158, 1, '', '7010285', 'NBL Money Transfer USA', '', '7077', '', '', 0),
 (159, 1, '', '7010276', 'NBL Money Transfer,Malaysia', '', '7059', '', '', 0),
 (160, 1, '', '7010241', 'NCBJ, Jeddah, KSA', '', '7055', '', '', 0),
-(161, 1, '', '7010272', 'NEC Money Transfer, UK', '', '7087', '', '', 0),
+(161, 1, 'nec', '7010272', 'NEC Money Transfer, UK', 'NEC', '7087', 'NecModel', 'necModelRepository', 0),
 (162, 1, '', '7010208', 'Oman Exchange Co, Kuwait', '', '7008', '', '', 0),
 (163, 1, '', '7010215', 'Oman Intl Exchange Ltd. Oman', '', '7021', '', '', 0),
 (164, 1, '', '7010286', 'Placid NK orp', '', '7065', '', '', 0),
 (165, 1, '', '7010238', 'Prabhu Group Inc. U S A', '', '7051', '', '', 0),
 (166, 1, '', '7010296', 'SG Quick Pay, PTE LTD, SNG', '', '7107', '', '', 0),
 (167, 1, '', '7010256', 'SIGUE Global Sercice ', '', '7074', '', '', 0),
-(168, 1, '', '7010248', 'Standard Express', '', '7060', '', '', 0),
+(168, 1, 'standard', '7010248', 'Standard Express', 'Standard Express', '7060', 'StandardModel', 'standardModelRepository', 0),
 (169, 1, '', '7010274', 'Sunman Express 	', '', '7096', '', '', 0),
 (170, 1, '', '7010293', 'Terra Payment Services Ltd. Ma', '', '7101', '', '', 0),
 (171, 1, '', '7010266', 'The Saudi Investment Bank (SAI', '', '7086', '', '', 0),
