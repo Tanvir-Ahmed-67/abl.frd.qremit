@@ -158,7 +158,7 @@ public class SigueModelService {
             if(errorDataModelList.isEmpty() && sigueDataModelList.isEmpty()){
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
-            resp.put("necDataModelList", sigueDataModelList);
+            resp.put("sigueDataModelList", sigueDataModelList);
             resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
