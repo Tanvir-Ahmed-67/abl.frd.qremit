@@ -11,22 +11,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
-import abl.frd.qremit.converter.nafex.model.SigueModel;
+import abl.frd.qremit.converter.nafex.model.UnimoniModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
 import abl.frd.qremit.converter.nafex.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
+import abl.frd.qremit.converter.nafex.repository.UnimoniModelRepository;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
-import abl.frd.qremit.converter.nafex.repository.SigueModelRepository;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import java.util.*;
 @SuppressWarnings("unchecked")
 @Service
-public class SigueModelService {
+public class UnimoniModelService {
     @Autowired
-    SigueModelRepository sigueModelRepository;
+    UnimoniModelRepository unimoniModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -58,30 +58,30 @@ public class SigueModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> sigueData = csvToSigueModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
-            List<SigueModel> sigueModels = (List<SigueModel>) sigueData.get("sigueDataModelList");
+            Map<String, Object> unimoniData = csvToUnimoniModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            List<UnimoniModel> unimoniModels = (List<UnimoniModel>) unimoniData.get("unimoniDataModelList");
 
-            if(sigueData.containsKey("errorMessage")){
-                resp.put("errorMessage", sigueData.get("errorMessage"));
+            if(unimoniData.containsKey("errorMessage")){
+                resp.put("errorMessage", unimoniData.get("errorMessage"));
             }
-            if(sigueData.containsKey("errorCount") && ((Integer) sigueData.get("errorCount") >= 1)){
-                int errorCount = (Integer) sigueData.get("errorCount");
+            if(unimoniData.containsKey("errorCount") && ((Integer) unimoniData.get("errorCount") >= 1)){
+                int errorCount = (Integer) unimoniData.get("errorCount");
                 fileInfoModel.setErrorCount(errorCount);
                 resp.put("fileInfoModel", fileInfoModel);
                 fileInfoModelRepository.save(fileInfoModel);
             }
 
-            if(sigueModels.size()!=0) {
-                for(SigueModel sigueModel : sigueModels){
-                    sigueModel.setFileInfoModel(fileInfoModel);
-                    sigueModel.setUserModel(user);
+            if(unimoniModels.size()!=0) {
+                for(UnimoniModel unimoniModel : unimoniModels){
+                    unimoniModel.setFileInfoModel(fileInfoModel);
+                    unimoniModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(sigueModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(unimoniModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
-                fileInfoModel.setTotalCount(String.valueOf(sigueModels.size()));
+                fileInfoModel.setTotalCount(String.valueOf(unimoniModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setSigueModel(sigueModels);
+                fileInfoModel.setUnimoniModel(unimoniModels);
    
                 // SAVING TO MySql Data Table
                 try{
@@ -99,13 +99,13 @@ public class SigueModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToSigueModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToUnimoniModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<SigueModel> duplicateData;
+        Optional<UnimoniModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<SigueModel> sigueDataModelList = new ArrayList<>();
+            List<UnimoniModel> unimoniDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
@@ -113,7 +113,7 @@ public class SigueModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = sigueModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                duplicateData = unimoniModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
@@ -140,11 +140,11 @@ public class SigueModelService {
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
 
-                SigueModel sigueDataModel = new SigueModel();
-                sigueDataModel = CommonService.createDataModel(sigueDataModel, data);
-                sigueDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                sigueDataModel.setUploadDateTime(currentDateTime);
-                sigueDataModelList.add(sigueDataModel);
+                UnimoniModel unimoniDataModel = new UnimoniModel();
+                unimoniDataModel = CommonService.createDataModel(unimoniDataModel, data);
+                unimoniDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                unimoniDataModel.setUploadDateTime(currentDateTime);
+                unimoniDataModelList.add(unimoniDataModel);
             }
 
             //save error data
@@ -155,10 +155,10 @@ public class SigueModelService {
                 return resp;
             }
             //if both model is empty then delete fileInfoModel
-            if(errorDataModelList.isEmpty() && sigueDataModelList.isEmpty()){
+            if(errorDataModelList.isEmpty() && unimoniDataModelList.isEmpty()){
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
-            resp.put("sigueDataModelList", sigueDataModelList);
+            resp.put("unimoniDataModelList", unimoniDataModelList);
             resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
