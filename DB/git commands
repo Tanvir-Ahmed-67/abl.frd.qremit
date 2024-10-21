@@ -22,6 +22,18 @@ Step two - Add the changes and commit with message
     git add .
     git commit -m "git commands added"
 
+// Tanvir
+Step one - to pull the latest code from development branch
+    git pull origin development
+Step two - Add the changes and commit with message
+    git status
+    git add .
+    git commit -m "git commands added"
+Step three - Push to developers own local branch to remote repository
+    git push origin dev-tanvir:development
+
+
+
 
 Step three - Push to developers own local branch to remote repository whre developer forked the project
 git push git@github.com:bhaktear/dev-bhaktear.git dev-bhaktear
