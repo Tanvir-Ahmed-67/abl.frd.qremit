@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.nafex.controller;
-
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.*;
 
 @Controller
 public class ApiBeftnModelController {
@@ -29,9 +29,9 @@ public class ApiBeftnModelController {
     private MyUserDetailsService myUserDetailsService;
 
     @PostMapping("/api_beftnUpload")
-    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
+    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, 
+        Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-
 
         int userId = 000000000;
         // Getting Logged In user Details in this block
@@ -42,44 +42,40 @@ public class ApiBeftnModelController {
             userId = user.getId();
         }
         String message = "";
-        FileInfoModel fileInfoModelObject;
-        if (commonService.hasCSVFormat(file)) {
+        if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = apiBeftnModelService.save(file, userId, exchangeCode);
-                    if(fileInfoModelObject!=null){
-                        model.addAttribute("fileInfo", fileInfoModelObject);
-                        return commonService.uploadApiSuccessPage;
-                    }
-                    else{
-                        message = "All Data From Your Selected File Already Exists!";
-                        model.addAttribute("message", message);
-                        return commonService.uploadApiSuccessPage;
-                    }
+                    Map<String, Object> resp = apiBeftnModelService.save(file, userId, exchangeCode);
+                    model = CommonService.viewUploadStatus(resp, model);
+                    model.addAttribute("apiBtn", 1);
+                    model.addAttribute("apiUrl", "/apibeftntransfer");
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return commonService.uploadApiSuccessPage;
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadApiSuccessPage;
+                    return CommonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadApiSuccessPage;
+            return CommonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadApiSuccessPage;
+        return CommonService.uploadSuccesPage;
     }
 
     @PostMapping("/apibeftntransfer")
-    public String transferApiBeftnData(){
-        dynamicOperationService.transferApiBeftnData();
-        return "redirect:/user-home-page";
+    @ResponseBody
+    public Map<String, Object> transferApiBeftnData(@RequestParam("id") String id){
+        if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);
+        return dynamicOperationService.transferApiBeftnData(Integer.parseInt(id));
+        //return "redirect:/user-home-page";
     }
 }

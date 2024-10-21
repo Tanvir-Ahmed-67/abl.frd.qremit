@@ -664,22 +664,31 @@ public class CommonService {
         fileInfoModel.setBeftnModelList(beftnModelList);
         fileInfoModel.setOnlineModelList(onlineModelList);
 
-        for (CocModel cocModel : cocModelList) {
-            cocModel.setFileInfoModel(fileInfoModel);
-            cocModel.setUserModel(user);
+        if(cocModelList != null){
+            for (CocModel cocModel : cocModelList) {
+                cocModel.setFileInfoModel(fileInfoModel);
+                cocModel.setUserModel(user);
+            }
         }
-        for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
-            accountPayeeModel.setFileInfoModel(fileInfoModel);
-            accountPayeeModel.setUserModel(user);
+        if(accountPayeeModelList != null){
+            for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
+                accountPayeeModel.setFileInfoModel(fileInfoModel);
+                accountPayeeModel.setUserModel(user);
+            }
         }
-        for (BeftnModel beftnModel : beftnModelList) {
-            beftnModel.setFileInfoModel(fileInfoModel);
-            beftnModel.setUserModel(user);
+        if(beftnModelList != null){
+            for (BeftnModel beftnModel : beftnModelList) {
+                beftnModel.setFileInfoModel(fileInfoModel);
+                beftnModel.setUserModel(user);
+            }
         }
-        for (OnlineModel onlineModel : onlineModelList) {
-            onlineModel.setFileInfoModel(fileInfoModel);
-            onlineModel.setUserModel(user);
+        if(onlineModelList != null){
+            for (OnlineModel onlineModel : onlineModelList) {
+                onlineModel.setFileInfoModel(fileInfoModel);
+                onlineModel.setUserModel(user);
+            }
         }
+
         resp.put("fileInfoModel", fileInfoModel);
         resp.put("onlineModelList", onlineModelList);
         resp.put("cocModelList", cocModelList);
@@ -916,6 +925,13 @@ public class CommonService {
             return resp;
         }
         if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
+            if(checkEmptyString(bankName)){
+                errorMessage = "Bank Name is empty. Please correct it";
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
             errorMessage = checkBEFTNRouting(branchCode);
             if(!errorMessage.isEmpty()){
                 addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
@@ -953,8 +969,10 @@ public class CommonService {
         if(transactionList.contains(transactionNo)){
             return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }else{
-            transactionList.add(transactionNo);
-            resp.put("transactionList", transactionList);
+            if(transactionList.size() > 1){
+                transactionList.add(transactionNo);
+                resp.put("transactionList", transactionList);
+            }
         }
         return resp;
     }

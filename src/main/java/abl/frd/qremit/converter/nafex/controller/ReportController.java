@@ -25,7 +25,7 @@ import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.ReportService;
-
+@SuppressWarnings("unchecked")
 @Controller
 public class ReportController {
 
