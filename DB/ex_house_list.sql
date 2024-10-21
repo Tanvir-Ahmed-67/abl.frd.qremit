@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 20, 2024 at 01:12 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Oct 21, 2024 at 11:35 AM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -57,7 +57,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (112, 1, '', '7010291', 'Aftab Currency Exchange Ltd.UK', '', '7100', '', '', 0),
 (113, 1, '', '7010221', 'Al Ahalia Money Ex. ', '', '7047', '', '', 0),
 (114, 1, 'alansari', '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', 'AlansariModel', 'alansariModelRepository', 0),
-(115, 1, '', '7010246', 'Al jadeed Exchange', '', '7058', '', '', 0),
+(115, 1, 'alzadeed', '7010246', 'Al jadeed Exchange', 'Al Jadeed', '7058', 'AlzadeedModel', 'alzadeedModelRepository', 0),
 (116, 1, '', '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '', '', 0),
 (117, 1, '', '7010240', 'Al Rostamani Intl Ex. Co. Abu', '', '7052', '', '', 0),
 (118, 1, '', '7010245', 'Al Zaman Ex. , Qatar', '', '7057', '', '', 0),
@@ -66,7 +66,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (121, 1, '', '7010220', 'Al-Fardan Exchange, Abu Dhabi', '', '7010', '', '', 0),
 (122, 1, '', '7010233', 'AL-Ghurair Ex. Dubai, UAE', '', '7043', '', '', 0),
 (123, 1, '', '7119', 'Al-Rajhi Banking & Investment ', '', '7009', '', '', 0),
-(124, 1, '', '7010263', 'Aman Ex- Kuwait', '', '7084', '', '', 0),
+(124, 1, 'aman', '7010263', 'Aman Ex- Kuwait', 'Aman Ex', '7084', 'AmanModel', 'amanModelRepository', 0),
 (125, 1, '', '7010203', 'Arab National Bank, Riyadh, K.', '', '7030', '', '', 0),
 (126, 1, '', '7010243', 'Bahrain Financing Co. Bahrain ', '', '7013', '', '', 0),
 (127, 1, '', '7010204', 'Bank Al-Bilad, Riyadh, K.S.A', '', '7031', '', '', 0),
@@ -109,7 +109,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (164, 1, '', '7010286', 'Placid NK orp', '', '7065', '', '', 0),
 (165, 1, '', '7010238', 'Prabhu Group Inc. U S A', '', '7051', '', '', 0),
 (166, 1, '', '7010296', 'SG Quick Pay, PTE LTD, SNG', '', '7107', '', '', 0),
-(167, 1, '', '7010256', 'SIGUE Global Sercice ', '', '7074', '', '', 0),
+(167, 1, 'sigue', '7010256', 'SIGUE Global Service', 'Sigue Global', '7074', 'SigueModel', 'sigueModelRepository', 0),
 (168, 1, 'standard', '7010248', 'Standard Express', 'Standard Express', '7060', 'StandardModel', 'standardModelRepository', 0),
 (169, 1, '', '7010274', 'Sunman Express 	', '', '7096', '', '', 0),
 (170, 1, '', '7010293', 'Terra Payment Services Ltd. Ma', '', '7101', '', '', 0),
