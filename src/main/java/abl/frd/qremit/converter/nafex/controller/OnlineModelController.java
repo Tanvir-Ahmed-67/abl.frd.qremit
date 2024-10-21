@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.nafex.controller;
-
 import abl.frd.qremit.converter.nafex.service.OnlineModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -10,13 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
 public class OnlineModelController {
-
     private final OnlineModelService onlineModelService;
-
     @Autowired
     public OnlineModelController(OnlineModelService onlineModelService){
         this.onlineModelService = onlineModelService;

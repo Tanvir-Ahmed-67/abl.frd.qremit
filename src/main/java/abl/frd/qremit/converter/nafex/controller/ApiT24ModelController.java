@@ -1,7 +1,5 @@
 package abl.frd.qremit.converter.nafex.controller;
-
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.*;
 
 @Controller
 public class ApiT24ModelController {
@@ -40,20 +41,14 @@ public class ApiT24ModelController {
             userId = user.getId();
         }
         String message = "";
-        FileInfoModel fileInfoModelObject;
-        if (commonService.hasCSVFormat(file)) {
+        if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    fileInfoModelObject = apit24ModelService.save(file, userId, exchangeCode);
-                    if(fileInfoModelObject!=null){
-                        model.addAttribute("fileInfo", fileInfoModelObject);
-                        return commonService.uploadApiSuccessPage;
-                    }
-                    else{
-                        message = "All Data From Your Selected File Already Exists!";
-                        model.addAttribute("message", message);
-                        return commonService.uploadApiSuccessPage;
-                    }
+                    Map<String, Object> resp = apit24ModelService.save(file, userId, exchangeCode);
+                    model = CommonService.viewUploadStatus(resp, model);
+                    model.addAttribute("apiBtn", 1);
+                    model.addAttribute("apiUrl", "/apit24transfer");
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (IllegalArgumentException e) {
                     message = e.getMessage();
@@ -75,8 +70,9 @@ public class ApiT24ModelController {
         return commonService.uploadApiSuccessPage;
     }
     @PostMapping("/apit24transfer")
-    public String transferApiT24Data(){
-        dynamicOperationService.transferApiT24Data();
-        return "redirect:/user-home-page";
+    @ResponseBody
+    public Map<String, Object> transferApiT24Data(@RequestParam("id") String id){
+        if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);
+        return dynamicOperationService.transferApiT24Data(Integer.parseInt(id));
     }
 }

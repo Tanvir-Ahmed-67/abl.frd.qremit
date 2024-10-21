@@ -1,8 +1,6 @@
 package abl.frd.qremit.converter.nafex.repository;
 
 import abl.frd.qremit.converter.nafex.model.BeftnModel;
-import abl.frd.qremit.converter.nafex.model.OnlineModel;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
