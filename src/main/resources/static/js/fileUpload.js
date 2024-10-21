@@ -1,6 +1,4 @@
 $(document).ready(function(){
-    var csrf_token = $("meta[name='_csrf']").attr("content");
-    var csrf_header = $("meta[name='_csrf_header']").attr("content");
     var exchange_code = getParameterByName("id");
     if(exchange_code == '7010272') alert("Please send 8 cup of Doi");
     $("#exchangeCode").val(exchange_code);
@@ -28,6 +26,17 @@ $(document).ready(function(){
 
     function view_data(resp){
         var tbl = "#error_data_tbl";
+        var csrf_token = $('#_csrf').val();
+        var csrf_header = $('#_csrf_header').val();
+        $(".apiUrl").on('click', function(e){
+            e.preventDefault();
+            var id = $(this).attr('id');
+            var url = $("#apiUrl").val();
+            var data = {'_csrf': csrf_token, '_csrf_header': csrf_header, id: id};
+            var params = {'success_alert': "", "success_redirect": "true"};
+            get_ajax(url,data, success_alert, fail_func,'post','json',params);
+        });
+
         if($(tbl).length){
             var uid = $('#id').val();
             var reportColumns = $("#reportColumns").val();

@@ -57,8 +57,9 @@ public class DynamicOperationService {
         return repositoryModelMap;
     }
 
-    public void transferApiBeftnData() {
-        List<ApiBeftnModel> allRows = apiBeftnModelRepository.findAll();
+    public Map<String, Object> transferApiBeftnData(int fileInfoModelId) {
+        Map<String, Object> resp = new HashMap<>();
+        List<ApiBeftnModel> allRows = apiBeftnModelRepository.findAllByFileInfoModelId(fileInfoModelId);
         for (ApiBeftnModel row : allRows) {
             try {
                 String exchangeCode = row.getExchangeCode();
@@ -70,15 +71,20 @@ public class DynamicOperationService {
                     Object modelInstance = constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getUploadDateTime(), row.getFileInfoModel(), row.getUserModel());
                     repository.save(modelInstance);
                 } else {
-                    throw new IllegalArgumentException("No repository or model class found for cxchangeCode: " + exchangeCode);
+                    resp = CommonService.getResp(1, "No repository or model class found for exchangeCode: " + exchangeCode, null);
+                    //throw new IllegalArgumentException("No repository or model class found for exchangeCode: " + exchangeCode);
                 }
             } catch (Exception e) {
                 // Handle exception
-                e.printStackTrace();
+                return CommonService.getResp(1, e.getMessage(), null);
             }
         }
+        resp = CommonService.getResp(0, "Information processed succesfully", null);
+        resp.put("url", "/user-home-page");
+        return resp;
     }
-    public void transferApiT24Data() {
+    public Map<String, Object> transferApiT24Data(int fileInfoModelId) {
+        Map<String, Object> resp = new HashMap<>();
         List<ApiT24Model> allRows = apiT24ModelRepository.findAll();
         for (ApiT24Model row : allRows) {
             try {
@@ -91,12 +97,16 @@ public class DynamicOperationService {
                     Object modelInstance = constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getUploadDateTime(), row.getFileInfoModel(), row.getUserModel());
                     repository.save(modelInstance);
                 } else {
-                    throw new IllegalArgumentException("No repository or model class found for exchangeCode: " + exchangeCode);
+                    resp = CommonService.getResp(1, "No repository or model class found for exchangeCode: " + exchangeCode, null);
+                    //throw new IllegalArgumentException("No repository or model class found for exchangeCode: " + exchangeCode);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                return CommonService.getResp(1, e.getMessage(), null);
             }
         }
+        resp = CommonService.getResp(0, "Information processed succesfully", null);
+        resp.put("url", "/user-home-page");
+        return resp;
     }
 
     public Map<String, Object> transferErrorData(Map<String, Object> updatedData){

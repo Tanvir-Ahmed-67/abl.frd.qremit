@@ -1,7 +1,5 @@
 package abl.frd.qremit.converter.nafex.repository;
-
 import abl.frd.qremit.converter.nafex.model.AgexSingaporeModel;
-import abl.frd.qremit.converter.nafex.model.NafexEhMstModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
