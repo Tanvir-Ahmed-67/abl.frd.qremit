@@ -2,10 +2,8 @@ package abl.frd.qremit.converter.nafex.repository;
 
 import abl.frd.qremit.converter.nafex.model.BecModel;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BecModelRepository extends JpaRepository<BecModel, Integer> {
@@ -20,4 +18,6 @@ public interface BecModelRepository extends JpaRepository<BecModel, Integer> {
     List<NafexEhMstModel> findAllNafexModelHavingAccountPayee();
 
      */
+    BecModel findByTransactionNo(String transactionNo);
+    Optional<BecModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
 }

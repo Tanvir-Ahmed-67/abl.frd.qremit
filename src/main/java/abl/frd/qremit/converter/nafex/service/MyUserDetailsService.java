@@ -1,38 +1,29 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import java.util.*;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
     private static final String other = null;
     @Autowired
     UserModelRepository userModelRepository;
-    public UserDetails loadUserByUserEmail(String userEmail)
+    public User loadUserByUserEmail(String userEmail)
             throws UsernameNotFoundException {
         User user = userModelRepository.findByUserEmail(userEmail);
         if (user == null) {
             throw new UsernameNotFoundException("Could not find user");
         }
-        return new MyUserDetails(user);
+        return user;
     }
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
          
@@ -52,11 +43,7 @@ public class MyUserDetailsService implements UserDetailsService {
                 exchangeMap.put(exchangeShortNames.get(i), exchangeCodes.get(i));
             }
             return exchangeMap;
-          //  model.addAttribute("exchangeMap", exchangeMap);
-        } 
-        // else {
-        //     model.addAttribute("error", "Mismatch in the size of exchange names and short names lists");
-        // }
+        }
         return exchangeMap;
     }
 
@@ -85,17 +72,6 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return users;
     }
-
-   
-    // public String findExchangeNameByUser(int user_id)  {
-    //    String exchangeName = userModelRepository.findExchangeNamesByUserId(user_id);
-    //     return exchangeName;
-    // }
-
-    // public String findExchangeNameControllerByUser(int user_id)  {
-    //     String exchangeControllerName = userModelRepository.findExchangeNamesControllerByUserId(user_id);
-    //      return exchangeControllerName;
-    //  }
 
     public Map<String, String> getExchangeNamesByUserId(int userId) {
         return userModelRepository.findExchangeNamesByUserId(userId);
@@ -126,6 +102,13 @@ public class MyUserDetailsService implements UserDetailsService {
         String exchangeCode = user.getExchangeCode();
         userModelRepository.updateUser(userId, userName, userEmail, exchangeCode);
     }
+    public void updatePasswordForFirstTimeUserLogging(User user){
+        int userId = user.getId();
+        user.setPasswordChangeRequired(false);
+        boolean passwordChangeRequired = user.isPasswordChangeRequired();
+        String password = user.getPassword();
+        userModelRepository.updatePasswordForFirstTimeUserLogging(userId, password, passwordChangeRequired);
+    }
     public List<User> loadAllInactiveUsers(){
         List<User> inactiveUsersList = userModelRepository.loadAllInactiveUsers();
         return inactiveUsersList;
@@ -134,17 +117,6 @@ public class MyUserDetailsService implements UserDetailsService {
         userModelRepository.updateInactiveUser(userId);
         return true;
     }
-
-    // public User updateUser(User user){
-    //     User existingUser= userModelRepository.findByUserId(user.getId());
-    //     existingUser.setUserName(user.getUserName());
-    //     existingUser.setRoles(user.getRoles());
-    //     existingUser.setUserEmail(user.getUserEmail());
-    //     existingUser.setNrtaCode(user.getNrtaCode());
-
-    //     return existingUser;
-
-    // }
 
     public User getUserByIds(int id){
         Optional <User> optional = userModelRepository.findById(id);
@@ -156,17 +128,6 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return user;
     }
-
-    // public static User getUserByIds(int id) {
-    //     Optional <User> optional = userModelRepository.findById(id);
-    //     User user = null;
-    //     if(optional.isPresent()){
-    //         user =optional.get();
-    //     }else {
-    //         throw new RuntimeException("User not Found for id :: " + id);
-    //     }
-    //     return user;
-    // }
     public int getCurrentUser() {
         User user = null;
         int loggedInUserId = 1111;

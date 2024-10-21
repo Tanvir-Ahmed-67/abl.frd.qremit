@@ -1,13 +1,9 @@
 package abl.frd.qremit.converter.nafex.controller;
-
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.Role;
 import abl.frd.qremit.converter.nafex.model.User;
-import abl.frd.qremit.converter.nafex.service.ExchangeHouseModelService;
-import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
-import abl.frd.qremit.converter.nafex.service.NafexModelService;
-import abl.frd.qremit.converter.nafex.service.RoleModelService;
+import abl.frd.qremit.converter.nafex.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,16 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import javax.validation.Valid;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class UserController {
@@ -37,17 +25,21 @@ public class UserController {
     private final ExchangeHouseModelService exchangeHouseModelService;
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
+    private final FileInfoModelService fileInfoModelService;
+    private final CommonService commonService;
 
     @Autowired
     public UserController(MyUserDetailsService myUserDetailsService, 
     NafexModelService nafexModelService,
-     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder) {
+     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, FileInfoModelService fileInfoModelService, CommonService commonService) {
 
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
         this.exchangeHouseModelService = exchangeHouseModelService;
         this.roleModelService = roleModelService;
         this.passwordEncoder = passwordEncoder;
+        this.fileInfoModelService = fileInfoModelService;
+        this.commonService = commonService;
     }
     @RequestMapping("/login")
     public String loginPage(){
@@ -61,9 +53,20 @@ public class UserController {
     public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         return "/layouts/dashboard"; 
+    }
+    @RequestMapping("/change-password")
+    public String showChangePasswordPage() {
+        return "/pages/user/userPasswordChangeForm";
+    }
+    @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST)
+    public String changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
+        User user = myUserDetailsService.loadUserByUserEmail(userDetails.getUserEmail());
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordChangeRequired(false);
+        myUserDetailsService.updatePasswordForFirstTimeUserLogging(user);
+        return "redirect:/login";
     }
 
     @RequestMapping("/home")
@@ -113,6 +116,7 @@ public class UserController {
         roleSet.add(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActiveStatus(false);
+        user.setPasswordChangeRequired(true);
         user.setRoles(roleSet);
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
@@ -121,7 +125,7 @@ public class UserController {
     @GetMapping("/adminDashboard")
     @ResponseBody
     public List<Integer> loadAdminDashboard(Model model){
-        List<Integer> count = nafexModelService.CountAllFourTypesOfData();
+        List<Integer> count = commonService.CountAllFourTypesOfData();
         return count;
     }
     @RequestMapping(value="/userEditForm/{id}", method = RequestMethod.POST)
@@ -136,8 +140,6 @@ public class UserController {
         return "/pages/admin/adminUserEditForm";
     }
 
-  
-    
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
     public String editExchangeHouse(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user, BindingResult result, RedirectAttributes ra){
         int idInIntegerFormat = Integer.parseInt(id);
@@ -171,4 +173,22 @@ public class UserController {
         }
         return "redirect:/showInactiveUsers";
     }
+    
+    @GetMapping("/userFileUploadReport")
+    public String userFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String type){
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        List<Map<String, String>> reportColumn = ReportController.getReportColumn(type);
+        System.out.println(reportColumn);
+        System.out.println(type);
+        return "/pages/user/userFileUploadReport";
+    }
+
+    @GetMapping("/adminErrorReport")
+    public String adminErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("type") String type){
+        //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        if(type.equalsIgnoreCase("4"))   return "/pages/admin/adminErrorUpdateReport";
+        else return "";
+    }
+
+
 }

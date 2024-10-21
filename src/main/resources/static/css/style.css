@@ -1,0 +1,39 @@
+* {
+    font-family: var(--bs-font-sans-serif);
+}
+
+.table > :not(caption) > * > * {
+    padding: 0.5rem 0.5rem;
+}
+
+body{
+    color: #333333 !important;
+}
+
+/* Change text color for specific elements */
+.header, .sidebar, .content, .footer {
+    color: #333333 !important;
+}
+
+/* Change text color for headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #333333 !important;
+}
+
+/* Change text color for paragraphs and spans */
+p, span {
+    color: #333333 !important;
+}
+
+/* Change text color for table content */
+/*
+.table {
+    color: black !important;
+}
+*/
+
+/* Change text color for links */
+a {
+    color: black !important;
+}
+

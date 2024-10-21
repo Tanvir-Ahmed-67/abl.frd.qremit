@@ -1,4 +1,11 @@
 <section class="section">
+    <div th:if="${message !=null and !message.isEmpty()}">
+        <div class="alert alert-danger text-center">
+            <span th:utext="${message}"></span>
+        </div> 
+    </div>
+    <div th:if="${fileInfo}">
+        <h4>Uploaded File Statistics</h4>
             <table class='table table-striped' id="table1">
                 <thead>
                 <tr>
@@ -32,4 +39,17 @@
                 </tr>
                 </tbody>
             </table>
+    </div>
+    <div th:if="${errorData !=null}">
+        <input type="hidden" name="id" id="id" th:value="${errorData}" />
+        <input type="hidden" name="reportColumns" id="reportColumns" th:value="${reportColumn}" />
+        <h4>Error Data Report</h4>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class='table table-striped' id="error_data_tbl" width="100%"></table>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>

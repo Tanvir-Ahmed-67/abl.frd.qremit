@@ -80,4 +80,7 @@ public class MyUserDetails implements UserDetails {
     public void setUser(User user) {
         this.user = user;
     }
+    public boolean isPasswordChangeRequired() {
+        return user.isPasswordChangeRequired();
+    }
 }

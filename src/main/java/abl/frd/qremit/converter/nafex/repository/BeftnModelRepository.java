@@ -1,32 +1,46 @@
 package abl.frd.qremit.converter.nafex.repository;
 
 import abl.frd.qremit.converter.nafex.model.BeftnModel;
-import abl.frd.qremit.converter.nafex.model.CocModel;
+import abl.frd.qremit.converter.nafex.model.OnlineModel;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer> {
     @Query("SELECT n FROM BeftnModel n WHERE n.fileInfoModel.id =?1")
-    List<BeftnModel> findAllBeftnModelHavingFileInfoId(long id);
+    List<BeftnModel> findAllBeftnModelHavingFileInfoId(int id);
 
     @Query("SELECT n FROM BeftnModel n WHERE n.fileInfoModel.id =?1")
-    List<BeftnModel> findAllBeftnModelHavingFileInfoIdForIncentive(long id);
+    List<BeftnModel> findAllBeftnModelHavingFileInfoIdForIncentive(int id);
     @Query("SELECT n FROM BeftnModel n")
     List<BeftnModel> findAllBeftnModel();
 
     @Query("SELECT n FROM BeftnModel n")
     List<BeftnModel> findAllBeftnModelForIncentive();
-    Integer countByIsProcessedMain(String isProcessed);
-    Integer countByIsProcessedIncentive(String isProcessed);
+    Integer countByIsProcessedMain(int isProcessed);
+    Integer countByIsProcessedIncentive(int isProcessed);
     @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedMain= :isProcessed")
-    List<BeftnModel> loadUnprocessedBeftnMainData(@Param("isProcessed") String isProcessed);
+    List<BeftnModel> loadUnprocessedBeftnMainData(@Param("isProcessed") int isProcessed);
     @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedIncentive= :isProcessed")
-    List<BeftnModel> loadUnprocessedBeftnIncentiveData(@Param("isProcessed") String isProcessed);
+    List<BeftnModel> loadUnprocessedBeftnIncentiveData(@Param("isProcessed") int isProcessed);
+    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessed= :isProcessed and n.isVoucherGenerated= :isVoucherGenerated and n.downloadDateTime BETWEEN :startDate AND :endDate")
+    List<BeftnModel> getProcessedDataByUploadDate(@Param("isProcessed") int isProcessed, @Param("isVoucherGenerated") int isVoucherGenerated, 
+        @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT n FROM BeftnModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isProcessed= :isProcessed AND n.isVoucherGenerated= :isVoucherGenerated and n.downloadDateTime BETWEEN :startDate AND :endDate")
+    List<BeftnModel> getProcessedDataByUploadDateAndFileId(@Param("fileInfoModelId") int fileInfoModelId, @Param("isProcessed") int isProcessed, 
+        @Param("isVoucherGenerated") int isVoucherGenerated, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Transactional
+    @Modifying
+    @Query("UPDATE BeftnModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate WHERE n.id=:id")
+    int updateIsVoucherGenerated(@Param("id") int id, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
 
 }
 /*

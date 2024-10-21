@@ -1,72 +1,63 @@
 package abl.frd.qremit.converter.nafex.model;
+import java.time.LocalDateTime;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_muzaini")
+@Table(name="base_data_table_muzaini", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
 public class MuzainiModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long  id;
-    @Column(name = "exchange_code")
+    private int  id;
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "transaction_no")
+    @Column(name = "transaction_no", length=30, unique = true, nullable = false)
     private String transactionNo;
-    @Column(name = "currency")
+    @Column(name = "currency", length=32)
     private String currency;
-    @Column(name = "amount")
+    @Column(name = "amount", length = 15, nullable = false)
     private Double amount;
-    @Column(name = "entered_date")
+    @Column(name = "entered_date", length=30)
     private String enteredDate;
-    @Column(name = "remitter_name")
+    @Column(name = "remitter_name", length=128)
     private String remitterName;
-    @Column(name = "beneficiary_name")
-    private String beneficiaryName;
-    @Column(name = "beneficiary_account_no")
-    private String beneficiaryAccount;
-  
-    @Column(name = "bank_name")
-    private String bankName;
-    @Column(name = "bank_code")
-    private String bankCode;
-    @Column(name = "branch_name")
-    private String branchName;
-    @Column(name = "branch_code")
-    private String branchCode;
-    @Column(name = "beneficiary_mobile_no")
-    private String beneficiaryMobile;
-
-    @Column(name = "drawee_branch_name")
-    private String draweeBranchName;
-    @Column(name = "drawee_branch_code")
-    private String draweeBranchCode;
-    @Column(name = "purpose_of_remittance")
-    private String purposeOfRemittance;
-    @Column(name = "source_of_income")
-    private String sourceOfIncome;
-    @Column(name = "remitter_mobile_no")
+    @Column(name = "remitter_mobile_no", length=30)
     private String remitterMobile;
-    @Column(name = "process_flag")
+    @Column(name = "beneficiary_name", length=128)
+    private String beneficiaryName;
+    @Column(name = "beneficiary_account_no", nullable = false, length=32)
+    private String beneficiaryAccount;
+    @Column(name = "beneficiary_mobile_no", length=20)
+    private String beneficiaryMobile;
+    @Column(name = "bank_name", length=64)
+    private String bankName;
+    @Column(name = "bank_code", length=10)
+    private String bankCode;
+    @Column(name = "branch_name", length=128)
+    private String branchName;
+    @Column(name = "branch_code", length=15)
+    private String branchCode;
+    @Column(name = "drawee_branch_name", length=32)
+    private String draweeBranchName;
+    @Column(name = "drawee_branch_code", length=10)
+    private String draweeBranchCode;
+    @Column(name = "purpose_of_remittance", length=32)
+    private String purposeOfRemittance;
+    @Column(name = "source_of_income", length=32)
+    private String sourceOfIncome;
+    @Column(name = "process_flag", length=10)
     private String processFlag;
     @Column(name = "type_flag")
     private String typeFlag;
-    @Column(name = "processed_by")
+    @Column(name = "processed_by", length=32)
     private String processedBy;
-    @Column(name = "processed_date")
+    @Column(name = "processed_date", length=32)
     private String processedDate;
-    @Column(name = "extra_c")
-    private String extraC;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
 
-    @Column(name = "check_t24")
-    private String checkT24;
-    @Column(name = "check_coc")
-    private String checkCoc;
-    @Column(name = "check_account_payee")
-    private String checkAccPayee;
-    @Column(name = "check_beftn")
-    private String checkBeftn;
-
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
@@ -89,47 +80,15 @@ public class MuzainiModel {
         this.fileInfoModel = fileInfoModel;
     }
 
-    public String getCheckT24() {
-        return checkT24;
-    }
-
-    public void setCheckT24(String checkT24) {
-        this.checkT24 = checkT24;
-    }
-
-    public String getCheckCoc() {
-        return checkCoc;
-    }
-
-    public void setCheckCoc(String checkCoc) {
-        this.checkCoc = checkCoc;
-    }
-
-    public String getCheckAccPayee() {
-        return checkAccPayee;
-    }
-
-    public void setCheckAccPayee(String checkAccPayee) {
-        this.checkAccPayee = checkAccPayee;
-    }
-
-    public String getCheckBeftn() {
-        return checkBeftn;
-    }
-
-    public void setCheckBeftn(String checkBeftn) {
-        this.checkBeftn = checkBeftn;
-    }
-
     public MuzainiModel() {
 
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -309,42 +268,45 @@ public class MuzainiModel {
         this.processedDate = processedDate;
     }
 
-    public String getExtraC() {
-        return extraC;
+
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
     }
 
-    public void setExtraC(String extraC) {
-        this.extraC = extraC;
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
     }
 
-    public MuzainiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String beneficiaryName, String beneficiaryAccount, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryMobile, String purposeOfRemittance, String remitterMobile, String processFlag, String typeFlag, String processedBy, String processedDate, String extraC, String checkT24, String checkCoc, String checkAccPayee, String checkBeftn) {
+
+    public MuzainiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
         this.amount = amount;
         this.enteredDate = enteredDate;
         this.remitterName = remitterName;
+        this.remitterMobile = remitterMobile;
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryAccount = beneficiaryAccount;
+        this.beneficiaryMobile = beneficiaryMobile;
         this.bankName = bankName;
         this.bankCode = bankCode;
         this.branchName = branchName;
         this.branchCode = branchCode;
-          this.beneficiaryMobile = beneficiaryMobile;
-        // this.draweeBranchName = draweeBranchName;
-        // this.draweeBranchCode = draweeBranchCode;
+        this.draweeBranchName = draweeBranchName;
+        this.draweeBranchCode = draweeBranchCode;
         this.purposeOfRemittance = purposeOfRemittance;
-       // this.sourceOfIncome = sourceOfIncome;
-        this.remitterMobile = remitterMobile;
+        this.sourceOfIncome = sourceOfIncome;
         this.processFlag = processFlag;
         this.typeFlag = typeFlag;
         this.processedBy = processedBy;
         this.processedDate = processedDate;
-        this.extraC = extraC;
-        this.checkT24 = checkT24;
-        this.checkCoc = checkCoc;
-        this.checkAccPayee = checkAccPayee;
-        this.checkBeftn = checkBeftn;
+        this.uploadDateTime = uploadDateTime;
+    }
+    public MuzainiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime, FileInfoModel fileInfoModel, User user) {
+        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, uploadDateTime);
+        this.fileInfoModel = fileInfoModel;
+        this.userModel = user;
     }
 
     @Override
@@ -370,11 +332,7 @@ public class MuzainiModel {
                 ", typeFlag='" + typeFlag + '\'' +
                 ", processedBy='" + processedBy + '\'' +
                 ", processedDate='" + processedDate + '\'' +
-                ", extraC='" + extraC + '\'' +
-                ", checkT24='" + checkT24 + '\'' +
-                ", checkCoc='" + checkCoc + '\'' +
-                ", checkAccPayee='" + checkAccPayee + '\'' +
-                ", checkBeftn='" + checkBeftn + '\'' +
+                ", uploadDateTime='" + uploadDateTime + '\'' +
                 '}';
     }
 }

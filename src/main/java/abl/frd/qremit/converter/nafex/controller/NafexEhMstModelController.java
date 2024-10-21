@@ -1,8 +1,7 @@
 package abl.frd.qremit.converter.nafex.controller;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.helper.NafexModelServiceHelper;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
+import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.NafexModelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,24 +13,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.util.*;
 
 @Controller
 public class NafexEhMstModelController {
     private final MyUserDetailsService myUserDetailsService;
     private final NafexModelService nafexModelService;
+    private final CommonService commonService;
 
     @Autowired
-    public NafexEhMstModelController(NafexModelService nafexModelService, MyUserDetailsService myUserDetailsService ){
+    public NafexEhMstModelController(NafexModelService nafexModelService, MyUserDetailsService myUserDetailsService, CommonService commonService ){
         this.myUserDetailsService = myUserDetailsService;
         this.nafexModelService = nafexModelService;
+        this.commonService = commonService;
     }
     
     @PostMapping("/nafexUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, Model model) {
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, 
+        @RequestParam("nrtaCode") String nrtaCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));        
-
-
+        
         int userId = 000000000;
         // Getting Logged In user Details in this block
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -41,19 +42,29 @@ public class NafexEhMstModelController {
             userId = user.getId();
         }
         String message = "";
-        FileInfoModel fileInfoModelObject;
-        if (NafexModelServiceHelper.hasCSVFormat(file)) {
-            try {
-                fileInfoModelObject = nafexModelService.save(file, userId);
-                model.addAttribute("fileInfo", fileInfoModelObject);
-                return "/pages/user/userUploadSuccessPage";
-            } catch (Exception e) {
-                e.printStackTrace();
-                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-                return "/pages/user/userUploadSuccessPage";
+        if (CommonService.hasCSVFormat(file)) {
+            if(!commonService.ifFileExist(file.getOriginalFilename())){
+                try {
+                    Map<String, Object> resp = nafexModelService.save(file, userId, exchangeCode, nrtaCode);
+                    model = CommonService.viewUploadStatus(resp, model);
+                    return CommonService.uploadSuccesPage;
+                }
+                catch (IllegalArgumentException e) {
+                    model.addAttribute("message", e.getMessage());
+                    return CommonService.uploadSuccesPage;
+                }
+                catch (Exception e) {
+                    message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
+                    model.addAttribute("message", message);
+                    return CommonService.uploadSuccesPage;
+                }
             }
+            message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
+            model.addAttribute("message", message);
+            return CommonService.uploadSuccesPage;
         }
-        message = "Please upload a csv file!";
-        return "/pages/user/userUploadSuccessPage";
+        message = "Please Upload a CSV File!";
+        model.addAttribute("message", message);
+        return CommonService.uploadSuccesPage;
     }
 }

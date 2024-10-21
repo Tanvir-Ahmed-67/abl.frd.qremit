@@ -8,27 +8,47 @@
 <div id="sidebar" class='active' th:fragment="sidebarUser"><!--sidebar-->
     <div class="sidebar-wrapper active">
         <div class="sidebar-header">
-            <img src="images/banner.png" alt="" srcset="">
+            <img src="/images/banner.png" alt="" srcset="">
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
+                <li class="sidebar-item">
+                    <a th:href="@{/user-home-page}" class='sidebar-link'>
+                        <i data-feather="file-plus" width="20"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/generateReport" class='sidebar-link'>
+                        <i data-feather="file" width="20"></i>
+                        <span>Generate Report </span> 
+                    </a>
+                </li>
                 <li class='sidebar-title'>File Upload</li>
                 <!--..........................User Section......................-->
                 <div>
+
+                 
+
                     <li class="sidebar-item active has-sub">
                         <a th:href="@{/home}" class='sidebar-link'>
                             <i data-feather="file-plus" width="20"></i>
                             <span>Upload File</span>
                         </a>
+                       
                         <ul class="submenu">
+                            
                             <!-- <li>
                                 <a th:each="arrexchangeNameController: ${arrexchangeNameController}" th:href="${arrexchangeNameController}" ><span th:text="${arrexchangeNameController}"></span></a>
                             </li> -->
                             <li th:each="entry : ${exchangeMap.entrySet()}">
-                                <a th:href="@{'#' + ${entry.value}}"
+                                <a th:href="@{'/utils/index?id=' + ${entry.value}}"
                                    th:text="${entry.key}" class="exCode">
                                 </a>
                             </li>
+                           
+
+                           
 
                             <!-- <select id="exchangeSelect" name="exchangeSelect">
                                 <option th:each="exchange, index : ${exchangeNames}"
@@ -44,6 +64,13 @@
                             </li> -->
                         </ul>
                     </li>
+                    <li class="sidebar-item">
+                        <a th:href="@{/user-home-page?type=3}" class='sidebar-link'>
+                            <i data-feather="file-plus" width="20"></i>
+                            <span>Error Data List</span>
+                        </a>
+                    </li>
+                    <!-- 
                     <li class='sidebar-title'>Data Statistics</li>
                     <li class="sidebar-item  has-sub">
                         <a href="#" class='sidebar-link'>
@@ -75,6 +102,7 @@
                             <span>Upload File</span>
                         </a>
                     </li>
+                -->
                 </div>
             </ul>
         </div>

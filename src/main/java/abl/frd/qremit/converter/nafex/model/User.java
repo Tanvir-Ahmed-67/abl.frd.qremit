@@ -1,6 +1,9 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +23,7 @@ public class User {
     private String password;
     private boolean activeStatus;
     private String exchangeCode;
+    private boolean passwordChangeRequired;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<AccountPayeeModel> accountPayeeModel;
@@ -34,7 +38,7 @@ public class User {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<OnlineModel> onlineModel;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
@@ -93,5 +97,13 @@ public class User {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    public boolean isPasswordChangeRequired() {
+        return passwordChangeRequired;
+    }
+
+    public void setPasswordChangeRequired(boolean passwordChangeRequired) {
+        this.passwordChangeRequired = passwordChangeRequired;
     }
 }

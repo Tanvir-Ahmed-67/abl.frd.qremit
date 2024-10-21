@@ -1,15 +1,11 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.AccountPayeeModelServiceHelper;
-import abl.frd.qremit.converter.nafex.helper.CocModelServiceHelper;
-import abl.frd.qremit.converter.nafex.helper.OnlineModelServiceHelper;
 import abl.frd.qremit.converter.nafex.model.AccountPayeeModel;
-import abl.frd.qremit.converter.nafex.model.CocModel;
-import abl.frd.qremit.converter.nafex.model.OnlineModel;
 import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
-import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
@@ -22,7 +18,7 @@ public class AccountPayeeModelService {
     @Autowired
     MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<AccountPayeeModel> accountPayeeModes = accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(Long.parseLong(fileId));
+        List<AccountPayeeModel> accountPayeeModes = accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(Integer.parseInt(fileId));
         ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(accountPayeeModes);
         return in;
     }
@@ -31,13 +27,13 @@ public class AccountPayeeModelService {
         ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(accountPayeeModes);
         return in;
     }
-    public ByteArrayInputStream loadAndUpdateUnprocessedAccountPayeeData(String isProcessed) {
+    public ByteArrayInputStream loadAndUpdateUnprocessedAccountPayeeData(int isProcessed) {
         List<AccountPayeeModel> unprocessedAccountPayeeModels = accountPayeeModelRepository.loadUnprocessedAccountPayeeData(isProcessed);
-        List<AccountPayeeModel> processedAndUpdatedAccountPayeeModels = updateAndReturn(unprocessedAccountPayeeModels, "1");
+        List<AccountPayeeModel> processedAndUpdatedAccountPayeeModels = updateAndReturn(unprocessedAccountPayeeModels, 1);
         ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(processedAndUpdatedAccountPayeeModels);
         return in;
     }
-    public List<AccountPayeeModel> updateAndReturn(List<AccountPayeeModel> entitiesToUpdate, String processed) {
+    public List<AccountPayeeModel> updateAndReturn(List<AccountPayeeModel> entitiesToUpdate, int processed) {
         // Retrieve the entities you want to update
         List<AccountPayeeModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -58,7 +54,20 @@ public class AccountPayeeModelService {
         return updatedEntities;
     }
     public int countRemainingAccountPayeeData(){
-        return accountPayeeModelRepository.countByIsProcessed("0");
+        return accountPayeeModelRepository.countByIsProcessed(0);
+    }
+
+    public List<AccountPayeeModel> getTemopraryReportData(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return accountPayeeModelRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
+    public List<AccountPayeeModel> getProcessedDataByFileId(int fileInfoModelId,int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return accountPayeeModelRepository.getProcessedDataByUploadDateAndFileId(fileInfoModelId, isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
+    @Transactional
+    public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
+        accountPayeeModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
 
 

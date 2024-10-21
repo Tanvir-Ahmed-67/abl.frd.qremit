@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ExchangeHouseModelService {
@@ -33,11 +34,24 @@ public class ExchangeHouseModelService {
     }
 
     public boolean updateInactiveExchangeHouse(int id){
-        exchangeHouseModelRepository.setExchangeHouseActiveStatusTrueById(id);
+        //exchangeHouseModelRepository.setExchangeHouseActiveStatusTrueById(id);
+        exchangeHouseModelRepository.setExchangeHouseActiveStatusById(id, 1);
         return true;
     }
     public void editExchangeHouse(ExchangeHouseModel exchangeHouseModel) throws Exception {
-        exchangeHouseModelRepository.save(exchangeHouseModel);
-        exchangeHouseModelRepository.setExchangeHouseActiveStatusFalseById(exchangeHouseModel.getId());
+        exchangeHouseModelRepository.editExchangeHouse(exchangeHouseModel.getExchangeName(), exchangeHouseModel.getExchangeShortName(), exchangeHouseModel.getNrtaCode(), exchangeHouseModel.getId());
+    }
+
+    public ExchangeHouseModel findByExchangeCode(String exchangeCode){
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+        return exchangeHouseModel;
+    }
+
+    public List<ExchangeHouseModel> loadAllIsSettlementExchangeHouse(int isSettlement){
+        return exchangeHouseModelRepository.findAllExchangeHouseByIsSettlement(isSettlement);
+    }
+
+    public List<ExchangeHouseModel> findAllByExchangeCodeIn(Set<String> exchangeCodes){
+        return exchangeHouseModelRepository.findAllByExchangeCodeIn(exchangeCodes);
     }
 }

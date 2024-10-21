@@ -1,0 +1,54 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="Blank_A4" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
+	<field name="transactionNo" class="java.lang.String">
+	</field>
+	<field name="exchangeCode" class="java.lang.String">
+	</field>
+	<field name="enteredDate" class="java.time.LocalDateTime">
+	</field>
+	<field name="amount" class="java.lang.Double">
+	</field>
+	<field name="beneficiaryName" class="java.lang.String">
+	</field>
+	<field name="beneficiaryAccount" class="java.lang.String">
+	</field>
+	<field name="remitterName" class="java.lang.String">
+	</field>
+	<background splitType="Stretch"/>
+	<title height="79" splitType="Stretch"/>
+	<pageHeader height="35" splitType="Stretch"/>
+	<columnHeader height="61" splitType="Stretch"/>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<element kind="textField" x="0" y="0" width="67" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{transactionNo}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="67" y="0" width="61" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{exchangeCode}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="128" y="0" width="61" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{enteredDate}.toLocalDate()]]></expression>
+			</element>
+			<element kind="textField" x="189" y="0" width="61" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{amount}]]></expression>
+			</element>
+			<element kind="textField" x="250" y="0" width="61" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{beneficiaryName}]]></expression>
+			</element>
+			<element kind="textField" x="311" y="0" width="61" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{beneficiaryAccount}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="372" y="0" width="61" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{remitterName}]]></expression>
+				<property name="net.sf.jasperreports.export.csv.field.delimiter" value=","/>
+				<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="pageHeader"/>
+				<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.2" value="pageFooter"/>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>

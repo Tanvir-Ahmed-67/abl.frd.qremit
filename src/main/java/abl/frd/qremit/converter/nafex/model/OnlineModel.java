@@ -4,36 +4,55 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="converted_data_online")
+@Table(name="converted_data_online",
+    indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
+        @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time")
+    }
+)
 public class OnlineModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long id;
+    private int id;
     @Column(name = "transaction_no")
     private String transactionNo;
-    @Column(name = "exchange_code")
+    @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "beneficiary_name")
+    @Column(name = "beneficiary_name", length=128)
     private String beneficiaryName;
     @Column(name = "beneficiary_account")
     private String beneficiaryAccount;
-    @Column(name = "amount")
+    @Column(name = "amount", length = 15)
     private Double amount;
-    @Column(name = "remitter_name")
+    @Column(name = "remitter_name", length=128)
     private String remitterName;
-    @Column(name = "is_processed")
-    private String isProcessed;
-    @Column(name = "is_downloaded")
-    private String isDownloaded;
+    @Column(name = "bank_name", length=64)
+    private String bankName;
+    @Column(name = "bank_code", length=10)
+    private String bankCode;
+    @Column(name = "branch_name", length=128)
+    private String branchName;
+    @Column(name = "branch_code", length=15)
+    private String branchCode;
+    @Column(name = "incentive", length = 12)
+    private Double incentive;
+    @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isProcessed = 0;
+    @Column(name = "is_downloaded", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isDownloaded = 0;
     @Column(name = "download_date_time")
     private LocalDateTime downloadDateTime;
     @Column(name = "download_user_id")
     private int downloadUserId;
-    @Column(name = "extra_e")
-    private String extraE;
+    @Column(name = "upload_date_time", columnDefinition = "DATETIME")
+    private LocalDateTime uploadDateTime;
+    @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isVoucherGenerated = 0;
+    @Column(name = "report_date", columnDefinition = "DATETIME")
+    private LocalDateTime reportDate;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="upload_user_id")
     private User userModel;
 
@@ -45,7 +64,8 @@ public class OnlineModel {
         this.userModel = userModel;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
 
@@ -61,11 +81,11 @@ public class OnlineModel {
 
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -117,20 +137,20 @@ public class OnlineModel {
         this.remitterName = remitterName;
     }
 
-    public String getIsProcessed() {
-        return isProcessed;
+    public int getIsProcessed() {
+        return this.isProcessed;
     }
 
-    public void setIsProcessed(String extraA) {
-        this.isProcessed = extraA;
+    public void setIsProcessed(int isProcessed) {
+        this.isProcessed = isProcessed;
     }
 
-    public String getIsDownloaded() {
-        return isDownloaded;
+    public int getIsDownloaded() {
+        return this.isDownloaded;
     }
 
-    public void setIsDownloaded(String extraB) {
-        this.isDownloaded = extraB;
+    public void setIsDownloaded(int isDownloaded) {
+        this.isDownloaded = isDownloaded;
     }
 
     public LocalDateTime getDownloadDateTime() {
@@ -149,15 +169,71 @@ public class OnlineModel {
         this.downloadUserId = downloadUserId;
     }
 
-    public String getExtraE() {
-        return extraE;
+    public String getBankName() {
+        return this.bankName;
     }
 
-    public void setExtraE(String extraE) {
-        this.extraE = extraE;
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 
-    public OnlineModel(long id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String extraA, String extraB, LocalDateTime downloadDateTime, int downloadUserId, String extraE) {
+    public String getBankCode() {
+        return this.bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getBranchName() {
+        return this.branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public String getBranchCode() {
+        return this.branchCode;
+    }
+
+    public void setBranchCode(String branchCode) {
+        this.branchCode = branchCode;
+    }
+
+    public LocalDateTime getUploadDateTime() {
+        return this.uploadDateTime;
+    }
+
+    public void setUploadDateTime(LocalDateTime uploadDateTime) {
+        this.uploadDateTime = uploadDateTime;
+    }
+
+    public int getIsVoucherGenerated() {
+        return this.isVoucherGenerated;
+    }
+
+    public void setIsVoucherGenerated(int isVoucherGenerated) {
+        this.isVoucherGenerated = isVoucherGenerated;
+    }
+
+    public LocalDateTime getReportDate() {
+        return this.reportDate;
+    }
+
+    public void setReportDate(LocalDateTime reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public Double getIncentive() {
+        return this.incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
+    }
+    
+    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.exchangeCode = exchangeCode;
@@ -169,7 +245,11 @@ public class OnlineModel {
         this.isDownloaded = extraB;
         this.downloadDateTime = downloadDateTime;
         this.downloadUserId = downloadUserId;
-        this.extraE = extraE;
+        this.uploadDateTime = uploadDateTime;
+        this.bankCode = bankCode;
+        this.bankName = bankName;
+        this.branchCode = branchCode;
+        this.branchName = branchName;
     }
 
     @Override
@@ -186,7 +266,7 @@ public class OnlineModel {
                 ", extraB='" + isDownloaded + '\'' +
                 ", extraC='" + downloadDateTime + '\'' +
                 ", extraD='" + downloadUserId + '\'' +
-                ", extraE='" + extraE + '\'' +
+                ", extraE='" + uploadDateTime + '\'' +
                 '}';
     }
 

@@ -9,6 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 @Service
 public class BeftnModelService {
     @Autowired
@@ -16,7 +18,7 @@ public class BeftnModelService {
     @Autowired
     MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(Long.parseLong(fileId));
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(Integer.parseInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(beftnModels);
         return in;
     }
@@ -27,7 +29,7 @@ public class BeftnModelService {
     }
 
     public ByteArrayInputStream loadIncentive(String fileId, String fileType) {
-        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoIdForIncentive(Long.parseLong(fileId));
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoIdForIncentive(Integer.parseInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnIncentiveModelsToExcel(beftnModels);
         return in;
     }
@@ -37,19 +39,19 @@ public class BeftnModelService {
         return in;
     }
 
-    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnMainData(String isProcessed) {
+    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnMainData(int isProcessed) {
         List<BeftnModel> unprocessedBeftnModels = beftnModelRepository.loadUnprocessedBeftnMainData(isProcessed);
-        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnMainData(unprocessedBeftnModels, "1");
+        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnMainData(unprocessedBeftnModels, 1);
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(processedAndUpdatedBeftnModels);
         return in;
     }
-    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnIncentiveData(String isProcessed) {
+    public ByteArrayInputStream loadAndUpdateUnprocessedBeftnIncentiveData(int isProcessed) {
         List<BeftnModel> unprocessedBeftnModels = beftnModelRepository.loadUnprocessedBeftnIncentiveData(isProcessed);
-        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnIncentiveData(unprocessedBeftnModels, "1");
-        ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(processedAndUpdatedBeftnModels);
+        List<BeftnModel> processedAndUpdatedBeftnModels = updateAndReturnIncentiveData(unprocessedBeftnModels, 1);
+        ByteArrayInputStream in = BeftnModelServiceHelper.BeftnIncentiveModelsToExcel(processedAndUpdatedBeftnModels);
         return in;
     }
-    public List<BeftnModel> updateAndReturnMainData(List<BeftnModel> entitiesToUpdate, String processed) {
+    public List<BeftnModel> updateAndReturnMainData(List<BeftnModel> entitiesToUpdate, int processed) {
         // Retrieve the entities you want to update
         List<BeftnModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -59,6 +61,10 @@ public class BeftnModelService {
                     existingEntity.setIsProcessedMain(processed);
                     existingEntity.setDownloadDateTime(LocalDateTime.now());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
+                    if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
+                        existingEntity.setIsDownloaded(1);
+                        existingEntity.setIsProcessed(1);
+                    }
                     // Update other properties as needed
                     break;
                 }
@@ -68,7 +74,7 @@ public class BeftnModelService {
         List<BeftnModel> updatedEntities = beftnModelRepository.saveAll(existingEntities);
         return updatedEntities;
     }
-    public List<BeftnModel> updateAndReturnIncentiveData(List<BeftnModel> entitiesToUpdate, String processed) {
+    public List<BeftnModel> updateAndReturnIncentiveData(List<BeftnModel> entitiesToUpdate, int processed) {
         // Retrieve the entities you want to update
         List<BeftnModel> existingEntities = entitiesToUpdate;
         // Update the entities
@@ -78,6 +84,10 @@ public class BeftnModelService {
                     existingEntity.setIsProcessedIncentive(processed);
                     existingEntity.setDownloadDateTime(LocalDateTime.now());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
+                    if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
+                        existingEntity.setIsDownloaded(1);
+                        existingEntity.setIsProcessed(1);
+                    }
                     // Update other properties as needed
                     break;
                 }
@@ -88,10 +98,23 @@ public class BeftnModelService {
         return updatedEntities;
     }
     public int countRemainingBeftnDataMain(){
-        return beftnModelRepository.countByIsProcessedMain("0");
+        return beftnModelRepository.countByIsProcessedMain(0);
     }
     public int countRemainingBeftnDataIncentive(){
-        return beftnModelRepository.countByIsProcessedIncentive("0");
+        return beftnModelRepository.countByIsProcessedIncentive(0);
+    }
+
+    public List<BeftnModel> getTemopraryReportData(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return beftnModelRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
+    public List<BeftnModel> getProcessedDataByFileId(int fileInfoModelId,int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return beftnModelRepository.getProcessedDataByUploadDateAndFileId(fileInfoModelId, isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
+    @Transactional
+    public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
+        beftnModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
 
 }

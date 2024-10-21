@@ -19,7 +19,6 @@ public class CocModelController {
         this.cocModelService = cocModelService;
     }
 
-
     @GetMapping("/downloadcoc/{fileId}/{fileType}")
     public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
         InputStreamResource file = new InputStreamResource(cocModelService.load(fileId, fileType));
@@ -31,7 +30,7 @@ public class CocModelController {
     }
     @GetMapping("/downloadcoc")
     public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(cocModelService.loadAndUpdateUnprocessedCocData("0"));
+        InputStreamResource file = new InputStreamResource(cocModelService.loadAndUpdateUnprocessedCocData(0,0));
         int countRemainingCocData = cocModelService.countRemainingCocData();
         String fileName = "Coc";  // Have to attch date with file name here.
         return ResponseEntity.ok()

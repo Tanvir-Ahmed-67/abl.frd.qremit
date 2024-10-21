@@ -33,7 +33,7 @@ public class OnlineModelController {
     }
     @GetMapping("/downloadonline")
     public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(onlineModelService.loadAndUpdateUnprocessedOnlineData("0"));
+        InputStreamResource file = new InputStreamResource(onlineModelService.loadAndUpdateUnprocessedOnlineData(0));
         int countRemainingOnlineData = onlineModelService.countRemainingOnlineData();
         String fileName = "Online";
         return ResponseEntity.ok()
@@ -45,7 +45,7 @@ public class OnlineModelController {
     @GetMapping("/countOnlineAfterDownloadButtonClicked")
     @ResponseBody
     public int countOnlineAfterDownloadButtonClicked(){
-        int count = onlineModelService.countUnProcessedOnlineData("0");
+        int count = onlineModelService.countUnProcessedOnlineData(0);
         return count;
     }
 }

@@ -53,7 +53,7 @@ public class ExchangeHouseModelController {
     }
     @RequestMapping(value = "/createNewExchange", method = RequestMethod.POST)
     public String submitNewExchangeHouseCreateFromAdmin(ExchangeHouseModel exchangeHouseModel, RedirectAttributes ra){
-        exchangeHouseModel.setActiveStatus(false);
+        exchangeHouseModel.setActiveStatus(0);
         try{
             exchangeHouseModelService.insertNewExchangeHouse(exchangeHouseModel);
             ra.addFlashAttribute("message","New Exchange House has been created successfully");
