@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 21, 2024 at 08:06 AM
+-- Generation Time: Oct 21, 2024 at 11:35 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -109,7 +109,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (164, 1, '', '7010286', 'Placid NK orp', '', '7065', '', '', 0),
 (165, 1, '', '7010238', 'Prabhu Group Inc. U S A', '', '7051', '', '', 0),
 (166, 1, '', '7010296', 'SG Quick Pay, PTE LTD, SNG', '', '7107', '', '', 0),
-(167, 1, '', '7010256', 'SIGUE Global Sercice ', '', '7074', '', '', 0),
+(167, 1, 'sigue', '7010256', 'SIGUE Global Service', 'Sigue Global', '7074', 'SigueModel', 'sigueModelRepository', 0),
 (168, 1, 'standard', '7010248', 'Standard Express', 'Standard Express', '7060', 'StandardModel', 'standardModelRepository', 0),
 (169, 1, '', '7010274', 'Sunman Express 	', '', '7096', '', '', 0),
 (170, 1, '', '7010293', 'Terra Payment Services Ltd. Ma', '', '7101', '', '', 0),
