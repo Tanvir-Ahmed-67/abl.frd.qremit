@@ -20,6 +20,7 @@ TRUNCATE `base_data_table_nec`;
 TRUNCATE `base_data_table_eastern`;
 TRUNCATE `base_data_table_alansari`;
 TRUNCATE `base_data_table_sigue`;
+TRUNCATE `base_data_table_standard`;
 TRUNCATE `base_data_table_saib`;
 
 
