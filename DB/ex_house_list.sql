@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 22, 2024 at 07:08 AM
+-- Generation Time: Oct 22, 2024 at 07:56 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -118,7 +118,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (173, 1, '', '7010225', 'U.A.E. Exchange LLC, Abu Dhabi', '', '7028', '', '', 0),
 (174, 1, '', '7010257', 'U.A.E. Exchange, Malaysia', '', '7075', '', '', 0),
 (175, 1, '', '7010213', 'UAE Exchange WLL,Kuwait', '', '7027', '', '', 0),
-(176, 1, '', '7010216', 'Unimoni Exchange', '', '7034', '', '', 0),
+(176, 1, 'unimoni', '7010216', 'Unimoni Exchange', 'Unimoni Ex', '7034', 'UnimoniModel', 'unimoniModelRepository', 0),
 (177, 1, '', '7010268', 'Val You SDN BHD', '', '7090', '', '', 0),
 (178, 1, '', '7010224', 'Wall Street Exchange, Abu Dhab', '', '7033', '', '', 0),
 (179, 1, '', '7010303', 'Zamzam Money Exchange', '', '7111', '', '', 0),
