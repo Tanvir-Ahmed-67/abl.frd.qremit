@@ -75,6 +75,9 @@ public class FileInfoModel {
     private List<NecModel> necModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<InstantCashModel> instantCashModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<UnimoniModel> unimoniModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -281,6 +284,14 @@ public class FileInfoModel {
         this.necModel = necModel;
     }
 
+
+    public List<InstantCashModel> getInstantCashModel() {
+        return this.instantCashModel;
+    }
+
+    public void setInstantCashModel(List<InstantCashModel> instantCashModel) {
+        this.instantCashModel = instantCashModel;
+    }
 
     public List<UnimoniModel> getUnimoniModel() {
         return this.unimoniModel;
