@@ -1,0 +1,3 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Remitter Name|Beneficiary Name|Beneficiary Bank Account/mobile  Number|Beneficiary Bank|Benificiary Bank Code|Beneficiary Bank Branch Name|Beneficiary Bank Branch Code|Beneficiary Mobile No|Drawee Bank Branch Name|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter MobileNo
+7010215|01417102400002|BDT|70000.00|17/10/2024|BORHAN   SOBAN|NARGIS AKTER|0200003693515|AGRANI BANK LTD ||NARAYANPUR|010131451||||FAMILY MAINTENANCE|SALARY|96878007870
+7010215|00817102400001|BDT|54354.00|17/10/2024|PIARUL  ISLAM|MST BEAUTY  KHATUN|0200012528863|AGRANI BANK LTD ||GOLAP NAGAR|010500558|0|||FAMILY MAINTENANCE|SALARY|96891084361

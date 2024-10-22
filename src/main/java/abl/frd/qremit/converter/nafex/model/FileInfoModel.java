@@ -75,6 +75,9 @@ public class FileInfoModel {
     private List<NecModel> necModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<BelhashaGlobalModel> belhashaGlobalModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<InstantCashModel> instantCashModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -93,9 +96,11 @@ public class FileInfoModel {
     private List<AlRostamaniModel> alRostamaniModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<NblMalyasiaModel> nblMalyasiaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<AnbModel> anbModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
-    
     @JsonIgnore
     private List<AmanModel> amanModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -285,12 +290,29 @@ public class FileInfoModel {
     }
 
 
+    public List<BelhashaGlobalModel> getBelhashaGlobalModel() {
+        return this.belhashaGlobalModel;
+    }
+
+    public void setBelhashaGlobalModel(List<BelhashaGlobalModel> belhashaGlobalModel) {
+        this.belhashaGlobalModel = belhashaGlobalModel;
+    }
+
     public List<InstantCashModel> getInstantCashModel() {
         return this.instantCashModel;
     }
 
     public void setInstantCashModel(List<InstantCashModel> instantCashModel) {
         this.instantCashModel = instantCashModel;
+    }
+
+
+    public List<NblMalyasiaModel> getNblMalyasiaModel() {
+        return this.nblMalyasiaModel;
+    }
+
+    public void setNblMalyasiaModel(List<NblMalyasiaModel> nblMalyasiaModel) {
+        this.nblMalyasiaModel = nblMalyasiaModel;
     }
 
     public List<UnimoniModel> getUnimoniModel() {
