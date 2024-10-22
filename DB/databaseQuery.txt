@@ -20,6 +20,7 @@ TRUNCATE `base_data_table_nec`;
 TRUNCATE `base_data_table_eastern`;
 TRUNCATE `base_data_table_alansari`;
 TRUNCATE `base_data_table_sigue`;
+TRUNCATE `base_data_table_standard`;
 
 
 DROP TABLE `base_data_table_bec`,`base_data_table_ezremit`,`base_data_table_muzaini`, `base_data_table_nafex`, `base_data_table_ria`,`base_data_table_singapore`;
