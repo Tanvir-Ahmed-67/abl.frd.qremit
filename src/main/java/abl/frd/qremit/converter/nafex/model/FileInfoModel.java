@@ -96,9 +96,11 @@ public class FileInfoModel {
     private List<AlRostamaniModel> alRostamaniModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<NblMalyasiaModel> nblMalyasiaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<AnbModel> anbModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
-    
     @JsonIgnore
     private List<AmanModel> amanModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -302,6 +304,15 @@ public class FileInfoModel {
 
     public void setInstantCashModel(List<InstantCashModel> instantCashModel) {
         this.instantCashModel = instantCashModel;
+    }
+
+
+    public List<NblMalyasiaModel> getNblMalyasiaModel() {
+        return this.nblMalyasiaModel;
+    }
+
+    public void setNblMalyasiaModel(List<NblMalyasiaModel> nblMalyasiaModel) {
+        this.nblMalyasiaModel = nblMalyasiaModel;
     }
 
     public List<UnimoniModel> getUnimoniModel() {
