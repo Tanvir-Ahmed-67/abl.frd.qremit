@@ -225,7 +225,7 @@ public class ReportController {
         model.addAttribute("summaryReportContent", exchangeReport);
         model.addAttribute("grandTotalAmount", commaFormattedGrandTotalAmount);
         model.addAttribute("grandTotalRemittances", grandTotalRemittances);
-        return "/report/summaryOfDailyRemittance";
+        return "report/summaryOfDailyRemittance";
     }
 
     @RequestMapping(value="/detailsOfDailyStatement", method= RequestMethod.GET)
@@ -235,7 +235,7 @@ public class ReportController {
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
         }
         model.addAttribute("detailsReportContent", exchangeReport);
-        return "/report/detailsOfDailyRemittance";
+        return "report/detailsOfDailyRemittance";
     }
 
     @RequestMapping(value="/downloadSummaryOfDailyStatementInPdfFormat", method= RequestMethod.GET)

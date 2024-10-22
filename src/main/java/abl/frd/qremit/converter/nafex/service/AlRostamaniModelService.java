@@ -1,20 +1,38 @@
 package abl.frd.qremit.converter.nafex.service;
-import abl.frd.qremit.converter.nafex.model.*;
-import abl.frd.qremit.converter.nafex.repository.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.*;
-import java.time.LocalDateTime;
+
+import abl.frd.qremit.converter.nafex.model.AlRostamaniModel;
+import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
+import abl.frd.qremit.converter.nafex.model.FileInfoModel;
+import abl.frd.qremit.converter.nafex.model.User;
+import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
+import abl.frd.qremit.converter.nafex.repository.AlRostamaniModelRepository;
+import abl.frd.qremit.converter.nafex.repository.BeftnModelRepository;
+import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
+import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
+import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
+import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
+import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import java.util.*;
 @SuppressWarnings("unchecked")
 @Service
-public class SaibModelService {
+public class AlRostamaniModelService {
     @Autowired
-    SaibModelRepository saibModelRepository;
+    AlRostamaniModelRepository alRostamaniModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -46,29 +64,29 @@ public class SaibModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> saibData = csvToSaibModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
-            List<SaibModel> saibModels = (List<SaibModel>) saibData.get("saibDataModelList");
+            Map<String, Object> alRostamaniData = csvToAlRostamaniModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            List<AlRostamaniModel> alRostamaniModels = (List<AlRostamaniModel>) alRostamaniData.get("alRostamaniModelList");
 
-            if(saibData.containsKey("errorMessage")){
-                resp.put("errorMessage", saibData.get("errorMessage"));
+            if(alRostamaniData.containsKey("errorMessage")){
+                resp.put("errorMessage", alRostamaniData.get("errorMessage"));
             }
-            if(saibData.containsKey("errorCount") && ((Integer) saibData.get("errorCount") >= 1)){
-                int errorCount = (Integer) saibData.get("errorCount");
+            if(alRostamaniData.containsKey("errorCount") && ((Integer) alRostamaniData.get("errorCount") >= 1)){
+                int errorCount = (Integer) alRostamaniData.get("errorCount");
                 fileInfoModel.setErrorCount(errorCount);
                 resp.put("fileInfoModel", fileInfoModel);
                 fileInfoModelRepository.save(fileInfoModel);
             }
-            if(saibModels.size()!=0) {
-                for (SaibModel saibModel : saibModels) {
-                    saibModel.setFileInfoModel(fileInfoModel);
-                    saibModel.setUserModel(user);
+            if(alRostamaniModels.size()!=0) {
+                for (AlRostamaniModel alRostamaniModel : alRostamaniModels) {
+                    alRostamaniModel.setFileInfoModel(fileInfoModel);
+                    alRostamaniModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(saibModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(alRostamaniModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
-                fileInfoModel.setTotalCount(String.valueOf(saibModels.size()));
+                fileInfoModel.setTotalCount(String.valueOf(alRostamaniModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setSaibModel(saibModels);
+                fileInfoModel.setAlRostamaniModel(alRostamaniModels);
    
                 // SAVING TO MySql Data Table
                 try{
@@ -85,13 +103,13 @@ public class SaibModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToSaibModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToAlRostamaniModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
         Map<String, Object> resp = new HashMap<>();
-        Optional<SaibModel> duplicateData;
+        Optional<AlRostamaniModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<SaibModel> saibDataModelList = new ArrayList<>();
+            List<AlRostamaniModel> alRostamaniModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
@@ -99,7 +117,7 @@ public class SaibModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = saibModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                duplicateData = alRostamaniModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
@@ -124,11 +142,11 @@ public class SaibModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                SaibModel saibModel = new SaibModel();
-                saibModel = CommonService.createDataModel(saibModel, data);
-                saibModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                saibModel.setUploadDateTime(currentDateTime);
-                saibDataModelList.add(saibModel);
+                AlRostamaniModel alRostamaniModel = new AlRostamaniModel();
+                alRostamaniModel = CommonService.createDataModel(alRostamaniModel, data);
+                alRostamaniModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                alRostamaniModel.setUploadDateTime(currentDateTime);
+                alRostamaniModelList.add(alRostamaniModel);
             }
            //save error data
            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -138,10 +156,10 @@ public class SaibModelService {
                return resp;
            }
            //if both model is empty then delete fileInfoModel
-           if(errorDataModelList.isEmpty() && saibDataModelList.isEmpty()){
+           if(errorDataModelList.isEmpty() && alRostamaniModelList.isEmpty()){
                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
            }
-           resp.put("saibDataModelList", saibDataModelList);
+           resp.put("alRostamaniModelList", alRostamaniModelList);
            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
@@ -170,7 +188,7 @@ public class SaibModelService {
         data.put("draweeBranchName", "");
         data.put("draweeBranchCode", "");
         data.put("purposeOfRemittance", csvRecord.get(15));
-        data.put("sourceOfIncome", "");
+        data.put("sourceOfIncome", csvRecord.get(16));
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");

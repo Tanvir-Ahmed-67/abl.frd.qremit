@@ -46,7 +46,7 @@ public class ErrorDataController {
         ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(Integer.parseInt(id));
         //System.out.println(errorDataModel.toString());
         model.addAttribute("errorDataModel", errorDataModel);
-        return "/pages/user/editErrorForm";
+        return "pages/user/editErrorForm";
     }
     @PostMapping("/update")
     @ResponseBody

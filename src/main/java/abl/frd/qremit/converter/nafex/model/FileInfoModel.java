@@ -86,6 +86,9 @@ public class FileInfoModel {
     @JsonIgnore
     private List<SaibModel> saibModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlRostamaniModel> alRostamaniModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     
     @JsonIgnore
     private List<AmanModel> amanModel;
@@ -143,6 +146,14 @@ public class FileInfoModel {
 
     public void setSaibModel(List<SaibModel> saibModel) {
         this.saibModel = saibModel;
+    }
+
+    public List<AlRostamaniModel> getAlRostamaniModel() {
+        return this.alRostamaniModel;
+    }
+
+    public void setAlRostamaniModel(List<AlRostamaniModel> alRostamaniModel) {
+        this.alRostamaniModel = alRostamaniModel;
     }
 
     public List<OnlineModel> getOnlineModelList() {

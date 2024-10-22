@@ -92,7 +92,7 @@ public class UtilsController {
     @GetMapping("/errorReport")
     public String errorReport(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        return "/pages/user/errorReport";
+        return "pages/user/errorReport";
     }
     
     @GetMapping("/uploadApi")
@@ -101,7 +101,7 @@ public class UtilsController {
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         model.addAttribute("currentDate", currentDate);
-        return "/pages/admin/adminApiUpload";
+        return "pages/admin/adminApiUpload";
     }
 
     @GetMapping("/getSettlement")

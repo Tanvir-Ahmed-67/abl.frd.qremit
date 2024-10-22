@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 21, 2024 at 11:35 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Oct 22, 2024 at 06:23 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -57,9 +57,9 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (112, 1, '', '7010291', 'Aftab Currency Exchange Ltd.UK', '', '7100', '', '', 0),
 (113, 1, '', '7010221', 'Al Ahalia Money Ex. ', '', '7047', '', '', 0),
 (114, 1, 'alansari', '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', 'AlansariModel', 'alansariModelRepository', 0),
-(115, 1, 'alzadeed', '7010246', 'Al jadeed Exchange', 'Al Jadeed', '7058', 'AlzadeedModel', 'alzadeedModelRepository', 0),
+(115, 1, 'alzadeed', '7010246', 'Al Jadeed Exchange', 'Al Jadeed', '7058', 'AlzadeedModel', 'alzadeedModelRepository', 0),
 (116, 1, '', '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '', '', 0),
-(117, 1, '', '7010240', 'Al Rostamani Intl Ex. Co. Abu', '', '7052', '', '', 0),
+(117, 1, 'alrostamani', '7010240', 'Al Rostamani Intl Ex. Co. Abu', 'Al Rostamani', '7052', 'AlRostamaniModel', 'alRostamaniModelRepository', 0),
 (118, 1, '', '7010245', 'Al Zaman Ex. , Qatar', '', '7057', '', '', 0),
 (119, 1, '', '7010262', 'ALAWANEH EX. JORDAN', '', '7082', '', '', 0),
 (120, 1, '', '7010205', 'Al-Fardan Exchange  Co. Doha, ', '', '7002', '', '', 0),
@@ -103,17 +103,17 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (158, 1, '', '7010285', 'NBL Money Transfer USA', '', '7077', '', '', 0),
 (159, 1, '', '7010276', 'NBL Money Transfer,Malaysia', '', '7059', '', '', 0),
 (160, 1, '', '7010241', 'NCBJ, Jeddah, KSA', '', '7055', '', '', 0),
-(161, 1, 'nec', '7010272', 'NEC Money Transfer, UK', 'NEC', '7087', 'NecModel', 'necModelRepository', 0),
+(161, 1, 'nec', '7010272', 'NEC Money Transfer, UK', 'NEC UK', '7087', 'NecModel', 'necModelRepository', 0),
 (162, 1, '', '7010208', 'Oman Exchange Co, Kuwait', '', '7008', '', '', 0),
 (163, 1, '', '7010215', 'Oman Intl Exchange Ltd. Oman', '', '7021', '', '', 0),
 (164, 1, '', '7010286', 'Placid NK orp', '', '7065', '', '', 0),
 (165, 1, '', '7010238', 'Prabhu Group Inc. U S A', '', '7051', '', '', 0),
 (166, 1, '', '7010296', 'SG Quick Pay, PTE LTD, SNG', '', '7107', '', '', 0),
-(167, 1, 'sigue', '7010256', 'SIGUE Global Service', 'Sigue Global', '7074', 'SigueModel', 'sigueModelRepository', 0),
+(167, 1, 'sigue', '7010256', 'SIGUE Global Sercice ', 'Sigue Global', '7074', 'SigueModel', 'sigueModelRepository', 0),
 (168, 1, 'standard', '7010248', 'Standard Express', 'Standard Express', '7060', 'StandardModel', 'standardModelRepository', 0),
 (169, 1, '', '7010274', 'Sunman Express 	', '', '7096', '', '', 0),
 (170, 1, '', '7010293', 'Terra Payment Services Ltd. Ma', '', '7101', '', '', 0),
-(171, 1, '', '7010266', 'The Saudi Investment Bank (SAI', '', '7086', '', '', 0),
+(171, 1, 'saib', '7010266', 'The Saudi Investment Bank (SAI', 'SAIB', '7086', 'SaibModel', 'saibModelRepository', 0),
 (172, 1, '', '7010267', 'U REMIT INTERNATIONAL, CANADA', '', '7088', '', '', 0),
 (173, 1, '', '7010225', 'U.A.E. Exchange LLC, Abu Dhabi', '', '7028', '', '', 0),
 (174, 1, '', '7010257', 'U.A.E. Exchange, Malaysia', '', '7075', '', '', 0),
