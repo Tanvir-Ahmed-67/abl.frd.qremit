@@ -29,7 +29,7 @@ public class UtilsController {
     CommonService commonService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    private String fileUploadPage = "/fragments/file_upload_form";
+    private String fileUploadPage = "fragments/file_upload_form";
     public UtilsController(MyUserDetailsService myUserDetailsService){
         this.myUserDetailsService = myUserDetailsService;
     }
