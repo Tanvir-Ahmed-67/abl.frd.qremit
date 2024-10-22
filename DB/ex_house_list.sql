@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 22, 2024 at 08:52 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Oct 22, 2024 at 12:57 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -67,10 +67,10 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (122, 1, '', '7010233', 'AL-Ghurair Ex. Dubai, UAE', '', '7043', '', '', 0),
 (123, 1, '', '7119', 'Al-Rajhi Banking & Investment ', '', '7009', '', '', 0),
 (124, 1, 'aman', '7010263', 'Aman Ex- Kuwait', 'Aman Ex', '7084', 'AmanModel', 'amanModelRepository', 0),
-(125, 1, '', '7010203', 'Arab National Bank, Riyadh, K.', '', '7030', '', '', 0),
+(125, 1, 'anb', '7010203', 'Arab National Bank, Riyadh, K.', 'Arab National Bank', '7030', 'AnbModel', 'anbModelRepository', 0),
 (126, 1, '', '7010243', 'Bahrain Financing Co. Bahrain ', '', '7013', '', '', 0),
 (127, 1, '', '7010204', 'Bank Al-Bilad, Riyadh, K.S.A', '', '7031', '', '', 0),
-(128, 1, 'belhashaglobal', '7010279', 'Belhasa Global Ex', 'Belhasa Global', '7098', 'BelhashaGlobalModel', 'belhashaGlobalModelRepository', 0),
+(128, 1, 'belhashaglobal', '7010279', 'Belhasa Global Ex', 'Belhasa', '7098', 'BelhashaGlobalModel', 'belhashaGlobalModelRepository', 0),
 (129, 1, '', '7010278', 'Brac Saajjan Exchange', '', '7091', '', '', 0),
 (130, 1, '', '7010251', 'Choice Money Ex. , USA', '', '7066', '', '', 0),
 (131, 1, '', '7010211', 'City Intl Exchange Co, Kuwait', '', '7016', '', '', 0),
@@ -101,7 +101,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (156, 1, '', '7010252', 'Multinet  trust Ex. LLC, UAE ', '', '7067', '', '', 0),
 (157, 1, '', '7010229', 'National Exchange, Italy', '', '7037', '', '', 0),
 (158, 1, '', '7010285', 'NBL Money Transfer USA', '', '7077', '', '', 0),
-(159, 1, '', '7010276', 'NBL Money Transfer,Malaysia', '', '7059', '', '', 0),
+(159, 1, 'nblmalyasia', '7010276', 'NBL Money Transfer, Malaysia', 'NBL Malaysia', '7059', 'NblMalyasiaModel', 'nblMalyasiaModelRepository', 0),
 (160, 1, '', '7010241', 'NCBJ, Jeddah, KSA', '', '7055', '', '', 0),
 (161, 1, 'nec', '7010272', 'NEC Money Transfer, UK', 'NEC UK', '7087', 'NecModel', 'necModelRepository', 0),
 (162, 1, '', '7010208', 'Oman Exchange Co, Kuwait', '', '7008', '', '', 0),

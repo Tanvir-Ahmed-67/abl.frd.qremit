@@ -98,6 +98,8 @@ public class AnbModelService {
         Optional<AnbModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
+            //skip first line
+            fileReader.readLine();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<AnbModel> anbModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
@@ -107,11 +109,11 @@ public class AnbModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = anbModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
-                String beneficiaryAccount = csvRecord.get(7).trim();
-                String bankName = csvRecord.get(8).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
+                String transactionNo = csvRecord.get(4).trim();
+                duplicateData = anbModelRepository.findByTransactionNoEqualsIgnoreCase(transactionNo);
+                String bankName = csvRecord.get(24).trim();
+                String branchCode = CommonService.fixRoutingNo(csvRecord.get(22).trim());
+                String beneficiaryAccount = getBenificiaryAccount(csvRecord, branchCode, bankName);
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
@@ -159,26 +161,58 @@ public class AnbModelService {
         return resp;
     }
 
+    public String getBenificiaryAccount(CSVRecord csvRecord, String branchCode, String bankName){
+        String benificiaryAccount = csvRecord.get(25).trim();
+        String mobile = csvRecord.get(20).trim();
+        int isCoc = 0;
+        if(CommonService.checkAgraniBankName(bankName)){
+            //if br code 333 or mobile not null then coc
+            if(("333").equals(branchCode))  isCoc = 1;
+            else if(!mobile.isEmpty())  isCoc = 1;
+            /*
+            if(("333").equals(branchCode)){
+                //mobile = mobile.replaceFirst("^0+", "");
+                benificiaryAccount = "COC" + mobile;
+            }
+            if(!mobile.isEmpty()){
+                
+                benificiaryAccount = "COC" + mobile;
+            }
+            */
+            if(isCoc == 1){
+                mobile = mobile.replaceFirst("^0+", "");
+                benificiaryAccount = "COC" + mobile;
+            }
+        }
+        return benificiaryAccount;
+    }
+
+    public String getAmount(String amountStr){
+        Double amount = Double.parseDouble(amountStr);
+        amount = amount/100;
+        return String.valueOf(amount);
+    }
+
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
-        data.put("currency", csvRecord.get(2));
-        data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
-        data.put("remitterName", csvRecord.get(5));
-        data.put("remitterMobile", csvRecord.get(17));
-        data.put("beneficiaryName", csvRecord.get(6));
+        data.put("currency", "BDT");
+        data.put("amount", getAmount(csvRecord.get(14).trim()));
+        data.put("enteredDate", csvRecord.get(6));
+        data.put("remitterName", csvRecord.get(10));
+        data.put("remitterMobile", "");
+        data.put("beneficiaryName", csvRecord.get(11));
         data.put("beneficiaryAccount", beneficiaryAccount);
-        data.put("beneficiaryMobile", csvRecord.get(12));
+        data.put("beneficiaryMobile", csvRecord.get(20));
         data.put("bankName", bankName);
-        data.put("bankCode", csvRecord.get(9));
-        data.put("branchName", csvRecord.get(10));
+        data.put("bankCode", "");
+        data.put("branchName", csvRecord.get(23));
         data.put("branchCode", branchCode);
         data.put("draweeBranchName", "");
         data.put("draweeBranchCode", "");
-        data.put("purposeOfRemittance", csvRecord.get(15));
-        data.put("sourceOfIncome", csvRecord.get(16));
+        data.put("purposeOfRemittance", "");
+        data.put("sourceOfIncome", "");
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
