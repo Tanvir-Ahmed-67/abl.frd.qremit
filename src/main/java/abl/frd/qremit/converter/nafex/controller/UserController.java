@@ -48,17 +48,17 @@ public class UserController {
 
     
     @RequestMapping("/super-admin-home-page")
-    public String loginSubmitSuperAdmin(){ return "/layouts/dashboard"; }
+    public String loginSubmitSuperAdmin(){ return "layouts/dashboard"; }
     @RequestMapping("/admin-home-page")
-    public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
+    public String loginSubmitAdmin(){ return "layouts/dashboard"; }
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        return "/layouts/dashboard"; 
+        return "layouts/dashboard"; 
     }
     @RequestMapping("/change-password")
     public String showChangePasswordPage() {
-        return "/pages/user/userPasswordChangeForm";
+        return "pages/user/userPasswordChangeForm";
     }
     @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST)
     public String changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
@@ -71,7 +71,7 @@ public class UserController {
 
     @RequestMapping("/home")
     public String loginSubmit(){
-        return "/layouts/dashboard";
+        return "layouts/dashboard";
     }
     @RequestMapping("/logout")
     public String logoutSuccessPage(){
@@ -90,15 +90,15 @@ public class UserController {
                 adminList = myUserDetailsService.loadAdminsOnly();
                 model.addAttribute("UserList", userList);
                 model.addAttribute("adminList", adminList);
-                return "/pages/superAdmin/superAdminUserListPage";
+                return "pages/superAdmin/superAdminUserListPage";
             }
             if (authorityName.equals("ROLE_ADMIN")) {
                 userList = myUserDetailsService.loadUsersOnly();
                 model.addAttribute("UserList", userList);
-                return "/pages/admin/adminUserListPage";
+                return "pages/admin/adminUserListPage";
             }
         }
-        return "/allUsers";
+        return "allUsers";
     }
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromAdmin(Model model){
@@ -106,7 +106,7 @@ public class UserController {
         List<ExchangeHouseModel> exchangeHouseList;
         exchangeHouseList = exchangeHouseModelService.loadAllActiveExchangeHouse();
         model.addAttribute("exchangeList", exchangeHouseList);
-        return "/pages/admin/adminNewUserEntryForm";
+        return "pages/admin/adminNewUserEntryForm";
     }
 
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
@@ -137,7 +137,7 @@ public class UserController {
         model.addAttribute("exchangeList", exchangeHouseList);
         model.addAttribute("user", userSelected);
         model.addAttribute("exchangeCodeAssignedToUser", exchangeCodeAssignedToUser);
-        return "/pages/admin/adminUserEditForm";
+        return "pages/admin/adminUserEditForm";
     }
 
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
@@ -162,7 +162,7 @@ public class UserController {
         List<User> inactiveUserModelList;
         inactiveUserModelList = myUserDetailsService.loadAllInactiveUsers();
         model.addAttribute("inactiveUserModelList", inactiveUserModelList);
-        return "/pages/superAdmin/superAdminInactiveUserListPage";
+        return "pages/superAdmin/superAdminInactiveUserListPage";
     }
 
     @RequestMapping(value="/activateUser/{id}", method = RequestMethod.POST)
@@ -180,13 +180,13 @@ public class UserController {
         List<Map<String, String>> reportColumn = ReportController.getReportColumn(type);
         System.out.println(reportColumn);
         System.out.println(type);
-        return "/pages/user/userFileUploadReport";
+        return "pages/user/userFileUploadReport";
     }
 
     @GetMapping("/adminErrorReport")
     public String adminErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("type") String type){
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        if(type.equalsIgnoreCase("4"))   return "/pages/admin/adminErrorUpdateReport";
+        if(type.equalsIgnoreCase("4"))   return "pages/admin/adminErrorUpdateReport";
         else return "";
     }
 

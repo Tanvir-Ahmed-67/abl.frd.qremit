@@ -36,20 +36,20 @@ public class ExchangeHouseModelController {
             if (authorityName.equals("ROLE_SUPERADMIN")) {
                 exchangeHouseModelList = exchangeHouseModelService.loadAllExchangeHouse();
                 model.addAttribute("exchangeHouseList", exchangeHouseModelList);
-                return "/pages/superAdmin/superAdminExchangeHouseListPage";
+                return "pages/superAdmin/superAdminExchangeHouseListPage";
             }
             if (authorityName.equals("ROLE_ADMIN")) {
                 exchangeHouseModelList = exchangeHouseModelService.loadAllExchangeHouse();
                 model.addAttribute("exchangeHouseList", exchangeHouseModelList);
-                return "/pages/admin/adminExchangeHouseListPage";
+                return "pages/admin/adminExchangeHouseListPage";
             }
         }
-        return "/viewAllExchangeHouse";
+        return "viewAllExchangeHouse";
     }
     @RequestMapping("/newExchangeHouseCreationForm")
     public String showNewExchangeHouseCreateFromAdmin(Model model){
         model.addAttribute("exchangeHouse", new ExchangeHouseModel());
-        return "/pages/admin/adminNewExchangeHouseEntryForm";
+        return "pages/admin/adminNewExchangeHouseEntryForm";
     }
     @RequestMapping(value = "/createNewExchange", method = RequestMethod.POST)
     public String submitNewExchangeHouseCreateFromAdmin(ExchangeHouseModel exchangeHouseModel, RedirectAttributes ra){
@@ -68,7 +68,7 @@ public class ExchangeHouseModelController {
         List<ExchangeHouseModel> inactiveExchangeHouseModelList;
         inactiveExchangeHouseModelList = exchangeHouseModelService.loadAllInactiveExchangeHouse();
         model.addAttribute("inactiveExchangeHouseList", inactiveExchangeHouseModelList);
-        return "/pages/superAdmin/superAdminInactiveExchangeHouseListPage";
+        return "pages/superAdmin/superAdminInactiveExchangeHouseListPage";
     }
 
     @RequestMapping(value="/activateExchangeHouse/{id}", method = RequestMethod.POST)
@@ -84,7 +84,7 @@ public class ExchangeHouseModelController {
         int idInIntegerFormat = Integer.parseInt(id);
         ExchangeHouseModel exchangeHouseModelSelected = exchangeHouseModelService.getExchangeHouseByExchangeId(idInIntegerFormat);
         model.addAttribute("exchangeHouse", exchangeHouseModelSelected);
-        return "/pages/admin/adminExchangeHouseEditForm";
+        return "pages/admin/adminExchangeHouseEditForm";
     }
     @RequestMapping(value="/editExchangeHouse/{id}", method= RequestMethod.POST)
     public String editExchangeHouse(Model model, @PathVariable(required = true, name= "id") String id, @Valid ExchangeHouseModel exchangeHouseModel, BindingResult result, RedirectAttributes ra){
