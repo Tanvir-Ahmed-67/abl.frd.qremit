@@ -1,0 +1,19 @@
+2||||||||||||||||241921020310|2024/10/21|51214||||AKHINUR                                 ||333ANY BRANCH PAYMENT|COC8801799389243|SIDDIQUR RAHMAN ALAMGIR FAKIR           |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||241941019664|2024/10/21|300000||||mst JOSNA KHATUN                        ||333ANY BRANCH PAYMENT|COC|MOHAMMAD ASMAN ALI MD UZZAL             |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242941029368|2024/10/21|2651||||shamsun nahar                           ||333ANY BRANCH PAYMENT|COC8817744396760|SALMAN  AHMED                           |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243591046125|2024/10/21|300000||||NAZMA BEGUM                             ||333ANY BRANCH PAYMENT|COC|MD ARSHAD ALI                           |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243591046126|2024/10/21|145300||||NAZMA BEGUM                             ||333ANY BRANCH PAYMENT|COC|MD ARSHAD ALI                           |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243831025776|2024/10/21|136549||||abdul jalil sikder                      ||333ANY BRANCH PAYMENT|COC8801721832094|LABLU  MIAH                             |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243891040039|2024/10/21|203354||||md ariz mia                             ||333ANY BRANCH PAYMENT|COC8801|SOJIB  MIAH                             |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243931047438|2024/10/21|286400||||JAFORA BEGUM                            ||333ANY BRANCH PAYMENT|COC|KHORSHED  ALAM                          |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243971008643|2024/10/21|79041||||RIKTA BEGUM                             ||333ANY BRANCH PAYMENT|COC8801929106992|MD RIPON ISLAM                          |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||246011009659|2024/10/21|60159||||SHIRIN AKTER                            ||333ANY BRANCH PAYMENT|COC8801768972115|KAZI NIAZ UDDIN                         |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||246021015861|2024/10/21|28210||||SHORIFA KHATUN                          ||333ANY BRANCH PAYMENT|COC8801934604527|HALIM ABDUL MAZID                       |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081988005|2024/10/20|34661.99||||Md  nujmul  hossen                      ||ANY WHERE IN COUNTRY|COC8801761235332|RIPON MOZNU MIAH                        |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081988950|2024/10/21|222504.77||||josna begum                             ||333ANY BRANCH PAYMENT|COC8801401963165|JAHANGIR SHEKH SHEKH NURUL              |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081988975|2024/10/21|15511.76||||Mst  Rujena  Akter                      ||ANY WHERE IN COUNTRY|COC8801860593895|MAHABUL HASAN                           |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081988984|2024/10/21|36236.49||||laily                                   ||333ANY BRANCH PAYMENT|COC|MD MOJMUL MURAD                         |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081989804|2024/10/21|40000||||fahima khatun                           ||333ANY BRANCH PAYMENT|COC8801701737278|RIFAT HOSSAIN ALI LIYAQUAT              |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||249011000150|2024/10/21|300000||||MONUFA BEGUM                            ||333ANY BRANCH PAYMENT|COC8801732349952|BAYEZID MIAH AHAD                       |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||249011000151|2024/10/21|300000||||MOHAMMAD KHOKAN UDDIN                   ||333ANY BRANCH PAYMENT|COC8801717453693|PANNA HOSSAN SABBIR                     |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||249011000152|2024/10/21|300000||||TANIA AKTER                             ||333ANY BRANCH PAYMENT|COC8801720416591|MAMUN  CHOWDHURY                        |AGRANI BANK|||||||||||||End of Report
