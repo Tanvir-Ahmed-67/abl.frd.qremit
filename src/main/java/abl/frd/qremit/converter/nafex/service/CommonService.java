@@ -969,10 +969,9 @@ public class CommonService {
         if(transactionList.contains(transactionNo)){
             return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }else{
-            if(transactionList.size() > 1){
-                transactionList.add(transactionNo);
-                resp.put("transactionList", transactionList);
-            }
+            transactionList.add(transactionNo);
+            resp.put("transactionList", transactionList);
+            
         }
         return resp;
     }
