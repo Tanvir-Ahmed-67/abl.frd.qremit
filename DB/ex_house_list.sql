@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 22, 2024 at 07:56 AM
+-- Generation Time: Oct 22, 2024 at 08:52 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -70,7 +70,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (125, 1, '', '7010203', 'Arab National Bank, Riyadh, K.', '', '7030', '', '', 0),
 (126, 1, '', '7010243', 'Bahrain Financing Co. Bahrain ', '', '7013', '', '', 0),
 (127, 1, '', '7010204', 'Bank Al-Bilad, Riyadh, K.S.A', '', '7031', '', '', 0),
-(128, 1, '', '7010279', 'Belhasa Global Ex', '', '7098', '', '', 0),
+(128, 1, 'belhashaglobal', '7010279', 'Belhasa Global Ex', 'Belhasa Global', '7098', 'BelhashaGlobalModel', 'belhashaGlobalModelRepository', 0),
 (129, 1, '', '7010278', 'Brac Saajjan Exchange', '', '7091', '', '', 0),
 (130, 1, '', '7010251', 'Choice Money Ex. , USA', '', '7066', '', '', 0),
 (131, 1, '', '7010211', 'City Intl Exchange Co, Kuwait', '', '7016', '', '', 0),
