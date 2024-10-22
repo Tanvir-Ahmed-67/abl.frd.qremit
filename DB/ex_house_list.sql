@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 22, 2024 at 06:23 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Oct 22, 2024 at 07:08 AM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -85,7 +85,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (140, 1, '', '7010287', 'Gulf Overseas', '', '7069', '', '', 0),
 (141, 1, '', '7010284', 'Hamdan Exchange', '', '7099', '', '', 0),
 (142, 1, '', '7010223', 'Index Exchange Co. LLC', '', '7024', '', '', 0),
-(143, 1, '', '7010260', 'Instant Cash', '', '7080', '', '', 0),
+(143, 1, 'instantcash', '7010260', 'Instant Cash', 'Instant Cash', '7080', 'InstantCashModel', 'instantCashModelRepository', 0),
 (144, 1, '', '7010298', 'Japan Remit Finance, Japan', '', '7108', '', '', 0),
 (145, 1, '', '7010255', 'Joyalukkas Ex Dubai,UAE', '', '7072', '', '', 0),
 (146, 1, '', '7010258', 'Joyalukkas Ex Oman', '', '7078', '', '', 0),
