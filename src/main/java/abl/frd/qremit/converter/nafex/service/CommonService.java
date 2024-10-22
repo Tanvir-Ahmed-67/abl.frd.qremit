@@ -5,6 +5,7 @@ import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
@@ -33,6 +35,8 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
 @Service
@@ -60,8 +64,8 @@ public class CommonService {
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
-    public static String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
-    public String uploadApiSuccessPage = "/pages/user/userApiUploadSuccessPage";
+    public static String uploadSuccesPage = "pages/user/userUploadSuccessPage";
+    public String uploadApiSuccessPage = "pages/user/userApiUploadSuccessPage";
 
     private final EntityManager entityManager;
     private final DataSource dataSource;
@@ -762,16 +766,23 @@ public class CommonService {
     }
 
     private static String readTemplateFromFile(String templateName) {
-        try {
-            Path path = Paths.get(ResourceUtils.getFile("classpath:templates/" + templateName).toURI());
-            return new String(Files.readAllBytes(path));
+        StringBuilder templateContent = new StringBuilder();
+        //try {
+            //Path path = Paths.get(ResourceUtils.getFile("classpath:templates/" + templateName).toURI());
+            //return new String(Files.readAllBytes(path));
+                      ClassPathResource resource = new ClassPathResource("templates/" + templateName);
+        try (InputStream inputStream = resource.getInputStream();
+            Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
+                
+            // Read the file line by line
+            while (scanner.hasNextLine()) {
+                templateContent.append(scanner.nextLine()).append("\n");
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return "";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
         }
+        return templateContent.toString();
     }
 
     private static String replaceVariables(String template, Map<String, String> variables) {
