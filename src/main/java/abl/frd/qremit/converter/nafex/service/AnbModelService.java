@@ -164,17 +164,9 @@ public class AnbModelService {
     public String getBenificiaryAccount(CSVRecord csvRecord, String branchCode, String bankName){
         String benificiaryAccount = csvRecord.get(25).trim();
         String mobile = csvRecord.get(20).trim();
-        int isCoc = 0;
-        if(CommonService.checkAgraniBankName(bankName)){
-            //if br code 333 or mobile not null then coc
-            if(benificiaryAccount.isEmpty()){
-                if(("333").equals(branchCode))  isCoc = 1;
-                else if(!mobile.isEmpty())  isCoc = 1;
-            }
-            if(isCoc == 1){
-                mobile = mobile.replaceFirst("^0+", "");
-                benificiaryAccount = "COC" + mobile;
-            }
+        if(("101").equals(csvRecord.get(8).trim())){
+            mobile = mobile.replaceFirst("^0+", "");
+            benificiaryAccount = "COC" + mobile;
         }
         return benificiaryAccount;
     }
