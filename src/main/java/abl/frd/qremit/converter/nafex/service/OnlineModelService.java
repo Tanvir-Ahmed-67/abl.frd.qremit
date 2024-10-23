@@ -1,12 +1,10 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.OnlineModelServiceHelper;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.OnlineModel;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
