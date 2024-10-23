@@ -9,24 +9,25 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import abl.frd.qremit.converter.nafex.model.AlawnehModel;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
-import abl.frd.qremit.converter.nafex.model.NecModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
 import abl.frd.qremit.converter.nafex.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
-import abl.frd.qremit.converter.nafex.repository.NecModelRepository;
+import abl.frd.qremit.converter.nafex.repository.AlawnehModelRepository;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import java.util.*;
 @SuppressWarnings("unchecked")
 @Service
-public class NecModelService {
+public class AlawnehModelService {
     @Autowired
-    NecModelRepository necModelRepository;
+    AlawnehModelRepository alawnehModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -58,30 +59,30 @@ public class NecModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> necData = csvToNecModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
-            List<NecModel> necModels = (List<NecModel>) necData.get("necDataModelList");
+            Map<String, Object> alawnehData = csvToAlawnehModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            List<AlawnehModel> alawnehModels = (List<AlawnehModel>) alawnehData.get("alawnehDataModelList");
 
-            if(necData.containsKey("errorMessage")){
-                resp.put("errorMessage", necData.get("errorMessage"));
+            if(alawnehData.containsKey("errorMessage")){
+                resp.put("errorMessage", alawnehData.get("errorMessage"));
             }
-            if(necData.containsKey("errorCount") && ((Integer) necData.get("errorCount") >= 1)){
-                int errorCount = (Integer) necData.get("errorCount");
+            if(alawnehData.containsKey("errorCount") && ((Integer) alawnehData.get("errorCount") >= 1)){
+                int errorCount = (Integer) alawnehData.get("errorCount");
                 fileInfoModel.setErrorCount(errorCount);
                 resp.put("fileInfoModel", fileInfoModel);
                 fileInfoModelRepository.save(fileInfoModel);
             }
 
-            if(necModels.size()!=0) {
-                for(NecModel necModel : necModels){
-                    necModel.setFileInfoModel(fileInfoModel);
-                    necModel.setUserModel(user);
+            if(alawnehModels.size()!=0) {
+                for(AlawnehModel alawnehModel : alawnehModels){
+                    alawnehModel.setFileInfoModel(fileInfoModel);
+                    alawnehModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(necModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(alawnehModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
-                fileInfoModel.setTotalCount(String.valueOf(necModels.size()));
+                fileInfoModel.setTotalCount(String.valueOf(alawnehModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setNecModel(necModels);
+                fileInfoModel.setAlawnehModel(alawnehModels);
    
                 // SAVING TO MySql Data Table
                 try{
@@ -99,21 +100,22 @@ public class NecModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToNecModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToAlawnehModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<NecModel> duplicateData;
+        Optional<AlawnehModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<NecModel> necDataModelList = new ArrayList<>();
+            List<AlawnehModel> alawnehDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
+                if ( csvRecord.get(0).isEmpty())   continue;
                 i++;
-                duplicateData = necModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                duplicateData = alawnehModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
@@ -140,11 +142,11 @@ public class NecModelService {
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
 
-                NecModel necDataModel = new NecModel();
-                necDataModel = CommonService.createDataModel(necDataModel, data);
-                necDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                necDataModel.setUploadDateTime(currentDateTime);
-                necDataModelList.add(necDataModel);
+                AlawnehModel alawnehDataModel = new AlawnehModel();
+                alawnehDataModel = CommonService.createDataModel(alawnehDataModel, data);
+                alawnehDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                alawnehDataModel.setUploadDateTime(currentDateTime);
+                alawnehDataModelList.add(alawnehDataModel);
             }
 
             //save error data
@@ -155,10 +157,10 @@ public class NecModelService {
                 return resp;
             }
             //if both model is empty then delete fileInfoModel
-            if(errorDataModelList.isEmpty() && necDataModelList.isEmpty()){
+            if(errorDataModelList.isEmpty() && alawnehDataModelList.isEmpty()){
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
-            resp.put("necDataModelList", necDataModelList);
+            resp.put("alawnehDataModelList", alawnehDataModelList);
             resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();

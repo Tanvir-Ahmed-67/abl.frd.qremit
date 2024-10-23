@@ -72,7 +72,13 @@ public class FileInfoModel {
     private List<BecModel> becModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
-    private List<NecModel> necModel;
+    private List<NecItalyModel> necItalyModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<NecUkModel> necUkModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlawnehModel> alawnehModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<BelhashaGlobalModel> belhashaGlobalModel;
@@ -303,12 +309,30 @@ public class FileInfoModel {
 
 
 
-    public List<NecModel> getNecModel() {
-        return this.necModel;
+    public List<NecItalyModel> getNecItalyModel() {
+        return this.necItalyModel;
     }
 
-    public void setNecModel(List<NecModel> necModel) {
-        this.necModel = necModel;
+    public void setNecItalyModel(List<NecItalyModel> necItalyModel) {
+        this.necItalyModel = necItalyModel;
+    }
+
+   
+
+    public List<NecUkModel> getNecUkModel() {
+        return this.necUkModel;
+    }
+
+    public void setNecUkModel(List<NecUkModel> necUkModel) {
+        this.necUkModel = necUkModel;
+    }
+
+    public List<AlawnehModel> getAlawnehModel() {
+        return this.alawnehModel;
+    }
+
+    public void setAlawnehModel(List<AlawnehModel> alawnehModel) {
+        this.alawnehModel = alawnehModel;
     }
 
 

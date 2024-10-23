@@ -16,23 +16,23 @@ import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
-import abl.frd.qremit.converter.nafex.service.NecModelService;
+import abl.frd.qremit.converter.nafex.service.NecItalyModelService;
 import java.util.*;
 
 @Controller
-public class NecModelController {
+public class NecItalyModelController {
     private final MyUserDetailsService myUserDetailsService;
-    private final NecModelService necModelService;
+    private final NecItalyModelService necItalyModelService;
     private final CommonService commonService;
     
     @Autowired
-    public NecModelController(NecModelService necModelService,MyUserDetailsService myUserDetailsService, CommonService commonService){
+    public NecItalyModelController(NecItalyModelService necItalyModelService,MyUserDetailsService myUserDetailsService, CommonService commonService){
         this.myUserDetailsService = myUserDetailsService;
-        this.necModelService = necModelService;
+        this.necItalyModelService = necItalyModelService;
         this.commonService = commonService;
     }
     
-    @PostMapping("/necUpload")
+    @PostMapping("/necitalyUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode,
         @RequestParam("nrtaCode") String nrtaCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));  
@@ -48,7 +48,7 @@ public class NecModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
-                    Map<String, Object> resp = necModelService.save(file, userId, exchangeCode, nrtaCode);
+                    Map<String, Object> resp = necItalyModelService.save(file, userId, exchangeCode, nrtaCode);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 }catch (IllegalArgumentException e) {
