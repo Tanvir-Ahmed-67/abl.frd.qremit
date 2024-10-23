@@ -1,7 +1,4 @@
 package abl.frd.qremit.converter.nafex.repository;
-
-import abl.frd.qremit.converter.nafex.model.AccountPayeeModel;
-import abl.frd.qremit.converter.nafex.model.NafexEhMstModel;
 import abl.frd.qremit.converter.nafex.model.OnlineModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,9 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public interface OnlineModelRepository extends JpaRepository<OnlineModel, Integer> {
