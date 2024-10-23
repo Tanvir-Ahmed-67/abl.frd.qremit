@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="/fragments/header :: head-css"></head>
+<head th:replace="fragments/header :: head-css"></head>
 <body th:fragment="errorReport">
     <div id="app"><!--main content-->
-        <span th:replace="/fragments/sidebarUser :: sidebarUser"></span>
+        <span th:replace="fragments/sidebarUser :: sidebarUser"></span>
         <div id="main"><!--content Id-->
-            <span th:replace="/fragments/header :: header"></span>
+            <span th:replace="fragments/header :: header"></span>
             <div class="main-content container-fluid">
                 <div class="page-title">
                     <div class="row">
@@ -35,7 +35,7 @@
 
                 
             </div>
-            <span th:replace="/fragments/footer :: footer"></span>
+            <span th:replace="fragments/footer :: footer"></span>
         </div>
     </div>
 </body>
