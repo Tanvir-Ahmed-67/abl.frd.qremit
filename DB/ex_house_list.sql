@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 23, 2024 at 07:23 AM
+-- Generation Time: Oct 23, 2024 at 11:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,7 +61,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (116, 1, '', '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '', '', 0),
 (117, 1, 'alrostamani', '7010240', 'Al Rostamani Intl Ex. Co. Abu', 'Al Rostamani', '7052', 'AlRostamaniModel', 'alRostamaniModelRepository', 0),
 (118, 1, 'alzaman', '7010245', 'Al Zaman Ex. , Qatar', 'Al Zaman', '7057', 'AlZamanModel', 'alZamanModelRepository', 0),
-(119, 1, '', '7010262', 'ALAWANEH EX. JORDAN', '', '7082', '', '', 0),
+(119, 1, 'alawneh', '7010262', 'ALAWANEH EX. JORDAN', 'ALAWANEH EX.', '7082', 'AlawnehModel', 'alawnehModelRepository', 0),
 (120, 1, '', '7010205', 'Al-Fardan Exchange  Co. Doha, ', '', '7002', '', '', 0),
 (121, 1, '', '7010220', 'Al-Fardan Exchange, Abu Dhabi', '', '7010', '', '', 0),
 (122, 1, '', '7010233', 'AL-Ghurair Ex. Dubai, UAE', '', '7043', '', '', 0),
@@ -99,11 +99,11 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (154, 1, '', '7010250', 'Modern Ex. Co., Oman', '', '7061', '', '', 0),
 (155, 1, '', '7010302', 'Money Match', '', '7109', '', '', 0),
 (156, 1, '', '7010252', 'Multinet  trust Ex. LLC, UAE ', '', '7067', '', '', 0),
-(157, 1, '', '7010229', 'National Exchange, Italy', '', '7037', '', '', 0),
+(157, 1, 'necitaly', '7010229', 'National Exchange Company, Italy', 'NEC Italy', '7037', 'NecItalyModel', 'necItalyModelRepository', 0),
 (158, 1, '', '7010285', 'NBL Money Transfer USA', '', '7077', '', '', 0),
 (159, 1, 'nblmalyasia', '7010276', 'NBL Money Transfer, Malaysia', 'NBL Malaysia', '7059', 'NblMalyasiaModel', 'nblMalyasiaModelRepository', 0),
 (160, 1, '', '7010241', 'NCBJ, Jeddah, KSA', '', '7055', '', '', 0),
-(161, 1, 'nec', '7010272', 'NEC Money Transfer, UK', 'NEC UK', '7087', 'NecModel', 'necModelRepository', 0),
+(161, 1, 'necuk', '7010272', 'NEC Money Transfer, UK', 'NEC UK', '7087', 'NecUkModel', 'necUkModelRepository', 0),
 (162, 1, '', '7010208', 'Oman Exchange Co, Kuwait', '', '7008', '', '', 0),
 (163, 1, '', '7010215', 'Oman Intl Exchange Ltd. Oman', '', '7021', '', '', 0),
 (164, 1, '', '7010286', 'Placid NK orp', '', '7065', '', '', 0),
@@ -122,7 +122,8 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (177, 1, '', '7010268', 'Val You SDN BHD', '', '7090', '', '', 0),
 (178, 1, '', '7010224', 'Wall Street Exchange, Abu Dhab', '', '7033', '', '', 0),
 (179, 1, '', '7010303', 'Zamzam Money Exchange', '', '7111', '', '', 0),
-(180, 1, '', '7010219', 'Zenj Exchange Co. Bahrain', '', '7003', '', '', 0);
+(180, 1, '', '7010219', 'Zenj Exchange Co. Bahrain', '', '7003', '', '', 0),
+(183, 1, 'fsie', '7010289', 'FSIE Italy', 'FSIE', '7093', 'FsieModel', 'fsieModelRepository', 1);
 
 --
 -- Indexes for dumped tables
@@ -143,7 +144,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=183;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=184;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
