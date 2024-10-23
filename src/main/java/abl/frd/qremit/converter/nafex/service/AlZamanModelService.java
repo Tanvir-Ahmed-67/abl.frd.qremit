@@ -1,36 +1,28 @@
 package abl.frd.qremit.converter.nafex.service;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.time.LocalDateTime;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
+import java.util.*;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import abl.frd.qremit.converter.nafex.model.AlRostamaniModel;
+import abl.frd.qremit.converter.nafex.model.AlZamanModel;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
-import abl.frd.qremit.converter.nafex.repository.AlRostamaniModelRepository;
+import abl.frd.qremit.converter.nafex.repository.AlZamanModelRepository;
 import abl.frd.qremit.converter.nafex.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
-import java.util.*;
 @SuppressWarnings("unchecked")
 @Service
-public class AlRostamaniModelService {
+public class AlZamanModelService {
     @Autowired
-    AlRostamaniModelRepository alRostamaniModelRepository;
+    AlZamanModelRepository alZamanModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -62,29 +54,29 @@ public class AlRostamaniModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> alRostamaniData = csvToAlRostamaniModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
-            List<AlRostamaniModel> alRostamaniModels = (List<AlRostamaniModel>) alRostamaniData.get("alRostamaniModelList");
+            Map<String, Object> alZamanData = csvToAlZamanModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            List<AlZamanModel> alZamanModels = (List<AlZamanModel>) alZamanData.get("alZamanModelList");
 
-            if(alRostamaniData.containsKey("errorMessage")){
-                resp.put("errorMessage", alRostamaniData.get("errorMessage"));
+            if(alZamanData.containsKey("errorMessage")){
+                resp.put("errorMessage", alZamanData.get("errorMessage"));
             }
-            if(alRostamaniData.containsKey("errorCount") && ((Integer) alRostamaniData.get("errorCount") >= 1)){
-                int errorCount = (Integer) alRostamaniData.get("errorCount");
+            if(alZamanData.containsKey("errorCount") && ((Integer) alZamanData.get("errorCount") >= 1)){
+                int errorCount = (Integer) alZamanData.get("errorCount");
                 fileInfoModel.setErrorCount(errorCount);
                 resp.put("fileInfoModel", fileInfoModel);
                 fileInfoModelRepository.save(fileInfoModel);
             }
-            if(alRostamaniModels.size()!=0) {
-                for (AlRostamaniModel alRostamaniModel : alRostamaniModels) {
-                    alRostamaniModel.setFileInfoModel(fileInfoModel);
-                    alRostamaniModel.setUserModel(user);
+            if(alZamanModels.size()!=0) {
+                for (AlZamanModel alZamanModel : alZamanModels) {
+                    alZamanModel.setFileInfoModel(fileInfoModel);
+                    alZamanModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(alRostamaniModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(alZamanModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
-                fileInfoModel.setTotalCount(String.valueOf(alRostamaniModels.size()));
+                fileInfoModel.setTotalCount(String.valueOf(alZamanModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setAlRostamaniModel(alRostamaniModels);
+                fileInfoModel.setAlZamanModel(alZamanModels);
    
                 // SAVING TO MySql Data Table
                 try{
@@ -101,13 +93,13 @@ public class AlRostamaniModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToAlRostamaniModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToAlZamanModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AlRostamaniModel> duplicateData;
+        Optional<AlZamanModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
+            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<AlRostamaniModel> alRostamaniModelList = new ArrayList<>();
+            List<AlZamanModel> alZamanModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
@@ -115,11 +107,11 @@ public class AlRostamaniModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = alRostamaniModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                duplicateData = alZamanModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                String transactionNo = csvRecord.get(1).trim();
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
@@ -140,11 +132,11 @@ public class AlRostamaniModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                AlRostamaniModel alRostamaniModel = new AlRostamaniModel();
-                alRostamaniModel = CommonService.createDataModel(alRostamaniModel, data);
-                alRostamaniModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                alRostamaniModel.setUploadDateTime(currentDateTime);
-                alRostamaniModelList.add(alRostamaniModel);
+                AlZamanModel alZamanModel = new AlZamanModel();
+                alZamanModel = CommonService.createDataModel(alZamanModel, data);
+                alZamanModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                alZamanModel.setUploadDateTime(currentDateTime);
+                alZamanModelList.add(alZamanModel);
             }
            //save error data
            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -154,10 +146,10 @@ public class AlRostamaniModelService {
                return resp;
            }
            //if both model is empty then delete fileInfoModel
-           if(errorDataModelList.isEmpty() && alRostamaniModelList.isEmpty()){
+           if(errorDataModelList.isEmpty() && alZamanModelList.isEmpty()){
                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
            }
-           resp.put("alRostamaniModelList", alRostamaniModelList);
+           resp.put("alZamanModelList", alZamanModelList);
            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();

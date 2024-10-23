@@ -112,10 +112,13 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<EasternModel> easternModel;
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)    
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlZamanModel> alZamanModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+
     @JsonIgnore
     private List<ApiBeftnModel> apiBeftnModel;
-
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<ApiT24Model> apiT24Model;
@@ -173,6 +176,14 @@ public class FileInfoModel {
 
     public void setAnbModel(List<AnbModel> anbModel) {
         this.anbModel = anbModel;
+    }
+
+    public List<AlZamanModel> getAlZamanModel() {
+        return this.alZamanModel;
+    }
+
+    public void setAlZamanModel(List<AlZamanModel> alZamanModel) {
+        this.alZamanModel = alZamanModel;
     }
 
     public List<OnlineModel> getOnlineModelList() {
