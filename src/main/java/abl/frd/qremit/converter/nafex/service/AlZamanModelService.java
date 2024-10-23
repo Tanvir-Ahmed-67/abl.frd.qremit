@@ -1,28 +1,28 @@
 package abl.frd.qremit.converter.nafex.service;
 import java.io.*;
 import java.time.LocalDateTime;
+import java.util.*;
 import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import abl.frd.qremit.converter.nafex.model.AnbModel;
+import abl.frd.qremit.converter.nafex.model.AlZamanModel;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
-import abl.frd.qremit.converter.nafex.repository.AnbModelRepository;
+import abl.frd.qremit.converter.nafex.repository.AlZamanModelRepository;
 import abl.frd.qremit.converter.nafex.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
-import java.util.*;
 @SuppressWarnings("unchecked")
 @Service
-public class AnbModelService {
+public class AlZamanModelService {
     @Autowired
-    AnbModelRepository anbModelRepository;
+    AlZamanModelRepository alZamanModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -54,29 +54,29 @@ public class AnbModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> anbData = csvToAnbModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
-            List<AnbModel> anbModels = (List<AnbModel>) anbData.get("anbModelList");
+            Map<String, Object> alZamanData = csvToAlZamanModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            List<AlZamanModel> alZamanModels = (List<AlZamanModel>) alZamanData.get("alZamanModelList");
 
-            if(anbData.containsKey("errorMessage")){
-                resp.put("errorMessage", anbData.get("errorMessage"));
+            if(alZamanData.containsKey("errorMessage")){
+                resp.put("errorMessage", alZamanData.get("errorMessage"));
             }
-            if(anbData.containsKey("errorCount") && ((Integer) anbData.get("errorCount") >= 1)){
-                int errorCount = (Integer) anbData.get("errorCount");
+            if(alZamanData.containsKey("errorCount") && ((Integer) alZamanData.get("errorCount") >= 1)){
+                int errorCount = (Integer) alZamanData.get("errorCount");
                 fileInfoModel.setErrorCount(errorCount);
                 resp.put("fileInfoModel", fileInfoModel);
                 fileInfoModelRepository.save(fileInfoModel);
             }
-            if(anbModels.size()!=0) {
-                for (AnbModel anbModel : anbModels) {
-                    anbModel.setFileInfoModel(fileInfoModel);
-                    anbModel.setUserModel(user);
+            if(alZamanModels.size()!=0) {
+                for (AlZamanModel alZamanModel : alZamanModels) {
+                    alZamanModel.setFileInfoModel(fileInfoModel);
+                    alZamanModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(anbModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(alZamanModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
-                fileInfoModel.setTotalCount(String.valueOf(anbModels.size()));
+                fileInfoModel.setTotalCount(String.valueOf(alZamanModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setAnbModel(anbModels);
+                fileInfoModel.setAlZamanModel(alZamanModels);
    
                 // SAVING TO MySql Data Table
                 try{
@@ -93,15 +93,13 @@ public class AnbModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToAnbModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToAlZamanModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AnbModel> duplicateData;
+        Optional<AlZamanModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
-            //skip first line
-            fileReader.readLine();
+            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<AnbModel> anbModelList = new ArrayList<>();
+            List<AlZamanModel> alZamanModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
@@ -109,11 +107,11 @@ public class AnbModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                String transactionNo = csvRecord.get(4).trim();
-                duplicateData = anbModelRepository.findByTransactionNoEqualsIgnoreCase(transactionNo);
-                String bankName = csvRecord.get(24).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(22).trim());
-                String beneficiaryAccount = getBenificiaryAccount(csvRecord, branchCode, bankName);
+                duplicateData = alZamanModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                String transactionNo = csvRecord.get(1).trim();
+                String beneficiaryAccount = csvRecord.get(7).trim();
+                String bankName = csvRecord.get(8).trim();
+                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
@@ -134,11 +132,11 @@ public class AnbModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                AnbModel anbModel = new AnbModel();
-                anbModel = CommonService.createDataModel(anbModel, data);
-                anbModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                anbModel.setUploadDateTime(currentDateTime);
-                anbModelList.add(anbModel);
+                AlZamanModel alZamanModel = new AlZamanModel();
+                alZamanModel = CommonService.createDataModel(alZamanModel, data);
+                alZamanModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                alZamanModel.setUploadDateTime(currentDateTime);
+                alZamanModelList.add(alZamanModel);
             }
            //save error data
            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -148,10 +146,10 @@ public class AnbModelService {
                return resp;
            }
            //if both model is empty then delete fileInfoModel
-           if(errorDataModelList.isEmpty() && anbModelList.isEmpty()){
+           if(errorDataModelList.isEmpty() && alZamanModelList.isEmpty()){
                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
            }
-           resp.put("anbModelList", anbModelList);
+           resp.put("alZamanModelList", alZamanModelList);
            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
@@ -161,42 +159,26 @@ public class AnbModelService {
         return resp;
     }
 
-    public String getBenificiaryAccount(CSVRecord csvRecord, String branchCode, String bankName){
-        String benificiaryAccount = csvRecord.get(25).trim();
-        String mobile = csvRecord.get(20).trim();
-        if(("101").equals(csvRecord.get(8).trim())){
-            mobile = mobile.replaceFirst("^0+", "");
-            benificiaryAccount = "COC" + mobile;
-        }
-        return benificiaryAccount;
-    }
-
-    public String getAmount(String amountStr){
-        Double amount = Double.parseDouble(amountStr);
-        amount = amount/100;
-        return String.valueOf(amount);
-    }
-
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
-        data.put("currency", "BDT");
-        data.put("amount", getAmount(csvRecord.get(14).trim()));
-        data.put("enteredDate", csvRecord.get(6));
-        data.put("remitterName", csvRecord.get(10));
-        data.put("remitterMobile", "");
-        data.put("beneficiaryName", csvRecord.get(11));
+        data.put("currency", csvRecord.get(2));
+        data.put("amount", csvRecord.get(3));
+        data.put("enteredDate", csvRecord.get(4));
+        data.put("remitterName", csvRecord.get(5));
+        data.put("remitterMobile", csvRecord.get(17));
+        data.put("beneficiaryName", csvRecord.get(6));
         data.put("beneficiaryAccount", beneficiaryAccount);
-        data.put("beneficiaryMobile", csvRecord.get(20));
+        data.put("beneficiaryMobile", csvRecord.get(12));
         data.put("bankName", bankName);
-        data.put("bankCode", "");
-        data.put("branchName", csvRecord.get(23));
+        data.put("bankCode", csvRecord.get(9));
+        data.put("branchName", csvRecord.get(10));
         data.put("branchCode", branchCode);
-        data.put("draweeBranchName", "");
-        data.put("draweeBranchCode", "");
-        data.put("purposeOfRemittance", "");
-        data.put("sourceOfIncome", "");
+        data.put("draweeBranchName", csvRecord.get(13));
+        data.put("draweeBranchCode", csvRecord.get(14));
+        data.put("purposeOfRemittance", csvRecord.get(15));
+        data.put("sourceOfIncome", csvRecord.get(16));
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");

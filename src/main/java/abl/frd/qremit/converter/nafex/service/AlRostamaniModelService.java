@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -185,8 +183,8 @@ public class AlRostamaniModelService {
         data.put("bankCode", csvRecord.get(9));
         data.put("branchName", csvRecord.get(10));
         data.put("branchCode", branchCode);
-        data.put("draweeBranchName", "");
-        data.put("draweeBranchCode", "");
+        data.put("draweeBranchName", csvRecord.get(13));
+        data.put("draweeBranchCode", csvRecord.get(14));
         data.put("purposeOfRemittance", csvRecord.get(15));
         data.put("sourceOfIncome", csvRecord.get(16));
         data.put("processFlag", "");

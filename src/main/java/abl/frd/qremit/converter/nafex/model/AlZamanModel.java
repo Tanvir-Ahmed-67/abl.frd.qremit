@@ -1,10 +1,9 @@
 package abl.frd.qremit.converter.nafex.model;
 import java.time.LocalDateTime;
 import javax.persistence.*;
-
 @Entity
-@Table(name="base_data_table_anb", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
-public class AnbModel {
+@Table(name="base_data_table_alzaman", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
+public class AlZamanModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -78,6 +77,10 @@ public class AnbModel {
 
     public void setFileInfoModel(FileInfoModel fileInfoModel) {
         this.fileInfoModel = fileInfoModel;
+    }
+
+    public AlZamanModel() {
+
     }
 
     public int getId() {
@@ -272,11 +275,7 @@ public class AnbModel {
         this.uploadDateTime = uploadDateTime;
     }
 
-    public AnbModel() {
-    }
-
-
-    public AnbModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
+    public AlZamanModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -302,7 +301,7 @@ public class AnbModel {
         this.uploadDateTime = uploadDateTime;
     }
 
-    public AnbModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
+    public AlZamanModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
         this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, upLocalDateTime);
         this.fileInfoModel = fileInfoModel;
         this.userModel = user;
@@ -337,4 +336,6 @@ public class AnbModel {
                 ", uploadDateTime='" + uploadDateTime + '\'' +
                 '}';
     }
+
+
 }
