@@ -62,7 +62,7 @@ public class ErrorDataController {
     @GetMapping("/viewError/{id}")
     public String viewError(@AuthenticationPrincipal MyUserDetails userDetails, @PathVariable("id") String id, Model model){
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        String page = "/pages/admin/viewError";
+        String page = "pages/admin/viewError";
         Map<String, Object> resp = getLogData(id);
         if((Integer) resp.get("err") == 1){
             model.addAttribute("message", (String) resp.get("msg"));

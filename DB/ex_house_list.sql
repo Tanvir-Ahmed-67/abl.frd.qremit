@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 22, 2024 at 12:57 PM
+-- Generation Time: Oct 23, 2024 at 07:23 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -60,7 +60,7 @@ INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange
 (115, 1, 'alzadeed', '7010246', 'Al Jadeed Exchange', 'Al Jadeed', '7058', 'AlzadeedModel', 'alzadeedModelRepository', 0),
 (116, 1, '', '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '', '', 0),
 (117, 1, 'alrostamani', '7010240', 'Al Rostamani Intl Ex. Co. Abu', 'Al Rostamani', '7052', 'AlRostamaniModel', 'alRostamaniModelRepository', 0),
-(118, 1, '', '7010245', 'Al Zaman Ex. , Qatar', '', '7057', '', '', 0),
+(118, 1, 'alzaman', '7010245', 'Al Zaman Ex. , Qatar', 'Al Zaman', '7057', 'AlZamanModel', 'alZamanModelRepository', 0),
 (119, 1, '', '7010262', 'ALAWANEH EX. JORDAN', '', '7082', '', '', 0),
 (120, 1, '', '7010205', 'Al-Fardan Exchange  Co. Doha, ', '', '7002', '', '', 0),
 (121, 1, '', '7010220', 'Al-Fardan Exchange, Abu Dhabi', '', '7010', '', '', 0),
