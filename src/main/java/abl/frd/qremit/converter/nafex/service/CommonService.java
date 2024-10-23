@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,8 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 
+@SuppressWarnings("unchecked")
 @Service
 public class CommonService {
     private static final DecimalFormat df = new DecimalFormat("0.00");
