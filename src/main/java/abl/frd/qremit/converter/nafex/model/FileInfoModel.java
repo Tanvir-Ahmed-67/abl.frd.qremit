@@ -116,6 +116,9 @@ public class FileInfoModel {
     @JsonIgnore
     private List<AlZamanModel> alZamanModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<FsieModel> fsieModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
 
     @JsonIgnore
     private List<ApiBeftnModel> apiBeftnModel;
@@ -184,6 +187,14 @@ public class FileInfoModel {
 
     public void setAlZamanModel(List<AlZamanModel> alZamanModel) {
         this.alZamanModel = alZamanModel;
+    }
+
+    public List<FsieModel> getFsieModel() {
+        return this.fsieModel;
+    }
+
+    public void setFsieModel(List<FsieModel> fsieModel) {
+        this.fsieModel = fsieModel;
     }
 
     public List<OnlineModel> getOnlineModelList() {
