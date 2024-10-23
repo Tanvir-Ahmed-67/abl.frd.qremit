@@ -5,7 +5,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="base_data_table_anb", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
 public class AnbModel {
-        @Id
+    @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int  id;

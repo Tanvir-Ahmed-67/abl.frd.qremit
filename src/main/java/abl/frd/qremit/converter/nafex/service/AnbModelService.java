@@ -167,18 +167,10 @@ public class AnbModelService {
         int isCoc = 0;
         if(CommonService.checkAgraniBankName(bankName)){
             //if br code 333 or mobile not null then coc
-            if(("333").equals(branchCode))  isCoc = 1;
-            else if(!mobile.isEmpty())  isCoc = 1;
-            /*
-            if(("333").equals(branchCode)){
-                //mobile = mobile.replaceFirst("^0+", "");
-                benificiaryAccount = "COC" + mobile;
+            if(benificiaryAccount.isEmpty()){
+                if(("333").equals(branchCode))  isCoc = 1;
+                else if(!mobile.isEmpty())  isCoc = 1;
             }
-            if(!mobile.isEmpty()){
-                
-                benificiaryAccount = "COC" + mobile;
-            }
-            */
             if(isCoc == 1){
                 mobile = mobile.replaceFirst("^0+", "");
                 benificiaryAccount = "COC" + mobile;
