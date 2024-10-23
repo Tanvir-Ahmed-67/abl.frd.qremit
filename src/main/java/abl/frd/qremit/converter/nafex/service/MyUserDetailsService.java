@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,8 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return user;
     }
+    /*
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
-         
-      
         Map<String, String> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
         
         String exchangeCode = exchangeNamesMap.get("exchange_code");
@@ -45,6 +45,17 @@ public class MyUserDetailsService implements UserDetailsService {
             return exchangeMap;
         }
         return exchangeMap;
+    }
+    */
+    
+    public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
+        Map<String, String> resp = new HashMap<>();
+        int userId = userDetails.getUser().getId();
+        List<ExchangeHouseModel> exchangeHouseList = userModelRepository.findExchangeCodeByUserId(userId);
+        for(ExchangeHouseModel eList: exchangeHouseList){
+            resp.put(eList.getExchangeShortName(), eList.getExchangeCode());
+        }
+        return resp;
     }
 
     public User loadUserByUserId(int userId)
