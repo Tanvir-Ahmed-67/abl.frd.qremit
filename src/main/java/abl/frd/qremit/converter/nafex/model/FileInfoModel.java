@@ -78,6 +78,18 @@ public class FileInfoModel {
     private List<NecUkModel> necUkModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<SunmanModel> sunmanModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<OmanModel> omanModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<OmanKuwaitModel> omanKuwaitModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    
+    
+    
+    @JsonIgnore
     private List<AlawnehModel> alawnehModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -326,7 +338,29 @@ public class FileInfoModel {
     public void setNecUkModel(List<NecUkModel> necUkModel) {
         this.necUkModel = necUkModel;
     }
+    public List<SunmanModel> getSunmanModel() {
+        return this.sunmanModel;
+    }
 
+    public void setSunmanModel(List<SunmanModel> sunmanModel) {
+        this.sunmanModel = sunmanModel;
+    }
+
+    public List<OmanModel> getOmanModel() {
+        return this.omanModel;
+    }
+
+    public void setOmanModel(List<OmanModel> omanModel) {
+        this.omanModel = omanModel;
+    }
+
+    public List<OmanKuwaitModel> getOmanKuwaitModel() {
+        return this.omanKuwaitModel;
+    }
+
+    public void setOmanKuwaitModel(List<OmanKuwaitModel> omanKuwaitModel) {
+        this.omanKuwaitModel = omanKuwaitModel;
+    }
     public List<AlawnehModel> getAlawnehModel() {
         return this.alawnehModel;
     }
