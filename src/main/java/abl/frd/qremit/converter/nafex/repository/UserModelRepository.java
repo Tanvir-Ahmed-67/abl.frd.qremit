@@ -42,5 +42,5 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     void updatePasswordForFirstTimeUserLogging(int userId, String password, boolean passwordChangeRequired);
     User getUserById(int id);
     @Query("SELECT e from ExchangeHouseModel e INNER JOIN UserExchangeMap u ON e.exchangeCode=u.exchangeCode where u.userId= :userId")
-    List<ExchangeHouseModel> findExchangeCodeByUserId(@Param("userId") int userId);
+    List<ExchangeHouseModel> findExchangeHouseByUserId(@Param("userId") int userId);
 }

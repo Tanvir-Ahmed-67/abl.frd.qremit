@@ -51,7 +51,7 @@ public class MyUserDetailsService implements UserDetailsService {
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
         Map<String, String> resp = new HashMap<>();
         int userId = userDetails.getUser().getId();
-        List<ExchangeHouseModel> exchangeHouseList = userModelRepository.findExchangeCodeByUserId(userId);
+        List<ExchangeHouseModel> exchangeHouseList = userModelRepository.findExchangeHouseByUserId(userId);
         for(ExchangeHouseModel eList: exchangeHouseList){
             resp.put(eList.getExchangeShortName(), eList.getExchangeCode());
         }
