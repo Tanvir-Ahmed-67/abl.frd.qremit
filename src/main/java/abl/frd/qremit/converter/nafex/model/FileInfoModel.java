@@ -95,7 +95,9 @@ public class FileInfoModel {
     @JsonIgnore
     private List<NblMalaysiaModel> nblMalaysiaModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
-
+    @JsonIgnore
+    private List<NblUsaModel> nblUsaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<AlawnehModel> alawnehModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -475,6 +477,14 @@ public class FileInfoModel {
         this.nblMalaysiaModel = nblMalaysiaModel;
     }
 
+
+    public List<NblUsaModel> getNblUsaModel() {
+        return this.nblUsaModel;
+    }
+
+    public void setNblUsaModel(List<NblUsaModel> nblUsaModel) {
+        this.nblUsaModel = nblUsaModel;
+    }
 
 
     public List<AmanModel> getAmanModel() {
