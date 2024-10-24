@@ -1,4 +1,5 @@
 package abl.frd.qremit.converter.nafex.repository;
+import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -39,7 +40,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("UPDATE User n SET n.password = :password, n.passwordChangeRequired = :passwordChangeRequired where n.id = :userId")
     void updatePasswordForFirstTimeUserLogging(int userId, String password, boolean passwordChangeRequired);
-
     User getUserById(int id);
-
+    @Query("SELECT e from ExchangeHouseModel e INNER JOIN UserExchangeMap u ON e.exchangeCode=u.exchangeCode where u.userId= :userId")
+    List<ExchangeHouseModel> findExchangeHouseByUserId(@Param("userId") int userId);
 }
