@@ -10,5 +10,5 @@ import abl.frd.qremit.converter.nafex.model.MultinetModel;
 @Repository
 public interface MultinetModelRepository extends JpaRepository<MultinetModel, Integer>{
     MultinetModel findByTransactionNo(String transactionNo);
-    Optional<MultinetModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<MultinetModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

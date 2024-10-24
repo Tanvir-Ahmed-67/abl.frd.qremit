@@ -8,5 +8,5 @@ import abl.frd.qremit.converter.nafex.model.AlawnehModel;
 @Repository
 public interface AlawnehModelRepository extends JpaRepository<AlawnehModel, Integer>{
     AlawnehModel findByTransactionNo(String transactionNo);
-    Optional<AlawnehModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<AlawnehModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

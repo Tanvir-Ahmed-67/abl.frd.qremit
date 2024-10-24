@@ -7,5 +7,5 @@ import abl.frd.qremit.converter.nafex.model.AlZamanModel;
 @Repository
 public interface AlZamanModelRepository extends JpaRepository<AlZamanModel, Integer>{
     AlZamanModel findByTransactionNo(String transactionNo);
-    Optional<AlZamanModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<AlZamanModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

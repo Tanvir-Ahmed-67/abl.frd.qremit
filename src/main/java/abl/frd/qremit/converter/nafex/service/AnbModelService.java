@@ -110,11 +110,12 @@ public class AnbModelService {
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(4).trim();
-                duplicateData = anbModelRepository.findByTransactionNoEqualsIgnoreCase(transactionNo);
+                String amount = getAmount(csvRecord.get(14).trim());
+                duplicateData = anbModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.parseDouble(amount), exchangeCode);
                 String bankName = csvRecord.get(24).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(22).trim());
                 String beneficiaryAccount = getBenificiaryAccount(csvRecord, branchCode, bankName);
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
@@ -177,12 +178,12 @@ public class AnbModelService {
         return String.valueOf(amount);
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount){
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", "BDT");
-        data.put("amount", getAmount(csvRecord.get(14).trim()));
+        data.put("amount", amount);
         data.put("enteredDate", csvRecord.get(6));
         data.put("remitterName", csvRecord.get(10));
         data.put("remitterMobile", "");

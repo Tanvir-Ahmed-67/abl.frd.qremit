@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface ApiT24ModelRepository extends JpaRepository<ApiT24Model, Integer> {
     ApiT24Model findByTransactionNo(String transactionNo);
-    Optional<ApiT24Model> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<ApiT24Model> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

@@ -1,10 +1,13 @@
 package abl.frd.qremit.converter.nafex.model;
 import java.time.LocalDateTime;
-
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_saib", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
+@Table(name="base_data_table_saib", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no", "amount", "exchange_code"}),
+        @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})
+    }
+)
 public class SaibModel {
     @Id
     @Column(name = "id")
@@ -12,7 +15,7 @@ public class SaibModel {
     private int  id;
     @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "transaction_no", length=30, unique = true, nullable = false)
+    @Column(name = "transaction_no", length=30, nullable = false)
     private String transactionNo;
     @Column(name = "currency", length=32)
     private String currency;

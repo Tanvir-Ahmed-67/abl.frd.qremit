@@ -6,5 +6,5 @@ import java.util.*;
 @Repository
 public interface UremitModelRepository extends JpaRepository<UremitModel, Integer>{
     UremitModel findByTransactionNo(String transactionNo);
-    Optional<UremitModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<UremitModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

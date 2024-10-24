@@ -9,5 +9,5 @@ import abl.frd.qremit.converter.nafex.model.BelhashaGlobalModel;
 @Repository
 public interface BelhashaGlobalModelRepository extends JpaRepository<BelhashaGlobalModel, Integer>{
     BelhashaGlobalModel findByTransactionNo(String transactionNo);
-    Optional<BelhashaGlobalModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<BelhashaGlobalModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

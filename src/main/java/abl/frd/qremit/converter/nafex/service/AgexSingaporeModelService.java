@@ -152,12 +152,14 @@ public class AgexSingaporeModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = agexSingaporeModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = agexSingaporeModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
                 String bankName = (type == 1) ? csvRecord.get(8): csvRecord.get(9);
                 String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
+
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){

@@ -916,10 +916,6 @@ public class CommonService {
         String exchangeCode = data.get("exchangeCode").toString();
         String transactionNo = data.get("transactionNo").toString(); 
 
-        //check duplicate data exists in database
-        if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-            return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
-        }
         //check exchange code
         String exchangeMessage = CommonService.checkExchangeCode(userExCode, exchangeCode, nrtaCode);
         if(!exchangeMessage.isEmpty()){
@@ -932,6 +928,10 @@ public class CommonService {
             resp = getResp(1, errorMessage, null);
             resp.put("errorDataModelList", errorDataModelList);
             return resp;
+        }
+        //check duplicate data exists in database
+        if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
+            return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }
         if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
             if(checkEmptyString(bankName)){

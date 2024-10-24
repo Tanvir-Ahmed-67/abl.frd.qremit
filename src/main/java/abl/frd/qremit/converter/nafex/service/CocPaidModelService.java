@@ -76,7 +76,10 @@ public class CocPaidModelService {
             List<CocPaidModel> cocPaidModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
-                duplicateData = cocPaidModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                //String transactionNo = csvRecord.get(1).trim();
+                //String amount = csvRecord.get(3).trim();
+                //String exchangeCode = csvRecord.get(0).trim();
+                duplicateData = cocPaidModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(0));
                 if (duplicateData.isPresent()) {  // Checking Duplicate Transaction No in this block
                     continue;
                 }

@@ -157,6 +157,9 @@ public class FileInfoModel {
     @JsonIgnore
     private List<PrabhuModel> prabhuModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<GenericModel> genericModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
 
     @JsonIgnore
     private List<ApiBeftnModel> apiBeftnModel;
@@ -243,6 +246,13 @@ public class FileInfoModel {
         this.prabhuModel = prabhuModel;
     }
 
+    public List<GenericModel> getGenericModel() {
+        return this.genericModel;
+    }
+
+    public void setGenericModel(List<GenericModel> genericModel) {
+        this.genericModel = genericModel;
+    }
 
     public List<UremitModel> getUremitModel() {
         return this.uremitModel;

@@ -108,8 +108,9 @@ public class FsieModelService {
             for (CSVRecord csvRecord : csvRecords) {
                 if(csvRecord.get(0).trim().toLowerCase().startsWith("total"))  continue;
                 i++;
-                duplicateData = fsieModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = fsieModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());

@@ -9,5 +9,5 @@ import abl.frd.qremit.converter.nafex.model.NecItalyModel;
 @Repository
 public interface NecItalyModelRepository extends JpaRepository<NecItalyModel, Integer>{
     NecItalyModel findByTransactionNo(String transactionNo);
-    Optional<NecItalyModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<NecItalyModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

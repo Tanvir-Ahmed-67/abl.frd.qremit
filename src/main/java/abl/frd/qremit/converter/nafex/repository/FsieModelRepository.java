@@ -6,5 +6,5 @@ import java.util.*;
 @Repository
 public interface FsieModelRepository extends JpaRepository<FsieModel, Integer>{
     FsieModel findByTransactionNo(String transactionNo);
-    Optional<FsieModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<FsieModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

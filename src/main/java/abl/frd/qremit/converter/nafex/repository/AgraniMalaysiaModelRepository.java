@@ -10,5 +10,5 @@ import abl.frd.qremit.converter.nafex.model.AgraniMalaysiaModel;
 @Repository
 public interface AgraniMalaysiaModelRepository extends JpaRepository<AgraniMalaysiaModel, Integer>{
     AgraniMalaysiaModel findByTransactionNo(String transactionNo);
-    Optional<AgraniMalaysiaModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<AgraniMalaysiaModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

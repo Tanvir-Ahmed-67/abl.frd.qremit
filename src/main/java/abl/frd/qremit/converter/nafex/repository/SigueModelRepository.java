@@ -11,5 +11,5 @@ import abl.frd.qremit.converter.nafex.model.SigueModel;
 @Repository
 public interface SigueModelRepository extends JpaRepository<SigueModel, Integer>{
     SigueModel findByTransactionNo(String transactionNo);
-    Optional<SigueModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<SigueModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

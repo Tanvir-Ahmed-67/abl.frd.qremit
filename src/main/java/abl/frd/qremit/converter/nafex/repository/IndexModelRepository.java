@@ -7,5 +7,5 @@ import java.util.*;
 @Repository
 public interface IndexModelRepository extends JpaRepository<IndexModel, Integer>{
     IndexModel findByTransactionNo(String transactionNo);
-    Optional<IndexModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<IndexModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

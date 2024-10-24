@@ -7,5 +7,5 @@ import abl.frd.qremit.converter.nafex.model.AlRostamaniModel;
 @Repository
 public interface AlRostamaniModelRepository extends JpaRepository<AlRostamaniModel, Integer>{
     AlRostamaniModel findByTransactionNo(String transactionNo);
-    Optional<AlRostamaniModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<AlRostamaniModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

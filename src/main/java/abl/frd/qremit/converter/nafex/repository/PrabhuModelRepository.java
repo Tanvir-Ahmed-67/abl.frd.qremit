@@ -7,5 +7,5 @@ import java.util.*;
 @Repository
 public interface PrabhuModelRepository extends JpaRepository<PrabhuModel, Integer>{
     PrabhuModel findByTransactionNo(String transactionNo);
-    Optional<PrabhuModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<PrabhuModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

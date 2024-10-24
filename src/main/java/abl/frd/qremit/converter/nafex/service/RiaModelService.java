@@ -137,11 +137,13 @@ public class RiaModelService {
             int i = 0;
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
-                duplicateData = riaModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                i++;
+                String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = riaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
                 String bankName = "Agrani Bank";
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = "";
-                String transactionNo = csvRecord.get(0).trim();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){

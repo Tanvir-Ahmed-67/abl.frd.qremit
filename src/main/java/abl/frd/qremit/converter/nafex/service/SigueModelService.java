@@ -113,11 +113,12 @@ public class SigueModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = sigueModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = sigueModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
 
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
@@ -140,11 +141,11 @@ public class SigueModelService {
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
 
-                SigueModel sigueDataModel = new SigueModel();
-                sigueDataModel = CommonService.createDataModel(sigueDataModel, data);
-                sigueDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                sigueDataModel.setUploadDateTime(currentDateTime);
-                sigueDataModelList.add(sigueDataModel);
+                SigueModel sigueModel = new SigueModel();
+                sigueModel = CommonService.createDataModel(sigueModel, data);
+                sigueModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                sigueModel.setUploadDateTime(currentDateTime);
+                sigueDataModelList.add(sigueModel);
             }
 
             //save error data

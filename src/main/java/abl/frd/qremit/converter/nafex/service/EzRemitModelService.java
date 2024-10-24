@@ -168,8 +168,9 @@ public class EzRemitModelService {
                 branchCode = CommonService.fixRoutingNo(branchCode);
                 String transactionNo = (type == 1) ? csvRecord.get(0).trim(): csvRecord.get(1).trim();
                 String beneficiaryAccount = (type == 1) ? csvRecord.get(4).trim(): csvRecord.get(7).trim();
-                Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
-                duplicateData = ezRemitModelRepository.findByTransactionNoEqualsIgnoreCase(transactionNo);
+                String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
+                Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                duplicateData = ezRemitModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.parseDouble(amount), exchangeCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
@@ -216,11 +217,11 @@ public class EzRemitModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, int type, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, int type, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount){
         String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
         String branchName = (type == 1) ? "": csvRecord.get(10).trim();
         String currrency = (type == 1) ? "BDT": csvRecord.get(2);
-        String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
+        //String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
         String enteredDate = (type == 1) ? csvRecord.get(7) : csvRecord.get(4);
         String remiterName = (type == 1) ? csvRecord.get(1) : csvRecord.get(5);
 

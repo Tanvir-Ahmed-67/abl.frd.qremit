@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
-import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.LogModel;
 import abl.frd.qremit.converter.nafex.repository.ErrorDataModelRepository;
 import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
@@ -23,8 +22,6 @@ public class ErrorDataModelService {
     EntityManager entityManager;
     @Autowired
     LogModelRepository logModelRepository;
-    @Autowired
-    ExchangeHouseModelService exchangeHouseModelService;
     @Autowired
     LogModelService logModelService;
 
@@ -69,8 +66,8 @@ public class ErrorDataModelService {
         if(errorDataModel.getUpdateStatus() != 0)   return CommonService.getResp(1, "Invalid Type for update data", null);  //for update status must be 0
 
         Map<String, Object> errorDataMap = getErrorDataModelMap(errorDataModel); 
-        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
-        String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
+        //ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
+        //String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         Map<String, Object> info = new HashMap<>();
         info.put("oldData", errorDataMap);
         String ipAddress = request.getRemoteAddr();
@@ -130,8 +127,6 @@ public class ErrorDataModelService {
             }catch(Exception e){
                 resp = CommonService.getResp(1, "Error Updating status: " + e.getMessage(), null);
             }
-        }else{
-            resp = CommonService.getResp(1, "Error Updating Information", null);
         }
         return resp;
     }
