@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 24, 2024 at 01:48 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost
+-- Generation Time: Oct 24, 2024 at 04:18 PM
+-- Server version: 8.0.39-0ubuntu0.20.04.1
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,17 +28,17 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `ex_house_list` (
-  `id` int(11) NOT NULL,
-  `exchange_code` varchar(20) NOT NULL,
-  `exchange_name` varchar(255) NOT NULL,
-  `exchange_short_name` varchar(30) NOT NULL,
-  `nrta_code` varchar(10) NOT NULL,
-  `base_table_name` varchar(20) NOT NULL,
-  `class_name` varchar(32) NOT NULL,
-  `repository_name` varchar(32) NOT NULL,
-  `is_settlement` tinyint(1) DEFAULT 0,
-  `active_status` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `id` int NOT NULL,
+  `exchange_code` varchar(20) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `exchange_name` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `exchange_short_name` varchar(30) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `nrta_code` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `base_table_name` varchar(20) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `class_name` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `repository_name` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `is_settlement` tinyint(1) DEFAULT '0',
+  `active_status` tinyint(1) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 --
 -- Dumping data for table `ex_house_list`
@@ -63,9 +63,9 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (118, '7010245', 'Al Zaman Ex. , Qatar', 'Al Zaman', '7057', 'alzaman', 'AlZamanModel', 'alZamanModelRepository', 0, 1),
 (119, '7010262', 'ALAWANEH EX. JORDAN', 'ALAWANEH EX.', '7082', 'alawneh', 'AlawnehModel', 'alawnehModelRepository', 0, 1),
 (120, '7010205', 'Al-Fardan Exchange  Co. Doha, ', '', '7002', '', '', '', 0, 1),
-(121, '7010220', 'Al-Fardan Exchange, Abu Dhabi', '', '7010', '', '', '', 0, 1),
+(121, '7010220', 'Al-Fardan Exchange, Abu Dhabi, UAE', '', '7010', '', '', '', 0, 1),
 (122, '7010233', 'AL-Ghurair Ex. Dubai, UAE', '', '7043', '', '', '', 0, 1),
-(123, '7119', 'Al-Rajhi Banking & Investment ', '', '7009', '', '', '', 0, 1),
+(123, '7119', 'Al-Rajhi Banking & Investment ', 'Al Raji', '7009', 'alraji', 'AlRajiModel', 'alRajiModelRepository', 0, 1),
 (124, '7010263', 'Aman Ex- Kuwait', 'Aman Ex', '7084', 'aman', 'AmanModel', 'amanModelRepository', 0, 1),
 (125, '7010203', 'Arab National Bank, Riyadh, K.', 'Arab National Bank', '7030', 'anb', 'AnbModel', 'anbModelRepository', 0, 1),
 (126, '7010243', 'Bahrain Financing Co. Bahrain ', '', '7013', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
@@ -90,7 +90,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (145, '7010255', 'Joyalukkas Ex Dubai,UAE', '', '7072', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
 (146, '7010258', 'Joyalukkas Ex Oman', '', '7078', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
 (147, '7010264', 'Joyalukkas Ex WLL,KUWAIT', '', '7085', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
-(148, '7010271', 'K & H Remittance Services Brun', '', '7092', '', '', '', 0, 1),
+(148, '7010271', 'K & H Remittance Services Brunai', '', '7092', '', '', '', 0, 1),
 (149, '7010207', 'Kuwait Bahrain Intl Ex. Kuwai', '', '7006', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
 (150, '7010242', 'Lari Exchange  (Abu Dhabi, UAE', 'Lari Exchange', '7054', 'lari', 'LariModel', 'lariModelRepository', 0, 1),
 (151, '7010237', 'Lulu Exchange Co', '', '7050', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
@@ -120,12 +120,11 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (175, '7010213', 'UAE Exchange WLL,Kuwait', '', '7027', '', '', '', 0, 1),
 (176, '7010216', 'Unimoni Exchange', 'Unimoni Ex', '7034', 'unimoni', 'UnimoniModel', 'unimoniModelRepository', 0, 1),
 (177, '7010268', 'Val You SDN BHD', '', '7090', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
-(178, '7010224', 'Wall Street Exchange, Abu Dhab', '', '7033', '', '', '', 0, 1),
+(178, '7010224', 'Wall Street Exchange, Abu Dhabi, UAE', '', '7033', '', '', '', 0, 1),
 (179, '7010303', 'Zamzam Money Exchange', '', '7111', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
 (180, '7010219', 'Zenj Exchange Co. Bahrain', '', '7003', '', '', '', 0, 1),
 (183, '7010289', 'FSIE Italy', 'FSIE', '7093', 'fsie', 'FsieModel', 'fsieModelRepository', 1, 1),
-(184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', 'agranimalaysia', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', 0, 1),
-(185, '7119', 'Al Raji Bank', 'Al Raji', '7009', 'alraji', 'AlRajiModel', 'alRajiModelRepository', 0, 1);
+(184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', 'agranimalaysia', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', 0, 1);
 
 --
 -- Indexes for dumped tables
@@ -149,7 +148,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
