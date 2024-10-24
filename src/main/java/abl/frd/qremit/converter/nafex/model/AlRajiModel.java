@@ -3,12 +3,12 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_alawneh", uniqueConstraints = {
+@Table(name="base_data_table_alraji", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no", "amount", "exchange_code"}),
         @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})
     }
 )
-public class AlawnehModel {
+public class AlRajiModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -82,10 +82,6 @@ public class AlawnehModel {
 
     public void setFileInfoModel(FileInfoModel fileInfoModel) {
         this.fileInfoModel = fileInfoModel;
-    }
-
-    public AlawnehModel() {
-
     }
 
     public int getId() {
@@ -281,7 +277,10 @@ public class AlawnehModel {
     }
 
 
-    public AlawnehModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
+    public AlRajiModel() {
+    }
+
+    public AlRajiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -307,7 +306,7 @@ public class AlawnehModel {
         this.uploadDateTime = uploadDateTime;
     }
 
-    public AlawnehModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
+    public AlRajiModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
         this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, upLocalDateTime);
         this.fileInfoModel = fileInfoModel;
         this.userModel = user;
@@ -342,7 +341,4 @@ public class AlawnehModel {
                 ", uploadDateTime='" + uploadDateTime + '\'' +
                 '}';
     }
-
-
-
 }
