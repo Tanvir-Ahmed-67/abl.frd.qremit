@@ -78,6 +78,9 @@ public class FileInfoModel {
     private List<NecUkModel> necUkModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<AgraniMalaysiaModel> agraniMalaysiaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<SunmanModel> sunmanModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -602,6 +605,14 @@ public class FileInfoModel {
 
     public void setErrorDataModelList(List<ErrorDataModel> errorDataModelList) {
         this.errorDataModelList = errorDataModelList;
+    }
+
+    public List<AgraniMalaysiaModel> getAgraniMalaysiaModel() {
+        return this.agraniMalaysiaModel;
+    }
+
+    public void setAgraniMalaysiaModel(List<AgraniMalaysiaModel> agraniMalaysiaModel) {
+        this.agraniMalaysiaModel = agraniMalaysiaModel;
     }
 
     public List<AgexSingaporeModel> getAgexSingaporeModel() {
