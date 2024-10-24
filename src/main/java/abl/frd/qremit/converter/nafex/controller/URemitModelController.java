@@ -1,7 +1,7 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import abl.frd.qremit.converter.nafex.service.NblMalyasiaModelService;
+import abl.frd.qremit.converter.nafex.service.URemitModelService;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
@@ -19,19 +19,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 
 @Controller
-public class NblMalyasiaModelController {
+public class URemitModelController {
     private final MyUserDetailsService myUserDetailsService;
     private final CommonService commonService;
     @Autowired
-    NblMalyasiaModelService nblMalyasiaModelService;
+    URemitModelService uRemitModelService;
 
     @Autowired
-    public NblMalyasiaModelController(MyUserDetailsService myUserDetailsService, CommonService commonService){
+    public URemitModelController(MyUserDetailsService myUserDetailsService, CommonService commonService){
         this.myUserDetailsService = myUserDetailsService;
         this.commonService = commonService;
     }
 
-    @PostMapping("/nblmalyasiaUpload")
+    @PostMapping("/uremitUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, 
         @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
@@ -47,7 +47,7 @@ public class NblMalyasiaModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = nblMalyasiaModelService.save(file, userId, exchangeCode, nrtaCode);
+                    Map<String, Object> resp = uRemitModelService.save(file, userId, exchangeCode, nrtaCode);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {
