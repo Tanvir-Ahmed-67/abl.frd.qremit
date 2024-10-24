@@ -95,6 +95,7 @@ public class DynamicOperationService {
                     //throw new IllegalArgumentException("No repository or model class found for exchangeCode: " + exchangeCode);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 return CommonService.getResp(1, e.getMessage(), null);
             }
         }
