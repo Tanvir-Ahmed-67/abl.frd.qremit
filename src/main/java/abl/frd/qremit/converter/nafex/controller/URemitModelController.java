@@ -1,7 +1,6 @@
 package abl.frd.qremit.converter.nafex.controller;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import abl.frd.qremit.converter.nafex.service.URemitModelService;
+import abl.frd.qremit.converter.nafex.service.UremitModelService;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
@@ -19,14 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 
 @Controller
-public class URemitModelController {
+public class UremitModelController {
     private final MyUserDetailsService myUserDetailsService;
     private final CommonService commonService;
     @Autowired
-    URemitModelService uRemitModelService;
+    UremitModelService uremitModelService;
 
     @Autowired
-    public URemitModelController(MyUserDetailsService myUserDetailsService, CommonService commonService){
+    public UremitModelController(MyUserDetailsService myUserDetailsService, CommonService commonService){
         this.myUserDetailsService = myUserDetailsService;
         this.commonService = commonService;
     }
@@ -47,7 +46,7 @@ public class URemitModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = uRemitModelService.save(file, userId, exchangeCode, nrtaCode);
+                    Map<String, Object> resp = uremitModelService.save(file, userId, exchangeCode, nrtaCode);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {

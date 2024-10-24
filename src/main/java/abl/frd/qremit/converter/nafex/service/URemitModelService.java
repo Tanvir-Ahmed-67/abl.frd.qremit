@@ -6,7 +6,7 @@ import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import abl.frd.qremit.converter.nafex.model.URemitModel;
+import abl.frd.qremit.converter.nafex.model.UremitModel;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
@@ -16,14 +16,14 @@ import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
-import abl.frd.qremit.converter.nafex.repository.URemitModelRepository;
+import abl.frd.qremit.converter.nafex.repository.UremitModelRepository;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 
 @SuppressWarnings("unchecked")
 @Service
-public class URemitModelService {
+public class UremitModelService {
     @Autowired
-    URemitModelRepository uRemitModelRepository;
+    UremitModelRepository uremitModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -55,29 +55,29 @@ public class URemitModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> uRemitData = csvTouRemitModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
-            List<URemitModel> uRemitModels = (List<URemitModel>) uRemitData.get(" uRemitModelList");
+            Map<String, Object> uremitData = csvToUremitModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            List<UremitModel> uremitModels = (List<UremitModel>) uremitData.get(" uremitModelList");
 
-            if(uRemitData.containsKey("errorMessage")){
-                resp.put("errorMessage", uRemitData.get("errorMessage"));
+            if(uremitData.containsKey("errorMessage")){
+                resp.put("errorMessage", uremitData.get("errorMessage"));
             }
-            if(uRemitData.containsKey("errorCount") && ((Integer) uRemitData.get("errorCount") >= 1)){
-                int errorCount = (Integer) uRemitData.get("errorCount");
+            if(uremitData.containsKey("errorCount") && ((Integer) uremitData.get("errorCount") >= 1)){
+                int errorCount = (Integer) uremitData.get("errorCount");
                 fileInfoModel.setErrorCount(errorCount);
                 resp.put("fileInfoModel", fileInfoModel);
                 fileInfoModelRepository.save(fileInfoModel);
             }
-            if(uRemitModels.size()!=0) {
-                for (URemitModel uRemitModel : uRemitModels) {
-                    uRemitModel.setFileInfoModel(fileInfoModel);
-                    uRemitModel.setUserModel(user);
+            if(uremitModels.size()!=0) {
+                for (UremitModel uremitModel : uremitModels) {
+                    uremitModel.setFileInfoModel(fileInfoModel);
+                    uremitModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(uRemitModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(uremitModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
-                fileInfoModel.setTotalCount(String.valueOf(uRemitModels.size()));
+                fileInfoModel.setTotalCount(String.valueOf(uremitModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setURemitModel(uRemitModels);
+                fileInfoModel.setUremitModel(uremitModels);
    
                 // SAVING TO MySql Data Table
                 try{
@@ -94,13 +94,13 @@ public class URemitModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvTouRemitModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToUremitModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
         Map<String, Object> resp = new HashMap<>();
-        Optional<URemitModel> duplicateData;
+        Optional<UremitModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<URemitModel>  uRemitModelList = new ArrayList<>();
+            List<UremitModel>  uremitModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
@@ -108,7 +108,7 @@ public class URemitModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = uRemitModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                duplicateData = uremitModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
@@ -133,11 +133,11 @@ public class URemitModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                URemitModel uRemitModel = new URemitModel();
-                uRemitModel = CommonService.createDataModel( uRemitModel, data);
-                uRemitModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                uRemitModel.setUploadDateTime(currentDateTime);
-                uRemitModelList.add( uRemitModel);
+                UremitModel uremitModel = new UremitModel();
+                uremitModel = CommonService.createDataModel(uremitModel, data);
+                uremitModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                uremitModel.setUploadDateTime(currentDateTime);
+                uremitModelList.add( uremitModel);
             }
            //save error data
            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -147,10 +147,10 @@ public class URemitModelService {
                return resp;
            }
            //if both model is empty then delete fileInfoModel
-           if(errorDataModelList.isEmpty() &&  uRemitModelList.isEmpty()){
+           if(errorDataModelList.isEmpty() &&  uremitModelList.isEmpty()){
                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
            }
-           resp.put(" uRemitModelList",  uRemitModelList);
+           resp.put(" uremitModelList",  uremitModelList);
            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
