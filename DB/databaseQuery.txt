@@ -1,34 +1,52 @@
+TRUNCATE `base_data_table_alansari`;
+TRUNCATE `base_data_table_alawneh`;
+TRUNCATE `base_data_table_alrostamani`;
+TRUNCATE `base_data_table_alzadeed`;
+TRUNCATE `base_data_table_alzaman`;
+TRUNCATE `base_data_table_aman`;
+TRUNCATE `base_data_table_anb`;
+TRUNCATE `base_data_table_api_beftn`;
+TRUNCATE `base_data_table_api_t24`;
 TRUNCATE `base_data_table_bec`;
+TRUNCATE `base_data_table_belhashaglobal`;
+TRUNCATE `base_data_table_coc_paid`;
+TRUNCATE `base_data_table_eastern`;
 TRUNCATE `base_data_table_ezremit`;
+TRUNCATE `base_data_table_fsie`;
+TRUNCATE `base_data_table_index`;
+TRUNCATE `base_data_table_instantcash`;
+TRUNCATE `base_data_table_lari`;
+TRUNCATE `base_data_table_multinet`;
 TRUNCATE `base_data_table_muzaini`;
 TRUNCATE `base_data_table_nafex`;
+TRUNCATE `base_data_table_nblmalyasia`;
+TRUNCATE `base_data_table_nec`;
+TRUNCATE `base_data_table_necitaly`;
+TRUNCATE `base_data_table_necuk`;
+TRUNCATE `base_data_table_oman`;
+TRUNCATE `base_data_table_omankuwait`;
+TRUNCATE `base_data_table_prabhu`;
 TRUNCATE `base_data_table_ria`;
+TRUNCATE `base_data_table_saib`;
+TRUNCATE `base_data_table_sigue`;
 TRUNCATE `base_data_table_singapore`;
+TRUNCATE `base_data_table_standard`;
+TRUNCATE `base_data_table_sunman`;
+TRUNCATE `base_data_table_unimoni`;
 TRUNCATE `converted_data_account_payee`;
 TRUNCATE `converted_data_beftn`;
 TRUNCATE `converted_data_coc`;
 TRUNCATE `converted_data_online`;
-TRUNCATE `upload_file_info`;
-TRUNCATE`error_data_table`;
+TRUNCATE `error_data_table`;
 TRUNCATE `log`;
-TRUNCATE `base_data_table_api_beftn`;
-TRUNCATE `base_data_table_api_t24`;
-TRUNCATE `base_data_table_coc_paid`;
 TRUNCATE `report`;
 TRUNCATE `temporary_report`;
-TRUNCATE `base_data_table_nec`;
-TRUNCATE `base_data_table_eastern`;
-TRUNCATE `base_data_table_alansari`;
-TRUNCATE `base_data_table_sigue`;
-TRUNCATE `base_data_table_standard`;
-TRUNCATE `base_data_table_saib`;
-TRUNCATE `base_data_table_anb`;
-TRUNCATE `base_data_table_lari`;
+TRUNCATE `upload_file_info`;
 
 
 DROP TABLE `base_data_table_bec`,`base_data_table_ezremit`,`base_data_table_muzaini`, `base_data_table_nafex`, `base_data_table_ria`,`base_data_table_singapore`;
 DROP TABLE `converted_data_account_payee`,`converted_data_beftn`,`converted_data_coc`,`converted_data_online`,`upload_file_info`,`error_data_table`,`log`;
-DROP TABLE `base_data_table_api_beftn`,`base_data_table_api_t24`,`base_data_table_coc_paid`, `report`, `temporary_report`,`base_data_table_nec`,`base_data_table_eastern`,`base_data_table_alansari`,`base_data_table_sigue`,`base_data_table_saib`,`base_data_table_anb`,TRUNCATE `base_data_table_lari`;
+DROP TABLE `base_data_table_api_beftn`,`base_data_table_api_t24`,`base_data_table_coc_paid`, `report`, `temporary_report`,`base_data_table_nec`,`base_data_table_eastern`,`base_data_table_alansari`,`base_data_table_sigue`,`base_data_table_saib`,`base_data_table_anb`,`base_data_table_lari`;
 
 https://codepen.io/n3k1t/pen/OJMGgyq
 

@@ -26,7 +26,7 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return user;
     }
-    /*
+    
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
         Map<String, String> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
         
@@ -46,8 +46,8 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return exchangeMap;
     }
-    */
     
+    /*
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
         Map<String, String> resp = new HashMap<>();
         int userId = userDetails.getUser().getId();
@@ -57,6 +57,7 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return resp;
     }
+    */
 
     public User loadUserByUserId(int userId)
             throws UsernameNotFoundException {

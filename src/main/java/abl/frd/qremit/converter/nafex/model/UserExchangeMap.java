@@ -1,7 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 import javax.persistence.*;
 @Entity
-@Table(name="user_exchange_map",
+@Table(name="user_exchange_map", indexes = { @Index(name = "idx_exchange_code", columnList = "exchange_code") },
     uniqueConstraints = @UniqueConstraint(name = "key", columnNames = {"exchange_code", "user_id"})
 )
 public class UserExchangeMap {
