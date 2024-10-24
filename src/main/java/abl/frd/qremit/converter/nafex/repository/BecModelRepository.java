@@ -19,5 +19,5 @@ public interface BecModelRepository extends JpaRepository<BecModel, Integer> {
 
      */
     BecModel findByTransactionNo(String transactionNo);
-    Optional<BecModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<BecModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

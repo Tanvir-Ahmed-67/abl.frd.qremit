@@ -7,5 +7,5 @@ import abl.frd.qremit.converter.nafex.model.EasternModel;
 @Repository
 public interface EasternModelRepository extends JpaRepository<EasternModel, Integer>{
     EasternModel findByTransactionNo(String transactionNo);
-    Optional<EasternModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<EasternModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

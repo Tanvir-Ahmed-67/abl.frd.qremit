@@ -7,5 +7,5 @@ import java.util.*;
 @Repository
 public interface SaibModelRepository extends JpaRepository<SaibModel, Integer> {
     SaibModel findByTransactionNo(String transactionNo);
-    Optional<SaibModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<SaibModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

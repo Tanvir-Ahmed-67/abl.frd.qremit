@@ -9,5 +9,5 @@ import abl.frd.qremit.converter.nafex.model.UnimoniModel;
 @Repository
 public interface UnimoniModelRepository extends JpaRepository<UnimoniModel, Integer>{
     UnimoniModel findByTransactionNo(String transactionNo);
-    Optional<UnimoniModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<UnimoniModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

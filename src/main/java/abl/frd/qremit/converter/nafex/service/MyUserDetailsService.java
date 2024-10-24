@@ -48,6 +48,7 @@ public class MyUserDetailsService implements UserDetailsService {
     }
     
     /*
+    //exchange house code map to seperate table using user id
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
         Map<String, String> resp = new HashMap<>();
         int userId = userDetails.getUser().getId();

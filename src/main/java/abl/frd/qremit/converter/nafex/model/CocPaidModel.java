@@ -4,7 +4,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="base_data_table_coc_paid", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
+@Table(name="base_data_table_coc_paid", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no", "amount", "exchange_code"}),
+        @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})
+    }
+)
 public class CocPaidModel {
     @Id
     @Column(name = "id")

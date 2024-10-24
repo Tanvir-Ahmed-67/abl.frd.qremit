@@ -10,5 +10,5 @@ import abl.frd.qremit.converter.nafex.model.NecUkModel;
 @Repository
 public interface NecUkModelRepository extends JpaRepository<NecUkModel, Integer>{
     NecUkModel findByTransactionNo(String transactionNo);
-    Optional<NecUkModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<NecUkModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

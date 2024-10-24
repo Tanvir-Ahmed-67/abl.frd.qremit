@@ -10,5 +10,5 @@ import abl.frd.qremit.converter.nafex.model.SunmanModel;
 @Repository
 public interface SunmanModelRepository extends JpaRepository<SunmanModel, Integer>{
     SunmanModel findByTransactionNo(String transactionNo);
-    Optional<SunmanModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<SunmanModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

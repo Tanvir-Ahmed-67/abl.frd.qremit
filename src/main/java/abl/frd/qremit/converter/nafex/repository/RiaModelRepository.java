@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface RiaModelRepository extends JpaRepository<RiaModel, Integer> {
-    Optional<RiaModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<RiaModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

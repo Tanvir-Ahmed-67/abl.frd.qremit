@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import abl.frd.qremit.converter.nafex.repository.CustomQueryRepository;
-
+@SuppressWarnings("unchecked")
 @Service
 public class CustomQueryService {
     @Autowired

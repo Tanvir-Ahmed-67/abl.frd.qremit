@@ -108,11 +108,12 @@ public class UremitModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = uremitModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = uremitModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){

@@ -6,5 +6,5 @@ import java.util.*;
 @Repository
 public interface AnbModelRepository  extends JpaRepository<AnbModel, Integer>{
     AnbModel findByTransactionNo(String transactionNo);
-    Optional<AnbModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<AnbModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

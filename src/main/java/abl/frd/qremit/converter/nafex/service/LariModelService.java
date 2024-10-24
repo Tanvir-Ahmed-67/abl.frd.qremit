@@ -109,8 +109,10 @@ public class LariModelService {
                 if(csvRecord.get(0).trim().toLowerCase().startsWith("test"))    continue;
                 if(csvRecord.get(0).isEmpty())  continue;
                 i++;
-                duplicateData = lariModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String transactionNo = csvRecord.get(1).trim();
+                Double amount = Double.parseDouble(csvRecord.get(3));
+                //duplicateData = lariModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                duplicateData = lariModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, amount, exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());

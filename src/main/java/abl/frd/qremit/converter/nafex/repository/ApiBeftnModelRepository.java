@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface ApiBeftnModelRepository extends JpaRepository<ApiBeftnModel, Integer> {
     ApiBeftnModel findByTransactionNo(String transactionNo);
-    Optional<ApiBeftnModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<ApiBeftnModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
     List<ApiBeftnModel> findAllByFileInfoModelId(int fileInfoModelId);
 }

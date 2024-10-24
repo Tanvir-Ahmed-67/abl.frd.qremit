@@ -9,5 +9,5 @@ import abl.frd.qremit.converter.nafex.model.InstantCashModel;
 @Repository
 public interface InstantCashModelRepository extends JpaRepository<InstantCashModel, Integer>{
     InstantCashModel findByTransactionNo(String transactionNo);
-    Optional<InstantCashModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<InstantCashModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

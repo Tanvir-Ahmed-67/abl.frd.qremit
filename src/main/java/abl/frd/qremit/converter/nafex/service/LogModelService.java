@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import abl.frd.qremit.converter.nafex.model.LogModel;
 import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
 import java.util.*;
-
+@SuppressWarnings("unchecked")
 @Service
 public class LogModelService {
     @Autowired

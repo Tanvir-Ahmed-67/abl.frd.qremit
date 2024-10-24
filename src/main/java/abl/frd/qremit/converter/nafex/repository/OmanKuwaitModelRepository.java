@@ -10,5 +10,5 @@ import abl.frd.qremit.converter.nafex.model.OmanKuwaitModel;
 @Repository
 public interface OmanKuwaitModelRepository extends JpaRepository<OmanKuwaitModel, Integer>{
     OmanKuwaitModel findByTransactionNo(String transactionNo);
-    Optional<OmanKuwaitModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<OmanKuwaitModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

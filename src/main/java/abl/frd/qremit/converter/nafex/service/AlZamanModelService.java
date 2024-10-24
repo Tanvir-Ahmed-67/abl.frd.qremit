@@ -107,8 +107,9 @@ public class AlZamanModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = alZamanModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = alZamanModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
