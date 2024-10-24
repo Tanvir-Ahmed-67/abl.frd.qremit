@@ -93,8 +93,14 @@ public class FileInfoModel {
     private List<MultinetModel> multinetModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<NblMalaysiaModel> nblMalaysiaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+
+    @JsonIgnore
     private List<AlawnehModel> alawnehModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+   
+    
     @JsonIgnore
     private List<BelhashaGlobalModel> belhashaGlobalModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -461,6 +467,16 @@ public class FileInfoModel {
     public void setAlzadeedModel(List<AlzadeedModel> alzadeedModel) {
         this.alzadeedModel = alzadeedModel;
     }
+
+    public List<NblMalaysiaModel> getNblMalaysiaModel() {
+        return this.nblMalaysiaModel;
+    }
+
+    public void setNblMalaysiaModel(List<NblMalaysiaModel> nblMalaysiaModel) {
+        this.nblMalaysiaModel = nblMalaysiaModel;
+    }
+
+
 
     public List<AmanModel> getAmanModel() {
         return this.amanModel;
