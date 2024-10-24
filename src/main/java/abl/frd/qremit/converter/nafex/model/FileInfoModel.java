@@ -117,7 +117,7 @@ public class FileInfoModel {
     private List<AlRostamaniModel> alRostamaniModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
-    private List<NblMalyasiaModel> nblMalyasiaModel;
+    private List<URemitModel> uRemitModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<AnbModel> anbModel;
@@ -233,6 +233,14 @@ public class FileInfoModel {
 
     public void setPrabhuModel(List<PrabhuModel> prabhuModel) {
         this.prabhuModel = prabhuModel;
+    }
+
+    public List<URemitModel> getURemitModel() {
+        return this.uRemitModel;
+    }
+
+    public void setURemitModel(List<URemitModel> uRemitModel) {
+        this.uRemitModel = uRemitModel;
     }
 
     public List<AlZamanModel> getAlZamanModel() {
@@ -429,16 +437,6 @@ public class FileInfoModel {
     public void setInstantCashModel(List<InstantCashModel> instantCashModel) {
         this.instantCashModel = instantCashModel;
     }
-
-
-    public List<NblMalyasiaModel> getNblMalyasiaModel() {
-        return this.nblMalyasiaModel;
-    }
-
-    public void setNblMalyasiaModel(List<NblMalyasiaModel> nblMalyasiaModel) {
-        this.nblMalyasiaModel = nblMalyasiaModel;
-    }
-
     public List<UnimoniModel> getUnimoniModel() {
         return this.unimoniModel;
     }

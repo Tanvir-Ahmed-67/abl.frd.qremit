@@ -3,8 +3,8 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_nblmalyasia", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
-public class NblMalyasiaModel {
+@Table(name="base_data_table_uremit", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
+public class URemitModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -80,7 +80,7 @@ public class NblMalyasiaModel {
         this.fileInfoModel = fileInfoModel;
     }
 
-    public NblMalyasiaModel() {
+    public URemitModel() {
 
     }
 
@@ -277,7 +277,7 @@ public class NblMalyasiaModel {
     }
 
 
-    public NblMalyasiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
+    public URemitModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -303,7 +303,7 @@ public class NblMalyasiaModel {
         this.uploadDateTime = uploadDateTime;
     }
 
-    public NblMalyasiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
+    public URemitModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
         this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, upLocalDateTime);
         this.fileInfoModel = fileInfoModel;
         this.userModel = user;

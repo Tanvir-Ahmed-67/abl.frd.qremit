@@ -1,38 +1,29 @@
 package abl.frd.qremit.converter.nafex.service;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
+import java.util.*;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import abl.frd.qremit.converter.nafex.model.NblMalyasiaModel;
+import abl.frd.qremit.converter.nafex.model.URemitModel;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
-import abl.frd.qremit.converter.nafex.repository.NblMalyasiaModelRepository;
 import abl.frd.qremit.converter.nafex.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import abl.frd.qremit.converter.nafex.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
+import abl.frd.qremit.converter.nafex.repository.URemitModelRepository;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
-import java.util.*;
+
 @SuppressWarnings("unchecked")
 @Service
-public class NblMalyasiaModelService {
+public class URemitModelService {
     @Autowired
-    NblMalyasiaModelRepository nblMalyasiaModelRepository;
+    URemitModelRepository uRemitModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -64,29 +55,29 @@ public class NblMalyasiaModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> nblMalyasiaData = csvToNblMalyasiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
-            List<NblMalyasiaModel> nblMalyasiaModels = (List<NblMalyasiaModel>) nblMalyasiaData.get(" nblMalyasiaModelList");
+            Map<String, Object> uRemitData = csvTouRemitModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            List<URemitModel> uRemitModels = (List<URemitModel>) uRemitData.get(" uRemitModelList");
 
-            if(nblMalyasiaData.containsKey("errorMessage")){
-                resp.put("errorMessage", nblMalyasiaData.get("errorMessage"));
+            if(uRemitData.containsKey("errorMessage")){
+                resp.put("errorMessage", uRemitData.get("errorMessage"));
             }
-            if(nblMalyasiaData.containsKey("errorCount") && ((Integer) nblMalyasiaData.get("errorCount") >= 1)){
-                int errorCount = (Integer) nblMalyasiaData.get("errorCount");
+            if(uRemitData.containsKey("errorCount") && ((Integer) uRemitData.get("errorCount") >= 1)){
+                int errorCount = (Integer) uRemitData.get("errorCount");
                 fileInfoModel.setErrorCount(errorCount);
                 resp.put("fileInfoModel", fileInfoModel);
                 fileInfoModelRepository.save(fileInfoModel);
             }
-            if(nblMalyasiaModels.size()!=0) {
-                for (NblMalyasiaModel nblMalyasiaModel : nblMalyasiaModels) {
-                    nblMalyasiaModel.setFileInfoModel(fileInfoModel);
-                    nblMalyasiaModel.setUserModel(user);
+            if(uRemitModels.size()!=0) {
+                for (URemitModel uRemitModel : uRemitModels) {
+                    uRemitModel.setFileInfoModel(fileInfoModel);
+                    uRemitModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(nblMalyasiaModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(uRemitModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
-                fileInfoModel.setTotalCount(String.valueOf(nblMalyasiaModels.size()));
+                fileInfoModel.setTotalCount(String.valueOf(uRemitModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setNblMalyasiaModel(nblMalyasiaModels);
+                fileInfoModel.setURemitModel(uRemitModels);
    
                 // SAVING TO MySql Data Table
                 try{
@@ -103,13 +94,13 @@ public class NblMalyasiaModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToNblMalyasiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvTouRemitModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
         Map<String, Object> resp = new HashMap<>();
-        Optional<NblMalyasiaModel> duplicateData;
+        Optional<URemitModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
+            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<NblMalyasiaModel>  nblMalyasiaModelList = new ArrayList<>();
+            List<URemitModel>  uRemitModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
@@ -117,7 +108,7 @@ public class NblMalyasiaModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = nblMalyasiaModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                duplicateData = uRemitModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
@@ -142,11 +133,11 @@ public class NblMalyasiaModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                NblMalyasiaModel nblMalyasiaModel = new NblMalyasiaModel();
-                nblMalyasiaModel = CommonService.createDataModel( nblMalyasiaModel, data);
-                nblMalyasiaModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                nblMalyasiaModel.setUploadDateTime(currentDateTime);
-                nblMalyasiaModelList.add( nblMalyasiaModel);
+                URemitModel uRemitModel = new URemitModel();
+                uRemitModel = CommonService.createDataModel( uRemitModel, data);
+                uRemitModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                uRemitModel.setUploadDateTime(currentDateTime);
+                uRemitModelList.add( uRemitModel);
             }
            //save error data
            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -156,10 +147,10 @@ public class NblMalyasiaModelService {
                return resp;
            }
            //if both model is empty then delete fileInfoModel
-           if(errorDataModelList.isEmpty() &&  nblMalyasiaModelList.isEmpty()){
+           if(errorDataModelList.isEmpty() &&  uRemitModelList.isEmpty()){
                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
            }
-           resp.put(" nblMalyasiaModelList",  nblMalyasiaModelList);
+           resp.put(" uRemitModelList",  uRemitModelList);
            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
@@ -170,6 +161,7 @@ public class NblMalyasiaModelService {
     }
 
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+        String[] beneficiaryMobileNumbers = csvRecord.get(12).split("-");
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
@@ -180,7 +172,7 @@ public class NblMalyasiaModelService {
         data.put("remitterMobile", csvRecord.get(17));
         data.put("beneficiaryName", csvRecord.get(6));
         data.put("beneficiaryAccount", beneficiaryAccount);
-        data.put("beneficiaryMobile", csvRecord.get(12));
+        data.put("beneficiaryMobile", beneficiaryMobileNumbers[1]);
         data.put("bankName", bankName);
         data.put("bankCode", csvRecord.get(9));
         data.put("branchName", csvRecord.get(10));
