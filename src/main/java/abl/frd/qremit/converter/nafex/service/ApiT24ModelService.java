@@ -137,7 +137,7 @@ public class ApiT24ModelService {
                 String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = apiT24ModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
+                duplicateData = apiT24ModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());

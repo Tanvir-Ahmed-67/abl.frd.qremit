@@ -115,7 +115,7 @@ public class AgraniMalaysiaModelService {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = agraniMalaysiaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
+                duplicateData = agraniMalaysiaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());

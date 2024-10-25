@@ -154,7 +154,7 @@ public class AgexSingaporeModelService {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = agexSingaporeModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
+                duplicateData = agexSingaporeModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = (type == 1) ? csvRecord.get(8): csvRecord.get(9);
                 String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();

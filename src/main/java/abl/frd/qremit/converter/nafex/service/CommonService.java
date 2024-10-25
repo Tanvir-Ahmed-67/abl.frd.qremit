@@ -611,6 +611,16 @@ public class CommonService {
         }
     }
 
+    public static Double convertStringToDouble(String str){
+        Double number;
+        try{
+            number = Double.parseDouble(str);
+        }catch(NumberFormatException e){
+            number = 0.0;
+        }
+        return number;
+    }
+
     public static boolean checkEmptyString(String str){
         if(str == null || str.trim().isEmpty()) return true;
         try{
@@ -768,7 +778,7 @@ public class CommonService {
         //try {
             //Path path = Paths.get(ResourceUtils.getFile("classpath:templates/" + templateName).toURI());
             //return new String(Files.readAllBytes(path));
-                      ClassPathResource resource = new ClassPathResource("templates/" + templateName);
+        ClassPathResource resource = new ClassPathResource("templates/" + templateName);
         try (InputStream inputStream = resource.getInputStream();
             Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
                 

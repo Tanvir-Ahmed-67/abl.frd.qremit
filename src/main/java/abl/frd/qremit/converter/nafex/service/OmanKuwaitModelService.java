@@ -115,7 +115,7 @@ public class OmanKuwaitModelService {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = omanKuwaitModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
+                duplicateData = omanKuwaitModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());

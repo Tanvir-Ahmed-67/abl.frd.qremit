@@ -170,7 +170,7 @@ public class EzRemitModelService {
                 String beneficiaryAccount = (type == 1) ? csvRecord.get(4).trim(): csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
-                duplicateData = ezRemitModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.parseDouble(amount), exchangeCode);
+                duplicateData = ezRemitModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");

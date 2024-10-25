@@ -111,7 +111,7 @@ public class AnbModelService {
                 i++;
                 String transactionNo = csvRecord.get(4).trim();
                 String amount = getAmount(csvRecord.get(14).trim());
-                duplicateData = anbModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.parseDouble(amount), exchangeCode);
+                duplicateData = anbModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = csvRecord.get(24).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(22).trim());
                 String beneficiaryAccount = getBenificiaryAccount(csvRecord, branchCode, bankName);

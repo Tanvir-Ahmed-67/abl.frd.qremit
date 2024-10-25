@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
-import abl.frd.qremit.converter.nafex.model.NecUkModel;
 import abl.frd.qremit.converter.nafex.model.SunmanModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.AccountPayeeModelRepository;
@@ -116,7 +115,7 @@ public class SunmanModelService {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = sunmanModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, Double.valueOf(amount), exchangeCode);
+                duplicateData = sunmanModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
