@@ -56,7 +56,7 @@ delete FROM `report` WHERE exchange_code="7010204";
 delete FROM `report` WHERE exchange_code="7010274";
 
 //exchange codes for user login 
-7010231,7010209,7010234,7010226,7010299,7010290,111111,222222,333333,7010239,7010246,7010240,7010245,7010263,7010203,7010279,7010206,7010260,7010276,7010272,7010256,7010248,7010266,7010216
+7010231,7010209,7010234,7010226,7010299,7010290,7010239,7010246,7010240,7010245,7010262,7119,7010263,7010203,7010279,7010206,7010223,7010260,7010242,7010252,7010229,7010285,7010276,7010272,7010208,7010215,7010238,7010256,7010248,7010274,7010266,7010267,7010216,7010289,7010228
 
 // Need to add this in ex_house_list table 
 INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `class_name`, `repository_name`, `is_settlement`) VALUES (NULL, '1', 'agranimalaysia', '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', '0');
