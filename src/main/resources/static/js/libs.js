@@ -128,7 +128,7 @@ function checkDataTable(tbl){
     });
   }
 
-  function modal_ui(params){ 
+  function modal_ui(params, data){ 
     var modal_obj = {
       'modal_title': params.modal_title,
       'id' : params.modalID,
@@ -138,6 +138,7 @@ function checkDataTable(tbl){
     var modal = ui.modal(modal_obj);
     $(params.modal_wrap).html(modal);
     $('#' + params.modalID).modal('show');
+    if(params.sfunc)  params.sfunc(data);
   }
   
   function gen_modal(url,params,mparams,data){
@@ -146,7 +147,7 @@ function checkDataTable(tbl){
       url: url,
     }).done(function(resp){
       mparams.content = resp;
-      modal_ui(mparams);
+      modal_ui(mparams, data);
     }).fail(function(){
       alert("Error getting from server");
     });
