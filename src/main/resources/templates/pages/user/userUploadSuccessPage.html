@@ -29,8 +29,12 @@
                     <td class="text-center"><p th:text="${fileInfo.beftnCount}"></p></td>
                     <td class="text-center"><p th:text="${fileInfo.totalCount}"></p></td>
                     <td>
+                        <span th:if="${apiBtn != 1}">
+                            <button type="button" class="btn btn-sm btn-info view_btn" th:id="${fileInfo.id}">View</button> 
+                            <input id="exchange_code" type="hidden" th:value="${fileInfo.exchangeCode}">
+                        </span>
                         <span th:if="${apiBtn == 1}">
-                            <button type="button" class="btn btn-sm btn-primary apiUrl" th:id="${fileInfo.id}">Process</button> 
+                            <button type="button" class="btn btn-sm btn-info apiUrl" th:id="${fileInfo.id}">Process</button> 
                             <input id="apiUrl" type="hidden" th:value="${apiUrl}">
                         </span>
                     </td>

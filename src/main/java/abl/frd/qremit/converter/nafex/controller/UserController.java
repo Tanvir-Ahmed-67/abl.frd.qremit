@@ -15,6 +15,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.validation.Valid;
 import java.util.*;
 
@@ -177,9 +181,7 @@ public class UserController {
     @GetMapping("/userFileUploadReport")
     public String userFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String type){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        List<Map<String, String>> reportColumn = ReportController.getReportColumn(type);
-        System.out.println(reportColumn);
-        System.out.println(type);
+        //List<Map<String, String>> reportColumn = ReportController.getReportColumn(type);
         return "pages/user/userFileUploadReport";
     }
 
@@ -188,6 +190,18 @@ public class UserController {
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         if(type.equalsIgnoreCase("4"))   return "pages/admin/adminErrorUpdateReport";
         else return "";
+    }
+    @GetMapping("/viewData")
+    public String viewData(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("id") String id,
+        @RequestParam("exchangeCode") String exchangeCode, @RequestParam(defaultValue = "") String type) throws JsonProcessingException{
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        List<Map<String, String>> columns = ReportController.getReportColumn(type);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String reportColumn = objectMapper.writeValueAsString(columns);
+        model.addAttribute("exchangeCode", exchangeCode);
+        model.addAttribute("id", id);
+        model.addAttribute("reportColumn", reportColumn);
+        return "pages/user/viewExchangeData";
     }
 
 
