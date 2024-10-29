@@ -12,8 +12,9 @@ import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
 public class FileInfoModelService {
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
-    public List<FileInfoModel> getUploadedFileDetails(int userId){
-        return fileInfoModelRepository.getUploadedFileDetails(userId);
+    public List<FileInfoModel> getUploadedFileDetails(int userId, String date){
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
+        return fileInfoModelRepository.getUploadedFileDetails(userId, dateTime.get("startDateTime"), dateTime.get("endDateTime"));
     }
 
     public Map<String, Object> deleteFileInfoModelById(int id){
@@ -33,7 +34,6 @@ public class FileInfoModelService {
     public List<FileInfoModel> getFileDetailsBetweenUploadedDate(String startDate, String endDate){
         startDate += " 00:00:00";
         endDate += " 23:59:59";
-        System.out.println(startDate + " " + endDate);
         LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
         LocalDateTime enDateTime = CommonService.convertStringToDate(endDate);
         return fileInfoModelRepository.getFileDetailsBetweenUploadedDate(startDateTime, enDateTime);

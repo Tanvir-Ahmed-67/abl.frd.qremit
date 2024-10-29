@@ -95,7 +95,7 @@ public class ReportController {
             MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
             User user = myUserDetails.getUser();
             userId = user.getId();
-            List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId);
+            List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId, date);
             
             List<Map<String, Object>> dataList = new ArrayList<>();
             int sl = 1;

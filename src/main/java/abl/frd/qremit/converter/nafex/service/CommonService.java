@@ -5,6 +5,7 @@ import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -63,7 +64,8 @@ public class CommonService {
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
     public static String uploadSuccesPage = "pages/user/userUploadSuccessPage";
-    public static String dirPrefix = "../../..";
+    public static String dirPrefix = "../";
+    public static String reportDir = "report/";
 
     private final EntityManager entityManager;
     private final DataSource dataSource;
@@ -73,13 +75,17 @@ public class CommonService {
         this.dataSource = dataSource;
     }
 
-    public static String getReportFile(String file) throws IOException{
-        Path reportPath = Paths.get("../../..", "report/daily_report/");
+    public static String generateOutputFile(String dir, String file) throws IOException{
+        Path reportPath = Paths.get(dirPrefix, dir);
         if (!Files.exists(reportPath)) {
             Files.createDirectories(reportPath);
         }
         Path outputPath = reportPath.resolve(file);
         return outputPath.toString();
+    }
+
+    public static String getReportFile(String file) throws IOException{
+        return generateOutputFile(reportDir + "daily_report/", file);
     }
     
     public static boolean hasCSVFormat(MultipartFile file) {
