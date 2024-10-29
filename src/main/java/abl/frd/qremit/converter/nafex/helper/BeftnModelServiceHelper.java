@@ -195,6 +195,7 @@ public class BeftnModelServiceHelper {
             is = new ByteArrayInputStream(xls);
             fos.close();
             is.close();
+            workbook.close();
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -125,6 +125,9 @@ public class FileInfoModel {
     private List<AlRostamaniModel> alRostamaniModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<ProgotiModel> progotiModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<UremitModel> uremitModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -385,6 +388,14 @@ public class FileInfoModel {
 
     public List<MultinetModel> getMultinetModel() {
         return this.multinetModel;
+    }
+
+    public List<ProgotiModel> getProgotiModel() {
+        return this.progotiModel;
+    }
+
+    public void setProgotiModel(List<ProgotiModel> progotiModel) {
+        this.progotiModel = progotiModel;
     }
 
     public void setMultinetModel(List<MultinetModel> multinetModel) {
