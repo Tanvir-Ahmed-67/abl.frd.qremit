@@ -1,27 +1,24 @@
-<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
-<jasperReport name="Blank_A4" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" >
-	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
-	<field name="exchangeCode" class="java.lang.String"></field>
-	<field name="exchangeName" class="java.lang.String"></field>
-	<field name="totalRowCount" class="java.lang.Integer"></field>
-	<field name="sumOfAmount" class="java.lang.Double"></field>
-	<variable name="exchangeCode1" resetType="Column" calculation="Sum" class="java.lang.String">
-		<expression><![CDATA[$F{exchangeCode}]]></expression>
-	</variable>
-	<variable name="exchangeName1" resetType="Column" calculation="Count" class="java.lang.String">
-		<expression><![CDATA[$F{exchangeName}]]></expression>
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0 -->
+<jasperReport name="Blank_A4" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<field name="exchangeCode" class="java.lang.String"/>
+	<field name="exchangeName" class="java.lang.String"/>
+	<field name="totalRowCount" class="java.lang.Integer"/>
+	<field name="sumOfAmount" class="java.lang.Double"/>
+
+	<variable name="serialNumber" class="java.lang.Integer" resetType="Report" calculation="Nothing">
+		<initialValueExpression><![CDATA[1]]></initialValueExpression>
+		<expression><![CDATA[$V{REPORT_COUNT}]]></expression>
 	</variable>
 	<variable name="totalRowCount1" resetType="Column" calculation="Count" class="java.lang.Integer">
 		<expression><![CDATA[$F{totalRowCount}]]></expression>
 	</variable>
-	<variable name="sumOfTotalRowCount1" resetType="Column" calculation="Sum" class="java.lang.Integer">
+	<variable name="sumOfTotalRowCount1" resetType="Report" calculation="Sum" class="java.lang.Integer">
 		<expression><![CDATA[$F{totalRowCount}]]></expression>
 	</variable>
 	<variable name="totalCount" calculation="Sum" class="java.lang.Double">
 		<expression><![CDATA[$F{sumOfAmount}]]></expression>
 	</variable>
-	<background splitType="Stretch"/>
+
 	<title height="89" splitType="Stretch">
 		<element kind="staticText" x="180" y="0" width="200" height="40" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Agrani Bank PLC]]></text>
@@ -30,60 +27,31 @@
 			<text><![CDATA[Daily Remittance Summary]]></text>
 		</element>
 		<element kind="staticText" x="180" y="59" width="200" height="21" fontSize="11.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Date: 03-09-2024]]></text>
+			<text><![CDATA[Date: 29-10-2024]]></text>
 		</element>
 	</title>
-	<pageHeader height="85" splitType="Stretch"/>
+
 	<columnHeader height="38" splitType="Stretch">
 		<element kind="staticText" x="89" y="0" width="80" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Exchange Code]]></text>
-			<box>
-				<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-			</box>
 		</element>
 		<element kind="staticText" x="440" y="0" width="110" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Amount]]></text>
-			<box>
-				<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-			</box>
 		</element>
 		<element kind="staticText" x="180" y="0" width="150" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Exchange Name]]></text>
-			<box>
-				<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-			</box>
 		</element>
 		<element kind="staticText" x="339" y="0" width="90" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Total Remittance]]></text>
-			<box>
-				<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-			</box>
 		</element>
 		<element kind="staticText" x="0" y="1" width="80" height="19" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Serial No]]></text>
-			<box>
-				<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-			</box>
 		</element>
 		<element kind="staticText" x="0" y="10" width="550" height="13" hTextAlign="Center" vTextAlign="Top">
 			<text><![CDATA[_____________________________________________________________________________________________________________________________________]]></text>
 		</element>
 	</columnHeader>
+
 	<detail>
 		<band height="36" splitType="Stretch">
 			<element kind="textField" x="89" y="0" width="80" height="30" hTextAlign="Center" vTextAlign="Middle">
@@ -103,8 +71,7 @@
 			</element>
 		</band>
 	</detail>
-	<columnFooter height="42" splitType="Stretch"/>
-	<pageFooter height="54" splitType="Stretch"/>
+
 	<summary height="45" splitType="Stretch">
 		<element kind="staticText" x="180" y="3" width="150" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Grand Total =]]></text>
