@@ -102,7 +102,7 @@ public class StandardModelService {
     public Map<String, Object> csvToStandardModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
         Optional<StandardModel> duplicateData;
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-16"));
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-16LE"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<StandardModel> standardDataModelList = new ArrayList<>();

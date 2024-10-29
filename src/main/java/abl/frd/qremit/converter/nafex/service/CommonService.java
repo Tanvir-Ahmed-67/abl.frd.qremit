@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
-
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -63,7 +63,7 @@ public class CommonService {
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
     public static String uploadSuccesPage = "pages/user/userUploadSuccessPage";
-    public String uploadApiSuccessPage = "pages/user/userApiUploadSuccessPage";
+    public static String dirPrefix = "../../..";
 
     private final EntityManager entityManager;
     private final DataSource dataSource;
@@ -71,6 +71,15 @@ public class CommonService {
     public CommonService(EntityManager entityManager,DataSource dataSource){
         this.entityManager = entityManager;
         this.dataSource = dataSource;
+    }
+
+    public static String getReportFile(String file) throws IOException{
+        Path reportPath = Paths.get("../../..", "report/daily_report/");
+        if (!Files.exists(reportPath)) {
+            Files.createDirectories(reportPath);
+        }
+        Path outputPath = reportPath.resolve(file);
+        return outputPath.toString();
     }
     
     public static boolean hasCSVFormat(MultipartFile file) {

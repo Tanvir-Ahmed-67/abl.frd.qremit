@@ -53,21 +53,21 @@ public class ApiT24ModelController {
                 catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return commonService.uploadApiSuccessPage;
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadApiSuccessPage;
+                    return CommonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadApiSuccessPage;
+            return CommonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadApiSuccessPage;
+        return CommonService.uploadSuccesPage;
     }
     @PostMapping("/apit24transfer")
     @ResponseBody

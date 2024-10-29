@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import java.io.*;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -17,8 +18,10 @@ import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.Resource;
 
 @Service
 public class ReportService {
@@ -57,18 +60,30 @@ public class ReportService {
     @Autowired
     CommonService commonService;
     LocalDateTime currentDateTime = LocalDateTime.now();
+    
 
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
     }
 
-    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList) throws JRException, FileNotFoundException {
+    public JasperReport loadJasperReport(String fileName) throws Exception {
+        // Load the JRXML file as a resource
+        Resource resource = new ClassPathResource(fileName);
+
+        // Compile the report
+        try (InputStream inputStream = resource.getInputStream()) {
+            return JasperCompileManager.compileReport(inputStream);
+        }
+    }
+
+    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList) throws Exception {
         for(ExchangeReportDTO exchangeReportDTO: dataList){
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
         }
         // Load File And Compile It.
-        File file = ResourceUtils.getFile("classpath:dailyStatementSummary.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        //File file = ResourceUtils.getFile("classpath:dailyStatementSummary.jrxml");
+        //JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        JasperReport jasperReport = loadJasperReport("dailyStatementSummary.jrxml");
         // Convert data into a JasperReports data source
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
         // Parameters map if needed
@@ -76,11 +91,12 @@ public class ReportService {
         parameters.put("ReportTitle", "Sample Report");
         // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Summary_Report.pdf");
+        String outputFile = CommonService.getReportFile("summary_report.pdf");
+        JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
-    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList) throws JRException, FileNotFoundException {
+    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList) throws Exception {
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
                 .map(ExchangeReportDTO::getExchangeCode)
@@ -93,8 +109,7 @@ public class ReportService {
             dataList.get(i).setEnteredDate(currentDateTime);
         }
         // Load File And Compile It.
-        File file = ResourceUtils.getFile("classpath:dailyVoucher.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        JasperReport jasperReport = loadJasperReport("dailyVoucher.jrxml");
         // Convert data into a JasperReports data source
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
         // Parameters map if needed
@@ -102,12 +117,13 @@ public class ReportService {
         parameters.put("ReportTitle", "Sample Report");
         // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Daily_Voucher.pdf");
+        String file = CommonService.getReportFile("Daily_Voucher.pdf");
+        JasperExportManager.exportReportToPdfFile(jasperPrint, file);
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
-    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format) throws JRException, FileNotFoundException {
+    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format) throws Exception {
         File file;
         JasperReport jasperReport;
         JasperPrint jasperPrint;
@@ -123,18 +139,22 @@ public class ReportService {
         parameters.put("REPORT_DATA_SOURCE", dataSource);
         if (format.equalsIgnoreCase("pdf")) {
             // Load the JRXML file for PDF format
-            file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf_tabular.jrxml");
-            jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            //file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf_tabular.jrxml");
+            //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            jasperReport = loadJasperReport("dailyStatementDetails_pdf_tabular.jrxml");
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
             // Export to PDF
-            JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report\\Details_Report.pdf");
+            //JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report\\Details_Report.pdf");
+            String outputFile = CommonService.getReportFile("Details_Report.pdf");
+            JasperExportManager.exportReportToPdfFile(jasperPrint,outputFile);
             JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
 
         } else if (format.equalsIgnoreCase("csv")) {
             // Load the JRXML file for CSV format
-            file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
-            jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            //file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
+            //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            jasperReport = loadJasperReport("dailyStatementDetails_csv.jrxml");
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
             // CSV Exporter Setup for File Generation
@@ -208,7 +228,7 @@ public class ReportService {
                 })
                 .collect(Collectors.toList());
     }
-
+    /*
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement_1() {
         List<ExchangeReportDTO> report = new ArrayList<>();
 
@@ -290,6 +310,7 @@ public class ReportService {
         }
         return report;
     }
+    */
     // Utility method to check if a list is valid (not null, not empty, and size > 0)
     private boolean isListValid(List<?> list) {
         return list != null && !list.isEmpty() && list.size() > 0;
@@ -298,6 +319,7 @@ public class ReportService {
         List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportData();
         return exchangeReportDTOSList;
     }
+    /*
     public List<ExchangeReportDTO> generateDetailsOfDailyStatement_1() {
         // Fetch data from each table
         List<OnlineModel> onlineData = onlineModelRepository.findAll();
@@ -309,6 +331,7 @@ public class ReportService {
         List<ExchangeReportDTO> allData = mergeData(onlineData, beftnData, cocData, accountPayeeData);
         return allData;
     }
+    */
 
     private ExchangeReportDTO convertOnlineModelToDTO(OnlineModel onlineModel) {
         ExchangeReportDTO dto = new ExchangeReportDTO();
