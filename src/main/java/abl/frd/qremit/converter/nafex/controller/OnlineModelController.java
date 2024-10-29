@@ -36,8 +36,9 @@ public class OnlineModelController {
                 .body(file);
     }
     @GetMapping("/downloadonline")
-    /*
+    
     public ResponseEntity<Resource> download_File() {
+        System.out.println("download_File method started"); 
         InputStreamResource file = new InputStreamResource(onlineModelService.loadAndUpdateUnprocessedOnlineData(0));
         int countRemainingOnlineData = onlineModelService.countRemainingOnlineData();
         String fileName = "Online";
@@ -47,45 +48,38 @@ public class OnlineModelController {
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(file);
     }
-    */
     
+    /*
     public ResponseEntity<Resource> download_File() throws IOException {
-        InputStream contentStream  = onlineModelService.loadAndUpdateUnprocessedOnlineData(0);
+        System.out.println("download_File method started"); 
+        ByteArrayInputStream contentStream  = onlineModelService.loadAndUpdateUnprocessedOnlineData(0);
         int countRemainingOnlineData = onlineModelService.countRemainingOnlineData();
+        byte[] contentBytes = contentStream.readAllBytes();
         String fileName = "Online.txt";
         String tempFilePath  = CommonService.dirPrefix + CommonService.reportDir + fileName;
-        try {
-            // Check if InputStream has data and log
-            if (contentStream == null) {
-                System.out.println("Content stream is null.");
-                return ResponseEntity.status(500).body(null); // Server error response
-            }
-
-            // Create a ByteArrayOutputStream to hold the data
-            //ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            //contentStream.transferTo(byteArrayOutputStream); // Read all data to byteArrayOutputStream
-
-            byte[] contentBytes = contentStream.readAllBytes();
-
+        
+        
             // Log the size of data
             System.out.println("Data size after reading contentStream: " + contentBytes.length + " bytes");
-
-            // Write to file
-            writeToFile(contentBytes, tempFilePath);
+            try {
+                // Write to file
+                writeToFile(contentBytes, tempFilePath);
+            }catch (IOException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(500).body(null); // Return a server error response
+            }
 
             // Create InputStreamResource from the byte array for the response
-            InputStreamResource fileResource = new InputStreamResource(new ByteArrayInputStream(contentBytes));
+            InputStreamResource file = new InputStreamResource(new ByteArrayInputStream(contentBytes));
 
+            
             // Return the ResponseEntity with the file for download
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
                     .header("count", String.valueOf(countRemainingOnlineData))
                     .contentType(MediaType.TEXT_PLAIN)
-                    .body(fileResource);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null); // Return a server error response
-        }
+                    .body(file);
+                    */
         /*
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
@@ -121,8 +115,9 @@ public class OnlineModelController {
                 .header("count", String.valueOf(countRemainingAccountPayeeData))
                 .contentType(MediaType.parseMediaType("text/plain"))
                 .body(stream);
-                */
+                
     }
+                */
 
     private void writeToFile(byte[] contentBytes, String filePath) throws IOException {
         try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
