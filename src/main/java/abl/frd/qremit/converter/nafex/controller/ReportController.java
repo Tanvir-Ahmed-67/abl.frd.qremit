@@ -3,7 +3,7 @@ import java.io.*;
 import java.util.*;
 import abl.frd.qremit.converter.nafex.helper.NumberToWords;
 import abl.frd.qremit.converter.nafex.model.*;
-import net.sf.jasperreports.engine.JRException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
@@ -68,8 +68,8 @@ public class ReportController {
                 columnTitles = new String[] {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total","Action"};
                 break;
             case "2":
-                columnData = new String[] {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "remitterName","remType"};
-                columnTitles = new String[] {"SL", "Bank Name", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Remitter Name","Type"};
+                columnData = new String[] {"sl", "bankName", "branchCode", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "remitterName","remType"};
+                columnTitles = new String[] {"SL", "Bank Name",  "Routing No/ Branch Code", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Remitter Name","Type"};
                 break;
             case "3":
             case "4":
@@ -82,9 +82,12 @@ public class ReportController {
     
     @GetMapping("/report")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
+    public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
+        if(date.isEmpty()){
+            date = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         int userId;
@@ -130,7 +133,7 @@ public class ReportController {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
         
-        String[] columnData = {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "remitterName","remType"};
+        String[] columnData = {"sl", "bankName","branchCode", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "remitterName","remType"};
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         int userId;
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
@@ -153,6 +156,7 @@ public class ReportController {
             Map<String, Object> dataMap = new HashMap<>();
             dataMap.put("sl", sl++);
             dataMap.put("bankName",fdata.get("bank_name"));
+            dataMap.put("branchCode",fdata.get("branch_code"));
             dataMap.put("branchName",fdata.get("branch_name"));
             dataMap.put("beneficiaryAccountNo",fdata.get("beneficiary_account_no"));
             dataMap.put("beneficiaryName",fdata.get("beneficiary_name"));
@@ -237,7 +241,7 @@ public class ReportController {
     }
 
     @RequestMapping(value="/downloadSummaryOfDailyStatementInPdfFormat", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat() throws JRException, FileNotFoundException {
+    public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat() throws Exception {
         // Getting the data as List
         List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement();
 
@@ -277,7 +281,7 @@ public class ReportController {
     }
 
     @RequestMapping(value="/downloaDailyVoucherInPdfFormat", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloaDailyVoucherInPdfFormat() throws JRException, FileNotFoundException {
+    public ResponseEntity<byte[]> downloaDailyVoucherInPdfFormat() throws Exception {
         NumberToWords numberToWords = new NumberToWords();
         // Getting the data as List
         List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement();
@@ -286,11 +290,13 @@ public class ReportController {
         }
 
         // Generating the PDF report and storing here - D:\\Report"+"\\DailyVoucher.pdf
+        String fileName = CommonService.getReportFile("Daily_Voucher.pdf");
         byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data);
         // Set the headers for file download
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"DailyVoucher.pdf\"");
+        //headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"DailyVoucher.pdf\"");
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
 
         // Return the response with the PDF as a byte array
         return ResponseEntity.ok()

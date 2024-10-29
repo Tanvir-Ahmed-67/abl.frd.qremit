@@ -123,7 +123,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (178, '7010224', 'Wall Street Exchange, Abu Dhabi, UAE', '', '7033', '', '', '', 0, 0),
 (179, '7010303', 'Zamzam Money Exchange', '', '7111', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
 (180, '7010219', 'Zenj Exchange Co. Bahrain', '', '7003', '', '', '', 0, 1),
-(183, '7010289', 'FSIE Italy', 'FSIE', '7093', 'fsie', 'FsieModel', 'fsieModelRepository', 1, 1),
+(183, '7010289', 'FSIE Italy', 'FSIE', '7093', 'fsie', 'FsieModel', 'fsieModelRepository', 0, 1),
 (184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', 'agranimalaysia', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', 0, 1),
 (185, '7010304', 'Progoti Exchange Co.', '', '7113', '', '', '', 0, 1);
 

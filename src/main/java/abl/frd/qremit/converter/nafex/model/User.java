@@ -15,7 +15,7 @@ public class User {
     @Column(nullable=false)
     private String password;
     private boolean activeStatus;
-    //@Column(name ="exchange_code", columnDefinition = "TEXT")
+    @Column(name ="exchange_code", columnDefinition = "TEXT")
     private String exchangeCode;
     private boolean passwordChangeRequired;
     @Column(name="mobile_no")
