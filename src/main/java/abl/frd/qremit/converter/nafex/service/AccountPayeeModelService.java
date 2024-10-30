@@ -42,7 +42,7 @@ public class AccountPayeeModelService {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessed(processed);
                     existingEntity.setIsDownloaded(processed);
-                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     // Update other properties as needed
                     break;

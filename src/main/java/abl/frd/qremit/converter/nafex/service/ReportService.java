@@ -59,9 +59,7 @@ public class ReportService {
     TemporaryReportService temporaryReportService;
     @Autowired
     CommonService commonService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
     
-
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
     }
@@ -97,6 +95,7 @@ public class ReportService {
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
     public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList) throws Exception {
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
                 .map(ExchangeReportDTO::getExchangeCode)
@@ -466,6 +465,7 @@ public class ReportService {
 
     public <T> Map<String, Object> setReportModelData(List<T> modelList, String type){
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         String types = type;
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;

@@ -36,10 +36,9 @@ public class ApiT24ModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
-
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -51,7 +50,7 @@ public class ApiT24ModelService {
             fileInfoModelRepository.save(fileInfoModel);
 
             //List<ApiT24Model> apiT24Models = csvToApiT24Models(file.getInputStream());
-            Map<String, Object> apiT24Data= csvToApiT24Models(file.getInputStream(), user, fileInfoModel);
+            Map<String, Object> apiT24Data= csvToApiT24Models(file.getInputStream(), user, fileInfoModel, currentDateTime);
             List<ApiT24Model> apiT24Models = (List<ApiT24Model>) apiT24Data.get("apiT24ModelList");
             if(apiT24Data.containsKey("errorMessage")){
                 resp.put("errorMessage", apiT24Data.get("errorMessage"));
@@ -117,7 +116,7 @@ public class ApiT24ModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToApiT24Models(InputStream is, User user, FileInfoModel fileInfoModel) {
+    public Map<String, Object> csvToApiT24Models(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<ApiT24Model> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
