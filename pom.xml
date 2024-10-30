@@ -15,6 +15,8 @@
 	<description>Qremit Converter for Agrani Bank Limited</description>
 	<properties>
 		<java.version>1.8</java.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+    	<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -106,11 +108,13 @@
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>7.0.0</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports-pdf</artifactId>
 			<version>7.0.0</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

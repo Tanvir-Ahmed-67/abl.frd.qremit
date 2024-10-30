@@ -108,7 +108,7 @@ public class OnlineModelController {
         System.out.println(stream);
 
         int countRemainingAccountPayeeData = onlineModelService.countRemainingOnlineData();
-        String fileName = "Account_Payee_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String fileName = "Account_Payee_" + CommonService.getCurrentDateTime()().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".txt")

@@ -25,6 +25,7 @@ import java.sql.ResultSetMetaData;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -237,7 +238,6 @@ public class CommonService {
 
     public static <T> OnlineModel generateOnlineModel(T model, LocalDateTime uploadDateTime, int flag) {
         OnlineModel onlineModel = new OnlineModel();
-          
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -252,7 +252,7 @@ public class CommonService {
             onlineModel.setIsProcessed(flag);
             onlineModel.setIsDownloaded(flag);
             if(flag == 1){
-                onlineModel.setDownloadDateTime(LocalDateTime.now());
+                onlineModel.setDownloadDateTime(uploadDateTime);
             }
             onlineModel.setDownloadUserId(9999);
             onlineModel.setUploadDateTime(uploadDateTime);
@@ -332,7 +332,6 @@ public class CommonService {
             cocModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             cocModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             cocModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            //cocModel.setDownloadDateTime(LocalDateTime.now());
             cocModel.setDownloadUserId(9999);
             cocModel.setUploadDateTime(uploadDateTime);
             cocModel.setIncentive(00.00);
@@ -406,7 +405,6 @@ public class CommonService {
             accountPayeeModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             accountPayeeModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             accountPayeeModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            //accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
             accountPayeeModel.setDownloadUserId(9999);
             accountPayeeModel.setUploadDateTime(uploadDateTime);
             accountPayeeModel.setIncentive(00.00);
@@ -475,7 +473,6 @@ public class CommonService {
             beftnModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             beftnModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             beftnModel.setDownloadUserId(9999);
-            //beftnModel.setDownloadDateTime(LocalDateTime.now());
             beftnModel.setIncentive(calculatePercentage((Double) getPropertyValue(model, "getAmount")));
             beftnModel.setOrgAccountNo("160954");
             beftnModel.setOrgAccountType("CA");
@@ -1019,11 +1016,15 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static LocalDateTime getCurrentDateTime(){
+        return LocalDateTime.now(ZoneId.of("UTC+6"));
+    }
+
     public static String getCurrentDate(){
         return getCurrentDate("ddMMyyyy");
     }
     public static String getCurrentDate(String format){
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now(ZoneId.of("UTC+6"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         String formattedDate = currentDate.format(formatter);
         return formattedDate;

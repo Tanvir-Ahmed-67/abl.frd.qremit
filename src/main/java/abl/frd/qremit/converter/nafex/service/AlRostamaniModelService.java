@@ -49,9 +49,10 @@ public class AlRostamaniModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -62,7 +63,7 @@ public class AlRostamaniModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> alRostamaniData = csvToAlRostamaniModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> alRostamaniData = csvToAlRostamaniModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<AlRostamaniModel> alRostamaniModels = (List<AlRostamaniModel>) alRostamaniData.get("alRostamaniModelList");
 
             if(alRostamaniData.containsKey("errorMessage")){
@@ -101,7 +102,7 @@ public class AlRostamaniModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToAlRostamaniModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToAlRostamaniModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
         Map<String, Object> resp = new HashMap<>();
         Optional<AlRostamaniModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

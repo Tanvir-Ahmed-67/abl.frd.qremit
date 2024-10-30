@@ -33,9 +33,10 @@ public class AgexSingaporeModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode){
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -49,7 +50,7 @@ public class AgexSingaporeModelService {
             int type = 0;
             if(fileType.equalsIgnoreCase("API")) type = 1;
             //List<AgexSingaporeModel> agexSingaporeModelList = csvToAgexSingaporeModels(file.getInputStream(),type);
-            Map<String, Object> agexSingaporeData = csvToAgexSingaporeModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> agexSingaporeData = csvToAgexSingaporeModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<AgexSingaporeModel> agexSingaporeModelList = (List<AgexSingaporeModel>) agexSingaporeData.get("agexSingaporeModelList");
             if(agexSingaporeData.containsKey("errorMessage")){
                 resp.put("errorMessage", agexSingaporeData.get("errorMessage"));
@@ -138,7 +139,7 @@ public class AgexSingaporeModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToAgexSingaporeModels(InputStream is, int type, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToAgexSingaporeModels(InputStream is, int type, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
         Map<String, Object> resp = new HashMap<>();
         Optional<AgexSingaporeModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

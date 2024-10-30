@@ -45,9 +45,10 @@ public class SunmanModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -58,7 +59,7 @@ public class SunmanModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> sunmanData = csvToSunmanModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> sunmanData = csvToSunmanModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<SunmanModel> sunmanModels = (List<SunmanModel>) sunmanData.get("sunmanDataModelList");
 
             if(sunmanData.containsKey("errorMessage")){
@@ -99,7 +100,7 @@ public class SunmanModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToSunmanModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToSunmanModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<SunmanModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-16LE"));

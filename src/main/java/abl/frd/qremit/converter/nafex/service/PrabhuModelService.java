@@ -41,9 +41,10 @@ public class PrabhuModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -54,7 +55,7 @@ public class PrabhuModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> prabhuData = csvToPrabhuModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> prabhuData = csvToPrabhuModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<PrabhuModel> prabhuModels = (List<PrabhuModel>) prabhuData.get("prabhuModelList");
 
             if(prabhuData.containsKey("errorMessage")){
@@ -93,7 +94,7 @@ public class PrabhuModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToPrabhuModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToPrabhuModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
         Map<String, Object> resp = new HashMap<>();
         Optional<PrabhuModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

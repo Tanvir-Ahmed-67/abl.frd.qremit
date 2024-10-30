@@ -33,9 +33,10 @@ public class NblMalaysiaModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -46,7 +47,7 @@ public class NblMalaysiaModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> nblMalaysiaData = csvToNblMalaysiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> nblMalaysiaData = csvToNblMalaysiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<NblMalaysiaModel> nblMalaysiaModels = (List<NblMalaysiaModel>) nblMalaysiaData.get("nblMalaysiaDataModelList");
 
             if(nblMalaysiaData.containsKey("errorMessage")){
@@ -86,7 +87,7 @@ public class NblMalaysiaModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToNblMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToNblMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
         Map<String, Object> resp = new HashMap<>();
         Optional<NblMalaysiaModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

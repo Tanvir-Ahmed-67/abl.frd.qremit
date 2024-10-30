@@ -41,9 +41,10 @@ public class IndexModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -54,7 +55,7 @@ public class IndexModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> indexData = csvToIndexModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> indexData = csvToIndexModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<IndexModel> indexModels = (List<IndexModel>) indexData.get("indexModelList");
 
             if(indexData.containsKey("errorMessage")){
@@ -93,7 +94,7 @@ public class IndexModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToIndexModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToIndexModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
         Map<String, Object> resp = new HashMap<>();
         Optional<IndexModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

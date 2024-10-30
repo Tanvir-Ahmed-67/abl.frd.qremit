@@ -59,7 +59,7 @@ public class BeftnModelService {
             for (BeftnModel updatedEntity : entitiesToUpdate) {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessedMain(processed);
-                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
                         existingEntity.setIsDownloaded(1);
@@ -82,7 +82,7 @@ public class BeftnModelService {
             for (BeftnModel updatedEntity : entitiesToUpdate) {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessedIncentive(processed);
-                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
                         existingEntity.setIsDownloaded(1);
