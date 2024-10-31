@@ -5,7 +5,6 @@ import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -13,8 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
@@ -67,6 +65,8 @@ public class CommonService {
     public static String uploadSuccesPage = "pages/user/userUploadSuccessPage";
     public static String dirPrefix = "../";
     public static String reportDir = "report/";
+    //@Value("${external.report.path}") // Inject the report directory path from application properties
+    //public String reportDirectory;
 
     private final EntityManager entityManager;
     private final DataSource dataSource;
@@ -76,17 +76,21 @@ public class CommonService {
         this.dataSource = dataSource;
     }
 
-    public static String generateOutputFile(String dir, String file) throws IOException{
+    public static Path generateOutputFile(String file) throws IOException{
+        return generateOutputFile(reportDir, file);
+    }
+    public static Path generateOutputFile(String dir, String file) throws IOException{
         Path reportPath = Paths.get(dirPrefix, dir);
+        //Path reportPath = Paths.get(dir);
         if (!Files.exists(reportPath)) {
             Files.createDirectories(reportPath);
         }
         Path outputPath = reportPath.resolve(file);
-        return outputPath.toString();
+        return outputPath;
     }
 
     public static String getReportFile(String file) throws IOException{
-        return generateOutputFile(reportDir + "daily_report/", file);
+        return generateOutputFile(reportDir + "daily_report/", file).toString();
     }
     
     public static boolean hasCSVFormat(MultipartFile file) {
@@ -1108,6 +1112,52 @@ public class CommonService {
             }
         }
         return model;
+    }
+
+    private static byte[] readBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int nRead;
+    
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        return buffer.toByteArray();
+    }
+
+    private static void writeToFile(byte[] contentBytes, String filePath) throws IOException {
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+            bos.write(contentBytes);
+            bos.flush();
+            System.out.println("Data written to file successfully.");
+        } catch (IOException e) {
+            System.err.println("Error writing data to file: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public static Map<String, Object> generateFile(ByteArrayInputStream contentStream, int count, String fileName) throws IOException{
+        Map<String, Object> resp = new HashMap<>();
+        byte[] contentBytes = readBytes(contentStream);
+        String tempFilePath =  generateOutputFile(fileName).toString();
+        try {
+            // Write to file
+            writeToFile(contentBytes, tempFilePath);
+        }catch (IOException e) {
+            e.printStackTrace();
+            return getResp(1, e.getMessage(), null);
+        }
+        String url = "/getReportFile?fileName=" + fileName;
+        resp.put("url", url);
+        resp.put("count", count);
+        return resp;
+    }
+
+    public static String generateDynamicFileName(String text, String ext){
+        String formattedDate = CommonService.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
+        String fileName = text + formattedDate + ext;
+        return fileName;
     }
 
 }

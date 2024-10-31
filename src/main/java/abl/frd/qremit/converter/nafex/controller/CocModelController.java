@@ -1,6 +1,10 @@
 package abl.frd.qremit.converter.nafex.controller;
 
 import abl.frd.qremit.converter.nafex.service.CocModelService;
+import abl.frd.qremit.converter.nafex.service.CommonService;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -29,14 +33,13 @@ public class CocModelController {
                 .body(file);
     }
     @GetMapping("/downloadcoc")
-    public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(cocModelService.loadAndUpdateUnprocessedCocData(0,0));
-        int countRemainingCocData = cocModelService.countRemainingCocData();
-        String fileName = "Coc";  // Have to attch date with file name here.
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
-                .header("count", String.valueOf(countRemainingCocData))
-                .contentType(MediaType.parseMediaType("application/csv"))
-                .body(file);
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
+        Map<String, Object> resp = new HashMap<>();
+        ByteArrayInputStream contentStream  = cocModelService.loadAndUpdateUnprocessedCocData(0,0);
+        int countRemaining = cocModelService.countRemainingCocData();
+        String fileName = CommonService.generateDynamicFileName("COC", ".txt");
+        resp = CommonService.generateFile(contentStream, countRemaining, fileName);
+        return ResponseEntity.ok(resp);
     }
 }

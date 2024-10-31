@@ -1,5 +1,8 @@
 package abl.frd.qremit.converter.nafex.controller;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.nio.*;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
 import abl.frd.qremit.converter.nafex.helper.NumberToWords;
@@ -7,6 +10,8 @@ import abl.frd.qremit.converter.nafex.model.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -346,6 +351,26 @@ public class ReportController {
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         resp = reportService.processReport(currentDate);
         return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/getReportFile")
+    public ResponseEntity<Resource> getReportFile(@RequestParam String fileName){
+        try{
+            Path filePath = CommonService.generateOutputFile(fileName);
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build(); // Handle any IO exceptions
+        }
     }
 
 }
