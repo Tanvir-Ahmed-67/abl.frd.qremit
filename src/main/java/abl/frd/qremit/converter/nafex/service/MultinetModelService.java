@@ -46,9 +46,10 @@ public class MultinetModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -59,7 +60,7 @@ public class MultinetModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> multinetData = csvToMultinetModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> multinetData = csvToMultinetModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<MultinetModel> multinetModels = (List<MultinetModel>) multinetData.get("multinetDataModelList");
 
             if(multinetData.containsKey("errorMessage")){
@@ -100,7 +101,7 @@ public class MultinetModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToMultinetModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToMultinetModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<MultinetModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

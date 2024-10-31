@@ -15,24 +15,36 @@ $(document).ready(function(){
 
 
 function get_cnt(url,tdiv){
-    window.location = url;
+    //window.location = url;
     $.ajax({
         url: url,
         type: "get",
         timeout: "10000",
-    }).done(function(resp,status,xhr){
-        var cnt = xhr.getResponseHeader("count");
-        $(tdiv).text(cnt);
+        dataType: "json"
+    }).done(function(resp){
+        //var cnt = xhr.getResponseHeader("count");
+        //$(tdiv).text(cnt);
+        $(tdiv).text(resp.count);
+        window.open(resp.url,"_");
     }).fail(function(params){
         alert("Error geeting from server");
     });
 }
 
 function downloadOnline() {
+    console.log("Button clicked");
     var url = "/downloadonline";
     get_cnt(url,"p.onlineCount");
 }
-
+/*
+$(document).off('click','.download_online');
+$(document).on('click','.download_online', function(e){
+    e.preventDefault();
+    console.log("Button clicked");
+    var url = "/downloadonline";
+    get_cnt(url,"p.onlineCount");
+});
+*/
     
 function downloadCoc() {
     var url = "/downloadcoc";

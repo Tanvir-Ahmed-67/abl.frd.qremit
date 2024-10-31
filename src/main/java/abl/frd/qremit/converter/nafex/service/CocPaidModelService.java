@@ -31,13 +31,14 @@ public class CocPaidModelService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     CustomQueryService customQueryService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public FileInfoModel save(MultipartFile file, int userId, String exchangeCode){
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try{
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
-            List<CocPaidModel> cocPaidModelList = csvToCocPaidModels(file.getInputStream());
+            List<CocPaidModel> cocPaidModelList = csvToCocPaidModels(file.getInputStream(), currentDateTime);
             if(cocPaidModelList.size()!=0) {
                 int ind = 0;
                 for (CocPaidModel cocPaidModel : cocPaidModelList) {
@@ -69,7 +70,7 @@ public class CocPaidModelService {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
     }
-    public List<CocPaidModel> csvToCocPaidModels(InputStream is) {
+    public List<CocPaidModel> csvToCocPaidModels(InputStream is, LocalDateTime currentDateTime) {
         Optional<CocPaidModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {

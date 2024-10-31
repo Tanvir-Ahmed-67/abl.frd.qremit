@@ -45,9 +45,10 @@ public class BelhashaGlobalModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -58,7 +59,7 @@ public class BelhashaGlobalModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> belhashaGlobalData = csvToBelhashaGlobalModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> belhashaGlobalData = csvToBelhashaGlobalModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<BelhashaGlobalModel> belhashaGlobalModels = (List<BelhashaGlobalModel>) belhashaGlobalData.get("belhashaGlobalDataModelList");
 
             if(belhashaGlobalData.containsKey("errorMessage")){
@@ -99,7 +100,7 @@ public class BelhashaGlobalModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToBelhashaGlobalModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToBelhashaGlobalModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<BelhashaGlobalModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

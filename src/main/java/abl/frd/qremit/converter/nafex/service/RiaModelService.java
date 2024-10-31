@@ -33,9 +33,10 @@ public class RiaModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -46,7 +47,7 @@ public class RiaModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> riaData = csvToRiaModels(file.getInputStream(), exchangeCode, user, fileInfoModel, nrtaCode);
+            Map<String, Object> riaData = csvToRiaModels(file.getInputStream(), exchangeCode, user, fileInfoModel, nrtaCode, currentDateTime);
             List<RiaModel> riaModelList = (List<RiaModel>) riaData.get("riaModelList");
             if(riaModelList.size()!=0) {
                 for (RiaModel riaModel : riaModelList) {
@@ -124,7 +125,7 @@ public class RiaModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToRiaModels(InputStream is, String exchangeCode, User user, FileInfoModel fileInfoModel, String nrtaCode) {
+    public Map<String, Object> csvToRiaModels(InputStream is, String exchangeCode, User user, FileInfoModel fileInfoModel, String nrtaCode, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<RiaModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

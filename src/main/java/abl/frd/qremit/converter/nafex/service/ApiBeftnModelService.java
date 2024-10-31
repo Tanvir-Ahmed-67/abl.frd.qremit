@@ -27,9 +27,10 @@ public class ApiBeftnModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {            
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -41,7 +42,7 @@ public class ApiBeftnModelService {
             fileInfoModelRepository.save(fileInfoModel);
 
             //List<ApiBeftnModel> apiBeftnModels = csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel);
-            Map<String, Object> apiBeftnData= csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel);
+            Map<String, Object> apiBeftnData= csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel, currentDateTime);
             List<ApiBeftnModel> apiBeftnModels = (List<ApiBeftnModel>) apiBeftnData.get("apiBeftnModelList"); 
             if(apiBeftnData.containsKey("errorMessage")){
                 resp.put("errorMessage", apiBeftnData.get("errorMessage"));
@@ -105,7 +106,7 @@ public class ApiBeftnModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToApiBeftnModels(InputStream is, User user, FileInfoModel fileInfoModel) {
+    public Map<String, Object> csvToApiBeftnModels(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<ApiBeftnModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

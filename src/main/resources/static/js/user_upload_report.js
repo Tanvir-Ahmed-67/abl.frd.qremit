@@ -9,7 +9,8 @@ $(document).ready(function(){
     switch(type){
         case '1':
         default:
-            var url = "/report";
+            var date = getParameterByName("date");
+            var url = "/report?date=" + date;
             break;
         case '2':
             var exchangeCode = getParameterByName("exchangeCode");

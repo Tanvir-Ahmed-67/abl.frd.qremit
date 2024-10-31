@@ -12,8 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
@@ -24,6 +23,7 @@ import java.sql.ResultSetMetaData;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -63,7 +63,10 @@ public class CommonService {
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
     public static String uploadSuccesPage = "pages/user/userUploadSuccessPage";
-    public static String dirPrefix = "../../..";
+    public static String dirPrefix = "../";
+    public static String reportDir = "report/";
+    //@Value("${external.report.path}") // Inject the report directory path from application properties
+    //public String reportDirectory;
 
     private final EntityManager entityManager;
     private final DataSource dataSource;
@@ -73,13 +76,21 @@ public class CommonService {
         this.dataSource = dataSource;
     }
 
-    public static String getReportFile(String file) throws IOException{
-        Path reportPath = Paths.get("../../..", "report/daily_report/");
+    public static Path generateOutputFile(String file) throws IOException{
+        return generateOutputFile(reportDir, file);
+    }
+    public static Path generateOutputFile(String dir, String file) throws IOException{
+        Path reportPath = Paths.get(dirPrefix, dir);
+        //Path reportPath = Paths.get(dir);
         if (!Files.exists(reportPath)) {
             Files.createDirectories(reportPath);
         }
         Path outputPath = reportPath.resolve(file);
-        return outputPath.toString();
+        return outputPath;
+    }
+
+    public static String getReportFile(String file) throws IOException{
+        return generateOutputFile(reportDir + "daily_report/", file).toString();
     }
     
     public static boolean hasCSVFormat(MultipartFile file) {
@@ -231,7 +242,6 @@ public class CommonService {
 
     public static <T> OnlineModel generateOnlineModel(T model, LocalDateTime uploadDateTime, int flag) {
         OnlineModel onlineModel = new OnlineModel();
-          
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -246,7 +256,7 @@ public class CommonService {
             onlineModel.setIsProcessed(flag);
             onlineModel.setIsDownloaded(flag);
             if(flag == 1){
-                onlineModel.setDownloadDateTime(LocalDateTime.now());
+                onlineModel.setDownloadDateTime(uploadDateTime);
             }
             onlineModel.setDownloadUserId(9999);
             onlineModel.setUploadDateTime(uploadDateTime);
@@ -326,7 +336,6 @@ public class CommonService {
             cocModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             cocModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             cocModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            //cocModel.setDownloadDateTime(LocalDateTime.now());
             cocModel.setDownloadUserId(9999);
             cocModel.setUploadDateTime(uploadDateTime);
             cocModel.setIncentive(00.00);
@@ -400,7 +409,6 @@ public class CommonService {
             accountPayeeModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             accountPayeeModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             accountPayeeModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            //accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
             accountPayeeModel.setDownloadUserId(9999);
             accountPayeeModel.setUploadDateTime(uploadDateTime);
             accountPayeeModel.setIncentive(00.00);
@@ -469,7 +477,6 @@ public class CommonService {
             beftnModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             beftnModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             beftnModel.setDownloadUserId(9999);
-            //beftnModel.setDownloadDateTime(LocalDateTime.now());
             beftnModel.setIncentive(calculatePercentage((Double) getPropertyValue(model, "getAmount")));
             beftnModel.setOrgAccountNo("160954");
             beftnModel.setOrgAccountType("CA");
@@ -1013,11 +1020,15 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static LocalDateTime getCurrentDateTime(){
+        return LocalDateTime.now(ZoneId.of("UTC+6"));
+    }
+
     public static String getCurrentDate(){
         return getCurrentDate("ddMMyyyy");
     }
     public static String getCurrentDate(String format){
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now(ZoneId.of("UTC+6"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         String formattedDate = currentDate.format(formatter);
         return formattedDate;
@@ -1101,6 +1112,52 @@ public class CommonService {
             }
         }
         return model;
+    }
+
+    private static byte[] readBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int nRead;
+    
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        return buffer.toByteArray();
+    }
+
+    private static void writeToFile(byte[] contentBytes, String filePath) throws IOException {
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+            bos.write(contentBytes);
+            bos.flush();
+            System.out.println("Data written to file successfully.");
+        } catch (IOException e) {
+            System.err.println("Error writing data to file: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public static Map<String, Object> generateFile(ByteArrayInputStream contentStream, int count, String fileName) throws IOException{
+        Map<String, Object> resp = new HashMap<>();
+        byte[] contentBytes = readBytes(contentStream);
+        String tempFilePath =  generateOutputFile(fileName).toString();
+        try {
+            // Write to file
+            writeToFile(contentBytes, tempFilePath);
+        }catch (IOException e) {
+            e.printStackTrace();
+            return getResp(1, e.getMessage(), null);
+        }
+        String url = "/getReportFile?fileName=" + fileName;
+        resp.put("url", url);
+        resp.put("count", count);
+        return resp;
+    }
+
+    public static String generateDynamicFileName(String text, String ext){
+        String formattedDate = CommonService.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
+        String fileName = text + formattedDate + ext;
+        return fileName;
     }
 
 }

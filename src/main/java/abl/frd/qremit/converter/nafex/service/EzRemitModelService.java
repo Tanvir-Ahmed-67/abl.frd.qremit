@@ -38,9 +38,10 @@ public class EzRemitModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -60,7 +61,7 @@ public class EzRemitModelService {
                 ezRemitModelList = csvToEzRemitBEFTNModels(file.getInputStream(), exchangeCode);
             }
             */
-            Map<String, Object> ezRemitData = csvToEzRemitModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> ezRemitData = csvToEzRemitModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<EzRemitModel> ezRemitModelList = (List<EzRemitModel>) ezRemitData.get("ezRemitModelList");
             if(ezRemitData.containsKey("errorMessage")){
                 resp.put("errorMessage", ezRemitData.get("errorMessage"));
@@ -149,7 +150,7 @@ public class EzRemitModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToEzRemitModels(InputStream is, int type, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode){
+    public Map<String, Object> csvToEzRemitModels(InputStream is, int type, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
         Map<String, Object> resp = new HashMap<>();
         Optional<EzRemitModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));

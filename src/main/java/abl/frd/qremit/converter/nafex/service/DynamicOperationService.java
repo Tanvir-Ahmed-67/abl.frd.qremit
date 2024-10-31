@@ -26,8 +26,6 @@ public class DynamicOperationService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     private ApplicationContext context; // To fetch repositories dynamically
-    
-    LocalDateTime currentDateTime = LocalDateTime.now();
     private Map<String, RepositoryModelWrapper<?>> repositoryModelMap = new HashMap<>();
     private String packageName = "abl.frd.qremit.converter.nafex.model.";
 
@@ -106,6 +104,7 @@ public class DynamicOperationService {
 
     public Map<String, Object> transferErrorData(Map<String, Object> updatedData){
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try{
             String exchangeCode = updatedData.get("exchangeCode").toString();
             RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);
