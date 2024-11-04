@@ -38,7 +38,7 @@
                                             <td class="text-bold-500" th:text="${user.getUserName()}"></td>
                                             <td class="text-bold-500" th:text="${user.getUserEmail()}"></td>
                                             <td class="text-bold-500">USER</td>
-                                            <td class="text-bold-500" th:text="${user.getExchangeCode()}"></td>
+                                            <td class="wrap-text text-bold-500" th:text="${user.getExchangeCode()}"></td>
                                             <td class="text-bold-500" th:text="${user.activeStatus} ? 'ACTIVE':'INACTIVE'"></td>
                                             <td>
                                                 <button type="submit" class="btn btn-outline-primary round" th:name="Edit" th:value="${user.getId()}">Edit</button>
