@@ -46,10 +46,10 @@
             </div>
           </div>
           <div class="d-flex justify-content-center mt-3">
-            <a th:href="@{/downloadSummaryOfDailyStatementInPdfFormat}" class="btn btn-primary">Download Summary in PDF</a>
+            <a th:href="@{/downloadSummaryOfDailyStatementInPdfFormat(date=${date})}" class="btn btn-primary">Download Summary in PDF</a>
           </div>
           <div class="d-flex justify-content-center mt-3">
-            <a th:href="@{/downloaDailyVoucherInPdfFormat}" class="btn btn-primary">Download Voucher in PDF</a>
+            <a th:href="@{/downloaDailyVoucherInPdfFormat(date=${date})}" class="btn btn-primary">Download Voucher in PDF</a>
           </div>
         </div>
       </div>

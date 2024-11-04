@@ -1,12 +1,12 @@
 package abl.frd.qremit.converter.nafex.service;
-
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import net.sf.jasperreports.engine.*;
@@ -15,12 +15,10 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
-
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import org.springframework.core.io.Resource;
 
 @Service
@@ -65,36 +63,32 @@ public class ReportService {
     }
 
     public JasperReport loadJasperReport(String fileName) throws Exception {
-        // Load the JRXML file as a resource
         Resource resource = new ClassPathResource(fileName);
-
-        // Compile the report
         try (InputStream inputStream = resource.getInputStream()) {
             return JasperCompileManager.compileReport(inputStream);
         }
     }
 
-    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList) throws Exception {
+    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
         for(ExchangeReportDTO exchangeReportDTO: dataList){
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
         }
-        // Load File And Compile It.
-        //File file = ResourceUtils.getFile("classpath:dailyStatementSummary.jrxml");
-        //JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
         JasperReport jasperReport = loadJasperReport("dailyStatementSummary.jrxml");
-        // Convert data into a JasperReports data source
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
-        // Parameters map if needed
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("ReportTitle", "Sample Report");
-        // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        String outputFile = CommonService.getReportFile("summary_report.pdf");
-        JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+        //Path reportPath = CommonService.getReportFile("summary_report_" + date.replace("-", "_") +".pdf");
+        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("summary_report_", date, ".pdf"));
+        String outputFile = reportPath.toString();
+        if(!Files.exists(reportPath)){
+            JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+        }
+        
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
-    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList) throws Exception {
+    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
@@ -116,14 +110,16 @@ public class ReportService {
         parameters.put("ReportTitle", "Sample Report");
         // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        String file = CommonService.getReportFile("Daily_Voucher.pdf");
-        JasperExportManager.exportReportToPdfFile(jasperPrint, file);
+        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("daily_voucher_", date, ".pdf"));
+        String outputFile = reportPath.toString();
+        if(!Files.exists(reportPath)){
+            JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+        }
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
-    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format) throws Exception {
-        File file;
+    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format, String date) throws Exception {
         JasperReport jasperReport;
         JasperPrint jasperPrint;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -136,19 +132,20 @@ public class ReportService {
         // Parameters map if needed
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("REPORT_DATA_SOURCE", dataSource);
+        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("details_report_", date, "." + format.toLowerCase()));
+        String outputFile = reportPath.toString();
         if (format.equalsIgnoreCase("pdf")) {
             // Load the JRXML file for PDF format
             //file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf_tabular.jrxml");
             //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
             jasperReport = loadJasperReport("dailyStatementDetails_pdf_tabular.jrxml");
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
             // Export to PDF
-            //JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report\\Details_Report.pdf");
-            String outputFile = CommonService.getReportFile("Details_Report.pdf");
-            JasperExportManager.exportReportToPdfFile(jasperPrint,outputFile);
-            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
-
+            if(!Files.exists(reportPath)){
+                JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+            }
+            //JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+            return JasperExportManager.exportReportToPdf(jasperPrint);
         } else if (format.equalsIgnoreCase("csv")) {
             // Load the JRXML file for CSV format
             //file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
@@ -159,7 +156,7 @@ public class ReportService {
             // CSV Exporter Setup for File Generation
             JRCsvExporter fileExporter = new JRCsvExporter();
             fileExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            fileExporter.setExporterOutput(new SimpleWriterExporterOutput("D:\\Report\\Details_Report.csv"));
+            fileExporter.setExporterOutput(new SimpleWriterExporterOutput(outputFile));
 
             // Optional: Set CSV configuration (e.g., delimiter)
             SimpleCsvExporterConfiguration fileConfiguration = new SimpleCsvExporterConfiguration();
@@ -180,9 +177,11 @@ public class ReportService {
         }
         return outputStream.toByteArray();
     }
-    public List<ExchangeReportDTO> getAllDailyReportData(){
+    public List<ExchangeReportDTO> getAllDailyReportData(String date){
         List<ExchangeReportDTO> report = new ArrayList<>();
-        List<ReportModel> reportModelsList = reportModelRepository.findAll(); // Have to apply logic to fetch specefic data based on date and processed flag
+        LocalDate reportDate = LocalDate.parse(date);
+        //List<ReportModel> reportModelsList = reportModelRepository.findAll(); // Have to apply logic to fetch specefic data based on date and processed flag
+        List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDate(reportDate);
         Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
         if(isListValid(reportModelsList)){
             for(ReportModel reportModel:reportModelsList){
@@ -199,8 +198,8 @@ public class ReportService {
         }
         return report;
     }
-    public List<ExchangeReportDTO> generateSummaryOfDailyStatement() {
-        List<ExchangeReportDTO> report = getAllDailyReportData();
+    public List<ExchangeReportDTO> generateSummaryOfDailyStatement(String date) {
+        List<ExchangeReportDTO> report = getAllDailyReportData(date);
         report = aggregateExchangeReports(report);
         return report;
     }
@@ -314,8 +313,8 @@ public class ReportService {
     private boolean isListValid(List<?> list) {
         return list != null && !list.isEmpty() && list.size() > 0;
     }
-    public List<ExchangeReportDTO> generateDetailsOfDailyStatement() {
-        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportData();
+    public List<ExchangeReportDTO> generateDetailsOfDailyStatement(String date) {
+        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportData(date);
         return exchangeReportDTOSList;
     }
     /*
@@ -466,6 +465,7 @@ public class ReportService {
     public <T> Map<String, Object> setReportModelData(List<T> modelList, String type){
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
+        LocalDate currentDate = LocalDate.now();
         String types = type;
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
@@ -506,7 +506,7 @@ public class ReportService {
                     reportModel.setDownloadDateTime((LocalDateTime) CommonService.getPropertyValue(model, downloadTimeMethod));
                     reportModel.setIncentive((Double) CommonService.getPropertyValue(model, "getIncentive"));
                     reportModel.setUploadDateTime((LocalDateTime) CommonService.getPropertyValue(model, "getUploadDateTime"));
-                    reportModel.setReportDate(currentDateTime);
+                    reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
                     //System.out.println(reportModel);
                     reportModelRepository.save(reportModel);

@@ -89,8 +89,8 @@ public class CommonService {
         return outputPath;
     }
 
-    public static String getReportFile(String file) throws IOException{
-        return generateOutputFile(reportDir + "daily_report/", file).toString();
+    public static Path getReportFile(String file) throws IOException{
+        return generateOutputFile(reportDir + "daily_report/", file);
     }
     
     public static boolean hasCSVFormat(MultipartFile file) {
@@ -1045,7 +1045,11 @@ public class CommonService {
     }
 
     public static LocalDateTime convertStringToDate(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return convertStringToDate(date,"yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static LocalDateTime convertStringToDate(String date, String format){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // Handles milliseconds too
         try{
             return LocalDateTime.parse(date, formatter);
@@ -1130,7 +1134,6 @@ public class CommonService {
         try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
             bos.write(contentBytes);
             bos.flush();
-            System.out.println("Data written to file successfully.");
         } catch (IOException e) {
             System.err.println("Error writing data to file: " + e.getMessage());
             throw e;
@@ -1158,6 +1161,14 @@ public class CommonService {
         String formattedDate = CommonService.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
         String fileName = text + formattedDate + ext;
         return fileName;
+    }
+
+    public static String convertUnderScore(String str){
+        return str.replace("-", "_");
+    }
+
+    public static String generateFileName(String text, String date, String ext){
+        return text + date.replace("-", "_") + ext;
     }
 
 }
