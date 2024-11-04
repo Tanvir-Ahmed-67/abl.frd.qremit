@@ -116,8 +116,8 @@ public class SunmanModelService {
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
                 duplicateData = sunmanModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                String beneficiaryAccount = csvRecord.get(7).trim();
-                String bankName = csvRecord.get(8).trim();
+                String beneficiaryAccount = csvRecord.get(12).trim();
+                String bankName = csvRecord.get(13).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
 
@@ -185,8 +185,8 @@ public class SunmanModelService {
         data.put("bankCode", csvRecord.get(9));
         data.put("branchName", csvRecord.get(10));
         data.put("branchCode", branchCode);
-        data.put("draweeBranchName", csvRecord.get(13));
-        data.put("draweeBranchCode", csvRecord.get(14));
+        data.put("draweeBranchName", csvRecord.get(14));
+        data.put("draweeBranchCode", csvRecord.get(11));
         data.put("purposeOfRemittance", csvRecord.get(15));
         data.put("sourceOfIncome", csvRecord.get(16));
         data.put("processFlag", "");
