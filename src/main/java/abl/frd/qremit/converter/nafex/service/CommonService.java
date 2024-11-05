@@ -1171,4 +1171,23 @@ public class CommonService {
         return text + date.replace("-", "_") + ext;
     }
 
+    public static Map<String, Object> checkApiOrBeftnData(String bankCode, int type){
+        Map<String, Object> resp = getResp(0, "", null);
+        String msg = "You selected wrong file. Please select the correct file.";
+        switch (type) {
+            case 1: //for api
+                if(!("11").equals(bankCode))  resp = getResp(1, msg, null);
+                break;
+            case 0: //for beftn
+                if(!bankCode.isEmpty()) resp = getResp(1, msg, null);
+                break;
+            default:
+                resp = getResp(1, "Invalid Type", null);
+                break;
+        }
+        return resp;
+    }
+
+    //public static Map<String, Object> 
+
 }

@@ -155,11 +155,17 @@ public class AgexSingaporeModelService {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = agexSingaporeModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = (type == 1) ? csvRecord.get(8): csvRecord.get(9);
                 String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
+                Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
+                if((Integer) apiCheckResp.get("err") == 1){
+                    resp.put("errorMessage", apiCheckResp.get("msg"));
+                    break;
+                }
+                duplicateData = agexSingaporeModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
+                
 
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
@@ -230,7 +236,9 @@ public class AgexSingaporeModelService {
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
             resp.put("agexSingaporeModelList", agexSingaporeModelList);
-            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            if(!resp.containsKey("errorMessage")){
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);

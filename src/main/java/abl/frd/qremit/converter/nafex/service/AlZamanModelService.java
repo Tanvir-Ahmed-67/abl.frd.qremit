@@ -152,7 +152,9 @@ public class AlZamanModelService {
                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
            }
            resp.put("alZamanModelList", alZamanModelList);
-           resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+           if(!resp.containsKey("errorMessage")){
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);
