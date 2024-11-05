@@ -126,6 +126,12 @@ public class ApiBeftnModelService {
                 String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
+                String bankCode = csvRecord.get(9).trim();
+                Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 0);
+                if((Integer) apiCheckResp.get("err") == 1){
+                    resp.put("errorMessage", apiCheckResp.get("msg"));
+                    break;
+                }
                 duplicateData = apiBeftnModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = csvRecord.get(9);
                 String beneficiaryAccount = csvRecord.get(7).trim();
@@ -198,7 +204,9 @@ public class ApiBeftnModelService {
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
             resp.put("apiBeftnModelList", apiBeftnModelList);
-            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            if(!resp.containsKey("errorMessage")){
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }
         }catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);

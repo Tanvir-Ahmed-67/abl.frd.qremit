@@ -208,7 +208,9 @@ public class NafexModelService {
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
             resp.put("nafexDataModelList", nafexDataModelList);
-            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            if(!resp.containsKey("errorMessage")){
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }
             /* 
             if(!duplicateMessage.isEmpty())  resp.put("errorMessage", duplicateMessage);
             //if(!exchangeMessage.isEmpty())  resp.put("errorMessage", exchangeMessage);

@@ -165,7 +165,9 @@ public class AlansariModelService {
                     fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
                 }
                 resp.put("alansariDataModelList", alansariDataModelList);
-                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+                if(!resp.containsKey("errorMessage")){
+                    resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+                }
             }catch (IOException e) {
                 resp.put("errorMessage", "fail to store csv data: " + e.getMessage());
             }
