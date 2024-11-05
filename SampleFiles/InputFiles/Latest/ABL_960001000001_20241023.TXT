@@ -1,0 +1,2 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Remitter Name|Beneficiary Name|Beneficiary a/c number|Beneficiary Bank|Beneficiary Bank Code|Beneficiary Bank Branch Name|Beneficiary Bank Branch Code|Routing Number|
+960001000002|77687102263|BDT|59892.00|22/10/2024|REDOY BEPERY|SAYLA BEGUM |0200010476624|Agrani Bank Limited DIKRIR CHOR HATPost: Decrirchar Hat,Upazilla-Kalkini,Post Code-8230Dist: Madaripur|1100000|DIKRIR CHOR HAT|10583|010540084|
