@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.*;
 import abl.frd.qremit.converter.nafex.helper.NumberToWords;
 import abl.frd.qremit.converter.nafex.model.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -44,9 +43,7 @@ public class ReportController {
     LogModelService logModelService;
     @Autowired
     CustomQueryService customQueryService;
-    private static final String PDF_DIRECTORY = "D:/Report/";
     
-
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
         this.myUserDetailsService = myUserDetailsService;
         this.fileInfoModelService = fileInfoModelService;
@@ -323,11 +320,13 @@ public class ReportController {
     }
 
     @GetMapping("/generateReport")
-    public ResponseEntity<?> viewPdf() {
-        String fileName = "Report" + "_" + CommonService.getCurrentDate();
+    public ResponseEntity<?> viewPdf() throws IOException {
+        String date = CommonService.getCurrentDate("yyyy-MM-dd");
+        Path filePath = CommonService.getReportFile(CommonService.generateFileName("summary_report_", date, ".pdf"));
+        String fileName = filePath.toString();
         try {
             // Construct the full file path
-            File file = new File(PDF_DIRECTORY + fileName + ".pdf");
+            File file = new File(fileName);
             // Check if the file exists
             if (!file.exists()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)

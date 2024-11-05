@@ -1,12 +1,10 @@
 package abl.frd.qremit.converter.nafex.helper;
-
 import abl.frd.qremit.converter.nafex.model.OnlineModel;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,8 +16,6 @@ import java.util.regex.Pattern;
 
 @Component
 public class OnlineModelServiceHelper {
-
-
     private static float incentivePercentage;
     @Autowired
     public OnlineModelServiceHelper(@Value("${incentive.percentage}") float incentivePercentage) {
