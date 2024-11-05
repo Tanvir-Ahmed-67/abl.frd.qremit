@@ -1,0 +1,2 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Remitter Name|Beneficiary Name|Beneficiary a/c number|Beneficiary Bank|Beneficiary Bank Code|Beneficiary Bank Branch Name|Beneficiary Bank Branch Code|Routing Number|
+960001000002|13663658322|BDT|35742.00|22/10/2024|SREE SUBROTO BORMON|LIPE RANI BORMON|0200022547505|Agrani Bank Limited MIRZAPUR,ABLMIRZAPUR BAZAR, PANKACHAIR, PAKUNDIA, KISHOREGANJ|1100000|MIRZAPUR,ABL|5757|010480915|

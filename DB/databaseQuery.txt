@@ -60,3 +60,6 @@ delete FROM `report` WHERE exchange_code="7010274";
 
 // Need to add this in ex_house_list table 
 INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `class_name`, `repository_name`, `is_settlement`) VALUES (NULL, '1', 'agranimalaysia', '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', '0');
+
+// Need to add this in ex_house_list table 
+INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `base_table_name`, `class_name`, `repository_name`, `is_settlement`, `active_status`) VALUES (NULL, '', '', '', '', '', '', '', '0', '0'), (NULL, '7010294', 'NBL Money Transfer, Maldives', 'NBL Maldives', '7105', 'nblmaldives', 'NblMaldivesModel', 'nblMaldivesModelRepository', '0', '1');
