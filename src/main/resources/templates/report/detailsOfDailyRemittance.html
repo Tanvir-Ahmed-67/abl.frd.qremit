@@ -16,9 +16,9 @@
           <div class="card">
             <div class="card-content">
               <div class="btn-group mb-6 btn-group-sm" role="group">
-                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('pdf')|">PDF</button>
-                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('csv')|">CSV</button>
-                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('excel')|">EXCEL</button>
+                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('pdf', '${date}')|">PDF</button>
+                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('csv', '${date}')|">CSV</button>
+                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('excel', '${date}')|">EXCEL</button>
               </div>
               <div class="table-responsive">
                 <table class="table table-hover">
