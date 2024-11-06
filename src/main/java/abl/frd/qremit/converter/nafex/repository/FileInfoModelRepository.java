@@ -13,9 +13,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FileInfoModelRepository extends JpaRepository<FileInfoModel, Integer> {
-    //@Query(value = "SELECT * FROM upload_file_info  WHERE user_id = :userId", nativeQuery = true)
-    @Query("SELECT n FROM FileInfoModel n WHERE n.userModel.id =:userId and n.uploadDateTime BETWEEN :startDate AND :endDate and n.totalCount != null")
+    @Query("SELECT n FROM FileInfoModel n WHERE n.userModel.id =:userId and n.uploadDateTime BETWEEN :startDate AND :endDate")
     List<FileInfoModel> getUploadedFileDetails(@Param("userId") int userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT n FROM FileInfoModel n WHERE n.uploadDateTime BETWEEN :startDate AND :endDate")
+    List<FileInfoModel> getUploadedFileDetails(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     FileInfoModel findByFileName(String fileName);
     FileInfoModel findById(int id);
     //@Query("UPDATE FileInfoModel n SET n.accountPayeeCount = :accountPayeeCount, n.beftnCount = :beftnCount, n.cocCount = :cocCount, n.onlineCount = :onlineCount, n.totalCount = :totalCount, n.isSettlement = :isSettlement, n.unprocessedCount = :unprocessedCount where n.id = :id")

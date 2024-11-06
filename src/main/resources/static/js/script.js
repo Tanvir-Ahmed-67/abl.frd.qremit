@@ -74,7 +74,7 @@ $( function() {
       $(this).datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "dd-mm-yy",
+        dateFormat: "yy-mm-dd",
         minDate: "-100Y",
         maxDate: "+0d",
         yearRange: "1900:2035" 

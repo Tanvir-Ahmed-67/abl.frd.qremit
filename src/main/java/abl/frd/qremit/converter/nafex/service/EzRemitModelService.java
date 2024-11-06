@@ -164,7 +164,12 @@ public class EzRemitModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                
+                int length = csvRecord.size();
+                Map<String, Object> apiCheckResp = checkEzRemitApiOrBeftnData(length, type);
+                if((Integer) apiCheckResp.get("err") == 1){
+                    resp.put("errorMessage", apiCheckResp.get("msg"));
+                    break;
+                }
                 String bankName = (type == 1) ? "Agrani Bank": csvRecord.get(9).trim();
                 String branchCode = (type == 1) ? "": csvRecord.get(11).trim();
                 branchCode = CommonService.fixRoutingNo(branchCode);
@@ -252,6 +257,14 @@ public class EzRemitModelService {
         data.put("processedBy", "");
         data.put("processedDate", "");
         return data;
+    }
+
+    public Map<String, Object> checkEzRemitApiOrBeftnData(int length, int type){
+        Map<String, Object> resp = CommonService.getResp(0, "", null);
+        String msg = "You selected wrong file. Please select the correct file.";
+        if(type == 1 && length != 8)    resp = CommonService.getResp(1, msg, null);
+        else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
+        return resp;
     }
 /* 
     public List<EzRemitModel> csvToEzRemitAccountPayeeModels(InputStream is, String exchangeCode) {

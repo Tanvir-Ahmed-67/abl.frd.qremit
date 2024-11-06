@@ -70,5 +70,7 @@ public class AccountPayeeModelService {
         accountPayeeModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
 
-
+    public List<AccountPayeeModel> findAllAccountPayeeModelByFileInfoId(int id){
+        return accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(id);
+    }
 }

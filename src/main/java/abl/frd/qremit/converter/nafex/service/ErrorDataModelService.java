@@ -40,7 +40,14 @@ public class ErrorDataModelService {
         if(fileInfoModelId != 0){
             return errorDataModelRepository.findByUserModelIdAndUpdateStatusAndFileInfoModelId(userId, updateStatus, fileInfoModelId);
         }else return errorDataModelRepository.findByUserModelIdAndUpdateStatus(userId, updateStatus);
-    } 
+    }
+    
+    public List<ErrorDataModel> findUserModelListByExchangeCodeAndUpdateStatus(String exchangeCode, int updateStatus, int fileInfoModelId){
+        List<String> exchangeCodeList = Arrays.asList(exchangeCode.split(","));
+        if(fileInfoModelId != 0){
+            return errorDataModelRepository.findErrorByExchangeCodeAndFileId(exchangeCodeList, updateStatus, fileInfoModelId);
+        }else return errorDataModelRepository.findErrorByExchangeCode(exchangeCodeList, updateStatus);
+    }
 
     //find errorDataModel 
     public ErrorDataModel findErrorModelById(int id){
@@ -56,7 +63,7 @@ public class ErrorDataModelService {
         errorDataModelRepository.deleteById(id);
     }
 
-    public Map<String, Object> processUpdateErrorDataById(@RequestParam Map<String, String> formData, HttpServletRequest request){
+    public Map<String, Object> processUpdateErrorDataById(@RequestParam Map<String, String> formData, HttpServletRequest request, int userId){
         Map<String, Object> resp = new HashMap<>();
         String exchangeCode = formData.get("exchangeCode");
         String id = formData.get("id");
@@ -106,6 +113,7 @@ public class ErrorDataModelService {
         errorDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
         
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel);
+        updatedData.put("userId", userId);
         info.put("updatedData", updatedData);
         String infoStr = "";
         ObjectMapper objectMapper = new ObjectMapper();
@@ -117,8 +125,8 @@ public class ErrorDataModelService {
         }catch(JsonProcessingException e){
             e.printStackTrace();
         }
-        String userId = String.valueOf(errorDataModel.getUserModel().getId());
-        LogModel logModel = new LogModel(userId, String.valueOf(errorDataModel.getId()), exchangeCode, "1", infoStr, ipAddress);
+        //String userId = String.valueOf(errorDataModel.getUserModel().getId());
+        LogModel logModel = new LogModel(String.valueOf(userId), String.valueOf(errorDataModel.getId()), exchangeCode, "1", infoStr, ipAddress);
         LogModel saveLogModel = logModelRepository.save(logModel);
         if(saveLogModel != null){
             try{
@@ -166,8 +174,9 @@ public class ErrorDataModelService {
         return resp;
     }
 
-    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId){
-        List<ErrorDataModel> errorDataModel = findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
+    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId, String exchangeCode){
+        //List<ErrorDataModel> errorDataModel = findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
+        List<ErrorDataModel> errorDataModel = findUserModelListByExchangeCodeAndUpdateStatus(exchangeCode, 0, fileInfoModelId);
         int sl = 1;
         String action = "";
         String btn = "";

@@ -1039,6 +1039,7 @@ public class CommonService {
     }
 
     public static String convertDateToString(LocalDateTime date, String format){
+        if(date == null)    return "";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         String formattedDateTime = date.format(formatter);
         return formattedDateTime;
@@ -1186,6 +1187,10 @@ public class CommonService {
                 break;
         }
         return resp;
+    }
+
+    public static Integer convertStringToInt(String str){
+        return (str != null) ? Integer.parseInt(str):0; 
     }
 
     //public static Map<String, Object> 

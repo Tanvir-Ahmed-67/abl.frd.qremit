@@ -117,4 +117,8 @@ public class BeftnModelService {
         beftnModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
 
+    public List<BeftnModel> findAllBeftnModelByFileInfoId(int id){
+        return beftnModelRepository.findAllBeftnModelHavingFileInfoId(id);
+    }
+
 }
