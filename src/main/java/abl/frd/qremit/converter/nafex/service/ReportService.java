@@ -21,6 +21,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.core.io.Resource;
 
+@SuppressWarnings("unchecked")
 @Service
 public class ReportService {
     @Autowired
@@ -32,13 +33,7 @@ public class ReportService {
     @Autowired
     ErrorDataModelRepository errorDataModelRepository;
     @Autowired
-    OnlineModelRepository onlineModelRepository;
-    @Autowired
-    BeftnModelRepository beftnModelRepository;
-    @Autowired
     CocModelRepository cocModelRepository;
-    @Autowired
-    AccountPayeeModelRepository accountPayeeModelRepository;
     @Autowired
     ExchangeHouseModelService exchangeHouseModelService;
     @Autowired
@@ -226,89 +221,7 @@ public class ReportService {
                 })
                 .collect(Collectors.toList());
     }
-    /*
-    public List<ExchangeReportDTO> generateSummaryOfDailyStatement_1() {
-        List<ExchangeReportDTO> report = new ArrayList<>();
 
-        // Fetch data from each table
-        List<OnlineModel> onlineData = onlineModelRepository.findAll();
-        List<BeftnModel> beftnData = beftnModelRepository.findAll();
-        List<CocModel> cocData = cocModelRepository.findAll();
-        List<AccountPayeeModel> accountPayeeData = accountPayeeModelRepository.findAll();
-
-        Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
-
-        // Process onlineData if it has valid data
-        if (isListValid(onlineData)) {
-            for (OnlineModel item : onlineData) {
-                String exchangeCode = item.getExchangeCode();
-                ExchangeReportDTO dto = reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
-                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
-                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
-                dto.doSum(item.getAmount());
-                dto.doCount();
-            }
-        }
-        // Process beftnData if it has valid data
-        if (isListValid(beftnData)) {
-            for (BeftnModel item : beftnData) {
-                String exchangeCode = item.getExchangeCode();
-                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
-                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
-                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
-                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
-                dto.setTransactionNo(item.getTransactionNo());
-                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
-                dto.setBeneficiaryName(item.getBeneficiaryName());
-                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                dto.doSum(item.getAmount());
-                dto.doCount();
-            }
-        }
-        // Process cocData if it has valid data
-        if (isListValid(cocData)) {
-            for (CocModel item : cocData) {
-                String exchangeCode = item.getExchangeCode();
-                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
-                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
-                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
-                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
-                dto.setTransactionNo(item.getTransactionNo());
-                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
-                dto.setBeneficiaryName(item.getBeneficiaryName());
-                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                dto.doSum(item.getAmount());
-                dto.doCount();
-            }
-        }
-        // Process accountPayeeData if it has valid data
-        if (isListValid(accountPayeeData)) {
-            for (AccountPayeeModel item : accountPayeeData) {
-                String exchangeCode = item.getExchangeCode();
-                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
-                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
-                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
-                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
-                dto.setTransactionNo(item.getTransactionNo());
-                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
-                dto.setBeneficiaryName(item.getBeneficiaryName());
-                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                dto.doSum(item.getAmount());
-                dto.doCount();
-            }
-        }
-        // Convert the map values to a list for the final report
-        if (reportMap.isEmpty()) {
-            report.add(new ExchangeReportDTO("No data available", null, 0.0, "", "", null));
-        } else {
-            report.addAll(reportMap.values());
-        }
-        return report;
-    }
-    */
     // Utility method to check if a list is valid (not null, not empty, and size > 0)
     private boolean isListValid(List<?> list) {
         return list != null && !list.isEmpty() && list.size() > 0;
@@ -317,19 +230,6 @@ public class ReportService {
         List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportData(date);
         return exchangeReportDTOSList;
     }
-    /*
-    public List<ExchangeReportDTO> generateDetailsOfDailyStatement_1() {
-        // Fetch data from each table
-        List<OnlineModel> onlineData = onlineModelRepository.findAll();
-        List<BeftnModel> beftnData = beftnModelRepository.findAll();
-        List<CocModel> cocData = cocModelRepository.findAll();
-        List<AccountPayeeModel> accountPayeeData = accountPayeeModelRepository.findAll();
-
-        // Merge all four data list into a single list
-        List<ExchangeReportDTO> allData = mergeData(onlineData, beftnData, cocData, accountPayeeData);
-        return allData;
-    }
-    */
 
     private ExchangeReportDTO convertOnlineModelToDTO(OnlineModel onlineModel) {
         ExchangeReportDTO dto = new ExchangeReportDTO();
@@ -423,9 +323,9 @@ public class ReportService {
         int count = 0;
         for(Map<String, Object> settlement: settlementList){
             FileInfoModel fileInfoModel = (FileInfoModel) settlement.get("fileInfoModel");
-            int onlineCount = Integer.parseInt(fileInfoModel.getOnlineCount());
-            int beftnCount = Integer.parseInt(fileInfoModel.getBeftnCount());
-            int accPayeeCount = Integer.parseInt(fileInfoModel.getAccountPayeeCount());
+            int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
+            int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
+            int accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
             if(onlineCount >= 1){
                 List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(onlineModelList, "1");
@@ -541,5 +441,97 @@ public class ReportService {
                 break;
         }
     }
+
+    public Map<String, Object> getFileDetails(int id, Map<String,Object> fileInfo, String[] columnData ){
+        Map<String, Object> resp = new HashMap<>();
+
+        List<Map<String, Object>> fileData = (List<Map<String, Object>>) fileInfo.get("data");
+        FileInfoModel fileInfoModel = fileInfoModelService.findAllById(id);
+        int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
+        int accountPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
+        int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
+        int cocCount = CommonService.convertStringToInt(fileInfoModel.getCocCount());
+        List<OnlineModel> onlineModelList = new ArrayList<>();
+        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
+        List<BeftnModel> beftnModelList = new ArrayList<>();
+        List<CocModel> cocModelList = new ArrayList<>();
+        if(onlineCount >= 1)    onlineModelList = onlineModelService.findAllOnlineModelByFileInfoId(id);
+        if(accountPayeeCount >=1)   accountPayeeModelList = accountPayeeModelService.findAllAccountPayeeModelByFileInfoId(id);
+        if(beftnCount >= 1) beftnModelList = beftnModelService.findAllBeftnModelByFileInfoId(id);
+        if(cocCount >=  1)  cocModelList = cocModelRepository.findAllCocModelHavingFileInfoId(id);
+
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        int sl = 1;
+        double totalAmount = 0;
+        LocalDateTime downloadDateTime = null;
+
+        for(Map<String,Object> fdata: fileData){
+            String type = fdata.get("type_flag").toString();
+            String transactionNo = fdata.get("transaction_no").toString();
+            if(("1").equals(type)){
+                for(OnlineModel onlineModel: onlineModelList){
+                    if(transactionNo.equalsIgnoreCase(onlineModel.getTransactionNo())){
+                        downloadDateTime = onlineModel.getDownloadDateTime();
+                        break;
+                    }
+                }
+            }
+            if(("2").equals(type)){
+                for(AccountPayeeModel accountPayeeModel: accountPayeeModelList){
+                    if(transactionNo.equalsIgnoreCase(accountPayeeModel.getTransactionNo())){
+                        downloadDateTime = accountPayeeModel.getDownloadDateTime();
+                        break;
+                    }
+                }
+            }
+            if(("3").equals(type)){
+                for(BeftnModel beftnModel: beftnModelList){
+                    if(transactionNo.equalsIgnoreCase(beftnModel.getTransactionNo())){
+                        downloadDateTime = beftnModel.getDownloadDateTime();
+                        break;
+                    }
+                }
+            }
+            if(("4").equals(type)){
+                for(CocModel cocModel: cocModelList){
+                    if(transactionNo.equalsIgnoreCase(cocModel.getTransactionNo())){
+                        downloadDateTime = cocModel.getDownloadDateTime();
+                        break;
+                    }
+                }
+            }
+
+            String processedDate = CommonService.convertDateToString(downloadDateTime);
+            if(processedDate.isEmpty()){
+                processedDate = CommonService.generateTemplateBtn("template-text.txt","#","text-danger fw-bold", "","Not Procssed");
+            }
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("sl", sl++);
+            dataMap.put("bankName",fdata.get("bank_name"));
+            dataMap.put("branchCode",fdata.get("branch_code"));
+            dataMap.put("branchName",fdata.get("branch_name"));
+            dataMap.put("beneficiaryAccountNo",fdata.get("beneficiary_account_no"));
+            dataMap.put("beneficiaryName",fdata.get("beneficiary_name"));
+            dataMap.put("remitterName",fdata.get("remitter_name"));
+            dataMap.put("transactionNo",transactionNo);
+            dataMap.put("exchangeCode",fdata.get("exchange_code"));
+            dataMap.put("amount",fdata.get("amount"));
+            dataMap.put("processedDate",processedDate);
+            totalAmount += Double.parseDouble(String.valueOf(fdata.get("amount")));
+            Map<String, Object> types = CommonService.getRemittanceTypes();
+            dataMap.put("remType", types.get(type));
+            dataList.add(dataMap);
+        }
+        //System.out.println(totalAmount);
+        Map<String, Object> totalAmountMap = commonService.getTotalAmountData(columnData, totalAmount,"beneficiaryAccountNo");
+        dataList.add(totalAmountMap);
+
+        resp.put("err", fileInfo.get("err"));
+        resp.put("msg", fileInfo.get("msg"));
+        resp.put("data",dataList);
+        return resp;
+    }
+    
+    //public Map<String, Object> get
 
 }

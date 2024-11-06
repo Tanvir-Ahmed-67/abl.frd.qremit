@@ -77,7 +77,7 @@ public class DynamicOperationService {
     }
     public Map<String, Object> transferApiT24Data(int fileInfoModelId) {
         Map<String, Object> resp = new HashMap<>();
-        List<ApiT24Model> allRows = apiT24ModelRepository.findAll();
+        List<ApiT24Model> allRows = apiT24ModelRepository.findAllByFileInfoModelId(fileInfoModelId);
         for (ApiT24Model row : allRows) {
             try {
                 String exchangeCode = row.getExchangeCode();
@@ -114,8 +114,8 @@ public class DynamicOperationService {
                 Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
                 
                 Double amount = updatedData.get("amount") != null ? Double.parseDouble(updatedData.get("amount").toString()) : null;
-                int fileInfoId = updatedData.get("fileInfoId") != null ? Integer.parseInt(updatedData.get("fileInfoId").toString()) : 0;
-                int userId = updatedData.get("userId") != null ? Integer.parseInt(updatedData.get("userId").toString()) : 0;
+                int fileInfoId = updatedData.get("fileInfoId") != null ? CommonService.convertStringToInt(updatedData.get("fileInfoId").toString()) : 0;
+                int userId = updatedData.get("userId") != null ? CommonService.convertStringToInt(updatedData.get("userId").toString()) : 0;
                 if(fileInfoId == 0 || userId == 0)    return CommonService.getResp(1, "Invalid File Id or User Id", null);
                 //LocalDateTime uploadDateTime = CommonService.convertStringToDate(updatedData.get("uploadDateTime").toString());
                 String beneficiaryAccount= String.valueOf(updatedData.get("beneficiaryAccount"));
@@ -128,10 +128,10 @@ public class DynamicOperationService {
                 int checkBeftn = (("3").equals(typeFlag))  ? 1:0;
                 int checkCoc = (("4").equals(typeFlag))  ? 1:0;
                 FileInfoModel fileInfoModel = fileInfoModelRepository.findById(fileInfoId);
-                Integer accPayeeCount = Integer.parseInt(fileInfoModel.getAccountPayeeCount()) + checkAccPayee;
-                Integer beftnCount = Integer.parseInt(fileInfoModel.getBeftnCount()) + checkBeftn;
-                Integer cocCount = Integer.parseInt(fileInfoModel.getCocCount()) + checkCoc;
-                Integer t24Count = Integer.parseInt(fileInfoModel.getOnlineCount()) + checkT24;
+                Integer accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount()) + checkAccPayee;
+                Integer beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount()) + checkBeftn;
+                Integer cocCount = CommonService.convertStringToInt(fileInfoModel.getCocCount()) + checkCoc;
+                Integer t24Count = CommonService.convertStringToInt(fileInfoModel.getOnlineCount()) + checkT24;
                 Integer totalCount = accPayeeCount + beftnCount + cocCount + t24Count;
                 fileInfoModel.setAccountPayeeCount(String.valueOf(accPayeeCount));
                 fileInfoModel.setBeftnCount(String.valueOf(beftnCount));

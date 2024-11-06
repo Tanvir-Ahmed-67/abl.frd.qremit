@@ -21,6 +21,12 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a th:href="@{/adminReport}" class='sidebar-link'>
+                            <i data-feather="user" width="20"></i>
+                            <span>Uploaded File Details</span>
+                        </a>
+                    </li>
                     <!--
                     <li class='sidebar-title'>Management</li>
                     <li class="sidebar-item has-sub">
@@ -107,7 +113,7 @@
                         </ul>
                     </li>
                     <li class="sidebar-item">
-                        <a th:href="@{/adminErrorReport?type=4}" class='sidebar-link'>
+                        <a th:href="@{/adminReport?type=4}" class='sidebar-link'>
                             <i data-feather="user" width="20"></i>
                             <span>Error Data Report</span>
                         </a>

@@ -14,7 +14,11 @@ public class FileInfoModelService {
     FileInfoModelRepository fileInfoModelRepository;
     public List<FileInfoModel> getUploadedFileDetails(int userId, String date){
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
-        return fileInfoModelRepository.getUploadedFileDetails(userId, dateTime.get("startDateTime"), dateTime.get("endDateTime"));
+        if(userId != 0){
+            return fileInfoModelRepository.getUploadedFileDetails(userId, dateTime.get("startDateTime"), dateTime.get("endDateTime"));
+        }else{
+            return fileInfoModelRepository.getUploadedFileDetails(dateTime.get("startDateTime"), dateTime.get("endDateTime"));
+        }
     }
 
     public Map<String, Object> deleteFileInfoModelById(int id){
@@ -66,6 +70,10 @@ public class FileInfoModelService {
             settlementList.add(resp);
         }
         return settlementList;
+    }
+
+    public FileInfoModel findAllById(int id){
+        return fileInfoModelRepository.findById(id);
     }
 
 }

@@ -82,4 +82,7 @@ public class OnlineModelService {
     public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
         onlineModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
+    public List<OnlineModel> findAllOnlineModelByFileInfoId(int id){
+        return onlineModelRepository.findAllOnlineModelHavingFileInfoId(id);
+    }
 }

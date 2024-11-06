@@ -4,29 +4,27 @@ import abl.frd.qremit.converter.nafex.model.CocModel;
 import abl.frd.qremit.converter.nafex.repository.CocModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayInputStream;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class CocModelService {
     @Autowired
-    CocModelRepository CocModelRepository;
+    CocModelRepository cocModelRepository;
     @Autowired
     MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<CocModel> cocModels = CocModelRepository.findAllCocModelHavingFileInfoId(Integer.parseInt(fileId));
+        List<CocModel> cocModels = cocModelRepository.findAllCocModelHavingFileInfoId(Integer.parseInt(fileId));
         ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(cocModels);
         return in;
     }
     public ByteArrayInputStream loadAll() {
-        List<CocModel> cocModels = CocModelRepository.findAllCocModel();
+        List<CocModel> cocModels = cocModelRepository.findAllCocModel();
         ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(cocModels);
         return in;
     }
     public ByteArrayInputStream loadAndUpdateUnprocessedCocData(int isProcessed, int isDownloaded) {
-        List<CocModel> unprocessedCocModels = CocModelRepository.loadUnprocessedCocData(isProcessed, isDownloaded);
+        List<CocModel> unprocessedCocModels = cocModelRepository.loadUnprocessedCocData(isProcessed, isDownloaded);
         List<CocModel> processedAndUpdatedCocModels = updateAndReturn(unprocessedCocModels, 0, 1);
         ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(processedAndUpdatedCocModels);
         return in;
@@ -48,12 +46,14 @@ public class CocModelService {
             }
         }
         // Save the modified entities
-        List<CocModel> updatedEntities = CocModelRepository.saveAll(existingEntities);
+        List<CocModel> updatedEntities = cocModelRepository.saveAll(existingEntities);
         return updatedEntities;
     }
     public int countRemainingCocData(){
         //return CocModelRepository.countByIsProcessed(0);
-        return CocModelRepository.countByIsDownloaded(0);
+        return cocModelRepository.countByIsDownloaded(0);
     }
-
+    public List<CocModel> findAllCocModelByFileInfoId(int id){
+        return cocModelRepository.findAllCocModelHavingFileInfoId(id);
+    }
 }

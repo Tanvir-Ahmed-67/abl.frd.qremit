@@ -126,7 +126,7 @@ public class ApiBeftnModelService {
                 String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                String bankCode = csvRecord.get(9).trim();
+                String bankCode = csvRecord.get(8).trim();
                 Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 0);
                 if((Integer) apiCheckResp.get("err") == 1){
                     resp.put("errorMessage", apiCheckResp.get("msg"));

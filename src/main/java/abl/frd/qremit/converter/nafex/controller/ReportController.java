@@ -26,7 +26,6 @@ import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.ReportService;
-@SuppressWarnings("unchecked")
 @Controller
 public class ReportController {
 
@@ -65,12 +64,12 @@ public class ReportController {
         switch(type){
             case "1":
             default:
-                columnData = new String[] {"sl", "exchangeCode", "uploadDateTime", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount","action"};
-                columnTitles = new String[] {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total","Action"};
+                columnData = new String[] {"sl", "exchangeCode", "uploadDateTime", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount", "errorCount", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Action"};
                 break;
             case "2":
-                columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","remitterName", "amount","remType"};
-                columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Remitter Name","Amount","Type"};
+                columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","remitterName", "amount","processedDate","remType"};
+                columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Remitter Name","Amount","Processed Date","Type"};
                 break;
             case "3":
             case "4":
@@ -84,56 +83,51 @@ public class ReportController {
     @GetMapping("/report")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
         if(date.isEmpty()){
             date = CommonService.getCurrentDate("yyyy-MM-dd");
         }
-        
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        int userId;
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
-            User user = myUserDetails.getUser();
-            userId = user.getId();
-            List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId, date);
-            
-            List<Map<String, Object>> dataList = new ArrayList<>();
-            int sl = 1;
-            int totalCount = 0;
-            String action = "";
-            for (FileInfoModel fModel : fileInfoModel) {
-                Map<String, Object> dataMap = new HashMap<>();
-                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
-                action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
-                dataMap.put("sl", sl++);
-                dataMap.put("id", fModel.getId());
-                dataMap.put("exchangeCode", fModel.getExchangeCode());
-                dataMap.put("uploadDateTime", fModel.getUploadDateTime());
-                dataMap.put("fileName", fModel.getFileName());
-                dataMap.put("cocCount", fModel.getCocCount());
-                dataMap.put("beftnCount", fModel.getBeftnCount());
-                dataMap.put("onlineCount", fModel.getOnlineCount());
-                dataMap.put("accountPayeeCount", fModel.getAccountPayeeCount());
-                totalCount += Integer.valueOf(fModel.getTotalCount());
-                dataMap.put("totalCount", fModel.getTotalCount());
-                dataMap.put("action", action); // Example action, customize as needed
-                dataList.add(dataMap);
-            }
-            resp.put("data", dataList);
-            return ResponseEntity.ok(resp);
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        int userId = (int) userData.get("userid");
+        String baseUrl = (userId == 0) ? "/adminReport": "/user-home-page";
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
+        List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId, date);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        int sl = 1;
+        int totalCount = 0;
+        String action = "";
+        for (FileInfoModel fModel : fileInfoModel) {
+            Map<String, Object> dataMap = new HashMap<>();
+            action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
+            action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
+            action += "<input type='hidden' id='base_url' value='" + baseUrl + "' />";
+            dataMap.put("sl", sl++);
+            dataMap.put("id", fModel.getId());
+            dataMap.put("exchangeCode", fModel.getExchangeCode());
+            dataMap.put("uploadDateTime", CommonService.convertDateToString(fModel.getUploadDateTime()));
+            dataMap.put("fileName", fModel.getFileName());
+            dataMap.put("cocCount", CommonService.convertStringToInt(fModel.getCocCount()));
+            dataMap.put("beftnCount", CommonService.convertStringToInt(fModel.getBeftnCount()));
+            dataMap.put("onlineCount", CommonService.convertStringToInt(fModel.getOnlineCount()));
+            dataMap.put("accountPayeeCount", CommonService.convertStringToInt(fModel.getAccountPayeeCount()));
+            dataMap.put("errorCount", fModel.getErrorCount());
+            int total = CommonService.convertStringToInt(fModel.getTotalCount());
+            totalCount += total;
+            dataMap.put("totalCount", total);
+            dataMap.put("action", action); // Example action, customize as needed
+            dataList.add(dataMap);
         }
-        else{
-           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        resp.put("data", dataList);
+        return ResponseEntity.ok(resp);
     }
 
     @GetMapping("/fileReport")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getFileDetails(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam String id,@RequestParam String exchangeCode){
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
-        
         List<Map<String, String>> reportColumn = getReportColumn("2");
         List<String> columnDataList = new ArrayList<>();
         for(Map<String, String> column: reportColumn){
@@ -142,47 +136,17 @@ public class ReportController {
         String[] columnData = columnDataList.toArray(new String[0]);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        int userId;
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
-            User user = myUserDetails.getUser();
-            userId = user.getId();
-        }else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        int userId = (int) userData.get("userid");
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
 
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
-        
         Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
         if((Integer) fileInfo.get("err") == 1)  return ResponseEntity.ok(fileInfo);
-
-        List<Map<String, Object>> dataList = new ArrayList<>();
-        int sl = 1;
-        double totalAmount = 0;
-
-        for(Map<String,Object> fdata: (List<Map<String, Object>>) fileInfo.get("data")){
-            Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put("sl", sl++);
-            dataMap.put("bankName",fdata.get("bank_name"));
-            dataMap.put("branchCode",fdata.get("branch_code"));
-            dataMap.put("branchName",fdata.get("branch_name"));
-            dataMap.put("beneficiaryAccountNo",fdata.get("beneficiary_account_no"));
-            dataMap.put("beneficiaryName",fdata.get("beneficiary_name"));
-            dataMap.put("remitterName",fdata.get("remitter_name"));
-            dataMap.put("transactionNo",fdata.get("transaction_no"));
-            dataMap.put("exchangeCode",fdata.get("exchange_code"));
-            dataMap.put("amount",fdata.get("amount"));
-            totalAmount += Double.parseDouble(String.valueOf(fdata.get("amount")));
-            Map<String, Object> types = CommonService.getRemittanceTypes();
-            dataMap.put("remType", types.get(fdata.get("type_flag")));
-            dataList.add(dataMap);
-        }
-        //System.out.println(totalAmount);
-        Map<String, Object> totalAmountMap = commonService.getTotalAmountData(columnData, totalAmount,"beneficiaryAccountNo");
-        dataList.add(totalAmountMap);
-
-        resp.put("err", fileInfo.get("err"));
-        resp.put("msg", fileInfo.get("msg"));
-        resp.put("data",dataList);
+        resp = reportService.getFileDetails(Integer.parseInt(id), fileInfo, columnData);
         return ResponseEntity.ok(resp);
     }
 
@@ -197,11 +161,13 @@ public class ReportController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         int userId;
+        String exchangeCode;
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
             User user = myUserDetails.getUser();
             userId = user.getId();
-            List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId);
+            exchangeCode = user.getExchangeCode();
+            List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode);
             resp.put("data", dataList);
         }else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

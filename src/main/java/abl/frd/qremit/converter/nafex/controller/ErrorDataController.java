@@ -4,7 +4,10 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
+import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.DynamicOperationService;
 import abl.frd.qremit.converter.nafex.service.ErrorDataModelService;
@@ -52,10 +56,19 @@ public class ErrorDataController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateErrorDataById(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam Map<String, String> formData, Model model, HttpServletRequest request){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        //Map<String, Object> resp = new HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
         formData.remove("_csrf");
         formData.remove("_csrf_header");
-        Map<String, Object> resp = errorDataModelService.processUpdateErrorDataById(formData, request);
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        int userId;
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+            User user = myUserDetails.getUser();
+            userId = user.getId();
+            resp = errorDataModelService.processUpdateErrorDataById(formData, request, userId);
+        }
+        
         return ResponseEntity.ok(resp);
     }
 
