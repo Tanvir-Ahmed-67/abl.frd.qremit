@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    get_loading();
     var tbl = "#settlement_tbl";
     var url = "/utils/getSettlement";
     var cols = ["sl", "currentDate", "exchangeName", "action"];
