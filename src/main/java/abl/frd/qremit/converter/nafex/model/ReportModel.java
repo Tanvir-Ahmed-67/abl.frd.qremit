@@ -60,6 +60,8 @@ public class ReportModel {
     private String districtCode;
     @Column(name = "report_date", columnDefinition = "DATE")
     private LocalDate reportDate; 
+    @Column(name = "data_model_id")
+    private int dataModelId;
 
     public int getId() {
         return this.id;
@@ -95,6 +97,14 @@ public class ReportModel {
 
     public String getBankName() {
         return this.bankName;
+    }
+
+    public int getDataModelId() {
+        return this.dataModelId;
+    }
+
+    public void setDataModelId(int dataModelId) {
+        this.dataModelId = dataModelId;
     }
 
     public void setBankName(String bankName) {

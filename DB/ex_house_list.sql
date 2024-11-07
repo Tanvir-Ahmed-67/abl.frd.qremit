@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 29, 2024 at 06:59 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Nov 06, 2024 at 12:51 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -101,8 +101,8 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (156, '7010252', 'Multinet  trust Ex. LLC, UAE ', 'Multinet Trust', '7067', 'multinet', 'MultinetModel', 'multinetModelRepository', 0, 1),
 (157, '7010229', 'National Exchange Company, Italy', 'NEC Italy', '7037', 'necitaly', 'NecItalyModel', 'necItalyModelRepository', 0, 1),
 (158, '7010285', 'NBL Money Transfer USA', 'NBL USA', '7077', 'nblusa', 'NblUsaModel', 'nblUsaModelRepository', 0, 1),
-(159, '7010276', 'NBL Money Transfer, Malaysia', 'NBL Malaysia', '7059', 'nblmalyasia', 'NblMalaysiaModel', 'nblMalaysiaModelRepository', 0, 1),
-(160, '7010241', 'Saudi National Bank (SNB)', 'SNB', '7055', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
+(159, '7010276', 'NBL Money Transfer, Malaysia', 'NBL Malaysia', '7059', 'nblmalaysia', 'NblMalaysiaModel', 'nblMalaysiaModelRepository', 0, 1),
+(160, '7010241', 'Saudi National Bank (SNB)', '', '7055', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
 (161, '7010272', 'NEC Money Transfer, UK', 'NEC UK', '7087', 'necuk', 'NecUkModel', 'necUkModelRepository', 0, 1),
 (162, '7010208', 'Oman Exchange Co, Kuwait', 'Oman Exchange Kuwait', '7008', 'omankuwait', 'OmanKuwaitModel', 'omanKuwaitModelRepository', 0, 1),
 (163, '7010215', 'Oman Intl Exchange Ltd. Oman', 'Oman Exchange Oman', '7021', 'oman', 'OmanModel', 'omanModelRepository', 0, 1),
@@ -113,7 +113,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (168, '7010248', 'Standard Express', 'Standard Express', '7060', 'standard', 'StandardModel', 'standardModelRepository', 0, 1),
 (169, '7010274', 'Sunman Express 	', 'Sunman', '7096', 'sunman', 'SunmanModel', 'sunmanModelRepository', 0, 1),
 (170, '7010293', 'Terra Payment Services Ltd. Ma', '', '7101', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
-(171, '7010266', 'The Saudi Investment Bank (SAI', 'SAIB', '7086', 'saib', 'SaibModel', 'saibModelRepository', 0, 1),
+(171, '7010266', 'The Saudi Investment Bank (SAIB)', 'SAIB', '7086', 'saib', 'SaibModel', 'saibModelRepository', 0, 1),
 (172, '7010267', 'U REMIT INTERNATIONAL, CANADA', 'U REMIT', '7088', 'uremit', 'UremitModel', 'uremitModelRepository', 0, 1),
 (173, '7010225', 'U.A.E. Exchange LLC, Abu Dhabi', '', '7028', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
 (174, '7010257', 'U.A.E. Exchange, Malaysia', '', '7075', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
@@ -125,7 +125,9 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (180, '7010219', 'Zenj Exchange Co. Bahrain', '', '7003', '', '', '', 0, 1),
 (183, '7010289', 'FSIE Italy', 'FSIE', '7093', 'fsie', 'FsieModel', 'fsieModelRepository', 0, 1),
 (184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', 'agranimalaysia', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', 0, 1),
-(185, '7010304', 'Progoti Exchange Co.', 'Progoti Ex.', '7113', 'progoti', 'ProgotiModel', 'progotiModelRepository', 0, 1);
+(185, '7010304', 'Progoti Exchange Co.', 'Progoti Ex.', '7113', 'progoti', 'ProgotiModel', 'progotiModelRepository', 0, 1),
+(186, '', '', '', '', '', '', '', 0, 0),
+(187, '7010294', 'NBL Money Transfer, Maldives', 'NBL Maldives', '7105', 'nblmaldives', 'NblMaldivesModel', 'nblMaldivesModelRepository', 0, 1);
 
 --
 -- Indexes for dumped tables
@@ -149,7 +151,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=188;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

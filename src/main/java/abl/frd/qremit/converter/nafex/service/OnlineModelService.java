@@ -85,4 +85,8 @@ public class OnlineModelService {
     public List<OnlineModel> findAllOnlineModelByFileInfoId(int id){
         return onlineModelRepository.findAllOnlineModelHavingFileInfoId(id);
     }
+    @Transactional
+    public void updateTempStatusById(int id, int tempStatus){
+        onlineModelRepository.updateTempStatusById(id, tempStatus);
+    }
 }

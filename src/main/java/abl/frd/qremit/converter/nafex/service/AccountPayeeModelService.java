@@ -73,4 +73,8 @@ public class AccountPayeeModelService {
     public List<AccountPayeeModel> findAllAccountPayeeModelByFileInfoId(int id){
         return accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(id);
     }
+    @Transactional
+    public void updateTempStatusById(int id, int tempStatus){
+        accountPayeeModelRepository.updateTempStatusById(id, tempStatus);
+    }
 }
