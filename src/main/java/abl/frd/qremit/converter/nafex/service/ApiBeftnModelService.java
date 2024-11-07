@@ -70,33 +70,6 @@ public class ApiBeftnModelService {
                 }catch(Exception e){
                     resp.put("errorMessage", e.getMessage());
                 }
-
-
-                /*
-                //List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(apiBeftnModels,"getCheckBeftn", currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(apiBeftnModels, currentDateTime);
-
-                // FILE INFO TABLE GENERATION HERE......
-                fileInfoModel.setAccountPayeeCount("0");
-                fileInfoModel.setOnlineCount("0");
-                fileInfoModel.setBeftnCount(String.valueOf(beftnModelList.size()));
-                fileInfoModel.setCocCount("0");
-                fileInfoModel.setTotalCount(String.valueOf(apiBeftnModels.size()));
-                fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setUnprocessedCount("test");
-                fileInfoModel.setUploadDateTime(currentDateTime);
-                fileInfoModel.setApiBeftnModel(apiBeftnModels);
-
-                fileInfoModel.setBeftnModelList(beftnModelList);
-                for(BeftnModel beftnModel:beftnModelList){
-                    beftnModel.setFileInfoModel(fileInfoModel);
-                    beftnModel.setUserModel(user);
-                }
-                // SAVING TO MySql Data Table
-                fileInfoModelRepository.save(fileInfoModel);
-                return fileInfoModel;
-                */
             }
 
         } catch (IOException e) {
@@ -161,36 +134,6 @@ public class ApiBeftnModelService {
                 apiBeftnModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 apiBeftnModel.setUploadDateTime(currentDateTime);
                 apiBeftnModelList.add(apiBeftnModel);
-                /*
-                if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    continue;
-                }
-                ApiBeftnModel apiBeftnModel = new ApiBeftnModel(
-                        csvRecord.get(0), //exCode
-                        csvRecord.get(1), //Tranno
-                        csvRecord.get(2), //Currency
-                        Double.parseDouble(csvRecord.get(3)), //Amount
-                        csvRecord.get(4), //enteredDate
-                        csvRecord.get(5), //remitter
-                        "", //remitterMobile
-                        csvRecord.get(6), // beneficiary
-                        csvRecord.get(7), //beneficiaryAccount
-                        "", //beneficiaryMobile
-                        csvRecord.get(9), //bankName
-                        csvRecord.get(8), //bankCode
-                        csvRecord.get(10), //branchName
-                        csvRecord.get(11), // branchCode
-                        "", //draweeBranchName
-                        "", //draweeBranchCode
-                        "", //purposeOfRemittance
-                        "", //sourceOfIncome
-                        "",    // processed_flag
-                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim(), csvRecord.get(11).trim()), //type_flag
-                        "",      // Processed_by
-                        "",            // processed_date
-                        currentDateTime);
-                apiBeftnModelList.add(apiBeftnModel);
-                */
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);

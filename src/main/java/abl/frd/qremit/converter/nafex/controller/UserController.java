@@ -146,7 +146,7 @@ public class UserController {
 
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
     public String editExchangeHouse(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user, BindingResult result, RedirectAttributes ra){
-        int idInIntegerFormat = Integer.parseInt(id);
+        int idInIntegerFormat = CommonService.convertStringToInt(id);
         if (result.hasErrors()) {
             user.setId(idInIntegerFormat);
             return "editUser";
@@ -171,7 +171,7 @@ public class UserController {
 
     @RequestMapping(value="/activateUser/{id}", method = RequestMethod.POST)
     public String activateInactiveUser(Model model, @PathVariable(required = true, name = "id") String id, RedirectAttributes ra) {
-        int idInIntegerFormat = Integer.parseInt(id);
+        int idInIntegerFormat = CommonService.convertStringToInt(id);
         if(myUserDetailsService.updateInactiveUser(idInIntegerFormat)){
             ra.addFlashAttribute("message","User has been activated successfully");
         }

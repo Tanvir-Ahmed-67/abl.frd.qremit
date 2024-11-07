@@ -17,7 +17,6 @@ import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 
-
 @Controller
 @RequestMapping("/utils")
 public class UtilsController {

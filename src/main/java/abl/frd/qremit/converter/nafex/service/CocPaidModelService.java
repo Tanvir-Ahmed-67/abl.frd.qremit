@@ -90,7 +90,7 @@ public class CocPaidModelService {
                 CocPaidModel cocPaidModel = new CocPaidModel(
                         csvRecord.get(0), //exCode
                         csvRecord.get(1), //Tranno
-                        Double.parseDouble(csvRecord.get(4)), //Amount
+                        CommonService.convertStringToDouble(csvRecord.get(4)), //Amount
                         CommonService.convertStringToDate(csvRecord.get(3)), //Entered Date
                         CommonService.convertStringToDate(csvRecord.get(11)), //Paid Date
                         csvRecord.get(5), //remitter Name

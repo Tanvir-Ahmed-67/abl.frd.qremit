@@ -19,7 +19,7 @@ public class OnlineModelService {
     MyUserDetailsService myUserDetailsService;
 
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<OnlineModel> onlineModes = onlineModelRepository.findAllOnlineModelHavingFileInfoId(Integer.parseInt(fileId));
+        List<OnlineModel> onlineModes = onlineModelRepository.findAllOnlineModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModes);
         return in;
     }

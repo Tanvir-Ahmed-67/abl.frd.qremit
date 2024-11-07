@@ -105,8 +105,8 @@ public class BecModelService {
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
                 duplicateData = becModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
+                String beneficiaryAccount = getBenificiaryAccount(bankName, csvRecord.get(7).trim());
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
 
@@ -184,5 +184,14 @@ public class BecModelService {
         data.put("processedBy", "");
         data.put("processedDate", "");
         return data;
+    }
+
+    public String getBenificiaryAccount(String bankName, String beneficiaryAccount){
+        if(CommonService.checkAgraniBankName(bankName)){
+            if(beneficiaryAccount.length() == 15){
+                beneficiaryAccount = beneficiaryAccount.replaceFirst("^4 ", "");
+            }
+        }
+        return beneficiaryAccount;
     }
 }

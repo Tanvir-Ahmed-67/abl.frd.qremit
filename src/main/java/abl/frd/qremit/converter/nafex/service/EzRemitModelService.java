@@ -54,13 +54,6 @@ public class EzRemitModelService {
             
             int type = 0;
             if(fileType.equalsIgnoreCase("API")) type = 1;
-            /*
-            if(fileType.equalsIgnoreCase("API")){
-               ezRemitModelList = csvToEzRemitAccountPayeeModels(file.getInputStream(), exchangeCode);
-            }else if(fileType.equalsIgnoreCase("BEFTN")){
-                ezRemitModelList = csvToEzRemitBEFTNModels(file.getInputStream(), exchangeCode);
-            }
-            */
             Map<String, Object> ezRemitData = csvToEzRemitModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<EzRemitModel> ezRemitModelList = (List<EzRemitModel>) ezRemitData.get("ezRemitModelList");
             if(ezRemitData.containsKey("errorMessage")){
@@ -91,56 +84,6 @@ public class EzRemitModelService {
                 }catch(Exception e){
                     resp.put("errorMessage", e.getMessage());
                 }
-
-                /*
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(ezRemitModelList, "getCheckT24", type, currentDateTime);
-                List<CocModel> cocModelList = CommonService.generateCocModelList(ezRemitModelList, "getCheckCoc", currentDateTime);
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(ezRemitModelList, "getCheckAccPayee", currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(ezRemitModelList, "getCheckBeftn", currentDateTime);
-                */
-                /*
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(ezRemitModelList, currentDateTime, type);
-                List<CocModel> cocModelList = CommonService.generateCocModelList(ezRemitModelList, currentDateTime);
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(ezRemitModelList, currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(ezRemitModelList, currentDateTime);
-
-
-                // FILE INFO TABLE GENERATION HERE......
-                fileInfoModel.setAccountPayeeCount(String.valueOf(accountPayeeModelList.size()));
-                fileInfoModel.setOnlineCount(String.valueOf(onlineModelList.size()));
-                fileInfoModel.setBeftnCount(String.valueOf(beftnModelList.size()));
-                fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
-                fileInfoModel.setTotalCount(String.valueOf(ezRemitModelList.size()));
-                fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setIsSettlement(type);
-                fileInfoModel.setUnprocessedCount("test");
-                fileInfoModel.setUploadDateTime(currentDateTime);
-                fileInfoModel.setEzRemitModel(ezRemitModelList);
-                fileInfoModel.setCocModelList(cocModelList);
-                fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
-                fileInfoModel.setBeftnModelList(beftnModelList);
-                fileInfoModel.setOnlineModelList(onlineModelList);
-
-                for (CocModel cocModel : cocModelList) {
-                    cocModel.setFileInfoModel(fileInfoModel);
-                    cocModel.setUserModel(user);
-                }
-                for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
-                    accountPayeeModel.setFileInfoModel(fileInfoModel);
-                    accountPayeeModel.setUserModel(user);
-                }
-                for (BeftnModel beftnModel : beftnModelList) {
-                    beftnModel.setFileInfoModel(fileInfoModel);
-                    beftnModel.setUserModel(user);
-                }
-                for (OnlineModel onlineModel : onlineModelList) {
-                    onlineModel.setFileInfoModel(fileInfoModel);
-                    onlineModel.setUserModel(user);
-                }
-                // SAVING TO MySql Data Table
-                fileInfoModelRepository.save(fileInfoModel);
-                return fileInfoModel;
-                */
             }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
@@ -266,94 +209,4 @@ public class EzRemitModelService {
         else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
         return resp;
     }
-/* 
-    public List<EzRemitModel> csvToEzRemitAccountPayeeModels(InputStream is, String exchangeCode) {
-        Optional<EzRemitModel> duplicateData;
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
-            List<EzRemitModel> ezRemitModelList = new ArrayList<>();
-            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            for (CSVRecord csvRecord : csvRecords) {
-                duplicateData = ezRemitModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(0));
-                if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    continue;
-                }
-                String bankName = "Agrani Bank";
-                EzRemitModel ezRemitModel = new EzRemitModel(
-                        exchangeCode, //exCode
-                        csvRecord.get(0), //Tranno
-                        "BDT", //Currency
-                        Double.parseDouble(csvRecord.get(5)), //Amount
-                        csvRecord.get(7), //enteredDate
-                        csvRecord.get(1), //remitter
-                        "", // remitterMobile
-                        csvRecord.get(6), // beneficiary
-                        csvRecord.get(4), //beneficiaryAccount
-                        "", // beneficiaryMobile
-                        bankName, //bankName
-                        "11", //bankCode
-                        "", //branchName
-                        "", // branchCode
-                        "", //Drawee Branch Name
-                        "", // Drawee Branch Code
-                        "", // purposeOfRemittance
-                        "", // sourceOfIncome
-                        "",    // processed_flag
-                        CommonService.setTypeFlag(csvRecord.get(4).trim(), bankName, ""), //type_flag
-                        "",      // Processed_by
-                        "",            // processed_date
-                        currentDateTime);
-                ezRemitModelList.add(ezRemitModel);
-            }
-            return ezRemitModelList;
-        } catch (IOException e) {
-            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
-        }
-    }
-    public List<EzRemitModel> csvToEzRemitBEFTNModels(InputStream is, String exchangeCode) {
-        Optional<EzRemitModel> duplicateData;
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
-            List<EzRemitModel> ezRemitModelList = new ArrayList<>();
-            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            for (CSVRecord csvRecord : csvRecords) {
-                duplicateData = ezRemitModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
-                if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    continue;
-                }
-                EzRemitModel ezRemitModel = new EzRemitModel(
-                        exchangeCode, //exCode
-                        csvRecord.get(1), //Tranno
-                        csvRecord.get(2), //Currency
-                        Double.parseDouble(csvRecord.get(3)), //Amount
-                        csvRecord.get(4), //enteredDate
-                        csvRecord.get(5), //remitter
-                        "", // remitterMobile
-
-                        csvRecord.get(6), // beneficiary
-                        csvRecord.get(7), //beneficiaryAccount
-                        "", // beneficiaryMobile
-
-                        csvRecord.get(9),  //bankName
-                        csvRecord.get(8),  //bankCode
-                        csvRecord.get(10), //branchName
-                        csvRecord.get(11), // branchCode
-                        "", //Drawee Branch Name
-                        "", // Drawee Branch Code
-                        "", // purposeOfRemittance
-                        "", // sourceOfIncome
-                        "",    // processed_flag
-                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim(), csvRecord.get(11).trim()), //type_flag
-                        "",      // Processed_by
-                        "",            // processed_date
-                        currentDateTime);
-                ezRemitModelList.add(ezRemitModel);
-            }
-            return ezRemitModelList;
-        } catch (IOException e) {
-            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
-        }
-    }
-        */
-
 }

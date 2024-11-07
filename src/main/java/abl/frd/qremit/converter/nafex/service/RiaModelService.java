@@ -67,56 +67,6 @@ public class RiaModelService {
                 }catch(Exception e){
                     resp.put("errorMessage", e.getMessage());
                 }
-
-                /*
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(riaModelList, "getCheckT24","1", currentDateTime);
-                List<CocModel> cocModelList = CommonService.generateCocModelList(riaModelList, "getCheckCoc", currentDateTime);
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(riaModelList, "getCheckAccPayee", currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(riaModelList, "getCheckBeftn", currentDateTime);
-                */
-                /*
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(riaModelList, currentDateTime, 1);
-                List<CocModel> cocModelList = CommonService.generateCocModelList(riaModelList, currentDateTime);
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(riaModelList, currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(riaModelList, currentDateTime);
-
-
-                // FILE INFO TABLE GENERATION HERE......
-                fileInfoModel.setAccountPayeeCount(String.valueOf(accountPayeeModelList.size()));
-                fileInfoModel.setOnlineCount(String.valueOf(onlineModelList.size()));
-                fileInfoModel.setBeftnCount(String.valueOf(beftnModelList.size()));
-                fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
-                fileInfoModel.setTotalCount(String.valueOf(riaModelList.size()));
-                fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setIsSettlement(1);
-                fileInfoModel.setUnprocessedCount("test");
-                fileInfoModel.setUploadDateTime(currentDateTime);
-                fileInfoModel.setRiaModel(riaModelList);
-                fileInfoModel.setCocModelList(cocModelList);
-                fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
-                fileInfoModel.setBeftnModelList(beftnModelList);
-                fileInfoModel.setOnlineModelList(onlineModelList);
-
-                for (CocModel cocModel : cocModelList) {
-                    cocModel.setFileInfoModel(fileInfoModel);
-                    cocModel.setUserModel(user);
-                }
-                for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
-                    accountPayeeModel.setFileInfoModel(fileInfoModel);
-                    accountPayeeModel.setUserModel(user);
-                }
-                for (BeftnModel beftnModel : beftnModelList) {
-                    beftnModel.setFileInfoModel(fileInfoModel);
-                    beftnModel.setUserModel(user);
-                }
-                for (OnlineModel onlineModel : onlineModelList) {
-                    onlineModel.setFileInfoModel(fileInfoModel);
-                    onlineModel.setUserModel(user);
-                }
-                // SAVING TO MySql Data Table
-                fileInfoModelRepository.save(fileInfoModel);
-                return fileInfoModel;
-                */
             }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
@@ -170,37 +120,6 @@ public class RiaModelService {
                 riaModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 riaModel.setUploadDateTime(currentDateTime);
                 riaModelList.add(riaModel);
-                /*
-                if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    continue;
-                }
-                String bankName = "Agrani Bank";
-                RiaModel riaModel = new RiaModel(
-                        exchangeCode, //exCode
-                        csvRecord.get(0), //Tranno
-                        "BDT", //Currency
-                        Double.parseDouble(csvRecord.get(1)), //Amount
-                        csvRecord.get(10), //enteredDate
-                        csvRecord.get(3), //remitter
-                        "", // remitterMobile
-                        csvRecord.get(6), // beneficiary
-                        csvRecord.get(7), //beneficiaryAccount
-                        "", // beneficiaryMobile
-                        bankName, //bankName
-                        "11", //bankCode
-                        "", //branchName
-                        "", // branchCode
-                        "", //Drawee Branch Name
-                        "", // Drawee Branch Code
-                        "", // purposeOfRemittance
-                        "", // sourceOfIncome
-                        "",    // processed_flag
-                        CommonService.setTypeFlag(csvRecord.get(7).trim(), bankName, csvRecord.get(11).trim()), //type_flag
-                        "",      // Processed_by
-                        "",            // processed_date
-                        currentDateTime);
-                riaModelList.add(riaModel);
-                */
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);

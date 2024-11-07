@@ -74,7 +74,6 @@ public class ApiBeftnModelController {
     @ResponseBody
     public Map<String, Object> transferApiBeftnData(@RequestParam("id") String id){
         if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);
-        return dynamicOperationService.transferApiBeftnData(Integer.parseInt(id));
-        //return "redirect:/user-home-page";
+        return dynamicOperationService.transferApiBeftnData(CommonService.convertStringToInt(id));
     }
 }
