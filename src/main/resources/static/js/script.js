@@ -15,19 +15,16 @@ $(document).ready(function(){
 
 
 function get_cnt(url,tdiv){
-    //window.location = url;
     $.ajax({
         url: url,
         type: "get",
         timeout: "10000",
         dataType: "json"
     }).done(function(resp){
-        //var cnt = xhr.getResponseHeader("count");
-        //$(tdiv).text(cnt);
         $(tdiv).text(resp.count);
         window.open(resp.url,"_");
     }).fail(function(params){
-        alert("Error geeting from server");
+        alert("Error getting from server");
     });
 }
 
@@ -114,4 +111,12 @@ function delete_error(tbl, csrf_token, csrf_header){
         }
     });
 }
+
+function get_loading(){
+    $body = $("body");
+    $(document).on({
+      ajaxStart: function() { $body.addClass("loading");    },
+      ajaxStop: function() { $body.removeClass("loading"); }    
+    });
+  }
 

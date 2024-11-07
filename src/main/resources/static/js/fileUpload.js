@@ -1,10 +1,12 @@
 $(document).ready(function(){
+    get_loading();
     var exchange_code = getParameterByName("id");
     if(exchange_code == '7010272') alert("Please send 8 cup of Doi");
     $("#exchangeCode").val(exchange_code);
     $('form').on('submit',function(e){
         e.preventDefault();
         var data = new FormData($(this)[0]);
+        $("body").addClass("loading");
         $.ajax({
             url: "/utils/upload",
             data: data,
@@ -20,6 +22,9 @@ $(document).ready(function(){
             view_data(resp);
         }).fail(function(){
             alert("Error Getting from server");
+        }).always(function() {
+            // Hide loading
+            $("body").removeClass("loading");
         });
    
     });

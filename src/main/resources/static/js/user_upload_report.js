@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    get_loading();
     var type = getParameterByName("type");
     var tbl = "#user_upload_tbl";
     var page_header = "";
