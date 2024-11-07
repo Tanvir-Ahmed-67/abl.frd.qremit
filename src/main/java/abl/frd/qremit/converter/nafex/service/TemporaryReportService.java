@@ -60,6 +60,7 @@ public class TemporaryReportService {
                     String transactionNo = (String) CommonService.getPropertyValue(model, "getTransactionNo");
                     String exchangeCode = (String) CommonService.getPropertyValue(model, "getExchangeCode");
                     Double amount = (Double) CommonService.getPropertyValue(model, "getAmount");
+                    int id = (int) CommonService.getPropertyValue(model, "getId");
                     Optional<TemporaryReportModel> temporaryReport = temporaryReportRepository.findByExchangeCodeAndTransactionNoAndAmount(exchangeCode, transactionNo, amount);
                     if(temporaryReport.isPresent()) continue;
 
@@ -82,9 +83,10 @@ public class TemporaryReportService {
                     FileInfoModel fileInfoModel= (FileInfoModel) CommonService.getPropertyValue(model, "getFileInfoModel");
                     temporaryReportModel.setFileInfoModelId((int) fileInfoModel.getId());
                     temporaryReportModel.setType(type);
-                    temporaryReportModel.setDataModelId((int) CommonService.getPropertyValue(model, "getId"));
+                    temporaryReportModel.setDataModelId(id);
                     //System.out.println(temporaryReportModel);
                     temporaryReportRepository.save(temporaryReportModel);
+                    setTempStatus(type, id);
                     count++;
                 }catch(Exception e){
                     e.printStackTrace();
@@ -97,9 +99,25 @@ public class TemporaryReportService {
         return resp;
     }
 
+    public void setTempStatus(String type, int id){
+        switch (type) {
+            case "1":
+                onlineModelService.updateTempStatusById(id,1);
+                break;
+            case "2":
+                accountPayeeModelService.updateTempStatusById(id,1);
+                break;
+            case "3":
+                beftnModelService.updateTempStatusById(id,1);
+            default:
+                break;
+        }
+    }
+
     @Transactional
     public void truncateTemporaryReportModel(){
         temporaryReportRepository.truncateTemporaryReport();
     }
+    
      
 }

@@ -120,5 +120,10 @@ public class BeftnModelService {
     public List<BeftnModel> findAllBeftnModelByFileInfoId(int id){
         return beftnModelRepository.findAllBeftnModelHavingFileInfoId(id);
     }
+    
+    @Transactional
+    public void updateTempStatusById(int id, int tempStatus){
+        beftnModelRepository.updateTempStatusById(id, tempStatus);
+    }
 
 }

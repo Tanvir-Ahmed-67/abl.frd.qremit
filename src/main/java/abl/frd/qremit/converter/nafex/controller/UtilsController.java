@@ -96,8 +96,6 @@ public class UtilsController {
     
     @GetMapping("/uploadApi")
     public String uploadApiUi(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-        //model.addAttribute("exchangeHouseModelList", exchangeHouseModelList);
-        //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         model.addAttribute("currentDate", currentDate);
         return "pages/admin/adminApiUpload";

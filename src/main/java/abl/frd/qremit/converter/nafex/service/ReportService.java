@@ -408,6 +408,7 @@ public class ReportService {
                     reportModel.setUploadDateTime((LocalDateTime) CommonService.getPropertyValue(model, "getUploadDateTime"));
                     reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
+                    reportModel.setDataModelId(id);
                     //System.out.println(reportModel);
                     reportModelRepository.save(reportModel);
                     setIsVoucherGenerated(types, id, currentDateTime);
