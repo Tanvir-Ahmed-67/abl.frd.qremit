@@ -139,9 +139,7 @@ public class ReportController {
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        int userId = (int) userData.get("userid");
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
-
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
@@ -220,21 +218,15 @@ public class ReportController {
     @RequestMapping(value="/downloadSummaryOfDailyStatementInPdfFormat", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        
-        // Getting the data as List
         List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement(date);
         if(data.isEmpty()){
             return ResponseEntity.noContent().build();
         }
         byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date);
-
-        // Set the headers for file download
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         String fileName = CommonService.generateFileName("summary_report_", date, ".pdf");
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"" );
-
-        // Return the response with the PDF as a byte array
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfReport);
@@ -243,12 +235,7 @@ public class ReportController {
     public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format, @RequestParam(defaultValue = "") String date){
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         try {
-            // Prepare parameters and data source as needed
-            Map<String, Object> parameters = new HashMap<>();
             List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyStatement(date);
-            //if(dataList.isEmpty())
-
-            // Call the method to generate the report
             byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format, date);
             String fileName = CommonService.generateFileName("details_report_", date, "." + format.toLowerCase());
             MediaType mediaType = format.equalsIgnoreCase("pdf") ? MediaType.APPLICATION_PDF : MediaType.TEXT_PLAIN;
@@ -265,21 +252,15 @@ public class ReportController {
     @RequestMapping(value="/downloaDailyVoucherInPdfFormat", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloaDailyVoucherInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        NumberToWords numberToWords = new NumberToWords();
-        // Getting the data as List
         List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement(date);
         for(int i=0; i<data.size();i++){
-            data.get(i).setTotalAmountInWords(numberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
+            data.get(i).setTotalAmountInWords(NumberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
         }
         String fileName = CommonService.generateFileName("daily_voucher_", date, ".pdf");
         byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date);
-        // Set the headers for file download
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        //headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"DailyVoucher.pdf\"");
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
-
-        // Return the response with the PDF as a byte array
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfReport);
@@ -315,9 +296,6 @@ public class ReportController {
         } catch (FileNotFoundException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("File not found.");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while reading the file.");
         }
     }
 

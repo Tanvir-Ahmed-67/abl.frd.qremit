@@ -15,42 +15,31 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import javax.validation.Valid;
 import java.util.*;
 
 @Controller
 public class UserController {
     private final MyUserDetailsService myUserDetailsService;
-    private final NafexModelService nafexModelService;
     private final ExchangeHouseModelService exchangeHouseModelService;
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
-    private final FileInfoModelService fileInfoModelService;
     private final CommonService commonService;
 
     @Autowired
-    public UserController(MyUserDetailsService myUserDetailsService, 
-    NafexModelService nafexModelService,
-     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, FileInfoModelService fileInfoModelService, CommonService commonService) {
-
+    public UserController(MyUserDetailsService myUserDetailsService, ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, CommonService commonService) {
         this.myUserDetailsService = myUserDetailsService;
-        this.nafexModelService = nafexModelService;
         this.exchangeHouseModelService = exchangeHouseModelService;
         this.roleModelService = roleModelService;
         this.passwordEncoder = passwordEncoder;
-        this.fileInfoModelService = fileInfoModelService;
         this.commonService = commonService;
     }
     @RequestMapping("/login")
     public String loginPage(){
         return "auth-login";
-    }
-
-    
+    }    
     @RequestMapping("/super-admin-home-page")
     public String loginSubmitSuperAdmin(){ return "layouts/dashboard"; }
     @RequestMapping("/admin-home-page")
