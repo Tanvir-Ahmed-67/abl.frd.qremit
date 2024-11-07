@@ -758,7 +758,7 @@ public class CommonService {
                     field.set(model, doubleField);
                 }
                 if(field.getType().equals(Integer.class)){
-                    field.set(model, Integer.parseInt((String) fieldValue));
+                    field.set(model, CommonService.convertStringToInt((String) fieldValue));
                 }
             }catch(NoSuchFieldException | IllegalAccessException e){
                 e.printStackTrace();

@@ -80,56 +80,6 @@ public class AgexSingaporeModelService {
                 }catch(Exception e){
                     resp.put("errorMessage", e.getMessage());
                 }
-                /*
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, "getCheckT24",type, currentDateTime);
-                List<CocModel> cocModelList = CommonService.generateCocModelList(agexSingaporeModelList, "getCheckCoc", currentDateTime);
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(agexSingaporeModelList, "getCheckAccPayee", currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(agexSingaporeModelList, "getCheckBeftn", currentDateTime);
-                */
-                /*
-                List<OnlineModel> onlineModelList = CommonService.generateOnlineModelList(agexSingaporeModelList, currentDateTime, type);
-                List<CocModel> cocModelList = CommonService.generateCocModelList(agexSingaporeModelList, currentDateTime);
-                List<AccountPayeeModel> accountPayeeModelList = CommonService.generateAccountPayeeModelList(agexSingaporeModelList, currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(agexSingaporeModelList, currentDateTime);
-
-
-                // FILE INFO TABLE GENERATION HERE......
-                fileInfoModel.setAccountPayeeCount(String.valueOf(accountPayeeModelList.size()));
-                fileInfoModel.setOnlineCount(String.valueOf(onlineModelList.size()));
-                fileInfoModel.setBeftnCount(String.valueOf(beftnModelList.size()));
-                fileInfoModel.setCocCount(String.valueOf(cocModelList.size()));
-                fileInfoModel.setTotalCount(String.valueOf(agexSingaporeModelList.size()));
-                fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setIsSettlement(type);
-                fileInfoModel.setUnprocessedCount("test");
-                fileInfoModel.setUploadDateTime(currentDateTime);
-                fileInfoModel.setAgexSingaporeModel(agexSingaporeModelList);
-                fileInfoModel.setCocModelList(cocModelList);
-                fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
-                fileInfoModel.setBeftnModelList(beftnModelList);
-                fileInfoModel.setOnlineModelList(onlineModelList);
-
-                for (CocModel cocModel : cocModelList) {
-                    cocModel.setFileInfoModel(fileInfoModel);
-                    cocModel.setUserModel(user);
-                }
-                for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
-                    accountPayeeModel.setFileInfoModel(fileInfoModel);
-                    accountPayeeModel.setUserModel(user);
-                }
-                for (BeftnModel beftnModel : beftnModelList) {
-                    beftnModel.setFileInfoModel(fileInfoModel);
-                    beftnModel.setUserModel(user);
-                }
-                for (OnlineModel onlineModel : onlineModelList) {
-                    onlineModel.setFileInfoModel(fileInfoModel);
-                    onlineModel.setUserModel(user);
-                }
-                
-                // SAVING TO MySql Data Table
-                fileInfoModelRepository.save(fileInfoModel);
-                return fileInfoModel;
-                */
             }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
@@ -191,38 +141,7 @@ public class AgexSingaporeModelService {
                 agexSingaporeModel = CommonService.createDataModel(agexSingaporeModel, data);
                 agexSingaporeModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 agexSingaporeModel.setUploadDateTime(currentDateTime);
-                agexSingaporeModelList.add(agexSingaporeModel);   
-                /*
-                if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    continue;
-                }
-                
-                AgexSingaporeModel agexSingaporeModel = new AgexSingaporeModel(
-                        csvRecord.get(0), //exCode
-                        csvRecord.get(1), //Tranno
-                        csvRecord.get(2), //Currency
-                        Double.parseDouble(csvRecord.get(3)), //Amount
-                        csvRecord.get(4), //enteredDate
-                        csvRecord.get(5), //remitter
-                        "", // remitterMobile
-                        csvRecord.get(6), // beneficiary
-                        csvRecord.get(7), //beneficiaryAccount
-                        "", // beneficiaryMobile
-                        bankName, //bankName
-                        bankCode, //bankCode
-                        csvRecord.get(10), //branchName
-                        csvRecord.get(11), // branchCode
-                        "", //Drawee Branch Name
-                        "", // Drawee Branch Code
-                        "", // purposeOfRemittance
-                        "", // sourceOfIncome
-                        "",    // processed_flag
-                        CommonService.setTypeFlag(csvRecord.get(7).trim(), bankName, csvRecord.get(11).trim()), //type_flag
-                        "",      // Processed_by
-                        "",    // processed_date
-                        currentDateTime);
                 agexSingaporeModelList.add(agexSingaporeModel);
-                */
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);

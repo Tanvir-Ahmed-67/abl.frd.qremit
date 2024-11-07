@@ -18,7 +18,7 @@ public class BeftnModelService {
     @Autowired
     MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(Integer.parseInt(fileId));
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(beftnModels);
         return in;
     }
@@ -29,7 +29,7 @@ public class BeftnModelService {
     }
 
     public ByteArrayInputStream loadIncentive(String fileId, String fileType) {
-        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoIdForIncentive(Integer.parseInt(fileId));
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoIdForIncentive(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnIncentiveModelsToExcel(beftnModels);
         return in;
     }

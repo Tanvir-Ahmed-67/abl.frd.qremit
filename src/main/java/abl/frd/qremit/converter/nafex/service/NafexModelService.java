@@ -129,73 +129,13 @@ public class NafexModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
-                /*
-                if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    duplicateMessage += "Duplicate Reference No " + transactionNo + " Found <br>";
-                    duplicateCount++;
-                    continue;
-                }
-                //check exchange code
-                exchangeMessage = CommonService.checkExchangeCode(csvRecord.get(0), exchangeCode, nrtaCode);
-                if(!exchangeMessage.isEmpty())  break;
-
-                //a/c no, benficiary name, amount empty or null check
-                errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, csvRecord.get(6), csvRecord.get(3));
-                if(!errorMessage.isEmpty()){
-                    CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                    continue;
-                }
-                if(CommonService.isBeftnFound(bankName, beneficiaryAccount, branchCode)){
-                    errorMessage = CommonService.checkBEFTNRouting(branchCode);
-                    if(!errorMessage.isEmpty()){
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                }else if(CommonService.isCocFound(beneficiaryAccount)){
-                    errorMessage = CommonService.checkCOCBankName(bankName);
-                    if(!errorMessage.isEmpty()){
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                }else if(CommonService.isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
-                    errorMessage = CommonService.checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
-                    if(!errorMessage.isEmpty()){
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                    errorMessage = CommonService.checkCOString(beneficiaryAccount);
-                    if(!errorMessage.isEmpty()){
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                }else if(CommonService.isOnlineAccoutNumberFound(beneficiaryAccount)){
-                    
-                }
-                if(transactionList.contains(transactionNo)){
-                    duplicateMessage += "Duplicate Transaction No " + transactionNo + " Found <br>";
-                    continue;
-                }else transactionList.add(transactionNo);
-                */
                 
-
                 NafexEhMstModel nafexDataModel = new NafexEhMstModel();
                 nafexDataModel = CommonService.createDataModel(nafexDataModel, data);
                 nafexDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 nafexDataModel.setUploadDateTime(currentDateTime);
                 nafexDataModelList.add(nafexDataModel);
             }
-            /*
-            if (!errorDataModelList.isEmpty()) {
-                try{
-                    List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
-                    int errorCount = errorDataModels.size();
-                    resp.put("errorCount", errorCount);
-                }catch(Exception e){
-                    resp.put("errorMessage", e.getMessage());
-                }
-            }
-            */
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -211,13 +151,6 @@ public class NafexModelService {
             if(!resp.containsKey("errorMessage")){
                 resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
             }
-            /* 
-            if(!duplicateMessage.isEmpty())  resp.put("errorMessage", duplicateMessage);
-            //if(!exchangeMessage.isEmpty())  resp.put("errorMessage", exchangeMessage);
-            if(i == duplicateCount){
-                resp.put("errorMessage", "All Data From Your Selected File Already Exists!");
-            }else if(duplicateCount >= 1) resp.put("errorMessage", duplicateMessage);
-            */
             return resp;
         } catch (IOException e) {
             String message = "fail to parse CSV file: " + e.getMessage();

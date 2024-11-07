@@ -113,7 +113,7 @@ public class DynamicOperationService {
                 Class<?> modelClass = wrapper.getModelClass();
                 Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
                 
-                Double amount = updatedData.get("amount") != null ? Double.parseDouble(updatedData.get("amount").toString()) : null;
+                Double amount = updatedData.get("amount") != null ? CommonService.convertStringToDouble(updatedData.get("amount").toString()) : null;
                 int fileInfoId = updatedData.get("fileInfoId") != null ? CommonService.convertStringToInt(updatedData.get("fileInfoId").toString()) : 0;
                 int userId = updatedData.get("userId") != null ? CommonService.convertStringToInt(updatedData.get("userId").toString()) : 0;
                 if(fileInfoId == 0 || userId == 0)    return CommonService.getResp(1, "Invalid File Id or User Id", null);

@@ -73,6 +73,6 @@ public class ApiT24ModelController {
     @ResponseBody
     public Map<String, Object> transferApiT24Data(@RequestParam("id") String id){
         if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);
-        return dynamicOperationService.transferApiT24Data(Integer.parseInt(id));
+        return dynamicOperationService.transferApiT24Data(CommonService.convertStringToInt(id));
     }
 }

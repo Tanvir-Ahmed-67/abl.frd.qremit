@@ -146,7 +146,7 @@ public class ReportController {
         String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
         if((Integer) fileInfo.get("err") == 1)  return ResponseEntity.ok(fileInfo);
-        resp = reportService.getFileDetails(Integer.parseInt(id), fileInfo, columnData);
+        resp = reportService.getFileDetails(CommonService.convertStringToInt(id), fileInfo, columnData);
         return ResponseEntity.ok(resp);
     }
 
@@ -157,7 +157,7 @@ public class ReportController {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
         int fileInfoModelId = 0;
-        if(!id.isEmpty())  fileInfoModelId = Integer.parseInt(id);
+        if(!id.isEmpty())  fileInfoModelId = CommonService.convertStringToInt(id);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         int userId;

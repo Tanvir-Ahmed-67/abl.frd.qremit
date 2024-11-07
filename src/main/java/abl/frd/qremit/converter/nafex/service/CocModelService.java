@@ -14,7 +14,7 @@ public class CocModelService {
     @Autowired
     MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<CocModel> cocModels = cocModelRepository.findAllCocModelHavingFileInfoId(Integer.parseInt(fileId));
+        List<CocModel> cocModels = cocModelRepository.findAllCocModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = CocModelServiceHelper.cocModelToCSV(cocModels);
         return in;
     }

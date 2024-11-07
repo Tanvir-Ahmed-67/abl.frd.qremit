@@ -518,7 +518,7 @@ public class ReportService {
             dataMap.put("exchangeCode",fdata.get("exchange_code"));
             dataMap.put("amount",fdata.get("amount"));
             dataMap.put("processedDate",processedDate);
-            totalAmount += Double.parseDouble(String.valueOf(fdata.get("amount")));
+            totalAmount += CommonService.convertStringToDouble(fdata.get("amount").toString());
             Map<String, Object> types = CommonService.getRemittanceTypes();
             dataMap.put("remType", types.get(type));
             dataList.add(dataMap);

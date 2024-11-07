@@ -176,7 +176,7 @@ public class AnbModelService {
     }
 
     public String getAmount(String amountStr){
-        Double amount = Double.parseDouble(amountStr);
+        Double amount = CommonService.convertStringToDouble(amountStr);
         amount = amount/100;
         return String.valueOf(amount);
     }
