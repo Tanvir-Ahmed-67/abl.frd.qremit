@@ -29,8 +29,6 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
@@ -50,12 +48,6 @@ public class CommonService {
     @Autowired
     BeftnModelRepository beftnModelRepository;
     @Autowired
-    NafexModelRepository nafexModelRepository;
-    @Autowired
-    NafexModelRepository BecModelRepository;
-    @Autowired
-    NafexModelRepository MuzainiModelRepository;
-    @Autowired
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     UserModelRepository userModelRepository;
@@ -65,14 +57,9 @@ public class CommonService {
     public static String uploadSuccesPage = "pages/user/userUploadSuccessPage";
     public static String dirPrefix = "../";
     public static String reportDir = "report/";
-    //@Value("${external.report.path}") // Inject the report directory path from application properties
-    //public String reportDirectory;
-
-    private final EntityManager entityManager;
     private final DataSource dataSource;
 
-    public CommonService(EntityManager entityManager,DataSource dataSource){
-        this.entityManager = entityManager;
+    public CommonService(DataSource dataSource){
         this.dataSource = dataSource;
     }
 
@@ -191,42 +178,7 @@ public class CommonService {
         resp.put(totalDetails,  generateClassForText("Total","fw-bold"));
         return resp;
     }
-        
-    /*
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, LocalDateTime uploadDateTime){
-        return generateOnlineModelList(models, checkT24MethodName,"0", uploadDateTime);
-    }
 
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, String isProcessed, LocalDateTime uploadDateTime) {
-        List<OnlineModel> onlineList = new ArrayList<>();
-        for (T singleModel : models) {
-            try {
-                Method checkT24Method = singleModel.getClass().getMethod(checkT24MethodName);
-                String checkT24Value = (String) checkT24Method.invoke(singleModel);
-                if ("1".equals(checkT24Value)) {
-                    onlineList.add(generateOnlineModel(singleModel,isProcessed, uploadDateTime));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return onlineList;
-    }
-    
-    public static <T> List<OnlineModel> generatOnlineModelListFromErrorData(Object object, String checkT24MethodName, String isProcessed, LocalDateTime uploadDateTime){
-        List<OnlineModel> onlineList = new ArrayList<>();
-        try{
-            Method checkT24Method = object.getClass().getMethod(checkT24MethodName);
-            String checkT24Value = (String) checkT24Method.invoke(object);
-            if ("1".equals(checkT24Value)) {
-                onlineList.add(generateOnlineModel(object, isProcessed, uploadDateTime));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return onlineList;
-    }    
-    */
     public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, LocalDateTime uploadDateTime, int isProcessed){
         List<OnlineModel> onlineList = new ArrayList<>();
         for (T singleModel : models) {
@@ -287,40 +239,6 @@ public class CommonService {
         return cocList;
     }
 
-    /*
-    public static <T> List<CocModel> generateCocModelList(List<T> models, String checkCocMethodName, LocalDateTime uploadDateTime) {
-        List<CocModel> cocList = new ArrayList<>();
-        for (T singleModel : models) {
-            try {
-                Method checkCocMethod = singleModel.getClass().getMethod(checkCocMethodName);
-                String checkCocValue = (String) checkCocMethod.invoke(singleModel);
-                if ("1".equals(checkCocValue)) {
-                    cocList.add(generateCocModel(singleModel, uploadDateTime));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Handle exception
-            }
-        }
-        return cocList;
-    }
-    
-
-    public static <T> List<CocModel> generatCocModelListFromErrorData(Object object, String checkCocMethodName, LocalDateTime uploadDateTime){
-        List<CocModel> cocList = new ArrayList<>();
-        try{
-            Method checkCocMethod = object.getClass().getMethod(checkCocMethodName);
-            String checkCocValue = (String) checkCocMethod.invoke(object);
-            if ("1".equals(checkCocValue)) {
-               cocList.add(generateCocModel(object, uploadDateTime));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return cocList;
-    }
-    */
-
     public static <T> CocModel generateCocModel(T model, LocalDateTime uploadDateTime) {
         CocModel cocModel = new CocModel();
         try {
@@ -347,39 +265,6 @@ public class CommonService {
         }
         return cocModel;
     }
-    /*
-    public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, String checkAccPayeeMethodName, LocalDateTime uploadDateTime) {
-        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
-        for (T singleModel : models) {
-            try {
-                Method checkAccPayeeMethod = singleModel.getClass().getMethod(checkAccPayeeMethodName);
-                String checkAccPayeeValue = (String) checkAccPayeeMethod.invoke(singleModel);
-                if ("1".equals(checkAccPayeeValue)) {
-                    accountPayeeModelList.add(generateAccountPayeeModel(singleModel, uploadDateTime));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Handle exception
-            }
-        }
-        return accountPayeeModelList;
-    }
-
-    public static <T> List<AccountPayeeModel> generatAccountPayeeModelListFromErrorData(Object object, String checkAccPayeeMethodName, LocalDateTime uploadDateTime){
-        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
-        try{
-            Method checkAccPayeeMethod = object.getClass().getMethod(checkAccPayeeMethodName);
-            String checkAccPayeeValue = (String) checkAccPayeeMethod.invoke(object);
-            if ("1".equals(checkAccPayeeValue)) {
-               accountPayeeModelList.add(generateAccountPayeeModel(object, uploadDateTime));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return accountPayeeModelList;
-    }
-    */
-
     public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, LocalDateTime uploadDateTime) {
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
         for (T singleModel : models) {
@@ -420,39 +305,6 @@ public class CommonService {
         }
         return accountPayeeModel;
     }
-
-    /*
-    public static <T> List<BeftnModel> generateBeftnModelList(List<T> models, String checkBeftnMethodName, LocalDateTime uploadDateTime) {
-        List<BeftnModel> beftnModelList = new ArrayList<>();
-        for (T singleModel : models) {
-            try {
-                Method checkBeftnMethod = singleModel.getClass().getMethod(checkBeftnMethodName);
-                String checkBeftnValue = (String) checkBeftnMethod.invoke(singleModel);
-                if ("1".equals(checkBeftnValue)) {
-                    beftnModelList.add(generateBeftnModel(singleModel, uploadDateTime));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Handle exception
-            }
-        }
-        return beftnModelList;
-    }
-
-    public static <T> List<BeftnModel> generateBeftnModelListFromErrorData(Object object, String checkBeftnMethodName, LocalDateTime uploadDateTime){
-        List<BeftnModel> beftnModelList = new ArrayList<>();
-        try{
-            Method checkBeftnMethod = object.getClass().getMethod(checkBeftnMethodName);
-            String checkBeftnValue = (String) checkBeftnMethod.invoke(object);
-            if ("1".equals(checkBeftnValue)) {
-                beftnModelList.add(generateBeftnModel(object, uploadDateTime));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return beftnModelList;
-    }
-    */
 
     public static <T> List<BeftnModel> generateBeftnModelList(List<T> models, LocalDateTime uploadDateTime) {
         List<BeftnModel> beftnModelList = new ArrayList<>();
@@ -569,15 +421,6 @@ public class CommonService {
         if(routingNo.isEmpty() || routingNo.length() != 9 || checkAgraniRoutingNo(routingNo)){
             return false;
         }
-        //if(routingNo.matches("^010.*"))  return false;
-        /* 
-        if(!(routingNo.matches("^010.*") && routingNo.length() == 9)){
-            return true;
-        }
-        else if(!(routingNo.matches("^10.*") && routingNo.length() == 8)){
-            return true;
-        }
-        */
         else if(isOnlineAccoutNumberFound(accountNumber, bankName)){
             return false;
         }
@@ -901,13 +744,6 @@ public class CommonService {
     //check ABL A/C starts with 02** and routing no is not matched with ABL
     public static String checkABLAccountAndRoutingNo(String accountNo, String routingNo, String bankName){
         String errorMessage = "";
-        /* 
-        if(!checkAgraniBankName(bankName) || !checkAgraniRoutingNo(routingNo)){
-            errorMessage = "Invalid Routing Number or Bank Name";
-        }else{
-            if()
-        }
-        */
         if(isOnlineAccoutNumberFound(accountNo) && (!checkAgraniRoutingNo(routingNo) || !checkAgraniBankName(bankName))){
             errorMessage = "Invalid Routing Number or Bank Name";
         }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02") && accountNo.length() != 13){

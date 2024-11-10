@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Constructor;
 import java.time.LocalDateTime;
 import java.util.*;
-
+@SuppressWarnings("unchecked")
 @Service
 public class DynamicOperationService {
     @Autowired
