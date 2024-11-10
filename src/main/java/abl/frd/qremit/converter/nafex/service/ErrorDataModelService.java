@@ -190,11 +190,12 @@ public class ErrorDataModelService {
             dataMap.put("sl", sl++);
             dataMap.put("bankName", emodel.getBankName());
             dataMap.put("branchName", emodel.getBranchName());
-            dataMap.put("routingNo", emodel.getBranchCode());
+            dataMap.put("branchCode", emodel.getBranchCode());
             dataMap.put("beneficiaryName", emodel.getBeneficiaryName());
             dataMap.put("beneficiaryAccountNo", emodel.getBeneficiaryAccount());
             dataMap.put("transactionNo", emodel.getTransactionNo());
             dataMap.put("amount", emodel.getAmount());
+            dataMap.put("uploadDateTime", CommonService.convertDateToString(emodel.getUploadDateTime()));
             dataMap.put("exchangeCode", emodel.getExchangeCode());
             dataMap.put("errorMessage", emodel.getErrorMessage());
             dataMap.put("action", action);

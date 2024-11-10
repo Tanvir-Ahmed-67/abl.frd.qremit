@@ -187,8 +187,8 @@ public class CommonService {
         for(String cData: columnData){
             resp.put(cData, "");
         }
-        resp.put("amount", totalAmount);
-        resp.put(totalDetails,"Total");
+        resp.put("amount", generateClassForText(totalAmount, "fw-bold"));
+        resp.put(totalDetails,  generateClassForText("Total","fw-bold"));
         return resp;
     }
         
@@ -1193,6 +1193,12 @@ public class CommonService {
         return (str != null) ? Integer.parseInt(str):0; 
     }
 
-    //public static Map<String, Object> 
+    public static String convertIntToString(int number){
+        return String.valueOf(number);
+    }
+
+    public static String generateClassForText(String text, String cls){
+        return "<div class='" + cls +"'>" + text + "</div>";
+    }
 
 }

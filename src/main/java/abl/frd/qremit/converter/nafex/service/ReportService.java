@@ -504,7 +504,7 @@ public class ReportService {
 
             String processedDate = CommonService.convertDateToString(downloadDateTime);
             if(processedDate.isEmpty()){
-                processedDate = CommonService.generateTemplateBtn("template-text.txt","#","text-danger fw-bold", "","Not Procssed");
+                processedDate = CommonService.generateClassForText("Not Processed", "text-danger fw-bold");
             }
             Map<String, Object> dataMap = new HashMap<>();
             dataMap.put("sl", sl++);
@@ -533,6 +533,21 @@ public class ReportService {
         return resp;
     }
     
-    //public Map<String, Object> get
+    //last row for showing total data for uploaded file info
+    public Map<String, Object> calculateTotalUploadFileInfo(int totalCocCount, int totalBeftnCount, int totalOnlineCount, int totalAccountPayeeCount, int totalErrorCount, int totalCount){
+        Map<String, Object> totalData = new HashMap<>();
+        totalData.put("sl","");
+        totalData.put("exchangeCode","");
+        totalData.put("uploadDateTime", "");
+        totalData.put("fileName", CommonService.generateClassForText("Total","fw-bold"));
+        totalData.put("cocCount", CommonService.generateClassForText(String.valueOf(totalCocCount),"fw-bold"));
+        totalData.put("beftnCount", CommonService.generateClassForText(String.valueOf(totalBeftnCount),"fw-bold"));
+        totalData.put("onlineCount", CommonService.generateClassForText(String.valueOf(totalOnlineCount),"fw-bold"));
+        totalData.put("accountPayeeCount", CommonService.generateClassForText(String.valueOf(totalAccountPayeeCount),"fw-bold"));
+        totalData.put("errorCount", CommonService.generateClassForText(String.valueOf(totalErrorCount),"fw-bold"));
+        totalData.put("totalCount", CommonService.generateClassForText(String.valueOf(totalCount),"fw-bold"));
+        totalData.put("action", "");
+        return totalData;
+    }
 
 }
