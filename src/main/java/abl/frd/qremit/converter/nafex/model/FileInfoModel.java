@@ -104,8 +104,10 @@ public class FileInfoModel {
     @JsonIgnore
     private List<AlawnehModel> alawnehModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlBiladModel> alBiladModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
    
-    
     @JsonIgnore
     private List<BelhashaGlobalModel> belhashaGlobalModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -226,6 +228,14 @@ public class FileInfoModel {
 
     public void setAnbModel(List<AnbModel> anbModel) {
         this.anbModel = anbModel;
+    }
+
+    public List<AlBiladModel> getAlBiladModel() {
+        return this.alBiladModel;
+    }
+
+    public void setAlBiladModel(List<AlBiladModel> alBiladModel) {
+        this.alBiladModel = alBiladModel;
     }
 
     public List<IndexModel> getIndexModel() {

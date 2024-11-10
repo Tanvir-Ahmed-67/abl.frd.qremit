@@ -64,8 +64,8 @@ public class ReportController {
         switch(type){
             case "1":
             default:
-                columnData = new String[] {"sl", "exchangeCode", "uploadDateTime", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount", "errorCount", "action"};
-                columnTitles = new String[] {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Action"};
+                columnData = new String[] {"sl", "exchangeCode", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount", "errorCount", "uploadDateTime", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Upload Date", "Action"};
                 break;
             case "2":
                 columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","remitterName", "amount","processedDate","remType"};
@@ -73,8 +73,8 @@ public class ReportController {
                 break;
             case "3":
             case "4":
-                columnData = new String[] {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
-                columnTitles = new String[] {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+                columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","amount","uploadDateTime","errorMessage","action"};
+                columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Amount","Upload Date","Error Mesage","Action"};
                 break;
         }
         return CommonService.createColumns(columnData, columnTitles);
@@ -96,30 +96,50 @@ public class ReportController {
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
         List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId, date);
         List<Map<String, Object>> dataList = new ArrayList<>();
+        if(fileInfoModel.isEmpty())     return ResponseEntity.ok(CommonService.getResp(1, "No data found", dataList));
         int sl = 1;
         int totalCount = 0;
+        int totalCocCount = 0;
+        int totalBeftnCount = 0;
+        int totalOnlineCount = 0;
+        int totalAccountPayeeCount = 0;
+        int totalErrorCount = 0;
         String action = "";
         for (FileInfoModel fModel : fileInfoModel) {
             Map<String, Object> dataMap = new HashMap<>();
             action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
             action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
             action += "<input type='hidden' id='base_url' value='" + baseUrl + "' />";
+            int cocCount = CommonService.convertStringToInt(fModel.getCocCount());
+            totalCocCount += cocCount;
+            int beftnCount = CommonService.convertStringToInt(fModel.getBeftnCount());
+            totalBeftnCount += beftnCount;
+            int onlineCount = CommonService.convertStringToInt(fModel.getOnlineCount());
+            totalOnlineCount += onlineCount;
+            int accountPayeeCount = CommonService.convertStringToInt(fModel.getAccountPayeeCount());
+            totalAccountPayeeCount += accountPayeeCount;
+            int errorCount = fModel.getErrorCount();
+            totalErrorCount += errorCount;
+            String errorStr = CommonService.convertIntToString(errorCount);
+            String totalError = (errorCount >= 1) ? CommonService.generateClassForText(errorStr, "text-danger fw-bold"): errorStr;
+            int total = CommonService.convertStringToInt(fModel.getTotalCount());
+            totalCount += total;
             dataMap.put("sl", sl++);
             dataMap.put("id", fModel.getId());
             dataMap.put("exchangeCode", fModel.getExchangeCode());
             dataMap.put("uploadDateTime", CommonService.convertDateToString(fModel.getUploadDateTime()));
             dataMap.put("fileName", fModel.getFileName());
-            dataMap.put("cocCount", CommonService.convertStringToInt(fModel.getCocCount()));
-            dataMap.put("beftnCount", CommonService.convertStringToInt(fModel.getBeftnCount()));
-            dataMap.put("onlineCount", CommonService.convertStringToInt(fModel.getOnlineCount()));
-            dataMap.put("accountPayeeCount", CommonService.convertStringToInt(fModel.getAccountPayeeCount()));
-            dataMap.put("errorCount", fModel.getErrorCount());
-            int total = CommonService.convertStringToInt(fModel.getTotalCount());
-            totalCount += total;
+            dataMap.put("cocCount", cocCount);
+            dataMap.put("beftnCount", beftnCount);
+            dataMap.put("onlineCount", onlineCount);
+            dataMap.put("accountPayeeCount", accountPayeeCount);
+            dataMap.put("errorCount", totalError);
             dataMap.put("totalCount", total);
-            dataMap.put("action", action); // Example action, customize as needed
+            dataMap.put("action", action);
             dataList.add(dataMap);
         }
+        Map<String, Object> totalData = reportService.calculateTotalUploadFileInfo(totalCocCount, totalBeftnCount, totalOnlineCount, totalAccountPayeeCount, totalErrorCount, totalCount);
+        dataList.add(totalData);
         resp.put("data", dataList);
         return ResponseEntity.ok(resp);
     }
@@ -139,9 +159,7 @@ public class ReportController {
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        int userId = (int) userData.get("userid");
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
-
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
@@ -220,21 +238,15 @@ public class ReportController {
     @RequestMapping(value="/downloadSummaryOfDailyStatementInPdfFormat", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        
-        // Getting the data as List
         List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement(date);
         if(data.isEmpty()){
             return ResponseEntity.noContent().build();
         }
         byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date);
-
-        // Set the headers for file download
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         String fileName = CommonService.generateFileName("summary_report_", date, ".pdf");
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"" );
-
-        // Return the response with the PDF as a byte array
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfReport);
@@ -243,12 +255,7 @@ public class ReportController {
     public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format, @RequestParam(defaultValue = "") String date){
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         try {
-            // Prepare parameters and data source as needed
-            Map<String, Object> parameters = new HashMap<>();
             List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyStatement(date);
-            //if(dataList.isEmpty())
-
-            // Call the method to generate the report
             byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format, date);
             String fileName = CommonService.generateFileName("details_report_", date, "." + format.toLowerCase());
             MediaType mediaType = format.equalsIgnoreCase("pdf") ? MediaType.APPLICATION_PDF : MediaType.TEXT_PLAIN;
@@ -265,21 +272,15 @@ public class ReportController {
     @RequestMapping(value="/downloaDailyVoucherInPdfFormat", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloaDailyVoucherInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        NumberToWords numberToWords = new NumberToWords();
-        // Getting the data as List
         List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement(date);
         for(int i=0; i<data.size();i++){
-            data.get(i).setTotalAmountInWords(numberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
+            data.get(i).setTotalAmountInWords(NumberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
         }
         String fileName = CommonService.generateFileName("daily_voucher_", date, ".pdf");
         byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date);
-        // Set the headers for file download
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        //headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"DailyVoucher.pdf\"");
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
-
-        // Return the response with the PDF as a byte array
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfReport);
@@ -315,9 +316,6 @@ public class ReportController {
         } catch (FileNotFoundException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("File not found.");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while reading the file.");
         }
     }
 
