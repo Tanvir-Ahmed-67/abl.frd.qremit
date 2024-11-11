@@ -1,5 +1,7 @@
 <!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0 -->
 <jasperReport name="Blank_A4" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<field name="voucherDate" class="java.time.LocalDate"></field>
+	<field name="nrtAccountNo" class="java.lang.String"/>
 	<field name="exchangeCode" class="java.lang.String"/>
 	<field name="exchangeName" class="java.lang.String"/>
 	<field name="totalRowCount" class="java.lang.Integer"/>
@@ -26,8 +28,11 @@
 		<element kind="staticText" x="180" y="31" width="200" height="30" fontSize="14.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Daily Remittance Summary]]></text>
 		</element>
-		<element kind="staticText" x="180" y="59" width="200" height="21" fontSize="11.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Date: 29-10-2024]]></text>
+		<element kind="staticText" x="230" y="59" width="60" height="21" fontSize="11.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Date:]]></text>
+		</element>
+		<element kind="textField" x="274" y="59" width="60" height="21" fontSize="11.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA[$F{voucherDate}.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))]]></expression>
 		</element>
 	</title>
 
