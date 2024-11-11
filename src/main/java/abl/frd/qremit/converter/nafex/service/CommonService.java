@@ -634,14 +634,9 @@ public class CommonService {
 
     private static String readTemplateFromFile(String templateName) {
         StringBuilder templateContent = new StringBuilder();
-        //try {
-            //Path path = Paths.get(ResourceUtils.getFile("classpath:templates/" + templateName).toURI());
-            //return new String(Files.readAllBytes(path));
         ClassPathResource resource = new ClassPathResource("templates/" + templateName);
         try (InputStream inputStream = resource.getInputStream();
             Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
-                
-            // Read the file line by line
             while (scanner.hasNextLine()) {
                 templateContent.append(scanner.nextLine()).append("\n");
             }
@@ -746,9 +741,9 @@ public class CommonService {
         String errorMessage = "";
         if(isOnlineAccoutNumberFound(accountNo) && (!checkAgraniRoutingNo(routingNo) || !checkAgraniBankName(bankName))){
             errorMessage = "Invalid Routing Number or Bank Name";
-        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02") && accountNo.length() != 13){
+        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02000") && accountNo.length() != 13){
             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits";  //check routing no
-        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("02") && accountNo.length() != 13){
+        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("02000") && accountNo.length() != 13){
             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits"; //check agrani bankName 
         }
         return errorMessage;
@@ -927,13 +922,6 @@ public class CommonService {
         resp.put("1", "benificiaryName,amount,beneficiaryAccount");
         resp.put("2", "");
         return resp;
-    }
-
-    //column for error Reporting
-    public List<Map<String, String>> getErrorReportColumn(){
-        String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
-        String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
-        return createColumns(columnData, columnTitles);
     }
 
     public static Model viewUploadStatus(Map<String, Object> resp, Model model) throws JsonProcessingException{
