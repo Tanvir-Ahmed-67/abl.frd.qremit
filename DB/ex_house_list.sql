@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2024 at 12:51 PM
+-- Generation Time: Nov 11, 2024 at 05:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,7 +69,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (124, '7010263', 'Aman Ex- Kuwait', 'Aman Ex', '7084', 'aman', 'AmanModel', 'amanModelRepository', 0, 1),
 (125, '7010203', 'Arab National Bank, Riyadh, K.', 'Arab National Bank', '7030', 'anb', 'AnbModel', 'anbModelRepository', 0, 1),
 (126, '7010243', 'Bahrain Financing Co. Bahrain ', '', '7013', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
-(127, '7010204', 'Bank Al-Bilad, Riyadh, K.S.A', '', '7031', '', '', '', 0, 1),
+(127, '7010204', 'Bank Al-Bilad, Riyadh, K.S.A', 'Bank Al Bilad', '7031', 'albilad', 'AlBiladModel', 'alBiladModelRepository', 0, 1),
 (128, '7010279', 'Belhasa Global Ex', 'Belhasa', '7098', 'belhashaglobal', 'BelhashaGlobalModel', 'belhashaGlobalModelRepository', 0, 1),
 (129, '7010278', 'Brac Saajjan Exchange', '', '7091', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
 (130, '7010251', 'Choice Money Ex. , USA', '', '7066', 'generic', 'GenericModel', 'genericModelRepository', 0, 1),
