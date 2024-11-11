@@ -1,0 +1,2 @@
+exchange_house_code|tt_no|transaction_currency_code|transaction_value|transaction_date|remitter_name|beneficiary_name|beneficiary_bank_account/mobile_number|beneficiary_bank|benificiary_bank_code|beneficiary_bank_branch_name|beneficiary_bank_branch_routing_no|beneficiary_mobile_no|drawee_bank_branch_name|drawee_bank_branch_code|purpose_of_remittance|source_of_income|remitter_mobile_no
+7040|24414714635854|BDT|29829.60|2024-11-11|MD MORSHED|MONJILA ISLAM|0200004163096|AGRANI BANK BANGLADESH||NAGARKANDA FARIDPUR|010291188|01321937237|00|00|Family Maintenance|||

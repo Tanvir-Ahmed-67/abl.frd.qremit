@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 11, 2024 at 05:37 AM
+-- Generation Time: Nov 11, 2024 at 12:39 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -127,7 +127,8 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', 'agranimalaysia', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', 0, 1),
 (185, '7010304', 'Progoti Exchange Co.', 'Progoti Ex.', '7113', 'progoti', 'ProgotiModel', 'progotiModelRepository', 0, 1),
 (186, '', '', '', '', '', '', '', 0, 0),
-(187, '7010294', 'NBL Money Transfer, Maldives', 'NBL Maldives', '7105', 'nblmaldives', 'NblMaldivesModel', 'nblMaldivesModelRepository', 0, 1);
+(187, '7010294', 'NBL Money Transfer, Maldives', 'NBL Maldives', '7105', 'nblmaldives', 'NblMaldivesModel', 'nblMaldivesModelRepository', 0, 1),
+(188, '7010300', 'Merchantrade Asia Sdn Bhd', 'Merchantrade', '7049', 'merchantrade', 'MerchantradeModel', 'merchantradeModelRepository', 0, 1);
 
 --
 -- Indexes for dumped tables
@@ -151,7 +152,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=188;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
