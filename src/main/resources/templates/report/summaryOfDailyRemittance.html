@@ -23,6 +23,7 @@
                   <tr>
                     <th>Exchange Name</th>
                     <th>Exchange Code</th>
+                    <th>NRTA A/C</th>
                     <th>Total Remittances</th>
                     <th>Total Amount</th>
                   </tr>
@@ -31,11 +32,12 @@
                   <tr th:each="summaryReportContent : ${summaryReportContent}">
                     <td class="text-bold-500" th:text="${summaryReportContent.getExchangeName()}"></td>
                     <td class="text-bold-500" th:text="${summaryReportContent.getExchangeCode()}"></td>
+                    <td class="text-bold-500" th:text="${summaryReportContent.getNrtAccountNo()}"></td>
                     <td class="text-bold-500" th:text="${summaryReportContent.getTotalRowCount()}"></td>
                     <td class="text-bold-500" th:text="${summaryReportContent.doFormatAmount(summaryReportContent.getTotalAmountCount())}"></td>
                   </tr>
                   <tr>
-                    <td colspan="1"></td>
+                    <td colspan="2"></td>
                     <td class="fw-bold">Grand Total</td>
                     <td class="fw-bold" th:text="${grandTotalRemittances}"></td>
                     <td class="fw-bold" th:text="${grandTotalAmount}"></td>

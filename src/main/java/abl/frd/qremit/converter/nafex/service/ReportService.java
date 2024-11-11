@@ -195,10 +195,10 @@ public class ReportService {
     }
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement(String date) {
         List<ExchangeReportDTO> report = getAllDailyReportData(date);
-        report = aggregateExchangeReports(report);
+        report = aggregateExchangeReports(report, date);
         return report;
     }
-    public static List<ExchangeReportDTO> aggregateExchangeReports(List<ExchangeReportDTO> exchangeReports) {
+    public List<ExchangeReportDTO> aggregateExchangeReports(List<ExchangeReportDTO> exchangeReports, String date) {
         // Group by exchangeCode
         return exchangeReports.stream()
                 .collect(Collectors.groupingBy(ExchangeReportDTO::getExchangeCode))
@@ -211,9 +211,10 @@ public class ReportService {
                     ExchangeReportDTO aggregatedReport = new ExchangeReportDTO();
                     aggregatedReport.setExchangeCode(exchangeCode);
                     aggregatedReport.setExchangeName(reportsWithSameCode.get(0).getExchangeName());  // Assuming same exchangeName
-
                     // Aggregate amount and count the rows
                     reportsWithSameCode.forEach(report -> {
+                        aggregatedReport.setVoucherDate(LocalDate.parse(date));
+                        aggregatedReport.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(aggregatedReport.getExchangeCode()).getNrtaCode());
                         aggregatedReport.doSum(report.getAmount());
                         aggregatedReport.doCount();
                     });
