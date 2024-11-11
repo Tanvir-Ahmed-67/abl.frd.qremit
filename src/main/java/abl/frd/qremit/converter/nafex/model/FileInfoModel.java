@@ -107,6 +107,9 @@ public class FileInfoModel {
     @JsonIgnore
     private List<AlBiladModel> alBiladModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<MerchantradeModel> merchantradeModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
    
     @JsonIgnore
     private List<BelhashaGlobalModel> belhashaGlobalModel;
@@ -205,6 +208,14 @@ public class FileInfoModel {
     @OneToMany(cascade={ CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<ErrorDataModel> errorDataModelList;
+
+    public List<MerchantradeModel> getMerchantradeModel() {
+        return this.merchantradeModel;
+    }
+
+    public void setMerchantradeModel(List<MerchantradeModel> merchantradeModel) {
+        this.merchantradeModel = merchantradeModel;
+    }
 
     public List<SaibModel> getSaibModel() {
         return this.saibModel;
