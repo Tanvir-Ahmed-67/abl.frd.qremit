@@ -219,7 +219,7 @@ public class ErrorDataModelService {
             dataMap.put("sl", sl++);
             dataMap.put("bankName", updatedDataMap.get("bankName"));
             dataMap.put("branchName", updatedDataMap.get("branchName"));
-            dataMap.put("branchName", updatedDataMap.get("branchCode"));
+            dataMap.put("branchCode", updatedDataMap.get("branchCode"));
             dataMap.put("beneficiaryName", updatedDataMap.get("beneficiaryName"));
             dataMap.put("beneficiaryAccountNo", updatedDataMap.get("beneficiaryAccount"));
             dataMap.put("transactionNo", updatedDataMap.get("transactionNo"));

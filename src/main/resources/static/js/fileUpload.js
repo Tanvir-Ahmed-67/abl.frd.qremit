@@ -1,7 +1,7 @@
 $(document).ready(function(){
     get_loading();
     var exchange_code = getParameterByName("id");
-    if(exchange_code == '7010272') alert("Please send 8 cup of Doi");
+    //if(exchange_code == '7010272') alert("Please send 8 cup of Doi");
     $("#exchangeCode").val(exchange_code);
     $('form').on('submit',function(e){
         e.preventDefault();
