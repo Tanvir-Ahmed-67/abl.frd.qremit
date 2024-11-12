@@ -313,11 +313,9 @@ public class ReportService {
         List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
         int totalCount = 0;
         //check all settlement file uploaded
-        int hasSettlementDailyCount = 0;
+        int hasSettlementDailyCount = exchangeHouseModelService.calculateSumOfHasSettlementDaily(exchangeHouseModelList);
         for(Map<String, Object> settlement: settlementList){
             int count = (int) settlement.get("count");
-            int settlementCount = (Integer) settlement.get("hasSettlementDaily");
-            if(settlementCount == 1)    hasSettlementDailyCount += settlementCount;
             if(count >= 1)  totalCount++;
         }
         if(totalCount < hasSettlementDailyCount)  return CommonService.getResp(1, "Please upload all settlement file", null);

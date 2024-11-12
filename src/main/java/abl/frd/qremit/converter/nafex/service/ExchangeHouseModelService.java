@@ -54,4 +54,9 @@ public class ExchangeHouseModelService {
     public List<ExchangeHouseModel> findAllByExchangeCodeIn(Set<String> exchangeCodes){
         return exchangeHouseModelRepository.findAllByExchangeCodeIn(exchangeCodes);
     }
+
+    public Integer calculateSumOfHasSettlementDaily(List<ExchangeHouseModel> exchangeHouseModelList){
+        int hasSettlementDailyCount = exchangeHouseModelList.stream().mapToInt(ExchangeHouseModel::getHasSettlementDaily).sum();
+        return hasSettlementDailyCount;
+    }
 }
