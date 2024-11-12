@@ -27,6 +27,8 @@ public class ExchangeHouseModel {
     private int activeStatus = 0;
     @Column(name = "is_settlement", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isSettlement = 0;
+    @Column(name = "has_settlement_daily", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int hasSettlementDaily = 0;
     @Column(name = "class_name", length = 32, nullable = false)
     private String className;
     @Column(name = "repository_name", length = 32, nullable = false)
@@ -110,6 +112,14 @@ public class ExchangeHouseModel {
 
     public void setExchangeShortName(String exchangeShortName) {
         this.exchangeShortName = exchangeShortName;
+    }
+
+    public int getHasSettlementDaily() {
+        return this.hasSettlementDaily;
+    }
+
+    public void setHasSettlementDaily(int hasSettlementDaily) {
+        this.hasSettlementDaily = hasSettlementDaily;
     }
 
     @Override

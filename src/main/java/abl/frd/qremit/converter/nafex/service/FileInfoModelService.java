@@ -48,8 +48,6 @@ public class FileInfoModelService {
         String endDate = date + " 23:59:59";
         LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
         LocalDateTime endDateTime = CommonService.convertStringToDate(endDate);
-        //Integer count = fileInfoModelRepository.getSettlementCountByExchangeCode(startDateTime, enDateTime, exchangeCode, isSettlement);
-        //return count != null ? count : 0;
         return fileInfoModelRepository.getSettlementDataByExchangeCode(startDateTime, endDateTime, exchangeCode, isSettlement);
     }
 
@@ -61,6 +59,7 @@ public class FileInfoModelService {
             Map<String, Object> resp = new HashMap<>();
             resp.put("exchangeCode", exchangeCode);
             resp.put("exchangeName", exchangeHouseModel.getExchangeName());
+            resp.put("hasSettlementDaily", exchangeHouseModel.getHasSettlementDaily());
             int count = 0;
             if(fileInfoModelDTO != null){
                 count = fileInfoModelDTO.getCount();

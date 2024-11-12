@@ -1014,7 +1014,12 @@ public class CommonService {
     }
 
     public static Integer convertStringToInt(String str){
-        return (str != null) ? Integer.parseInt(str):0; 
+        if(str == null)    return 0;
+        try{
+            return Integer.parseInt(str);
+        }catch(NumberFormatException e){
+            return 0;
+        }
     }
 
     public static String convertIntToString(int number){

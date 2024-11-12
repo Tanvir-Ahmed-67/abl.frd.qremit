@@ -1,11 +1,8 @@
 package abl.frd.qremit.converter.nafex.repository;
-
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModelDTO;
-
 import java.time.LocalDateTime;
 import java.util.*;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

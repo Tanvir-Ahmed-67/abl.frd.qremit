@@ -89,13 +89,13 @@ public class RiaModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                String transactionNo = csvRecord.get(1).trim();
-                String amount = csvRecord.get(3).trim();
+                String transactionNo = csvRecord.get(0).trim();
+                String amount = csvRecord.get(1).trim();
                 duplicateData = riaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = "Agrani Bank";
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = "";
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
@@ -144,12 +144,12 @@ public class RiaModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount){
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", "BDT");
-        data.put("amount", csvRecord.get(1));
+        data.put("amount", amount);
         data.put("enteredDate", csvRecord.get(10));
         data.put("remitterName", csvRecord.get(3));
         data.put("remitterMobile", "");
