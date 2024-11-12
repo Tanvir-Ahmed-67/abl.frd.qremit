@@ -111,13 +111,11 @@ public class UtilsController {
         List<Map<String, Object>> dataList = new ArrayList<>();
         int i = 1;
         String action = "";
-        int hasSettlementDailyCount = 0;
+        int hasSettlementDailyCount = exchangeHouseModelService.calculateSumOfHasSettlementDaily(exchangeHouseModelList);
         int totalCount = 0;
         for(Map<String, Object> settlement: settlementList){
             Map<String, Object> dataMap = new HashMap<>();
             int count = (int) settlement.get("count");
-            int settlementCount = (Integer) settlement.get("hasSettlementDaily");
-            if(settlementCount == 1)    hasSettlementDailyCount += settlementCount;
             if(count >= 1){
                 action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-success btn-sm", "","Processed");
                 totalCount++;
