@@ -103,7 +103,8 @@ public class CocPaidModelService {
                         routingMap.get("branch_name").toString(),
                         routingMap.get("abl_branch_code").toString(),// branch code have to put here
                         csvRecord.get(12), //tr mode
-                        currentDateTime);  //uploadDateTime
+                        currentDateTime,    //uploadDateTime
+                        "4");  
                 cocPaidModelList.add(cocPaidModel);
             }
             return cocPaidModelList;
