@@ -313,17 +313,20 @@ public class ReportService {
         List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
         int totalCount = 0;
         //check all settlement file uploaded
+        int hasSettlementDailyCount = 0;
         for(Map<String, Object> settlement: settlementList){
             int count = (int) settlement.get("count");
-            if(count == 1)  totalCount++;
+            int settlementCount = (Integer) settlement.get("hasSettlementDaily");
+            if(settlementCount == 1)    hasSettlementDailyCount += settlementCount;
+            if(count >= 1)  totalCount++;
         }
-        if(totalCount !=5)  return CommonService.getResp(1, "Please upload all settlement file", null);
-
+        if(totalCount < hasSettlementDailyCount)  return CommonService.getResp(1, "Please upload all settlement file", null);
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
         //parse data
         int count = 0;
         for(Map<String, Object> settlement: settlementList){
             FileInfoModel fileInfoModel = (FileInfoModel) settlement.get("fileInfoModel");
+            if(fileInfoModel == null)   continue;   //for empty fileinfo no data will be generated
             int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
             int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
             int accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
@@ -410,7 +413,6 @@ public class ReportService {
                     reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
-                    //System.out.println(reportModel);
                     reportModelRepository.save(reportModel);
                     setIsVoucherGenerated(types, id, currentDateTime);
                     count++;
@@ -524,7 +526,6 @@ public class ReportService {
             dataMap.put("remType", types.get(type));
             dataList.add(dataMap);
         }
-        //System.out.println(totalAmount);
         Map<String, Object> totalAmountMap = commonService.getTotalAmountData(columnData, totalAmount,"beneficiaryAccountNo");
         dataList.add(totalAmountMap);
 
