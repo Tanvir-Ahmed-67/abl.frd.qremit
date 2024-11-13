@@ -21,4 +21,6 @@ public interface CocPaidModelRepository extends JpaRepository<CocPaidModel, Inte
     @Modifying
     @Query("UPDATE CocPaidModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate WHERE n.id=:id")
     int updateIsVoucherGenerated(@Param("id") int id, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
+    @Query("SELECT n FROM CocPaidModel n WHERE n.fileInfoModel.id=:id")
+    List<CocPaidModel> findAllCocPaidModelHavingFileInfoId(int id);
 }

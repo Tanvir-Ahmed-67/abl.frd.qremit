@@ -121,4 +121,8 @@ public class CocPaidModelService {
     public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
         cocPaidModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
+
+    public List<CocPaidModel> findAllCocPaidModelHavingFileInfoId(int id){
+        return cocPaidModelRepository.findAllCocPaidModelHavingFileInfoId(id);
+    }
 }
