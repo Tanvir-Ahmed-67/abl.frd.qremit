@@ -752,7 +752,7 @@ public class CommonService {
     //string starts with CO
     public static String checkCOString(String accountNo){
         String errorMessage = "";
-        if(accountNo.toLowerCase().contains("co")){
+        if(accountNo.toLowerCase().startsWith("co")){
             errorMessage = "Invalid COC A/C name";
         }
         return errorMessage;
