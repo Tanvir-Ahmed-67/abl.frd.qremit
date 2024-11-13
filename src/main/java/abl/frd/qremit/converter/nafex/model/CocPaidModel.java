@@ -54,6 +54,8 @@ public class CocPaidModel {
     private int isVoucherGenerated = 0;
     @Column(name = "incentive", length = 15)
     private Double incentive;
+    @Column(name = "type_flag")
+    private String typeFlag;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
@@ -249,9 +251,17 @@ public class CocPaidModel {
         this.incentive = incentive;
     }
 
+    public String getTypeFlag() {
+        return this.typeFlag;
+    }
+
+    public void setTypeFlag(String typeFlag) {
+        this.typeFlag = typeFlag;
+    }
+
     public CocPaidModel(String exchangeCode, String transactionNo, Double amount, LocalDateTime enteredDate, LocalDateTime paidDate, String remitterName, 
         String beneficiaryName, String beneficiaryAccount, String routingNo, String beneficiaryMobile, String bankName, String bankCode, String branchName, 
-        String branchCode, String trMode, LocalDateTime uploadDateTime) {
+        String branchCode, String trMode, LocalDateTime uploadDateTime, String typeFlag) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.amount = amount;
@@ -268,6 +278,7 @@ public class CocPaidModel {
         this.bankCode = bankCode;
         this.bankName = bankName;
         this.branchName = branchName;
+        this.typeFlag = typeFlag;
     }
 
     @Override

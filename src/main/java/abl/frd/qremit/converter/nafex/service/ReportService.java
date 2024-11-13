@@ -33,7 +33,7 @@ public class ReportService {
     @Autowired
     ErrorDataModelRepository errorDataModelRepository;
     @Autowired
-    CocModelRepository cocModelRepository;
+    CocModelService cocModelService;
     @Autowired
     ExchangeHouseModelService exchangeHouseModelService;
     @Autowired
@@ -457,11 +457,16 @@ public class ReportService {
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
         List<BeftnModel> beftnModelList = new ArrayList<>();
         List<CocModel> cocModelList = new ArrayList<>();
+        List<CocPaidModel> cocPaidModelList = new ArrayList<>();
         if(onlineCount >= 1)    onlineModelList = onlineModelService.findAllOnlineModelByFileInfoId(id);
         if(accountPayeeCount >=1)   accountPayeeModelList = accountPayeeModelService.findAllAccountPayeeModelByFileInfoId(id);
         if(beftnCount >= 1) beftnModelList = beftnModelService.findAllBeftnModelByFileInfoId(id);
-        if(cocCount >=  1)  cocModelList = cocModelRepository.findAllCocModelHavingFileInfoId(id);
-
+        
+        if(cocCount >=  1){
+            if(fileInfoModel.getExchangeCode().equals("333333")){
+                cocPaidModelList = cocPaidModelService.findAllCocPaidModelHavingFileInfoId(id);
+            }else cocModelList = cocModelService.findAllCocModelByFileInfoId(id);
+        }  
         List<Map<String, Object>> dataList = new ArrayList<>();
         int sl = 1;
         double totalAmount = 0;
@@ -495,10 +500,21 @@ public class ReportService {
                 }
             }
             if(("4").equals(type)){
-                for(CocModel cocModel: cocModelList){
-                    if(transactionNo.equalsIgnoreCase(cocModel.getTransactionNo())){
-                        downloadDateTime = cocModel.getDownloadDateTime();
-                        break;
+                //for cocPaidModel download date time will be uploaded date time
+                if(!cocPaidModelList.isEmpty()){
+                    for(CocPaidModel cocPaidModel: cocPaidModelList){
+                        if(transactionNo.equalsIgnoreCase(cocPaidModel.getTransactionNo())){
+                            downloadDateTime = cocPaidModel.getUploadDateTime();
+                            break;
+                        }
+                    }
+                }
+                if(!cocModelList.isEmpty()){
+                    for(CocModel cocModel: cocModelList){
+                        if(transactionNo.equalsIgnoreCase(cocModel.getTransactionNo())){
+                            downloadDateTime = cocModel.getDownloadDateTime();
+                            break;
+                        }
                     }
                 }
             }
