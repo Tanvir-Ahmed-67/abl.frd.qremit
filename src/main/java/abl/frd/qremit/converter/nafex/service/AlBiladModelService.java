@@ -2,7 +2,6 @@ package abl.frd.qremit.converter.nafex.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import abl.frd.qremit.converter.nafex.model.AlBiladModel;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
 import abl.frd.qremit.converter.nafex.model.FileInfoModel;
@@ -18,7 +17,6 @@ import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
-import org.apache.commons.csv.*;
 @SuppressWarnings("unchecked")
 @Service
 public class AlBiladModelService {
@@ -173,6 +171,7 @@ public class AlBiladModelService {
         Double amount = Double.parseDouble(line.substring(31, 49).trim());
         String currency = line.substring(49, 52).trim();
         String remitterName = line.substring(55, 90).trim();
+        String remittanceType = line.substring(160, 195).trim();
         String branchName = line.substring(230, 265).trim();
         String branchCode = line.substring(265, 300).trim();
         String bankStr = line.substring(300,335).trim();
@@ -180,7 +179,9 @@ public class AlBiladModelService {
         Map<String, Object> bank = getBankDetails(bankStr,branchName, branchCode, branch2);
         String beneficiaryName = line.substring(440, 545).trim();
         String beneficiaryAccount = line.substring(545, 580).trim();
+        String mobileNo = line.substring(685, 720).trim();
         String sourceOfIncome = line.substring(755, 790).trim();
+        beneficiaryAccount = getBeneficiaryAccountNo(beneficiaryAccount, remittanceType, mobileNo);
 
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
@@ -228,6 +229,11 @@ public class AlBiladModelService {
             branchName = branch2;
         }
         return branchName;
+    }
+
+    public String getBeneficiaryAccountNo(String beneficiaryAccount, String remittanceType, String mobileNo){
+        if(remittanceType.toLowerCase().startsWith("cash")) beneficiaryAccount = "COC" + mobileNo;
+        return beneficiaryAccount;
     }
 
 }

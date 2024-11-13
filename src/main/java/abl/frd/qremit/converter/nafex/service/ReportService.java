@@ -500,6 +500,7 @@ public class ReportService {
                 }
             }
             if(("4").equals(type)){
+                //for cocPaidModel download date time will be uploaded date time
                 if(!cocPaidModelList.isEmpty()){
                     for(CocPaidModel cocPaidModel: cocPaidModelList){
                         if(transactionNo.equalsIgnoreCase(cocPaidModel.getTransactionNo())){
