@@ -89,4 +89,8 @@ public class OnlineModelService {
     public void updateTempStatusById(int id, int tempStatus){
         onlineModelRepository.updateTempStatusById(id, tempStatus);
     }
+    @Transactional
+    public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
+        onlineModelRepository.updateTempStatusBulk(ids, tempStatus);
+    }
 }

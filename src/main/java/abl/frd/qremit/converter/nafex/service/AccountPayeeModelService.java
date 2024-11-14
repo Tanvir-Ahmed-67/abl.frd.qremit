@@ -77,4 +77,8 @@ public class AccountPayeeModelService {
     public void updateTempStatusById(int id, int tempStatus){
         accountPayeeModelRepository.updateTempStatusById(id, tempStatus);
     }
+    @Transactional
+    public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
+        accountPayeeModelRepository.updateTempStatusBulk(ids, tempStatus);
+    }
 }

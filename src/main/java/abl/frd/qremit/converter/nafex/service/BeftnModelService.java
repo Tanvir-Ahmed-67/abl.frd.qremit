@@ -125,5 +125,9 @@ public class BeftnModelService {
     public void updateTempStatusById(int id, int tempStatus){
         beftnModelRepository.updateTempStatusById(id, tempStatus);
     }
+    @Transactional
+    public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
+        beftnModelRepository.updateTempStatusBulk(ids, tempStatus);
+    }
 
 }

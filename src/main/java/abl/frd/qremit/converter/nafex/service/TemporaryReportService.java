@@ -51,7 +51,8 @@ public class TemporaryReportService {
 
     public <T> Map<String, Object> setTemporaryModelData(List<T> modelList, String type){
         Map<String, Object> resp = new HashMap<>();
-        //System.out.println(modelList);
+        List<TemporaryReportModel> tempInsertList = new ArrayList<>();
+        List<Integer> insertedIds = new ArrayList<>();
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
             for(T model: modelList){
@@ -85,8 +86,9 @@ public class TemporaryReportService {
                     temporaryReportModel.setType(type);
                     temporaryReportModel.setDataModelId(id);
                     //System.out.println(temporaryReportModel);
-                    temporaryReportRepository.save(temporaryReportModel);
-                    setTempStatus(type, id);
+                    //temporaryReportRepository.save(temporaryReportModel);
+                    //setTempStatus(type, id);
+                    tempInsertList.add(temporaryReportModel);
                     count++;
                 }catch(Exception e){
                     e.printStackTrace();
@@ -94,9 +96,35 @@ public class TemporaryReportService {
                 }
             }
             if(count == 0)  return CommonService.getResp(0, "No data found for processing temporary table", null);
-            resp = CommonService.getResp(0, "Data processed temporary report successfully", null);
+            if(!tempInsertList.isEmpty()){
+                List<TemporaryReportModel> savedModels = temporaryReportRepository.saveAll(tempInsertList);
+                temporaryReportRepository.flush();
+                for(TemporaryReportModel savedModel : savedModels){
+                    insertedIds.add(savedModel.getDataModelId());
+                }
+                if(!insertedIds.isEmpty()){
+                    updateTempStatusBulk(type,insertedIds);
+                }
+                resp = CommonService.getResp(0, "Data processed temporary report successfully", null);
+            }
+            //resp = CommonService.getResp(0, "Data processed temporary report successfully", null);
         }
         return resp;
+    }
+
+    public void updateTempStatusBulk(String type, List<Integer> ids){
+        switch (type) {
+            case "1":
+                onlineModelService.updateTempStatusBulk(ids,1);
+                break;
+            case "2":
+                accountPayeeModelService.updateTempStatusBulk(ids,1);
+                break;
+            case "3":
+                beftnModelService.updateTempStatusBulk(ids,1);
+            default:
+                break;
+        }
     }
 
     public void setTempStatus(String type, int id){

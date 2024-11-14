@@ -43,6 +43,10 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     @Modifying
     @Query("UPDATE BeftnModel n SET n.tempStatus=:tempStatus WHERE n.id=:id")
     int updateTempStatusById(@Param("id") int id, @Param("tempStatus") int tempStatus);
+    @Transactional
+    @Modifying
+    @Query("UPDATE BeftnModel n SET n.tempStatus=:tempStatus WHERE n.id in :ids")
+    int updateTempStatusBulk(List<Integer> ids, @Param("tempStatus") int tempStatus);
 
 }
 /*
