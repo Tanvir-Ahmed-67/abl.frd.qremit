@@ -369,6 +369,8 @@ public class ReportService {
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         LocalDate currentDate = LocalDate.now();
         String types = type;
+        List<ReportModel> reportInsertList = new ArrayList<>();
+        List<Integer> insertedIds = new ArrayList<>();
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
             for(T model: modelList){
@@ -411,19 +413,48 @@ public class ReportService {
                     reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
-                    reportModelRepository.save(reportModel);
-                    setIsVoucherGenerated(types, id, currentDateTime);
+                    //reportModelRepository.save(reportModel);
+                    //setIsVoucherGenerated(types, id, currentDateTime);
+                    reportInsertList.add(reportModel);
                     count++;
                 }catch(Exception e){
                     e.printStackTrace();
                     return CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }
             }
-            if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
             if(count == 0)  return CommonService.getResp(0, "No data found for processing report", null);
-            resp = CommonService.getResp(0, "Data processed successfully", null);
+            if(!reportInsertList.isEmpty()){
+                List<ReportModel> savedModels = reportModelRepository.saveAll(reportInsertList);
+                reportModelRepository.flush();
+                for(ReportModel savedModel: savedModels){
+                    insertedIds.add(savedModel.getDataModelId());
+                }
+                if(!insertedIds.isEmpty()){
+                    setIsVoucherGeneratedBulk(types, insertedIds, currentDateTime);
+                }
+                if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
+                resp = CommonService.getResp(0, "Data processed successfully", null);
+            }
         }
         return resp;
+    }
+
+    public void setIsVoucherGeneratedBulk(String type, List<Integer> ids, LocalDateTime reportDate){
+        switch (type) {
+            case "1":
+                onlineModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            case "2":
+                accountPayeeModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            case "3":
+                beftnModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+            case "4":
+                cocPaidModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            default:
+                break;
+        }
     }
 
     public void setIsVoucherGenerated(String type, int id, LocalDateTime reportDate){

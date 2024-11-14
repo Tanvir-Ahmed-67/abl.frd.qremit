@@ -30,6 +30,14 @@ public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeM
     int updateIsVoucherGenerated(@Param("id") int id, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
     @Transactional
     @Modifying
+    @Query("UPDATE AccountPayeeModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate, n.tempStatus = 1 WHERE n.id in :ids")
+    int updateIsVoucherGeneratedBulk(@Param("ids") List<Integer> ids, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
+    @Transactional
+    @Modifying
     @Query("UPDATE AccountPayeeModel n SET n.tempStatus=:tempStatus WHERE n.id=:id")
     int updateTempStatusById(@Param("id") int id, @Param("tempStatus") int tempStatus);
+    @Transactional
+    @Modifying
+    @Query("UPDATE AccountPayeeModel n SET n.tempStatus=:tempStatus WHERE n.id in :ids")
+    int updateTempStatusBulk(@Param("ids") List<Integer> ids, @Param("tempStatus") int tempStatus);
 }

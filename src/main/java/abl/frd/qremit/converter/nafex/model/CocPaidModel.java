@@ -56,6 +56,8 @@ public class CocPaidModel {
     private Double incentive;
     @Column(name = "type_flag")
     private String typeFlag;
+    @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int tempStatus = 0;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
@@ -257,6 +259,14 @@ public class CocPaidModel {
 
     public void setTypeFlag(String typeFlag) {
         this.typeFlag = typeFlag;
+    }
+
+    public int getTempStatus() {
+        return this.tempStatus;
+    }
+
+    public void setTempStatus(int tempStatus) {
+        this.tempStatus = tempStatus;
     }
 
     public CocPaidModel(String exchangeCode, String transactionNo, Double amount, LocalDateTime enteredDate, LocalDateTime paidDate, String remitterName, 
