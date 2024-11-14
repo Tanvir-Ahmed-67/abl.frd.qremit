@@ -116,7 +116,10 @@ public class BeftnModelService {
     public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
         beftnModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
-
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        beftnModelRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
+    }
     public List<BeftnModel> findAllBeftnModelByFileInfoId(int id){
         return beftnModelRepository.findAllBeftnModelHavingFileInfoId(id);
     }

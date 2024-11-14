@@ -69,6 +69,10 @@ public class AccountPayeeModelService {
     public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
         accountPayeeModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        accountPayeeModelRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
+    }
 
     public List<AccountPayeeModel> findAllAccountPayeeModelByFileInfoId(int id){
         return accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(id);

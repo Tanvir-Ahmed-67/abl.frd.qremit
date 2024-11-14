@@ -50,7 +50,8 @@ public class TemporaryReportService {
     
 
     public <T> Map<String, Object> setTemporaryModelData(List<T> modelList, String type){
-        Map<String, Object> resp = new HashMap<>();
+        String emsg = "No data found for processing temporary table";
+        Map<String, Object> resp = CommonService.getResp(1, emsg, null);;
         List<TemporaryReportModel> tempInsertList = new ArrayList<>();
         List<Integer> insertedIds = new ArrayList<>();
         if(modelList != null && !modelList.isEmpty()){
@@ -95,7 +96,7 @@ public class TemporaryReportService {
                     return CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }
             }
-            if(count == 0)  return CommonService.getResp(0, "No data found for processing temporary table", null);
+            if(count == 0)  return CommonService.getResp(1, emsg, null);
             if(!tempInsertList.isEmpty()){
                 List<TemporaryReportModel> savedModels = temporaryReportRepository.saveAll(tempInsertList);
                 temporaryReportRepository.flush();
