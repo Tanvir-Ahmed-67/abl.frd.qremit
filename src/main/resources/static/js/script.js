@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    get_loading();
     $.ajax({
         type: "GET",
         url: "/adminDashboard",
@@ -18,7 +19,7 @@ function get_cnt(url,tdiv){
     $.ajax({
         url: url,
         type: "get",
-        timeout: "10000",
+        timeout: "1000000",
         dataType: "json"
     }).done(function(resp){
         $(tdiv).text(resp.count);
