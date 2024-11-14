@@ -41,7 +41,7 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     int updateIsVoucherGenerated(@Param("id") int id, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
     @Transactional
     @Modifying
-    @Query("UPDATE BeftnModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate WHERE n.id in :ids")
+    @Query("UPDATE BeftnModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate, n.tempStatus = 1 WHERE n.id in :ids")
     int updateIsVoucherGeneratedBulk(@Param("ids") List<Integer> ids, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
     @Transactional
     @Modifying

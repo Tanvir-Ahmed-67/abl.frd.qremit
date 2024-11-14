@@ -23,7 +23,7 @@ public class TemporaryReportService {
     BeftnModelService beftnModelService;
     @Autowired
     AccountPayeeModelService accountPayeeModelService;
-
+    protected String emsg = "No data found for processing temporary table";
     public Map<String, Object> processTemporaryReport(){
         Map<String, Object> resp = new HashMap<>();
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
@@ -32,7 +32,9 @@ public class TemporaryReportService {
         List<OnlineModel> onlineModelList = onlineModelService.getTemopraryReportData(1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
         List<BeftnModel> beftnModelList = beftnModelService.getTemopraryReportData(1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
         List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getTemopraryReportData(1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-        
+        if(onlineModelList.isEmpty() && beftnModelList.isEmpty() && accountPayeeModelList.isEmpty()){
+            return CommonService.getResp(0, this.emsg, null);
+        }
         resp = setTemporaryModelData(onlineModelList, "1");
         int count = resp.size();
         if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
@@ -50,8 +52,7 @@ public class TemporaryReportService {
     
 
     public <T> Map<String, Object> setTemporaryModelData(List<T> modelList, String type){
-        String emsg = "No data found for processing temporary table";
-        Map<String, Object> resp = CommonService.getResp(1, emsg, null);;
+        Map<String, Object> resp = CommonService.getResp(0, this.emsg, null);;
         List<TemporaryReportModel> tempInsertList = new ArrayList<>();
         List<Integer> insertedIds = new ArrayList<>();
         if(modelList != null && !modelList.isEmpty()){
@@ -96,7 +97,7 @@ public class TemporaryReportService {
                     return CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }
             }
-            if(count == 0)  return CommonService.getResp(1, emsg, null);
+            if(count == 0)  return CommonService.getResp(0, this.emsg, null);
             if(!tempInsertList.isEmpty()){
                 List<TemporaryReportModel> savedModels = temporaryReportRepository.saveAll(tempInsertList);
                 temporaryReportRepository.flush();
@@ -106,7 +107,7 @@ public class TemporaryReportService {
                 if(!insertedIds.isEmpty()){
                     updateTempStatusBulk(type,insertedIds);
                 }
-                resp = CommonService.getResp(0, "Data processed temporary report successfully", null);
+                if(!savedModels.isEmpty()) resp = CommonService.getResp(0, "Data processed temporary report successfully", null);
             }
             //resp = CommonService.getResp(0, "Data processed temporary report successfully", null);
         }
