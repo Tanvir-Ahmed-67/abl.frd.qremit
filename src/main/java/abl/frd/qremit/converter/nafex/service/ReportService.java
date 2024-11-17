@@ -371,6 +371,7 @@ public class ReportService {
         String types = type;
         List<ReportModel> reportInsertList = new ArrayList<>();
         List<Integer> insertedIds = new ArrayList<>();
+        Map<String, List<Integer>> insertList = new HashMap<>();
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
             for(T model: modelList){
@@ -415,6 +416,8 @@ public class ReportService {
                     reportModel.setDataModelId(id);
                     //reportModelRepository.save(reportModel);
                     //setIsVoucherGenerated(types, id, currentDateTime);
+                    insertedIds.add(id);
+                    insertList.put(types, insertedIds);
                     reportInsertList.add(reportModel);
                     count++;
                 }catch(Exception e){
@@ -426,11 +429,16 @@ public class ReportService {
             if(!reportInsertList.isEmpty()){
                 List<ReportModel> savedModels = reportModelRepository.saveAll(reportInsertList);
                 reportModelRepository.flush();
+                /*
                 for(ReportModel savedModel: savedModels){
-                    insertedIds.add(savedModel.getDataModelId());
+                    //insertedIds.add(savedModel.getDataModelId());
                 }
                 if(!insertedIds.isEmpty()){
                     setIsVoucherGeneratedBulk(types, insertedIds, currentDateTime);
+                }
+                */
+                for (Map.Entry<String, List<Integer>> entry : insertList.entrySet()) {
+                    setIsVoucherGeneratedBulk(entry.getKey(), entry.getValue(), currentDateTime);
                 }
                 if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
                 resp = CommonService.getResp(0, "Data processed successfully", null);
