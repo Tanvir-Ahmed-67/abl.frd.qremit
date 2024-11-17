@@ -51,7 +51,7 @@ $(document).ready(function(){
     
 
     function get_user_upload_report(resp,params){
-        var sfun = [upload_report_ui]
+        var sfun = [upload_report_ui];
         get_dynamic_dataTable(params.tbl, params.url, resp.column, sfun);        
     }
 
@@ -71,26 +71,6 @@ $(document).ready(function(){
         //var url = "/user-home-page?type=2&exchangeCode=" + exCode + "&id=" + id;
         window.location.href = url;
     });
-    /*
-    $(document).off('click',".edit_error");
-    $(document).on('click',".edit_error",function(e){
-        e.preventDefault();
-        var id = $(this).attr("id");
-        var params = { tdiv: '.modal-body'};
-        var mparams = { 'modalID': 'myModal', 'modal_wrap':'#modal_wrap','modal_class':'modal-md', 'modal_title': 'Edit Error Data' };
-        var url = "/error/editForm/" + id;
-        gen_modal(url,params,mparams);
-    });
-    $(document).on('submit', "#editErrorForm", function(e){
-        e.preventDefault();
-        var token = $('#_csrf').val();
-        var header = $('#_csrf_header').val();
-        var data = $(this).serialize();
-        var url = "/error/update";
-        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
-        get_ajax(url,data,success_modal,fail_func,"post","json",params);
-    });
-    */
 
     $(document).off('click',".view_error");
     $(document).on('click',".view_error",function(e){
@@ -111,17 +91,4 @@ $(document).ready(function(){
         get_ajax(url,data,success_modal,fail_func,"post","json",params);
     });
 
-    /*
-    $(document).off('click',".delete_error");
-    $(document).on('click',".delete_error",function(e){
-        e.preventDefault();
-        var id = $(this).attr("id");
-        var url  = "/error/delete/" + id;
-        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
-        var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
-        if(confirm("Are you sure you want to delete this data?")){
-            get_ajax(url,data,success_modal,fail_func,"DELETE","json",params);
-        }
-    });
-    */
 });
