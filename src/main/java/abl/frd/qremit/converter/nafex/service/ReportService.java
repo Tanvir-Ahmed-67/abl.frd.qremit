@@ -370,7 +370,10 @@ public class ReportService {
         LocalDate currentDate = LocalDate.now();
         String types = type;
         List<ReportModel> reportInsertList = new ArrayList<>();
-        List<Integer> insertedIds = new ArrayList<>();
+        List<Integer> onlineInsertList = new ArrayList<>();
+        List<Integer> acPayeeInsertList = new ArrayList<>();
+        List<Integer> beftnInsertList = new ArrayList<>();
+        List<Integer> cocPaidInsertList = new ArrayList<>();
         Map<String, List<Integer>> insertList = new HashMap<>();
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
@@ -416,8 +419,24 @@ public class ReportService {
                     reportModel.setDataModelId(id);
                     //reportModelRepository.save(reportModel);
                     //setIsVoucherGenerated(types, id, currentDateTime);
-                    insertedIds.add(id);
-                    insertList.put(types, insertedIds);
+                    switch (types){
+                        case "1":
+                            onlineInsertList.add(id);
+                            insertList.put(types, onlineInsertList);
+                            break;
+                        case "2":
+                            acPayeeInsertList.add(id);
+                            insertList.put(types, acPayeeInsertList);
+                            break;
+                        case "3":
+                            beftnInsertList.add(id);
+                            insertList.put(types, beftnInsertList);
+                            break;
+                        case "4":
+                            cocPaidInsertList.add(id);
+                            insertList.put(types, cocPaidInsertList);
+                            break;
+                    }
                     reportInsertList.add(reportModel);
                     count++;
                 }catch(Exception e){
@@ -427,16 +446,8 @@ public class ReportService {
             }
             if(count == 0)  return CommonService.getResp(0, "No data found for processing report", null);
             if(!reportInsertList.isEmpty()){
-                List<ReportModel> savedModels = reportModelRepository.saveAll(reportInsertList);
+                reportModelRepository.saveAll(reportInsertList);
                 reportModelRepository.flush();
-                /*
-                for(ReportModel savedModel: savedModels){
-                    //insertedIds.add(savedModel.getDataModelId());
-                }
-                if(!insertedIds.isEmpty()){
-                    setIsVoucherGeneratedBulk(types, insertedIds, currentDateTime);
-                }
-                */
                 for (Map.Entry<String, List<Integer>> entry : insertList.entrySet()) {
                     setIsVoucherGeneratedBulk(entry.getKey(), entry.getValue(), currentDateTime);
                 }
