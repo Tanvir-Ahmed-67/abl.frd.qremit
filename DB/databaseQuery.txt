@@ -67,3 +67,4 @@ UPDATE `ex_house_list` set exchange_short_name = "Bank Al Bilad", base_table_nam
 INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `base_table_name`, `class_name`, `repository_name`, `is_settlement`, `active_status`) VALUES (NULL, '7010300', 'Merchantrade Asia Sdn Bhd', 'Merchantrade', '7049', 'merchantrade', 'MerchantradeModel', 'merchantradeModelRepository', '0', '1');
 UPDATE `ex_house_list` set has_settlement_daily = 1 where exchange_code in ('222222','7010226','333333');
 UPDATE `ex_house_list` set base_table_name = 'generic', class_name = 'GenericModel', repository_name = 'genericModelRepository' where exchange_code = '7010213';
+UPDATE `ex_house_list` set base_table_name = "shah_global", class_name ="ShahGlobalModel", repository_name ="shahGlobalModelRepository", nrta_code = 7104 where exchange_code = '7010294'
