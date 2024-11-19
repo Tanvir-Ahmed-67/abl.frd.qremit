@@ -174,6 +174,9 @@ public class FileInfoModel {
     @JsonIgnore
     private List<ShahGlobalModel> shahGlobalModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<CityModel> cityModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
 
     @JsonIgnore
     private List<ApiBeftnModel> apiBeftnModel;
@@ -246,6 +249,14 @@ public class FileInfoModel {
 
     public List<ShahGlobalModel> getShahGlobalModel() {
         return this.shahGlobalModel;
+    }
+
+    public List<CityModel> getCityModel() {
+        return this.cityModel;
+    }
+
+    public void setCityModel(List<CityModel> cityModel) {
+        this.cityModel = cityModel;
     }
 
     public void setShahGlobalModel(List<ShahGlobalModel> shahGlobalModel) {
