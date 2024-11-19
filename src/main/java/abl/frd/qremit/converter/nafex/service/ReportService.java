@@ -389,7 +389,7 @@ public class ReportService {
                     int id = (int) CommonService.getPropertyValue(model, "getId");
                     if(("").equals(type)){
                         types = (String) CommonService.getPropertyValue(model, "getType");
-                        reportModel.setUploadUserId((int) CommonService.getPropertyValue(model, "getFileInfoModelId"));
+                        reportModel.setUploadUserId((int) CommonService.getPropertyValue(model, "getUploadUserId"));
                         reportModel.setFileInfoModelId((int) CommonService.getPropertyValue(model, "getFileInfoModelId"));
                         id = (int) CommonService.getPropertyValue(model, "getDataModelId");
                     }else{
