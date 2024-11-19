@@ -446,12 +446,14 @@ public class ReportService {
             }
             if(count == 0)  return CommonService.getResp(0, "No data found for processing report", null);
             if(!reportInsertList.isEmpty()){
-                reportModelRepository.saveAll(reportInsertList);
+                List<ReportModel> savedModels = reportModelRepository.saveAll(reportInsertList);
                 reportModelRepository.flush();
-                for (Map.Entry<String, List<Integer>> entry : insertList.entrySet()) {
-                    setIsVoucherGeneratedBulk(entry.getKey(), entry.getValue(), currentDateTime);
+                if(!savedModels.isEmpty()){
+                    for (Map.Entry<String, List<Integer>> entry : insertList.entrySet()) {
+                        setIsVoucherGeneratedBulk(entry.getKey(), entry.getValue(), currentDateTime);
+                    }
+                    if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
                 }
-                if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
                 resp = CommonService.getResp(0, "Data processed successfully", null);
             }
         }
