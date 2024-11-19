@@ -18,7 +18,7 @@ public class CustomQueryService {
         return customQueryRepository.getRoutingDetails(routingNo);
     }
 
-    public Map<String, Object> getABLBranchFromRouting(String routingNo){
+    public Map<String, Object> getRoutingDetailsByRoutingNo(String routingNo){
         Map<String, Object> resp = new HashMap<>();
         Map<String, Object> routingDetails = getRoutingDetails(routingNo);
         if((Integer) routingDetails.get("err") == 0){

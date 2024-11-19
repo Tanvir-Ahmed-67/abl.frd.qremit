@@ -85,7 +85,7 @@ public class CocPaidModelService {
                     continue;
                 }
                 String routingNo = CommonService.fixRoutingNo(csvRecord.get(8));
-                Map<String, Object> routingMap = customQueryService.getABLBranchFromRouting(routingNo);
+                Map<String, Object> routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo);
                 
                 CocPaidModel cocPaidModel = new CocPaidModel(
                         csvRecord.get(0), //exCode
