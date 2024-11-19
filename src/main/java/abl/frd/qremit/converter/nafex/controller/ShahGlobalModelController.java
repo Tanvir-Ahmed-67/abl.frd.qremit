@@ -14,26 +14,26 @@ import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
-import abl.frd.qremit.converter.nafex.service.AgraniMalaysiaModelService;
+import abl.frd.qremit.converter.nafex.service.ShahGlobalModelService;
 import java.util.*;
 
 @Controller
-public class AgraniMalaysiaModelController {
+public class ShahGlobalModelController {
     private final MyUserDetailsService myUserDetailsService;
-    private final AgraniMalaysiaModelService agraniMalaysiaModelService;
     private final CommonService commonService;
-    
     @Autowired
-    public AgraniMalaysiaModelController(AgraniMalaysiaModelService agraniMalaysiaModelService,MyUserDetailsService myUserDetailsService, CommonService commonService){
+    ShahGlobalModelService shahGlobalModelService;
+
+    @Autowired
+    public ShahGlobalModelController(MyUserDetailsService myUserDetailsService, CommonService commonService) {
         this.myUserDetailsService = myUserDetailsService;
-        this.agraniMalaysiaModelService = agraniMalaysiaModelService;
         this.commonService = commonService;
     }
-    
-    @PostMapping("/agranimalaysiaUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("fileType") String fileType,
-        @ModelAttribute("exchangeCode") String exchangeCode,@RequestParam("nrtaCode") String nrtaCode, Model model) {
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));  
+
+    @PostMapping("/shah_globalUpload")
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, 
+        @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, Model model) {
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         int userId = 000000000;
         // Getting Logged In user Details in this block
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -44,15 +44,17 @@ public class AgraniMalaysiaModelController {
         }
         String message = "";
         if (CommonService.hasCSVFormat(file)) {
-            if(!commonService.ifFileExist(file.getOriginalFilename())) {
+            if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = agraniMalaysiaModelService.save(file, userId, exchangeCode, fileType, nrtaCode);
+                    Map<String, Object> resp = shahGlobalModelService.save(file, userId, exchangeCode, nrtaCode);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
-                }catch (IllegalArgumentException e) {
-                    model.addAttribute("message", e.getMessage());
+                } catch (IllegalArgumentException e) {
+                    message = e.getMessage();
+                    model.addAttribute("message", message);
                     return CommonService.uploadSuccesPage;
-                }catch (Exception e) {
+                }
+                catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
                     return CommonService.uploadSuccesPage;
@@ -66,4 +68,5 @@ public class AgraniMalaysiaModelController {
         model.addAttribute("message", message);
         return CommonService.uploadSuccesPage;
     }
+
 }
