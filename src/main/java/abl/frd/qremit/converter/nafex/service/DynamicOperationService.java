@@ -259,7 +259,7 @@ public class DynamicOperationService {
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved succesfully", null);
             } else {
-                String msg = "No repository or model class found for cxchangeCode: " + exchangeCode;
+                String msg = "No repository or model class found for exchangeCode: " + exchangeCode;
                 resp = CommonService.getResp(1, msg, null);
                 throw new IllegalArgumentException(msg);
             }
