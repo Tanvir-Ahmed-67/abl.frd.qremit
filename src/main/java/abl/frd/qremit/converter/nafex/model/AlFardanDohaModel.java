@@ -3,10 +3,10 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_saib", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
+@Table(name="base_data_table_alfardan_doha", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
     indexes = { @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id") }
 )
-public class SaibModel {
+public class AlFardanDohaModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -66,27 +66,8 @@ public class SaibModel {
     @JoinColumn(name="user_id")
     private User userModel;
 
-    public User getUserModel() {
-        return userModel;
-    }
-
-    public void setUserModel(User userModel) {
-        this.userModel = userModel;
-    }
-    public FileInfoModel getFileInfoModel() {
-        return fileInfoModel;
-    }
-
-    public void setFileInfoModel(FileInfoModel fileInfoModel) {
-        this.fileInfoModel = fileInfoModel;
-    }
-
-    public SaibModel() {
-
-    }
-
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(int id) {
@@ -94,7 +75,7 @@ public class SaibModel {
     }
 
     public String getExchangeCode() {
-        return exchangeCode;
+        return this.exchangeCode;
     }
 
     public void setExchangeCode(String exchangeCode) {
@@ -102,7 +83,7 @@ public class SaibModel {
     }
 
     public String getTransactionNo() {
-        return transactionNo;
+        return this.transactionNo;
     }
 
     public void setTransactionNo(String transactionNo) {
@@ -110,7 +91,7 @@ public class SaibModel {
     }
 
     public String getCurrency() {
-        return currency;
+        return this.currency;
     }
 
     public void setCurrency(String currency) {
@@ -118,7 +99,7 @@ public class SaibModel {
     }
 
     public Double getAmount() {
-        return amount;
+        return this.amount;
     }
 
     public void setAmount(Double amount) {
@@ -126,7 +107,7 @@ public class SaibModel {
     }
 
     public String getEnteredDate() {
-        return enteredDate;
+        return this.enteredDate;
     }
 
     public void setEnteredDate(String enteredDate) {
@@ -134,15 +115,23 @@ public class SaibModel {
     }
 
     public String getRemitterName() {
-        return remitterName;
+        return this.remitterName;
     }
 
     public void setRemitterName(String remitterName) {
         this.remitterName = remitterName;
     }
 
+    public String getRemitterMobile() {
+        return this.remitterMobile;
+    }
+
+    public void setRemitterMobile(String remitterMobile) {
+        this.remitterMobile = remitterMobile;
+    }
+
     public String getBeneficiaryName() {
-        return beneficiaryName;
+        return this.beneficiaryName;
     }
 
     public void setBeneficiaryName(String beneficiaryName) {
@@ -150,7 +139,7 @@ public class SaibModel {
     }
 
     public String getBeneficiaryAccount() {
-        return beneficiaryAccount;
+        return this.beneficiaryAccount;
     }
 
     public void setBeneficiaryAccount(String beneficiaryAccount) {
@@ -158,7 +147,7 @@ public class SaibModel {
     }
 
     public String getBeneficiaryMobile() {
-        return beneficiaryMobile;
+        return this.beneficiaryMobile;
     }
 
     public void setBeneficiaryMobile(String beneficiaryMobile) {
@@ -166,7 +155,7 @@ public class SaibModel {
     }
 
     public String getBankName() {
-        return bankName;
+        return this.bankName;
     }
 
     public void setBankName(String bankName) {
@@ -174,7 +163,7 @@ public class SaibModel {
     }
 
     public String getBankCode() {
-        return bankCode;
+        return this.bankCode;
     }
 
     public void setBankCode(String bankCode) {
@@ -182,7 +171,7 @@ public class SaibModel {
     }
 
     public String getBranchName() {
-        return branchName;
+        return this.branchName;
     }
 
     public void setBranchName(String branchName) {
@@ -190,7 +179,7 @@ public class SaibModel {
     }
 
     public String getBranchCode() {
-        return branchCode;
+        return this.branchCode;
     }
 
     public void setBranchCode(String branchCode) {
@@ -198,7 +187,7 @@ public class SaibModel {
     }
 
     public String getDraweeBranchName() {
-        return draweeBranchName;
+        return this.draweeBranchName;
     }
 
     public void setDraweeBranchName(String draweeBranchName) {
@@ -206,7 +195,7 @@ public class SaibModel {
     }
 
     public String getDraweeBranchCode() {
-        return draweeBranchCode;
+        return this.draweeBranchCode;
     }
 
     public void setDraweeBranchCode(String draweeBranchCode) {
@@ -214,7 +203,7 @@ public class SaibModel {
     }
 
     public String getPurposeOfRemittance() {
-        return purposeOfRemittance;
+        return this.purposeOfRemittance;
     }
 
     public void setPurposeOfRemittance(String purposeOfRemittance) {
@@ -222,23 +211,15 @@ public class SaibModel {
     }
 
     public String getSourceOfIncome() {
-        return sourceOfIncome;
+        return this.sourceOfIncome;
     }
 
     public void setSourceOfIncome(String sourceOfIncome) {
         this.sourceOfIncome = sourceOfIncome;
     }
 
-    public String getRemitterMobile() {
-        return remitterMobile;
-    }
-
-    public void setRemitterMobile(String remitterMobile) {
-        this.remitterMobile = remitterMobile;
-    }
-
     public String getProcessFlag() {
-        return processFlag;
+        return this.processFlag;
     }
 
     public void setProcessFlag(String processFlag) {
@@ -246,7 +227,7 @@ public class SaibModel {
     }
 
     public String getTypeFlag() {
-        return typeFlag;
+        return this.typeFlag;
     }
 
     public void setTypeFlag(String typeFlag) {
@@ -254,21 +235,20 @@ public class SaibModel {
     }
 
     public String getProcessedBy() {
-        return processedBy;
+        return this.processedBy;
     }
 
-    public void setProcessedBy(String extraA) {
-        this.processedBy = extraA;
+    public void setProcessedBy(String processedBy) {
+        this.processedBy = processedBy;
     }
 
     public String getProcessedDate() {
-        return processedDate;
+        return this.processedDate;
     }
 
     public void setProcessedDate(String processedDate) {
         this.processedDate = processedDate;
     }
-
 
     public LocalDateTime getUploadDateTime() {
         return this.uploadDateTime;
@@ -278,8 +258,27 @@ public class SaibModel {
         this.uploadDateTime = uploadDateTime;
     }
 
+    public FileInfoModel getFileInfoModel() {
+        return this.fileInfoModel;
+    }
 
-    public SaibModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
+    public void setFileInfoModel(FileInfoModel fileInfoModel) {
+        this.fileInfoModel = fileInfoModel;
+    }
+
+    public User getUserModel() {
+        return this.userModel;
+    }
+
+    public void setUserModel(User userModel) {
+        this.userModel = userModel;
+    }
+
+
+    public AlFardanDohaModel() {
+    }
+
+    public AlFardanDohaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -304,15 +303,16 @@ public class SaibModel {
         this.processedDate = processedDate;
         this.uploadDateTime = uploadDateTime;
     }
-    public SaibModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime, FileInfoModel fileInfoModel, User user) {
-        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, uploadDateTime);
+
+    public AlFardanDohaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
+        this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, upLocalDateTime);
         this.fileInfoModel = fileInfoModel;
         this.userModel = user;
     }
 
     @Override
     public String toString() {
-        return "MuzainiModel{" +
+        return "BecModel{" +
                 "id=" + id +
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", transactionNo='" + transactionNo + '\'' +
@@ -327,7 +327,10 @@ public class SaibModel {
                 ", branchName='" + branchName + '\'' +
                 ", branchCode='" + branchCode + '\'' +
                 ", beneficiaryMobile='" + beneficiaryMobile + '\'' +
+                ", draweeBranchName='" + draweeBranchName + '\'' +
+                ", draweeBranchCode='" + draweeBranchCode + '\'' +
                 ", purposeOfRemittance='" + purposeOfRemittance + '\'' +
+                ", sourceOfIncome='" + sourceOfIncome + '\'' +
                 ", remitterMobile='" + remitterMobile + '\'' +
                 ", processFlag='" + processFlag + '\'' +
                 ", typeFlag='" + typeFlag + '\'' +
@@ -337,4 +340,3 @@ public class SaibModel {
                 '}';
     }
 }
-

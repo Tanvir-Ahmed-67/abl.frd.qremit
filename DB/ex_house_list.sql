@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2024 at 10:57 AM
+-- Generation Time: Nov 19, 2024 at 12:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -74,7 +74,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (128, '7010279', 'Belhasa Global Ex', 'Belhasa', '7098', 'belhashaglobal', 'BelhashaGlobalModel', 'belhashaGlobalModelRepository', 0, 1, 0),
 (129, '7010278', 'Brac Saajjan Exchange', '', '7091', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (130, '7010251', 'Choice Money Ex. , USA', '', '7066', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(131, '7010211', 'City Intl Exchange Co, Kuwait', '', '7016', '', '', '', 0, 1, 0),
+(131, '7010211', 'City Intl Exchange Co, Kuwait', 'City Intl Exchange', '7016', 'city', 'CityModel', 'cityModelRepository', 0, 1, 0),
 (132, '7010288', 'City pay Malysia', '', '7071', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (133, '7010254', 'Dollarco Exchange Co. Kuwait', '', '7019', '', '', '', 0, 0, 0),
 (134, '7010206', 'Eastern Exchange Est. Doha, Qatar', 'Eastern Ex', '7000', 'eastern', 'EasternModel', 'easternModelRepository', 0, 1, 0),
