@@ -5,11 +5,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="base_data_table_standard", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no", "amount", "exchange_code"}),
-        @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})
-    }
-)
+@Table(name="base_data_table_standard", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})})
 public class StandardModel {
     @Id
     @Column(name = "id")

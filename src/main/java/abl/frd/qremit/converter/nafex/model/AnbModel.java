@@ -3,11 +3,7 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_anb", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no", "amount", "exchange_code"}),
-        @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})
-    }
-)
+@Table(name="base_data_table_anb", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})})
 public class AnbModel {
     @Id
     @Column(name = "id")
