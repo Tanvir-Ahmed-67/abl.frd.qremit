@@ -1,5 +1,5 @@
 package abl.frd.qremit.converter.nafex.repository;
-import java.util.List;
+import java.util.*;
 
 import javax.transaction.Transactional;
 
@@ -29,4 +29,5 @@ public interface ErrorDataModelRepository extends JpaRepository<ErrorDataModel, 
     @Query("UPDATE ErrorDataModel e SET e.updateStatus= :updateStatus where e.id= :id")
     void updateUpdateStatusById(int id, int updateStatus);
     void deleteById(int id);
+    Optional<ErrorDataModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }
