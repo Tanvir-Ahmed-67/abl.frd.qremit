@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_singapore", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})})
+@Table(name="base_data_table_singapore", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
+    indexes = { @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id") }
+)
 public class AgexSingaporeModel {
     @Id
     @Column(name = "id")
