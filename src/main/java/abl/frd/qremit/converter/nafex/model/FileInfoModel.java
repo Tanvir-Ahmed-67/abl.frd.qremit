@@ -98,6 +98,11 @@ public class FileInfoModel {
     @JsonIgnore
     private List<NblMaldivesModel> nblMaldivesModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    
+    @JsonIgnore
+    private List<SwiftModel> swiftModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+   
     @JsonIgnore
     private List<NblUsaModel> nblUsaModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -227,6 +232,14 @@ public class FileInfoModel {
 
     public List<AlRostamaniModel> getAlRostamaniModel() {
         return this.alRostamaniModel;
+    }
+
+    public List<SwiftModel> getSwiftModel() {
+        return this.swiftModel;
+    }
+
+    public void setSwiftModel(List<SwiftModel> swiftModel) {
+        this.swiftModel = swiftModel;
     }
 
     public void setAlRostamaniModel(List<AlRostamaniModel> alRostamaniModel) {
