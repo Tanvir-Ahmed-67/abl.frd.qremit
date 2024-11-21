@@ -6,6 +6,6 @@ import java.util.*;
 
 @Repository
 public interface AlFardanDohaModelRepository extends JpaRepository<AlFardanDohaModel, Integer>{
-    AlFardanDohaModel findByTransactionNo(String transactionNo);;
+    AlFardanDohaModel findByTransactionNo(String transactionNo);
     Optional<AlFardanDohaModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

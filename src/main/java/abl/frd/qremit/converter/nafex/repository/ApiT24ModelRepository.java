@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.nafex.repository;
-import abl.frd.qremit.converter.nafex.model.ApiBeftnModel;
 import abl.frd.qremit.converter.nafex.model.ApiT24Model;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
