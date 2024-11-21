@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2024 at 12:47 PM
+-- Generation Time: Nov 21, 2024 at 06:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -63,8 +63,8 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (117, '7010240', 'Al Rostamani Intl Ex. Co. Abu', 'Al Rostamani', '7052', 'alrostamani', 'AlRostamaniModel', 'alRostamaniModelRepository', 0, 1, 0),
 (118, '7010245', 'Al Zaman Ex. , Qatar', 'Al Zaman', '7057', 'alzaman', 'AlZamanModel', 'alZamanModelRepository', 0, 1, 0),
 (119, '7010262', 'ALAWANEH EX. JORDAN', 'ALAWANEH EX.', '7082', 'alawneh', 'AlawnehModel', 'alawnehModelRepository', 0, 1, 0),
-(120, '7010205', 'Al-Fardan Exchange  Co. Doha, ', '', '7002', '', '', '', 0, 1, 0),
-(121, '7010220', 'Al-Fardan Exchange, Abu Dhabi, UAE', '', '7010', '', '', '', 0, 1, 0),
+(120, '7010205', 'Al-Fardan Exchange Co. Doha,Qatar', 'Al Fardan Doha', '7002', 'alfardan_doha', 'AlFardanDohaModel', 'alFardanDohaModelRepository', 0, 1, 0),
+(121, '7010220', 'Al-Fardan Exchange, Abu Dhabi, UAE', 'Al Fardan Abu Dhabi', '7010', 'alfardan_abudhabi', 'AlFardanAbuDhabiModel', 'alFardanAbuDhabiModelRepository', 0, 1, 0),
 (122, '7010233', 'AL-Ghurair Ex. Dubai, UAE', '', '7043', '', '', '', 0, 0, 0),
 (123, '7119', 'Al-Rajhi Banking & Investment ', 'Al Raji', '7009', 'alraji', 'AlRajiModel', 'alRajiModelRepository', 0, 1, 0),
 (124, '7010263', 'Aman Ex- Kuwait', 'Aman Ex', '7084', 'aman', 'AmanModel', 'amanModelRepository', 0, 1, 0),
