@@ -70,3 +70,4 @@ UPDATE `ex_house_list` set base_table_name = 'generic', class_name = 'GenericMod
 UPDATE `ex_house_list` set base_table_name = "shah_global", class_name ="ShahGlobalModel", repository_name ="shahGlobalModelRepository", nrta_code = 7104 where exchange_code = '7010294'
 UPDATE `ex_house_list` set exchange_short_name = "City Intl Exchange", base_table_name = 'city', class_name = 'CityModel', repository_name = 'cityModelRepository' where exchange_code = '7010211';
 UPDATE `ex_house_list` set exchange_name = 'Al-Fardan Exchange Co. Doha,Qatar', exchange_short_name ="Al Fardan Doha", base_table_name = "alfardan_doha", class_name = "AlFardanDohaModel", repository_name = "alFardanDohaModelRepository" where exchange_code = '7010205'
+UPDATE `ex_house_list` SET `exchange_short_name` = 'Al Fardan Abu Dhabi', base_table_name = 'alfardan_abudhabi', class_name = "AlFardanAbuDhabiModel", repository_name = "alFardanAbuDhabiModelRepository" WHERE exchange_code = '7010220'
