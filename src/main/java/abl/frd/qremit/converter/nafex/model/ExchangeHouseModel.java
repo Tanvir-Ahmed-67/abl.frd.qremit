@@ -4,29 +4,31 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="ex_house_list",
-    indexes = { @Index(name = "idx_is_settlement", columnList = "is_settlement") }
+    indexes = { @Index(name = "idx_is_settlement", columnList = "is_settlement"), @Index(name = "idx_active_status", columnList = "active_status"),
+        @Index(name = "idx_exchange_code", columnList = "exchange_code"), @Index(name = "idx_nrta_code", columnList = "nrta_code"),
+    }
 )
 public class ExchangeHouseModel {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
-    @Column(nullable=false)
+    @Column(name = "exchange_name", nullable=false)
     private String exchangeName;
-    @Column(nullable=false)
+    @Column(name = "nrta_code",nullable=false, length = 10)
     private String nrtaCode;
-    @Column(nullable=false, length = 20)
+    @Column(name ="exchange_code", nullable=false, length = 20)
     private String exchangeCode;
-    @Column(nullable=false)
+    @Column(name = "exchange_short_name", nullable=false, length = 30)
     private String exchangeShortName;
-    @Column(nullable=false)
+    @Column(name ="base_table_name", nullable=false, length = 20)
     private String baseTableName;
-
     @Column(name = "active_status", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int activeStatus = 0;
     @Column(name = "is_settlement", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isSettlement = 0;
-
+    @Column(name = "has_settlement_daily", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int hasSettlementDaily = 0;
     @Column(name = "class_name", length = 32, nullable = false)
     private String className;
     @Column(name = "repository_name", length = 32, nullable = false)
@@ -110,6 +112,14 @@ public class ExchangeHouseModel {
 
     public void setExchangeShortName(String exchangeShortName) {
         this.exchangeShortName = exchangeShortName;
+    }
+
+    public int getHasSettlementDaily() {
+        return this.hasSettlementDaily;
+    }
+
+    public void setHasSettlementDaily(int hasSettlementDaily) {
+        this.hasSettlementDaily = hasSettlementDaily;
     }
 
     @Override

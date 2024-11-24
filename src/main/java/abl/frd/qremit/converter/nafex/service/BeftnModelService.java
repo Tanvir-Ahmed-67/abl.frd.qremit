@@ -18,7 +18,7 @@ public class BeftnModelService {
     @Autowired
     MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(Integer.parseInt(fileId));
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(beftnModels);
         return in;
     }
@@ -29,7 +29,7 @@ public class BeftnModelService {
     }
 
     public ByteArrayInputStream loadIncentive(String fileId, String fileType) {
-        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoIdForIncentive(Integer.parseInt(fileId));
+        List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoIdForIncentive(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnIncentiveModelsToExcel(beftnModels);
         return in;
     }
@@ -59,7 +59,7 @@ public class BeftnModelService {
             for (BeftnModel updatedEntity : entitiesToUpdate) {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessedMain(processed);
-                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
                         existingEntity.setIsDownloaded(1);
@@ -82,7 +82,7 @@ public class BeftnModelService {
             for (BeftnModel updatedEntity : entitiesToUpdate) {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessedIncentive(processed);
-                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
                         existingEntity.setIsDownloaded(1);
@@ -115,6 +115,22 @@ public class BeftnModelService {
     @Transactional
     public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
         beftnModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
+    }
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        beftnModelRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
+    }
+    public List<BeftnModel> findAllBeftnModelByFileInfoId(int id){
+        return beftnModelRepository.findAllBeftnModelHavingFileInfoId(id);
+    }
+    
+    @Transactional
+    public void updateTempStatusById(int id, int tempStatus){
+        beftnModelRepository.updateTempStatusById(id, tempStatus);
+    }
+    @Transactional
+    public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
+        beftnModelRepository.updateTempStatusBulk(ids, tempStatus);
     }
 
 }

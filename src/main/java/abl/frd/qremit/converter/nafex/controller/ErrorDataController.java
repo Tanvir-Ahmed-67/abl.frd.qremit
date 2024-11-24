@@ -4,7 +4,10 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
+import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.CommonService;
 import abl.frd.qremit.converter.nafex.service.DynamicOperationService;
 import abl.frd.qremit.converter.nafex.service.ErrorDataModelService;
@@ -43,26 +47,35 @@ public class ErrorDataController {
     @GetMapping("/editForm/{id}")
     public String editErrorDataForm(@AuthenticationPrincipal MyUserDetails userDetails, @PathVariable("id") String id, Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(Integer.parseInt(id));
+        ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(CommonService.convertStringToInt(id));
         //System.out.println(errorDataModel.toString());
         model.addAttribute("errorDataModel", errorDataModel);
-        return "/pages/user/editErrorForm";
+        return "pages/user/editErrorForm";
     }
     @PostMapping("/update")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateErrorDataById(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam Map<String, String> formData, Model model, HttpServletRequest request){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        //Map<String, Object> resp = new HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
         formData.remove("_csrf");
         formData.remove("_csrf_header");
-        Map<String, Object> resp = errorDataModelService.processUpdateErrorDataById(formData, request);
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        int userId;
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+            User user = myUserDetails.getUser();
+            userId = user.getId();
+            resp = errorDataModelService.processUpdateErrorDataById(formData, request, userId);
+        }
+        
         return ResponseEntity.ok(resp);
     }
 
     @GetMapping("/viewError/{id}")
     public String viewError(@AuthenticationPrincipal MyUserDetails userDetails, @PathVariable("id") String id, Model model){
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        String page = "/pages/admin/viewError";
+        String page = "pages/admin/viewError";
         Map<String, Object> resp = getLogData(id);
         if((Integer) resp.get("err") == 1){
             model.addAttribute("message", (String) resp.get("msg"));
@@ -80,7 +93,7 @@ public class ErrorDataController {
     @PostMapping("/approve")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> approveErrorDataById(@RequestParam String id){
-        int errorDataId = Integer.parseInt(id);
+        int errorDataId = CommonService.convertStringToInt(id);
         Map<String, Object> resp = getLogData(id);
         if((Integer) resp.get("err") == 1)  return ResponseEntity.ok(resp);
         List<Map<String, Object>> logData = (List<Map<String, Object>>) resp.get("data");
@@ -100,7 +113,7 @@ public class ErrorDataController {
             resp = CommonService.getResp(1, "Invalid Id", null);
             return resp;
         }
-        int errorDataId = Integer.parseInt(id);
+        int errorDataId = CommonService.convertStringToInt(id);
         ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(errorDataId);
         if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
         if(errorDataModel.getUpdateStatus() != 1)   return CommonService.getResp(1, "Invalid Type for approve data", null);  //for approve status must be 1

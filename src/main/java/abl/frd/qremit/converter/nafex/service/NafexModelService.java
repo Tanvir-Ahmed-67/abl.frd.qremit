@@ -33,10 +33,10 @@ public class NafexModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
-
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try{
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
@@ -47,7 +47,7 @@ public class NafexModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
             
-            Map<String, Object> nafexData = csvToNafexModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> nafexData = csvToNafexModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<NafexEhMstModel> nafexModels = (List<NafexEhMstModel>) nafexData.get("nafexDataModelList");
 
             if(nafexData.containsKey("errorMessage")){
@@ -88,7 +88,7 @@ public class NafexModelService {
         return resp;
     }
     
-    public Map<String, Object> csvToNafexModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToNafexModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<NafexEhMstModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -102,11 +102,12 @@ public class NafexModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = nafexModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = nafexModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
 
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
@@ -128,73 +129,13 @@ public class NafexModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
-                /*
-                if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    duplicateMessage += "Duplicate Reference No " + transactionNo + " Found <br>";
-                    duplicateCount++;
-                    continue;
-                }
-                //check exchange code
-                exchangeMessage = CommonService.checkExchangeCode(csvRecord.get(0), exchangeCode, nrtaCode);
-                if(!exchangeMessage.isEmpty())  break;
-
-                //a/c no, benficiary name, amount empty or null check
-                errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, csvRecord.get(6), csvRecord.get(3));
-                if(!errorMessage.isEmpty()){
-                    CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                    continue;
-                }
-                if(CommonService.isBeftnFound(bankName, beneficiaryAccount, branchCode)){
-                    errorMessage = CommonService.checkBEFTNRouting(branchCode);
-                    if(!errorMessage.isEmpty()){
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                }else if(CommonService.isCocFound(beneficiaryAccount)){
-                    errorMessage = CommonService.checkCOCBankName(bankName);
-                    if(!errorMessage.isEmpty()){
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                }else if(CommonService.isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
-                    errorMessage = CommonService.checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
-                    if(!errorMessage.isEmpty()){
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                    errorMessage = CommonService.checkCOString(beneficiaryAccount);
-                    if(!errorMessage.isEmpty()){
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                }else if(CommonService.isOnlineAccoutNumberFound(beneficiaryAccount)){
-                    
-                }
-                if(transactionList.contains(transactionNo)){
-                    duplicateMessage += "Duplicate Transaction No " + transactionNo + " Found <br>";
-                    continue;
-                }else transactionList.add(transactionNo);
-                */
                 
-
                 NafexEhMstModel nafexDataModel = new NafexEhMstModel();
                 nafexDataModel = CommonService.createDataModel(nafexDataModel, data);
                 nafexDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 nafexDataModel.setUploadDateTime(currentDateTime);
                 nafexDataModelList.add(nafexDataModel);
             }
-            /*
-            if (!errorDataModelList.isEmpty()) {
-                try{
-                    List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
-                    int errorCount = errorDataModels.size();
-                    resp.put("errorCount", errorCount);
-                }catch(Exception e){
-                    resp.put("errorMessage", e.getMessage());
-                }
-            }
-            */
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -207,14 +148,9 @@ public class NafexModelService {
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
             resp.put("nafexDataModelList", nafexDataModelList);
-            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
-            /* 
-            if(!duplicateMessage.isEmpty())  resp.put("errorMessage", duplicateMessage);
-            //if(!exchangeMessage.isEmpty())  resp.put("errorMessage", exchangeMessage);
-            if(i == duplicateCount){
-                resp.put("errorMessage", "All Data From Your Selected File Already Exists!");
-            }else if(duplicateCount >= 1) resp.put("errorMessage", duplicateMessage);
-            */
+            if(!resp.containsKey("errorMessage")){
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }
             return resp;
         } catch (IOException e) {
             String message = "fail to parse CSV file: " + e.getMessage();

@@ -1,0 +1,2 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Remitter Name|Beneficiary Name|Beneficiary Bank Account /Mobile Number|Beneficiary Bank|Benificiary Bank Code|Beneficiary Bank Branch Name|Beneficiary Bank Branch Code|Beneficiary Mobile No|Drawee Bank Branch Name|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter Mobile No
+7040|64126|BDT|80000.00|10/06/2024|SAIFUL  ISLAM|MD SAIFUL ISLAM SON |20506620200109214|ISLAMI BANK BANGLADE|11|CHATKHIL|125750585|88|||||

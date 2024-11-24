@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="/fragments/header :: head-css"></head>
+<head th:replace="fragments/header :: head-css"></head>
 <body th:fragment="fileUploadForm">
     <div id="app"><!--main content-->
-        <span th:replace="/fragments/sidebarUser :: sidebarUser"></span>
+        <span th:replace="fragments/sidebarUser :: sidebarUser"></span>
         <div id="main"><!--content Id-->
-            <span th:replace="/fragments/header :: header"></span>
+            <span th:replace="fragments/header :: header"></span>
             <div class="main-content container-fluid">
                 <div class="page-title">
                     <div class="row">
@@ -40,15 +40,14 @@
                                                         <div class="col-4 form-group">
                                                             <select id="fileType" name="fileType" class="form-select" required>
                                                                 <option value="">Choose One</option>
-                                                                <option value="API">API</option>
-                                                                <option value="BEFTN">BEFTN</option>
+                                                                <option th:each="entry : ${dropdown}" th:value="${entry.key}" th:text="${entry.value}"></option>
                                                             </select>
                                                         </div>
                                                 </div>
                                             </div>
                                             
                                             <div class="row">
-                                                <div class="col-2"><label>Upload CSV File</label></div>
+                                                <div class="col-2"><label>Upload File</label></div>
                                                 <div class="col-sm-8">
                                                     <div class="form-group">
                                                         <input type="file" id="roundText" class="form-control round" name="file"
@@ -73,7 +72,7 @@
                     </div>
                 </section>
             </div>
-            <span th:replace="/fragments/footer :: footer"></span>
+            <span th:replace="fragments/footer :: footer"></span>
         </div>
     </div>
     <div id="modal_wrap"></div><div class="lmodal"></div>

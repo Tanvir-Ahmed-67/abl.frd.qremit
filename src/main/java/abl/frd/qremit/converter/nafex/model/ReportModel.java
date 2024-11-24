@@ -1,5 +1,5 @@
 package abl.frd.qremit.converter.nafex.model;
-import java.time.LocalDateTime;
+import java.time.*;
 import javax.persistence.*;
 
 @Entity
@@ -59,7 +59,9 @@ public class ReportModel {
     @Column(name = "district_code", length = 10)
     private String districtCode;
     @Column(name = "report_date", columnDefinition = "DATE")
-    private LocalDateTime reportDate; 
+    private LocalDate reportDate; 
+    @Column(name = "data_model_id")
+    private int dataModelId;
 
     public int getId() {
         return this.id;
@@ -95,6 +97,14 @@ public class ReportModel {
 
     public String getBankName() {
         return this.bankName;
+    }
+
+    public int getDataModelId() {
+        return this.dataModelId;
+    }
+
+    public void setDataModelId(int dataModelId) {
+        this.dataModelId = dataModelId;
     }
 
     public void setBankName(String bankName) {
@@ -231,11 +241,11 @@ public class ReportModel {
         this.countryCode = countryCode;
     }
 
-    public LocalDateTime getReportDate() {
+    public LocalDate getReportDate() {
         return this.reportDate;
     }
 
-    public void setReportDate(LocalDateTime reportDate) {
+    public void setReportDate(LocalDate reportDate) {
         this.reportDate = reportDate;
     }
 
@@ -243,7 +253,7 @@ public class ReportModel {
     }
 
 
-    public ReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDateTime reportDate) {
+    public ReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDate reportDate) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.bankCode = bankCode;

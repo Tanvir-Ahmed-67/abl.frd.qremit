@@ -53,26 +53,26 @@ public class ApiT24ModelController {
                 catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
-                    return commonService.uploadApiSuccessPage;
+                    return CommonService.uploadSuccesPage;
                 }
                 catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
-                    return commonService.uploadApiSuccessPage;
+                    return CommonService.uploadSuccesPage;
                 }
             }
             message = "File With The Name "+ file.getOriginalFilename() +" Already Exists !!";
             model.addAttribute("message", message);
-            return commonService.uploadApiSuccessPage;
+            return CommonService.uploadSuccesPage;
         }
         message = "Please Upload a CSV File!";
         model.addAttribute("message", message);
-        return commonService.uploadApiSuccessPage;
+        return CommonService.uploadSuccesPage;
     }
     @PostMapping("/apit24transfer")
     @ResponseBody
     public Map<String, Object> transferApiT24Data(@RequestParam("id") String id){
         if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);
-        return dynamicOperationService.transferApiT24Data(Integer.parseInt(id));
+        return dynamicOperationService.transferApiT24Data(CommonService.convertStringToInt(id));
     }
 }

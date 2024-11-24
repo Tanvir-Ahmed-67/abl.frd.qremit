@@ -31,13 +31,14 @@ public class CocPaidModelService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     CustomQueryService customQueryService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public FileInfoModel save(MultipartFile file, int userId, String exchangeCode){
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try{
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
-            List<CocPaidModel> cocPaidModelList = csvToCocPaidModels(file.getInputStream());
+            List<CocPaidModel> cocPaidModelList = csvToCocPaidModels(file.getInputStream(), currentDateTime);
             if(cocPaidModelList.size()!=0) {
                 int ind = 0;
                 for (CocPaidModel cocPaidModel : cocPaidModelList) {
@@ -69,24 +70,27 @@ public class CocPaidModelService {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
     }
-    public List<CocPaidModel> csvToCocPaidModels(InputStream is) {
+    public List<CocPaidModel> csvToCocPaidModels(InputStream is, LocalDateTime currentDateTime) {
         Optional<CocPaidModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             List<CocPaidModel> cocPaidModelList = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
-                duplicateData = cocPaidModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
+                //String transactionNo = csvRecord.get(1).trim();
+                //String amount = csvRecord.get(3).trim();
+                //String exchangeCode = csvRecord.get(0).trim();
+                duplicateData = cocPaidModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(0));
                 if (duplicateData.isPresent()) {  // Checking Duplicate Transaction No in this block
                     continue;
                 }
                 String routingNo = CommonService.fixRoutingNo(csvRecord.get(8));
-                Map<String, Object> routingMap = customQueryService.getABLBranchFromRouting(routingNo);
+                Map<String, Object> routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo);
                 
                 CocPaidModel cocPaidModel = new CocPaidModel(
                         csvRecord.get(0), //exCode
                         csvRecord.get(1), //Tranno
-                        Double.parseDouble(csvRecord.get(4)), //Amount
+                        CommonService.convertStringToDouble(csvRecord.get(4)), //Amount
                         CommonService.convertStringToDate(csvRecord.get(3)), //Entered Date
                         CommonService.convertStringToDate(csvRecord.get(11)), //Paid Date
                         csvRecord.get(5), //remitter Name
@@ -99,7 +103,8 @@ public class CocPaidModelService {
                         routingMap.get("branch_name").toString(),
                         routingMap.get("abl_branch_code").toString(),// branch code have to put here
                         csvRecord.get(12), //tr mode
-                        currentDateTime);  //uploadDateTime
+                        currentDateTime,    //uploadDateTime
+                        "4");  
                 cocPaidModelList.add(cocPaidModel);
             }
             return cocPaidModelList;
@@ -115,5 +120,13 @@ public class CocPaidModelService {
     @Transactional
     public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
         cocPaidModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
+    }
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        cocPaidModelRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
+    }
+
+    public List<CocPaidModel> findAllCocPaidModelHavingFileInfoId(int id){
+        return cocPaidModelRepository.findAllCocPaidModelHavingFileInfoId(id);
     }
 }

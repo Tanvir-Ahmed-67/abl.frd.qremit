@@ -1,13 +1,6 @@
 package abl.frd.qremit.converter.nafex.model;
-
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 @Entity
 @Table(name="user")
 public class User {
@@ -22,8 +15,11 @@ public class User {
     @Column(nullable=false)
     private String password;
     private boolean activeStatus;
+    @Column(name ="exchange_code", columnDefinition = "TEXT")
     private String exchangeCode;
     private boolean passwordChangeRequired;
+    @Column(name="mobile_no")
+    private String mobileNo;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<AccountPayeeModel> accountPayeeModel;
@@ -68,6 +64,14 @@ public class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getMobileNo(){
+        return mobileNo;
+    }
+
+    public void setMobileNo(String mobileNo){
+        this.mobileNo = mobileNo;
     }
 
     public String getPassword() {

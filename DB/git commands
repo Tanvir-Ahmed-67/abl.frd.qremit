@@ -8,7 +8,7 @@ Step two - Add the changes and commit with message
     git commit -m "git commands added"
 
 Step three - Push to developers own local branch to remote repository whre developer forked the project
-    git push https://github.com/ashikur-rahman/abl.frd.qremit.git dev-ashik
+    git push https://github.com/ashikur-rahman/ablfrdqremit.git dev-ashik
 
 Step Four - Create a Pull request fromthe github websie to the main owners repository development branch
 
@@ -21,6 +21,10 @@ Step two - Add the changes and commit with message
     git status
     git add .
     git commit -m "git commands added"
+Step three - Push to developers own local branch to remote repository whre developer forked the project
+git push git@github.com:bhaktear/dev-bhaktear.git dev-bhaktear
+
+Step Four - Create a Pull request fromthe github websie to the main owners repository development branch
 
 // Tanvir
 Step one - to pull the latest code from development branch
@@ -35,7 +39,4 @@ Step three - Push to developers own local branch to remote repository
 
 
 
-Step three - Push to developers own local branch to remote repository whre developer forked the project
-git push git@github.com:bhaktear/dev-bhaktear.git dev-bhaktear
 
-Step Four - Create a Pull request fromthe github websie to the main owners repository development branch

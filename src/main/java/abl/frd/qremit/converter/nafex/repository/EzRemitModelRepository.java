@@ -6,5 +6,5 @@ import java.util.*;
 
 @Repository
 public interface EzRemitModelRepository extends JpaRepository<EzRemitModel, Integer> {
-    Optional<EzRemitModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<EzRemitModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

@@ -911,7 +911,7 @@ footer {
 }
 
 .sidebar-wrapper .menu .submenu.active {
-    max-height: 2000px
+    max-height: 2000px;
 }
 
 .sidebar-wrapper .menu .submenu li a {
@@ -1597,6 +1597,12 @@ footer {
 
 .bg-gray-700 {
     background-color: #4a5568 !important
+}
+.wrap-text {
+    white-space: normal;      /* Allows text to wrap */
+    word-wrap: break-word;    /* Breaks long words if necessary */
+    overflow-wrap: break-word; /* Compatible with most browsers */
+    max-width: 300px;         /* Optional: Sets a max width for the column */
 }
 
 /** custom css **/

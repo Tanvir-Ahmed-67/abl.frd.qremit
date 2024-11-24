@@ -45,9 +45,10 @@ public class StandardModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -58,7 +59,7 @@ public class StandardModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> standardData = csvToStandardModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> standardData = csvToStandardModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<StandardModel> standardModels = (List<StandardModel>) standardData.get("standardDataModelList");
 
             if(standardData.containsKey("errorMessage")){
@@ -99,10 +100,10 @@ public class StandardModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToStandardModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToStandardModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<StandardModel> duplicateData;
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-16"));
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-16LE"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<StandardModel> standardDataModelList = new ArrayList<>();
@@ -113,11 +114,12 @@ public class StandardModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = standardModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
-                String beneficiaryAccount = csvRecord.get(7).trim();
+                String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = standardModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
+                String beneficiaryAccount = "COC" + csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
 
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
@@ -159,7 +161,9 @@ public class StandardModelService {
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
             resp.put("standardDataModelList", standardDataModelList);
-            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            if(!resp.containsKey("errorMessage")){
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);

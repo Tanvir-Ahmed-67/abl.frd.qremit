@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface AgexSingaporeModelRepository extends JpaRepository<AgexSingaporeModel, Integer> {
-    Optional<AgexSingaporeModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<AgexSingaporeModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

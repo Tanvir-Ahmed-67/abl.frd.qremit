@@ -10,5 +10,5 @@ import abl.frd.qremit.converter.nafex.model.AlzadeedModel;
 @Repository
 public interface AlzadeedModelRepository extends JpaRepository<AlzadeedModel, Integer>{
     AlzadeedModel findByTransactionNo(String transactionNo);
-    Optional<AlzadeedModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<AlzadeedModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

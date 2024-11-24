@@ -18,27 +18,22 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
+                <!--
                 <li class="sidebar-item">
                     <a href="/generateReport" class='sidebar-link'>
                         <i data-feather="file" width="20"></i>
                         <span>Generate Report </span> 
                     </a>
-                </li>
+                </li> -->
                 <li class='sidebar-title'>File Upload</li>
                 <!--..........................User Section......................-->
                 <div>
-
-                 
-
                     <li class="sidebar-item active has-sub">
-                        <a th:href="@{/home}" class='sidebar-link'>
+                        <a href="#" class='sidebar-link'>
                             <i data-feather="file-plus" width="20"></i>
                             <span>Upload File</span>
                         </a>
                         <ul class="submenu">
-                            <!-- <li>
-                                <a th:each="arrexchangeNameController: ${arrexchangeNameController}" th:href="${arrexchangeNameController}" ><span th:text="${arrexchangeNameController}"></span></a>
-                            </li> -->
                             <li th:each="entry : ${exchangeMap.entrySet()}">
                                 <a th:href="@{'/utils/index?id=' + ${entry.value}}"
                                    th:text="${entry.key}" class="exCode">

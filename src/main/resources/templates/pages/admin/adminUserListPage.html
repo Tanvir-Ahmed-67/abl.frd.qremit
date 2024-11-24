@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="/fragments/header :: head-css"></head>
+<head th:replace="fragments/header :: head-css"></head>
 <body>
 <div id="app"><!--main content-->
-    <span th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
     <div id="main"><!--content Id-->
-        <span th:replace="/fragments/header :: header"></span>
+        <span th:replace="fragments/header :: header"></span>
         <div class="main-content container-fluid"><!--dynamic content-->
             <div class="page-title">
                 <h3>All Users Details</h3>
@@ -38,7 +38,7 @@
                                             <td class="text-bold-500" th:text="${user.getUserName()}"></td>
                                             <td class="text-bold-500" th:text="${user.getUserEmail()}"></td>
                                             <td class="text-bold-500">USER</td>
-                                            <td class="text-bold-500" th:text="${user.getExchangeCode()}"></td>
+                                            <td class="wrap-text text-bold-500" th:text="${user.getExchangeCode()}"></td>
                                             <td class="text-bold-500" th:text="${user.activeStatus} ? 'ACTIVE':'INACTIVE'"></td>
                                             <td>
                                                 <button type="submit" class="btn btn-outline-primary round" th:name="Edit" th:value="${user.getId()}">Edit</button>
@@ -53,7 +53,7 @@
                 </div>
             </div>
         </div>
-        <span th:replace="/fragments/footer :: footer"></span>
+        <span th:replace="fragments/footer :: footer"></span>
     </div>
 </div>
 </body>

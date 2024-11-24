@@ -18,7 +18,7 @@ public class AccountPayeeModelService {
     @Autowired
     MyUserDetailsService myUserDetailsService;
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<AccountPayeeModel> accountPayeeModes = accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(Integer.parseInt(fileId));
+        List<AccountPayeeModel> accountPayeeModes = accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = AccountPayeeModelServiceHelper.AccountPayeeModelToCSV(accountPayeeModes);
         return in;
     }
@@ -42,7 +42,7 @@ public class AccountPayeeModelService {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessed(processed);
                     existingEntity.setIsDownloaded(processed);
-                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     // Update other properties as needed
                     break;
@@ -69,6 +69,20 @@ public class AccountPayeeModelService {
     public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
         accountPayeeModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
     }
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        accountPayeeModelRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
+    }
 
-
+    public List<AccountPayeeModel> findAllAccountPayeeModelByFileInfoId(int id){
+        return accountPayeeModelRepository.findAllAccountPayeeModelHavingFileInfoId(id);
+    }
+    @Transactional
+    public void updateTempStatusById(int id, int tempStatus){
+        accountPayeeModelRepository.updateTempStatusById(id, tempStatus);
+    }
+    @Transactional
+    public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
+        accountPayeeModelRepository.updateTempStatusBulk(ids, tempStatus);
+    }
 }

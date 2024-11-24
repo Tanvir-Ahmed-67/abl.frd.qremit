@@ -33,9 +33,10 @@ public class BecModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -46,7 +47,7 @@ public class BecModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> becData = csvToBecModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode);
+            Map<String, Object> becData = csvToBecModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
             List<BecModel> becModels = (List<BecModel>) becData.get("becDataModelList");
 
             if(becData.containsKey("errorMessage")){
@@ -87,7 +88,7 @@ public class BecModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToBecModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> csvToBecModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<BecModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -101,11 +102,12 @@ public class BecModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = becModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
-                String beneficiaryAccount = csvRecord.get(7).trim();
-                String bankName = csvRecord.get(8).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                duplicateData = becModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
+                String bankName = csvRecord.get(8).trim();
+                String beneficiaryAccount = getBenificiaryAccount(bankName, csvRecord.get(7).trim());
+                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
 
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
@@ -147,7 +149,9 @@ public class BecModelService {
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
             resp.put("becDataModelList", becDataModelList);
-            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            if(!resp.containsKey("errorMessage")){
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);
@@ -180,5 +184,14 @@ public class BecModelService {
         data.put("processedBy", "");
         data.put("processedDate", "");
         return data;
+    }
+
+    public String getBenificiaryAccount(String bankName, String beneficiaryAccount){
+        if(CommonService.checkAgraniBankName(bankName)){
+            if(beneficiaryAccount.length() == 15){
+                beneficiaryAccount = beneficiaryAccount.replaceFirst("^4 ", "");
+            }
+        }
+        return beneficiaryAccount;
     }
 }

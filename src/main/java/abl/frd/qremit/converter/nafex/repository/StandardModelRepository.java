@@ -9,5 +9,5 @@ import abl.frd.qremit.converter.nafex.model.StandardModel;
 @Repository
 public interface StandardModelRepository extends JpaRepository<StandardModel, Integer>{
     StandardModel findByTransactionNo(String transactionNo);
-    Optional<StandardModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<StandardModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
 }

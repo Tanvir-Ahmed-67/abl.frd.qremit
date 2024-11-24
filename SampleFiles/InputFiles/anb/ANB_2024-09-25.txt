@@ -1,0 +1,21 @@
+2||||||||||||||||242581012495|2024/09/24|50441||||din islam                               ||333ANY BRANCH PAYMENT|COC8801851920690|MOHAMMAD NORUL ISLAM                    |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242831012412|2024/09/24|118000||||liza akter                              ||333ANY BRANCH PAYMENT|COC8801608393994|MOHAMMAD  NAZRUL                        |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242881017476|2024/09/24|630.52||||BDT    Dirct                            ||MAIN BRANCH DHAKA|COC88073626362727|ABDULLAH WADI ASI ALANAZI               |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242881017477|2024/09/24|788.15||||BDT    Dirct                            ||MAIN BRANCH DHAKA|COC88073626362727|ABDULLAH WADI ASI ALANAZI               |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242901019574|2024/09/24|49968||||tamanna aker                            ||333ANY BRANCH PAYMENT|COC|SYADE SAYKAT MIA SYADE EDRICH MIA       |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242921046630|2024/09/24|159880||||kohinor akter                           ||333ANY BRANCH PAYMENT|COC8801871362236|NURUN NOBI SOFIQUR SIFIQURRAHMAN        |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242941026381|2024/09/24|30989||||NAJMA AKTER                             ||1231NEW MARKET BR KUSHTIA|COC8801740095091|MD ABUL KALAM DIDAR BOX MIAZI           |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242941026452|2024/09/24|157007||||NOOR JAHAN begum                        ||333ANY BRANCH PAYMENT|COC8801883173992|OMAR  FARUK                             |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242941026482|2024/09/24|73000||||NAZMA BAGUM                             ||333ANY BRANCH PAYMENT|COC8801740200759|SOHRAB HOSSAIN SIRAJUL ISLAM            |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||242961007702|2024/09/24|93876||||RINA BAGOM                              ||333ANY BRANCH PAYMENT|COC8801756225876|MOHAMMAD ANOWER HOSSEN                  |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243691010630|2024/09/24|62595||||MD FARID HOSSAIN                        ||333ANY BRANCH PAYMENT|COC8801868507873|ABU JAFOR  ABDUL JOBBER                 |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243881031294|2024/09/24|31029||||KHADEGA                                 ||MAIN BRANCH DHAKA|COC|MD ARSHAD ALI                           |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243931042718|2024/09/24|300000||||mostafijur rahman liton                 ||333ANY BRANCH PAYMENT|COC|TOMAL HOSSAN SIRAJUL HAQUE              |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243931042719|2024/09/24|278598||||mostafijur rahman liton                 ||333ANY BRANCH PAYMENT|COC|TOMAL HOSSAN SIRAJUL HAQUE              |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||243941011660|2024/09/24|31029||||mafiea begum                            ||333ANY BRANCH PAYMENT|COC|MOHAMMAD MAHABUB ALAM                   |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||244181063092|2024/09/24|62515||||yeasmin                                 ||1231NEW MARKET BR KUSHTIA|COC8801747438106|RASEL ABDUL WAHAB                       |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081887358|2024/09/24|59955.82||||Shilpi  Begum                           ||ANY WHERE IN COUNTRY|COC8801859561739|MD SHAWON MIAH                          |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081887944|2024/09/24|60018.93||||LUKY AKTER                              ||333ANY BRANCH PAYMENT|COC|ABDUSSATTAR - - ABDULHAKIM              |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081888369|2024/09/24|252445.57||||ROBINA AKTER                            ||ANY WHERE IN COUNTRY|COC880192442228|RASEL ISLAM RAFIQUL ISLAM               |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081888518|2024/09/24|150836.23||||SABRINA AKTER IVE                       ||333ANY BRANCH PAYMENT|COC8801726182937|BOKUL ABDUL GONI                        |AGRANI BANK|||||||||||||End of Report
+2||||||||||||||||247081888733|2024/09/24|53234.46||||RAZIA                                   ||333ANY BRANCH PAYMENT|COC8801322151948|MD NAZMUL HAQUE                         |AGRANI BANK|||||||||||||End of Report

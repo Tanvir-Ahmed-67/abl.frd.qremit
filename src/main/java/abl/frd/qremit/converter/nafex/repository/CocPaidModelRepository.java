@@ -14,11 +14,17 @@ import java.util.Optional;
 @Repository
 public interface CocPaidModelRepository extends JpaRepository<CocPaidModel, Integer> {
     Optional<CocPaidModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
-    @Query("SELECT n FROM CocPaidModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isVoucherGenerated= :isVoucherGenerated and n.uploadDateTime BETWEEN :startDate AND :endDate")
+    @Query("SELECT n FROM CocPaidModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isVoucherGenerated= :isVoucherGenerated and n.uploadDateTime BETWEEN :startDate AND :endDate and n.tempStatus=0")
     List<CocPaidModel> getProcessedDataByUploadDateAndFileId(@Param("fileInfoModelId") int fileInfoModelId, @Param("isVoucherGenerated") int isVoucherGenerated, 
         @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     @Transactional
     @Modifying
     @Query("UPDATE CocPaidModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate WHERE n.id=:id")
     int updateIsVoucherGenerated(@Param("id") int id, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
+    @Transactional
+    @Modifying
+    @Query("UPDATE CocPaidModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate, n.tempStatus = 1 WHERE n.id in :ids")
+    int updateIsVoucherGeneratedBulk(@Param("ids") List<Integer> ids, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
+    @Query("SELECT n FROM CocPaidModel n WHERE n.fileInfoModel.id=:id")
+    List<CocPaidModel> findAllCocPaidModelHavingFileInfoId(int id);
 }

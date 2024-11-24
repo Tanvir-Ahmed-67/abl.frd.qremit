@@ -1,11 +1,12 @@
 package abl.frd.qremit.converter.nafex.service;
-
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import net.sf.jasperreports.engine.*;
@@ -14,12 +15,13 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
-
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.Resource;
 
+@SuppressWarnings("unchecked")
 @Service
 public class ReportService {
     @Autowired
@@ -31,13 +33,7 @@ public class ReportService {
     @Autowired
     ErrorDataModelRepository errorDataModelRepository;
     @Autowired
-    OnlineModelRepository onlineModelRepository;
-    @Autowired
-    BeftnModelRepository beftnModelRepository;
-    @Autowired
-    CocModelRepository cocModelRepository;
-    @Autowired
-    AccountPayeeModelRepository accountPayeeModelRepository;
+    CocModelService cocModelService;
     @Autowired
     ExchangeHouseModelService exchangeHouseModelService;
     @Autowired
@@ -56,31 +52,39 @@ public class ReportService {
     TemporaryReportService temporaryReportService;
     @Autowired
     CommonService commonService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
-
+    
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
     }
 
-    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList) throws JRException, FileNotFoundException {
+    public JasperReport loadJasperReport(String fileName) throws Exception {
+        Resource resource = new ClassPathResource(fileName);
+        try (InputStream inputStream = resource.getInputStream()) {
+            return JasperCompileManager.compileReport(inputStream);
+        }
+    }
+
+    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
         for(ExchangeReportDTO exchangeReportDTO: dataList){
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
         }
-        // Load File And Compile It.
-        File file = ResourceUtils.getFile("classpath:dailyStatementSummary.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-        // Convert data into a JasperReports data source
+        JasperReport jasperReport = loadJasperReport("dailyStatementSummary.jrxml");
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
-        // Parameters map if needed
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("ReportTitle", "Sample Report");
-        // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Summary_Report.pdf");
+        //Path reportPath = CommonService.getReportFile("summary_report_" + date.replace("-", "_") +".pdf");
+        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("summary_report_", date, ".pdf"));
+        String outputFile = reportPath.toString();
+        if(!Files.exists(reportPath)){
+            JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+        }
+        
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
-    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList) throws JRException, FileNotFoundException {
+    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
                 .map(ExchangeReportDTO::getExchangeCode)
@@ -93,8 +97,7 @@ public class ReportService {
             dataList.get(i).setEnteredDate(currentDateTime);
         }
         // Load File And Compile It.
-        File file = ResourceUtils.getFile("classpath:dailyVoucher.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        JasperReport jasperReport = loadJasperReport("dailyVoucher.jrxml");
         // Convert data into a JasperReports data source
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
         // Parameters map if needed
@@ -102,13 +105,16 @@ public class ReportService {
         parameters.put("ReportTitle", "Sample Report");
         // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report"+"\\Daily_Voucher.pdf");
+        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("daily_voucher_", date, ".pdf"));
+        String outputFile = reportPath.toString();
+        if(!Files.exists(reportPath)){
+            JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+        }
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
-    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format) throws JRException, FileNotFoundException {
-        File file;
+    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format, String date) throws Exception {
         JasperReport jasperReport;
         JasperPrint jasperPrint;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -121,26 +127,31 @@ public class ReportService {
         // Parameters map if needed
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("REPORT_DATA_SOURCE", dataSource);
+        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("details_report_", date, "." + format.toLowerCase()));
+        String outputFile = reportPath.toString();
         if (format.equalsIgnoreCase("pdf")) {
             // Load the JRXML file for PDF format
-            file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf_tabular.jrxml");
-            jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            //file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf_tabular.jrxml");
+            //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            jasperReport = loadJasperReport("dailyStatementDetails_pdf_tabular.jrxml");
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
             // Export to PDF
-            JasperExportManager.exportReportToPdfFile(jasperPrint, "D:\\Report\\Details_Report.pdf");
-            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
-
+            if(!Files.exists(reportPath)){
+                JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+            }
+            //JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+            return JasperExportManager.exportReportToPdf(jasperPrint);
         } else if (format.equalsIgnoreCase("csv")) {
             // Load the JRXML file for CSV format
-            file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
-            jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            //file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
+            //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+            jasperReport = loadJasperReport("dailyStatementDetails_csv.jrxml");
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
             // CSV Exporter Setup for File Generation
             JRCsvExporter fileExporter = new JRCsvExporter();
             fileExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            fileExporter.setExporterOutput(new SimpleWriterExporterOutput("D:\\Report\\Details_Report.csv"));
+            fileExporter.setExporterOutput(new SimpleWriterExporterOutput(outputFile));
 
             // Optional: Set CSV configuration (e.g., delimiter)
             SimpleCsvExporterConfiguration fileConfiguration = new SimpleCsvExporterConfiguration();
@@ -161,9 +172,11 @@ public class ReportService {
         }
         return outputStream.toByteArray();
     }
-    public List<ExchangeReportDTO> getAllDailyReportData(){
+    public List<ExchangeReportDTO> getAllDailyReportData(String date){
         List<ExchangeReportDTO> report = new ArrayList<>();
-        List<ReportModel> reportModelsList = reportModelRepository.findAll(); // Have to apply logic to fetch specefic data based on date and processed flag
+        LocalDate reportDate = LocalDate.parse(date);
+        //List<ReportModel> reportModelsList = reportModelRepository.findAll(); // Have to apply logic to fetch specefic data based on date and processed flag
+        List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDate(reportDate);
         Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
         if(isListValid(reportModelsList)){
             for(ReportModel reportModel:reportModelsList){
@@ -180,12 +193,12 @@ public class ReportService {
         }
         return report;
     }
-    public List<ExchangeReportDTO> generateSummaryOfDailyStatement() {
-        List<ExchangeReportDTO> report = getAllDailyReportData();
-        report = aggregateExchangeReports(report);
+    public List<ExchangeReportDTO> generateSummaryOfDailyStatement(String date) {
+        List<ExchangeReportDTO> report = getAllDailyReportData(date);
+        report = aggregateExchangeReports(report, date);
         return report;
     }
-    public static List<ExchangeReportDTO> aggregateExchangeReports(List<ExchangeReportDTO> exchangeReports) {
+    public List<ExchangeReportDTO> aggregateExchangeReports(List<ExchangeReportDTO> exchangeReports, String date) {
         // Group by exchangeCode
         return exchangeReports.stream()
                 .collect(Collectors.groupingBy(ExchangeReportDTO::getExchangeCode))
@@ -198,9 +211,10 @@ public class ReportService {
                     ExchangeReportDTO aggregatedReport = new ExchangeReportDTO();
                     aggregatedReport.setExchangeCode(exchangeCode);
                     aggregatedReport.setExchangeName(reportsWithSameCode.get(0).getExchangeName());  // Assuming same exchangeName
-
                     // Aggregate amount and count the rows
                     reportsWithSameCode.forEach(report -> {
+                        aggregatedReport.setVoucherDate(LocalDate.parse(date));
+                        aggregatedReport.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(aggregatedReport.getExchangeCode()).getNrtaCode());
                         aggregatedReport.doSum(report.getAmount());
                         aggregatedReport.doCount();
                     });
@@ -209,105 +223,13 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
-    public List<ExchangeReportDTO> generateSummaryOfDailyStatement_1() {
-        List<ExchangeReportDTO> report = new ArrayList<>();
-
-        // Fetch data from each table
-        List<OnlineModel> onlineData = onlineModelRepository.findAll();
-        List<BeftnModel> beftnData = beftnModelRepository.findAll();
-        List<CocModel> cocData = cocModelRepository.findAll();
-        List<AccountPayeeModel> accountPayeeData = accountPayeeModelRepository.findAll();
-
-        Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
-
-        // Process onlineData if it has valid data
-        if (isListValid(onlineData)) {
-            for (OnlineModel item : onlineData) {
-                String exchangeCode = item.getExchangeCode();
-                ExchangeReportDTO dto = reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
-                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
-                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
-                dto.doSum(item.getAmount());
-                dto.doCount();
-            }
-        }
-        // Process beftnData if it has valid data
-        if (isListValid(beftnData)) {
-            for (BeftnModel item : beftnData) {
-                String exchangeCode = item.getExchangeCode();
-                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
-                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
-                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
-                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
-                dto.setTransactionNo(item.getTransactionNo());
-                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
-                dto.setBeneficiaryName(item.getBeneficiaryName());
-                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                dto.doSum(item.getAmount());
-                dto.doCount();
-            }
-        }
-        // Process cocData if it has valid data
-        if (isListValid(cocData)) {
-            for (CocModel item : cocData) {
-                String exchangeCode = item.getExchangeCode();
-                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
-                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
-                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
-                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
-                dto.setTransactionNo(item.getTransactionNo());
-                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
-                dto.setBeneficiaryName(item.getBeneficiaryName());
-                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                dto.doSum(item.getAmount());
-                dto.doCount();
-            }
-        }
-        // Process accountPayeeData if it has valid data
-        if (isListValid(accountPayeeData)) {
-            for (AccountPayeeModel item : accountPayeeData) {
-                String exchangeCode = item.getExchangeCode();
-                reportMap.computeIfAbsent(exchangeCode, k -> new ExchangeReportDTO(
-                        k, item.getTransactionNo(), item.getAmount(), item.getBeneficiaryName(),
-                        item.getBeneficiaryAccount(), item.getFileInfoModel().getUploadDateTime()));
-                ExchangeReportDTO dto = reportMap.get(exchangeCode); // Get the existing or newly created DTO
-                dto.setTransactionNo(item.getTransactionNo());
-                dto.setAmount(dto.getAmount() + item.getAmount()); // Aggregate the amount
-                dto.setBeneficiaryName(item.getBeneficiaryName());
-                dto.setBeneficiaryAccount(item.getBeneficiaryAccount());
-                dto.setEnteredDate(item.getFileInfoModel().getUploadDateTime());
-                dto.doSum(item.getAmount());
-                dto.doCount();
-            }
-        }
-        // Convert the map values to a list for the final report
-        if (reportMap.isEmpty()) {
-            report.add(new ExchangeReportDTO("No data available", null, 0.0, "", "", null));
-        } else {
-            report.addAll(reportMap.values());
-        }
-        return report;
-    }
     // Utility method to check if a list is valid (not null, not empty, and size > 0)
     private boolean isListValid(List<?> list) {
         return list != null && !list.isEmpty() && list.size() > 0;
     }
-    public List<ExchangeReportDTO> generateDetailsOfDailyStatement() {
-        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportData();
+    public List<ExchangeReportDTO> generateDetailsOfDailyStatement(String date) {
+        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportData(date);
         return exchangeReportDTOSList;
-    }
-    public List<ExchangeReportDTO> generateDetailsOfDailyStatement_1() {
-        // Fetch data from each table
-        List<OnlineModel> onlineData = onlineModelRepository.findAll();
-        List<BeftnModel> beftnData = beftnModelRepository.findAll();
-        List<CocModel> cocData = cocModelRepository.findAll();
-        List<AccountPayeeModel> accountPayeeData = accountPayeeModelRepository.findAll();
-
-        // Merge all four data list into a single list
-        List<ExchangeReportDTO> allData = mergeData(onlineData, beftnData, cocData, accountPayeeData);
-        return allData;
     }
 
     private ExchangeReportDTO convertOnlineModelToDTO(OnlineModel onlineModel) {
@@ -391,20 +313,21 @@ public class ReportService {
         List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
         int totalCount = 0;
         //check all settlement file uploaded
+        int hasSettlementDailyCount = exchangeHouseModelService.calculateSumOfHasSettlementDaily(exchangeHouseModelList);
         for(Map<String, Object> settlement: settlementList){
             int count = (int) settlement.get("count");
-            if(count == 1)  totalCount++;
+            if(count >= 1)  totalCount++;
         }
-        if(totalCount !=5)  return CommonService.getResp(1, "Please upload all settlement file", null);
-
+        if(totalCount < hasSettlementDailyCount)  return CommonService.getResp(1, "Please upload all settlement file", null);
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
         //parse data
         int count = 0;
         for(Map<String, Object> settlement: settlementList){
             FileInfoModel fileInfoModel = (FileInfoModel) settlement.get("fileInfoModel");
-            int onlineCount = Integer.parseInt(fileInfoModel.getOnlineCount());
-            int beftnCount = Integer.parseInt(fileInfoModel.getBeftnCount());
-            int accPayeeCount = Integer.parseInt(fileInfoModel.getAccountPayeeCount());
+            if(fileInfoModel == null)   continue;   //for empty fileinfo no data will be generated
+            int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
+            int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
+            int accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
             if(onlineCount >= 1){
                 List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(onlineModelList, "1");
@@ -443,7 +366,15 @@ public class ReportService {
 
     public <T> Map<String, Object> setReportModelData(List<T> modelList, String type){
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
+        LocalDate currentDate = LocalDate.now();
         String types = type;
+        List<ReportModel> reportInsertList = new ArrayList<>();
+        List<Integer> onlineInsertList = new ArrayList<>();
+        List<Integer> acPayeeInsertList = new ArrayList<>();
+        List<Integer> beftnInsertList = new ArrayList<>();
+        List<Integer> cocPaidInsertList = new ArrayList<>();
+        Map<String, List<Integer>> insertList = new HashMap<>();
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
             for(T model: modelList){
@@ -458,7 +389,7 @@ public class ReportService {
                     int id = (int) CommonService.getPropertyValue(model, "getId");
                     if(("").equals(type)){
                         types = (String) CommonService.getPropertyValue(model, "getType");
-                        reportModel.setUploadUserId((int) CommonService.getPropertyValue(model, "getFileInfoModelId"));
+                        reportModel.setUploadUserId((int) CommonService.getPropertyValue(model, "getUploadUserId"));
                         reportModel.setFileInfoModelId((int) CommonService.getPropertyValue(model, "getFileInfoModelId"));
                         id = (int) CommonService.getPropertyValue(model, "getDataModelId");
                     }else{
@@ -483,22 +414,68 @@ public class ReportService {
                     reportModel.setDownloadDateTime((LocalDateTime) CommonService.getPropertyValue(model, downloadTimeMethod));
                     reportModel.setIncentive((Double) CommonService.getPropertyValue(model, "getIncentive"));
                     reportModel.setUploadDateTime((LocalDateTime) CommonService.getPropertyValue(model, "getUploadDateTime"));
-                    reportModel.setReportDate(currentDateTime);
+                    reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
-                    //System.out.println(reportModel);
-                    reportModelRepository.save(reportModel);
-                    setIsVoucherGenerated(types, id, currentDateTime);
+                    reportModel.setDataModelId(id);
+                    //reportModelRepository.save(reportModel);
+                    //setIsVoucherGenerated(types, id, currentDateTime);
+                    switch (types){
+                        case "1":
+                            onlineInsertList.add(id);
+                            insertList.put(types, onlineInsertList);
+                            break;
+                        case "2":
+                            acPayeeInsertList.add(id);
+                            insertList.put(types, acPayeeInsertList);
+                            break;
+                        case "3":
+                            beftnInsertList.add(id);
+                            insertList.put(types, beftnInsertList);
+                            break;
+                        case "4":
+                            cocPaidInsertList.add(id);
+                            insertList.put(types, cocPaidInsertList);
+                            break;
+                    }
+                    reportInsertList.add(reportModel);
                     count++;
                 }catch(Exception e){
                     e.printStackTrace();
                     return CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }
             }
-            if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
             if(count == 0)  return CommonService.getResp(0, "No data found for processing report", null);
-            resp = CommonService.getResp(0, "Data processed successfully", null);
+            if(!reportInsertList.isEmpty()){
+                List<ReportModel> savedModels = reportModelRepository.saveAll(reportInsertList);
+                reportModelRepository.flush();
+                if(!savedModels.isEmpty()){
+                    for (Map.Entry<String, List<Integer>> entry : insertList.entrySet()) {
+                        setIsVoucherGeneratedBulk(entry.getKey(), entry.getValue(), currentDateTime);
+                    }
+                    if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
+                }
+                resp = CommonService.getResp(0, "Data processed successfully", null);
+            }
         }
         return resp;
+    }
+
+    public void setIsVoucherGeneratedBulk(String type, List<Integer> ids, LocalDateTime reportDate){
+        switch (type) {
+            case "1":
+                onlineModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            case "2":
+                accountPayeeModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            case "3":
+                beftnModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+            case "4":
+                cocPaidModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            default:
+                break;
+        }
     }
 
     public void setIsVoucherGenerated(String type, int id, LocalDateTime reportDate){
@@ -517,6 +494,128 @@ public class ReportService {
             default:
                 break;
         }
+    }
+
+    public Map<String, Object> getFileDetails(int id, Map<String,Object> fileInfo, String[] columnData ){
+        Map<String, Object> resp = new HashMap<>();
+
+        List<Map<String, Object>> fileData = (List<Map<String, Object>>) fileInfo.get("data");
+        FileInfoModel fileInfoModel = fileInfoModelService.findAllById(id);
+        int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
+        int accountPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
+        int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
+        int cocCount = CommonService.convertStringToInt(fileInfoModel.getCocCount());
+        List<OnlineModel> onlineModelList = new ArrayList<>();
+        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
+        List<BeftnModel> beftnModelList = new ArrayList<>();
+        List<CocModel> cocModelList = new ArrayList<>();
+        List<CocPaidModel> cocPaidModelList = new ArrayList<>();
+        if(onlineCount >= 1)    onlineModelList = onlineModelService.findAllOnlineModelByFileInfoId(id);
+        if(accountPayeeCount >=1)   accountPayeeModelList = accountPayeeModelService.findAllAccountPayeeModelByFileInfoId(id);
+        if(beftnCount >= 1) beftnModelList = beftnModelService.findAllBeftnModelByFileInfoId(id);
+        
+        if(cocCount >=  1){
+            if(fileInfoModel.getExchangeCode().equals("333333")){
+                cocPaidModelList = cocPaidModelService.findAllCocPaidModelHavingFileInfoId(id);
+            }else cocModelList = cocModelService.findAllCocModelByFileInfoId(id);
+        }  
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        int sl = 1;
+        double totalAmount = 0;
+        LocalDateTime downloadDateTime = null;
+
+        for(Map<String,Object> fdata: fileData){
+            String type = fdata.get("type_flag").toString();
+            String transactionNo = fdata.get("transaction_no").toString();
+            if(("1").equals(type)){
+                for(OnlineModel onlineModel: onlineModelList){
+                    if(transactionNo.equalsIgnoreCase(onlineModel.getTransactionNo())){
+                        downloadDateTime = onlineModel.getDownloadDateTime();
+                        break;
+                    }
+                }
+            }
+            if(("2").equals(type)){
+                for(AccountPayeeModel accountPayeeModel: accountPayeeModelList){
+                    if(transactionNo.equalsIgnoreCase(accountPayeeModel.getTransactionNo())){
+                        downloadDateTime = accountPayeeModel.getDownloadDateTime();
+                        break;
+                    }
+                }
+            }
+            if(("3").equals(type)){
+                for(BeftnModel beftnModel: beftnModelList){
+                    if(transactionNo.equalsIgnoreCase(beftnModel.getTransactionNo())){
+                        downloadDateTime = beftnModel.getDownloadDateTime();
+                        break;
+                    }
+                }
+            }
+            if(("4").equals(type)){
+                //for cocPaidModel download date time will be uploaded date time
+                if(!cocPaidModelList.isEmpty()){
+                    for(CocPaidModel cocPaidModel: cocPaidModelList){
+                        if(transactionNo.equalsIgnoreCase(cocPaidModel.getTransactionNo())){
+                            downloadDateTime = cocPaidModel.getUploadDateTime();
+                            break;
+                        }
+                    }
+                }
+                if(!cocModelList.isEmpty()){
+                    for(CocModel cocModel: cocModelList){
+                        if(transactionNo.equalsIgnoreCase(cocModel.getTransactionNo())){
+                            downloadDateTime = cocModel.getDownloadDateTime();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            String processedDate = CommonService.convertDateToString(downloadDateTime);
+            if(processedDate.isEmpty()){
+                processedDate = CommonService.generateClassForText("Not Processed", "text-danger fw-bold");
+            }
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("sl", sl++);
+            dataMap.put("bankName",fdata.get("bank_name"));
+            dataMap.put("branchCode",fdata.get("branch_code"));
+            dataMap.put("branchName",fdata.get("branch_name"));
+            dataMap.put("beneficiaryAccountNo",fdata.get("beneficiary_account_no"));
+            dataMap.put("beneficiaryName",fdata.get("beneficiary_name"));
+            dataMap.put("remitterName",fdata.get("remitter_name"));
+            dataMap.put("transactionNo",transactionNo);
+            dataMap.put("exchangeCode",fdata.get("exchange_code"));
+            dataMap.put("amount",fdata.get("amount"));
+            dataMap.put("processedDate",processedDate);
+            totalAmount += CommonService.convertStringToDouble(fdata.get("amount").toString());
+            Map<String, Object> types = CommonService.getRemittanceTypes();
+            dataMap.put("remType", types.get(type));
+            dataList.add(dataMap);
+        }
+        Map<String, Object> totalAmountMap = commonService.getTotalAmountData(columnData, totalAmount,"beneficiaryAccountNo");
+        dataList.add(totalAmountMap);
+
+        resp.put("err", fileInfo.get("err"));
+        resp.put("msg", fileInfo.get("msg"));
+        resp.put("data",dataList);
+        return resp;
+    }
+    
+    //last row for showing total data for uploaded file info
+    public Map<String, Object> calculateTotalUploadFileInfo(int totalCocCount, int totalBeftnCount, int totalOnlineCount, int totalAccountPayeeCount, int totalErrorCount, int totalCount){
+        Map<String, Object> totalData = new HashMap<>();
+        totalData.put("sl","");
+        totalData.put("exchangeCode","");
+        totalData.put("uploadDateTime", "");
+        totalData.put("fileName", CommonService.generateClassForText("Total","fw-bold"));
+        totalData.put("cocCount", CommonService.generateClassForText(String.valueOf(totalCocCount),"fw-bold"));
+        totalData.put("beftnCount", CommonService.generateClassForText(String.valueOf(totalBeftnCount),"fw-bold"));
+        totalData.put("onlineCount", CommonService.generateClassForText(String.valueOf(totalOnlineCount),"fw-bold"));
+        totalData.put("accountPayeeCount", CommonService.generateClassForText(String.valueOf(totalAccountPayeeCount),"fw-bold"));
+        totalData.put("errorCount", CommonService.generateClassForText(String.valueOf(totalErrorCount),"fw-bold"));
+        totalData.put("totalCount", CommonService.generateClassForText(String.valueOf(totalCount),"fw-bold"));
+        totalData.put("action", "");
+        return totalData;
     }
 
 }

@@ -12,8 +12,13 @@ import abl.frd.qremit.converter.nafex.repository.FileInfoModelRepository;
 public class FileInfoModelService {
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
-    public List<FileInfoModel> getUploadedFileDetails(int userId){
-        return fileInfoModelRepository.getUploadedFileDetails(userId);
+    public List<FileInfoModel> getUploadedFileDetails(int userId, String date){
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
+        if(userId != 0){
+            return fileInfoModelRepository.getUploadedFileDetails(userId, dateTime.get("startDateTime"), dateTime.get("endDateTime"));
+        }else{
+            return fileInfoModelRepository.getUploadedFileDetails(dateTime.get("startDateTime"), dateTime.get("endDateTime"));
+        }
     }
 
     public Map<String, Object> deleteFileInfoModelById(int id){
@@ -33,7 +38,6 @@ public class FileInfoModelService {
     public List<FileInfoModel> getFileDetailsBetweenUploadedDate(String startDate, String endDate){
         startDate += " 00:00:00";
         endDate += " 23:59:59";
-        System.out.println(startDate + " " + endDate);
         LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
         LocalDateTime enDateTime = CommonService.convertStringToDate(endDate);
         return fileInfoModelRepository.getFileDetailsBetweenUploadedDate(startDateTime, enDateTime);
@@ -44,8 +48,6 @@ public class FileInfoModelService {
         String endDate = date + " 23:59:59";
         LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
         LocalDateTime endDateTime = CommonService.convertStringToDate(endDate);
-        //Integer count = fileInfoModelRepository.getSettlementCountByExchangeCode(startDateTime, enDateTime, exchangeCode, isSettlement);
-        //return count != null ? count : 0;
         return fileInfoModelRepository.getSettlementDataByExchangeCode(startDateTime, endDateTime, exchangeCode, isSettlement);
     }
 
@@ -57,6 +59,7 @@ public class FileInfoModelService {
             Map<String, Object> resp = new HashMap<>();
             resp.put("exchangeCode", exchangeCode);
             resp.put("exchangeName", exchangeHouseModel.getExchangeName());
+            resp.put("hasSettlementDaily", exchangeHouseModel.getHasSettlementDaily());
             int count = 0;
             if(fileInfoModelDTO != null){
                 count = fileInfoModelDTO.getCount();
@@ -66,6 +69,10 @@ public class FileInfoModelService {
             settlementList.add(resp);
         }
         return settlementList;
+    }
+
+    public FileInfoModel findAllById(int id){
+        return fileInfoModelRepository.findById(id);
     }
 
 }

@@ -1,9 +1,10 @@
 package abl.frd.qremit.converter.nafex.service;
-
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,9 +26,8 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return user;
     }
+    
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
-         
-      
         Map<String, String> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
         
         String exchangeCode = exchangeNamesMap.get("exchange_code");
@@ -45,6 +45,47 @@ public class MyUserDetailsService implements UserDetailsService {
             return exchangeMap;
         }
         return exchangeMap;
+    }
+    
+    /*
+    //exchange house code map to seperate table using user id
+    public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
+        Map<String, String> resp = new HashMap<>();
+        int userId = userDetails.getUser().getId();
+        List<ExchangeHouseModel> exchangeHouseList = userModelRepository.findExchangeHouseByUserId(userId);
+        for(ExchangeHouseModel eList: exchangeHouseList){
+            resp.put(eList.getExchangeShortName(), eList.getExchangeCode());
+        }
+        return resp;
+    }
+    */
+
+    public Map<String, Integer> getLoggedInUserRole(Authentication authentication){
+        Map<String, Integer> resp = new HashMap<>();
+        int isAdmin = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN")) ? 1:0;
+        int isUser = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_USER")) ? 1:0;
+        resp.put("isAdmin", isAdmin);
+        resp.put("isUser", isUser);
+        return resp;
+    }
+
+    public Map<String, Object> getLoggedInUserDetails(Authentication authentication, MyUserDetails myUserDetails){
+        Map<String, Object> resp = new HashMap<>();
+        Map<String, Integer> role = getLoggedInUserRole(authentication);
+        int userId = 0;
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            User user = myUserDetails.getUser();
+            resp.put("user", user);
+            if(role.get("isUser") == 1){
+                userId = user.getId();
+                if(myUserDetails != null) resp.put("exchangeMap",getLoggedInUserMenu(myUserDetails));
+            }
+            resp.put("status", HttpStatus.OK);
+        }else{
+            resp.put("status", HttpStatus.UNAUTHORIZED);
+        }
+        resp.put("userid", userId);  
+        return resp;
     }
 
     public User loadUserByUserId(int userId)

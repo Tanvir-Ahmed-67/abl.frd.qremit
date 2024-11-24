@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="/fragments/header :: head-css"></head>
+<head th:replace="fragments/header :: head-css"></head>
 <body th:fragment="fileUploadForm">
     <div id="app"><!--main content-->
-        <span th:replace="/fragments/sidebarAdmin :: sidebarAdmin"></span>
+        <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
         <div id="main"><!--content Id-->
-            <span th:replace="/fragments/header :: header"></span>
+            <span th:replace="fragments/header :: header"></span>
             <div class="main-content container-fluid">
                 <div class="page-title">
                     <div class="row">
@@ -62,8 +62,9 @@
                         </div>
                     </div>
                 </section>
+                <div id="modal_wrap"></div><div class="lmodal"></div>
             </div>
-            <span th:replace="/fragments/footer :: footer"></span>
+            <span th:replace="fragments/footer :: footer"></span>
         </div>
     </div>
     <script src="/js/script.js"></script>

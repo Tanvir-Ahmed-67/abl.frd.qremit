@@ -1,6 +1,9 @@
 package abl.frd.qremit.converter.nafex.controller;
-
 import abl.frd.qremit.converter.nafex.service.AccountPayeeModelService;
+import abl.frd.qremit.converter.nafex.service.CommonService;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -29,14 +32,13 @@ public class AccountPayeeModelController {
                 .body(file);
     }
     @GetMapping("/downloadaccountpayee")
-    public ResponseEntity<Resource> download_File() {
-        InputStreamResource file = new InputStreamResource(accountPayeeModelService.loadAndUpdateUnprocessedAccountPayeeData(0));
-        int countRemainingAccountPayeeData = accountPayeeModelService.countRemainingAccountPayeeData();
-        String fileName = "Account_Payee";  // Have to attch date with file name here.
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
-                .header("count", String.valueOf(countRemainingAccountPayeeData))
-                .contentType(MediaType.parseMediaType("application/csv"))
-                .body(file);
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
+        Map<String, Object> resp = new HashMap<>();
+        ByteArrayInputStream contentStream  = accountPayeeModelService.loadAndUpdateUnprocessedAccountPayeeData(0);
+        int countRemaining = accountPayeeModelService.countRemainingAccountPayeeData();
+        String fileName = CommonService.generateDynamicFileName("Account_Payee", ".txt");
+        resp = CommonService.generateFile(contentStream, countRemaining, fileName);
+        return ResponseEntity.ok(resp);
     }
 }

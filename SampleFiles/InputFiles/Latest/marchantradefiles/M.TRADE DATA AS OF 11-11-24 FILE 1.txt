@@ -1,0 +1,5 @@
+exchange_house_code|tt_no|transaction_currency_code|transaction_value|transaction_date|remitter_name|beneficiary_name|beneficiary_bank_account/mobile_number|beneficiary_bank|benificiary_bank_code|beneficiary_bank_branch_name|beneficiary_bank_branch_routing_no|beneficiary_mobile_no|drawee_bank_branch_name|drawee_bank_branch_code|purpose_of_remittance|source_of_income|remitter_mobile_no
+7040|24414448293642|BDT|16266.30|2024-11-11|MOHAMMAD KAMAL UDDIN|MOHAMMAD KAMAL UDDIN|20500050202333610|ISLAMI BANK BANGLADESH PLC||Coatbazar|125220231|0062|00|00|Savings|||
+7040|24414729072601|BDT|54565.80|2024-11-11|BASHIR AHAMMED|HAFEZ SULTAN AHAMMED|20507770215437254|ISLAMI BANK BANGLADESH PLC||JibonNagar|125180584|01724528445|00|00|Family Maintenance|||
+7040|24414738552912|BDT|27840.00|2024-11-11|MD RUBEL|AFROZA AKTER|20507770272113206|ISLAMI BANK BANGLADESH PLC||AGENT BANKING|125270607|01726313556|00|00|Family Maintenance|||
+7040|24414661990178|BDT|30613.00|2024-11-11|MOHAMMAD MOKLESUR RAHMAN|ABDUR RASHID|0200011640307|AGRANI BANK BANGLADESH||DARA TANA ROAD JESSORE|010410619|01771434625|00|00|Family Maintenance|||

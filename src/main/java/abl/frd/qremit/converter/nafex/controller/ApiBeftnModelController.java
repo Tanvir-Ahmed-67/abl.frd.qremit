@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.nafex.controller;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.User;
 import abl.frd.qremit.converter.nafex.service.ApiBeftnModelService;
 import abl.frd.qremit.converter.nafex.service.CommonService;
@@ -75,7 +74,6 @@ public class ApiBeftnModelController {
     @ResponseBody
     public Map<String, Object> transferApiBeftnData(@RequestParam("id") String id){
         if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);
-        return dynamicOperationService.transferApiBeftnData(Integer.parseInt(id));
-        //return "redirect:/user-home-page";
+        return dynamicOperationService.transferApiBeftnData(CommonService.convertStringToInt(id));
     }
 }

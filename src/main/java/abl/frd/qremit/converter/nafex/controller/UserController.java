@@ -15,50 +15,43 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.validation.Valid;
 import java.util.*;
 
 @Controller
 public class UserController {
     private final MyUserDetailsService myUserDetailsService;
-    private final NafexModelService nafexModelService;
     private final ExchangeHouseModelService exchangeHouseModelService;
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
-    private final FileInfoModelService fileInfoModelService;
     private final CommonService commonService;
 
     @Autowired
-    public UserController(MyUserDetailsService myUserDetailsService, 
-    NafexModelService nafexModelService,
-     ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, FileInfoModelService fileInfoModelService, CommonService commonService) {
-
+    public UserController(MyUserDetailsService myUserDetailsService, ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, CommonService commonService) {
         this.myUserDetailsService = myUserDetailsService;
-        this.nafexModelService = nafexModelService;
         this.exchangeHouseModelService = exchangeHouseModelService;
         this.roleModelService = roleModelService;
         this.passwordEncoder = passwordEncoder;
-        this.fileInfoModelService = fileInfoModelService;
         this.commonService = commonService;
     }
     @RequestMapping("/login")
     public String loginPage(){
         return "auth-login";
-    }
-
-    
+    }    
     @RequestMapping("/super-admin-home-page")
-    public String loginSubmitSuperAdmin(){ return "/layouts/dashboard"; }
+    public String loginSubmitSuperAdmin(){ return "layouts/dashboard"; }
     @RequestMapping("/admin-home-page")
-    public String loginSubmitAdmin(){ return "/layouts/dashboard"; }
+    public String loginSubmitAdmin(){ return "layouts/dashboard"; }
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        return "/layouts/dashboard"; 
+        return "layouts/dashboard"; 
     }
     @RequestMapping("/change-password")
     public String showChangePasswordPage() {
-        return "/pages/user/userPasswordChangeForm";
+        return "pages/user/userPasswordChangeForm";
     }
     @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST)
     public String changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
@@ -71,7 +64,7 @@ public class UserController {
 
     @RequestMapping("/home")
     public String loginSubmit(){
-        return "/layouts/dashboard";
+        return "layouts/dashboard";
     }
     @RequestMapping("/logout")
     public String logoutSuccessPage(){
@@ -90,15 +83,15 @@ public class UserController {
                 adminList = myUserDetailsService.loadAdminsOnly();
                 model.addAttribute("UserList", userList);
                 model.addAttribute("adminList", adminList);
-                return "/pages/superAdmin/superAdminUserListPage";
+                return "pages/superAdmin/superAdminUserListPage";
             }
             if (authorityName.equals("ROLE_ADMIN")) {
                 userList = myUserDetailsService.loadUsersOnly();
                 model.addAttribute("UserList", userList);
-                return "/pages/admin/adminUserListPage";
+                return "pages/admin/adminUserListPage";
             }
         }
-        return "/allUsers";
+        return "allUsers";
     }
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromAdmin(Model model){
@@ -106,7 +99,7 @@ public class UserController {
         List<ExchangeHouseModel> exchangeHouseList;
         exchangeHouseList = exchangeHouseModelService.loadAllActiveExchangeHouse();
         model.addAttribute("exchangeList", exchangeHouseList);
-        return "/pages/admin/adminNewUserEntryForm";
+        return "pages/admin/adminNewUserEntryForm";
     }
 
     @RequestMapping(value = "/createNewUser", method = RequestMethod.POST)
@@ -137,12 +130,12 @@ public class UserController {
         model.addAttribute("exchangeList", exchangeHouseList);
         model.addAttribute("user", userSelected);
         model.addAttribute("exchangeCodeAssignedToUser", exchangeCodeAssignedToUser);
-        return "/pages/admin/adminUserEditForm";
+        return "pages/admin/adminUserEditForm";
     }
 
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
     public String editExchangeHouse(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user, BindingResult result, RedirectAttributes ra){
-        int idInIntegerFormat = Integer.parseInt(id);
+        int idInIntegerFormat = CommonService.convertStringToInt(id);
         if (result.hasErrors()) {
             user.setId(idInIntegerFormat);
             return "editUser";
@@ -162,12 +155,12 @@ public class UserController {
         List<User> inactiveUserModelList;
         inactiveUserModelList = myUserDetailsService.loadAllInactiveUsers();
         model.addAttribute("inactiveUserModelList", inactiveUserModelList);
-        return "/pages/superAdmin/superAdminInactiveUserListPage";
+        return "pages/superAdmin/superAdminInactiveUserListPage";
     }
 
     @RequestMapping(value="/activateUser/{id}", method = RequestMethod.POST)
     public String activateInactiveUser(Model model, @PathVariable(required = true, name = "id") String id, RedirectAttributes ra) {
-        int idInIntegerFormat = Integer.parseInt(id);
+        int idInIntegerFormat = CommonService.convertStringToInt(id);
         if(myUserDetailsService.updateInactiveUser(idInIntegerFormat)){
             ra.addFlashAttribute("message","User has been activated successfully");
         }
@@ -177,17 +170,25 @@ public class UserController {
     @GetMapping("/userFileUploadReport")
     public String userFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String type){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        List<Map<String, String>> reportColumn = ReportController.getReportColumn(type);
-        System.out.println(reportColumn);
-        System.out.println(type);
-        return "/pages/user/userFileUploadReport";
+        //List<Map<String, String>> reportColumn = ReportController.getReportColumn(type);
+        return "pages/user/userFileUploadReport";
     }
 
-    @GetMapping("/adminErrorReport")
-    public String adminErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("type") String type){
-        //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        if(type.equalsIgnoreCase("4"))   return "/pages/admin/adminErrorUpdateReport";
-        else return "";
+    @GetMapping("/adminReport")
+    public String adminFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String type){
+        return "pages/admin/adminErrorUpdateReport";
+    }
+    @GetMapping("/viewData")
+    public String viewData(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("id") String id,
+        @RequestParam("exchangeCode") String exchangeCode, @RequestParam(defaultValue = "") String type) throws JsonProcessingException{
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        List<Map<String, String>> columns = ReportController.getReportColumn(type);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String reportColumn = objectMapper.writeValueAsString(columns);
+        model.addAttribute("exchangeCode", exchangeCode);
+        model.addAttribute("id", id);
+        model.addAttribute("reportColumn", reportColumn);
+        return "pages/user/viewExchangeData";
     }
 
 

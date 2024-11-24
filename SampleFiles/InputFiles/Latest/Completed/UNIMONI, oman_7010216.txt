@@ -1,0 +1,2 @@
+Exch|TT No|Tra|Transaction |Transactio|Remitter Name|Beneficiary Name|Beneficiary Bank Acc|Beneficiary Bank|Be|Beneficiary Bank Branch Name|Beneficia|Beneficiary Mobile N|Drawee Bank Branch Name|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter Mobile No
+7040|13908102400112|BDT|49660.00|20241008|MOHAMMAD NAZRUL  ISLAM|MD NAZRUL  ISLAM|0200012590887|AGRANI BANK LTD BD|11|ISHANAGAR|010153439||||FAMILY MAINTENANCE|SALARY|96894066071

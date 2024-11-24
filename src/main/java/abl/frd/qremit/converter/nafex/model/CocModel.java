@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Table(name="converted_data_coc",
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
-        @Index(name = "idx_is_downloaded", columnList = "is_downloaded")
+        @Index(name = "idx_is_downloaded", columnList = "is_downloaded"), @Index(name = "idx_temp_status", columnList = "temp_status")
     }
 )
 public class CocModel {
@@ -55,6 +55,8 @@ public class CocModel {
     private int downloadUserId;
     @Column(name = "upload_date_time", columnDefinition = "DATETIME")
     private LocalDateTime uploadDateTime;
+    @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int tempStatus = 0;
     @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isVoucherGenerated = 0;
     @Column(name = "report_date", columnDefinition = "DATETIME")
@@ -248,6 +250,15 @@ public class CocModel {
 
     public void setDownloadUserId(int downloadUserId) {
         this.downloadUserId = downloadUserId;
+    }
+
+
+    public int getTempStatus() {
+        return this.tempStatus;
+    }
+
+    public void setTempStatus(int tempStatus) {
+        this.tempStatus = tempStatus;
     }
 
 

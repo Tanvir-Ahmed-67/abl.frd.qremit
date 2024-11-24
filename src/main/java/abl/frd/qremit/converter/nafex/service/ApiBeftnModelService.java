@@ -27,9 +27,10 @@ public class ApiBeftnModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    LocalDateTime currentDateTime = LocalDateTime.now();
+    
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode) {
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
         {            
             FileInfoModel fileInfoModel = new FileInfoModel();
@@ -41,7 +42,7 @@ public class ApiBeftnModelService {
             fileInfoModelRepository.save(fileInfoModel);
 
             //List<ApiBeftnModel> apiBeftnModels = csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel);
-            Map<String, Object> apiBeftnData= csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel);
+            Map<String, Object> apiBeftnData= csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel, currentDateTime);
             List<ApiBeftnModel> apiBeftnModels = (List<ApiBeftnModel>) apiBeftnData.get("apiBeftnModelList"); 
             if(apiBeftnData.containsKey("errorMessage")){
                 resp.put("errorMessage", apiBeftnData.get("errorMessage"));
@@ -69,33 +70,6 @@ public class ApiBeftnModelService {
                 }catch(Exception e){
                     resp.put("errorMessage", e.getMessage());
                 }
-
-
-                /*
-                //List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(apiBeftnModels,"getCheckBeftn", currentDateTime);
-                List<BeftnModel> beftnModelList = CommonService.generateBeftnModelList(apiBeftnModels, currentDateTime);
-
-                // FILE INFO TABLE GENERATION HERE......
-                fileInfoModel.setAccountPayeeCount("0");
-                fileInfoModel.setOnlineCount("0");
-                fileInfoModel.setBeftnCount(String.valueOf(beftnModelList.size()));
-                fileInfoModel.setCocCount("0");
-                fileInfoModel.setTotalCount(String.valueOf(apiBeftnModels.size()));
-                fileInfoModel.setFileName(file.getOriginalFilename());
-                fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setUnprocessedCount("test");
-                fileInfoModel.setUploadDateTime(currentDateTime);
-                fileInfoModel.setApiBeftnModel(apiBeftnModels);
-
-                fileInfoModel.setBeftnModelList(beftnModelList);
-                for(BeftnModel beftnModel:beftnModelList){
-                    beftnModel.setFileInfoModel(fileInfoModel);
-                    beftnModel.setUserModel(user);
-                }
-                // SAVING TO MySql Data Table
-                fileInfoModelRepository.save(fileInfoModel);
-                return fileInfoModel;
-                */
             }
 
         } catch (IOException e) {
@@ -105,7 +79,7 @@ public class ApiBeftnModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToApiBeftnModels(InputStream is, User user, FileInfoModel fileInfoModel) {
+    public Map<String, Object> csvToApiBeftnModels(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
         Optional<ApiBeftnModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -121,13 +95,20 @@ public class ApiBeftnModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                duplicateData = apiBeftnModelRepository.findByTransactionNoEqualsIgnoreCase(csvRecord.get(1));
                 String nrtaCode = csvRecord.get(0);
                 String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
+                String transactionNo = csvRecord.get(1).trim();
+                String amount = csvRecord.get(3).trim();
+                String bankCode = csvRecord.get(8).trim();
+                Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 0);
+                if((Integer) apiCheckResp.get("err") == 1){
+                    resp.put("errorMessage", apiCheckResp.get("msg"));
+                    break;
+                }
+                duplicateData = apiBeftnModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = csvRecord.get(9);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                String transactionNo = csvRecord.get(1).trim();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
@@ -153,36 +134,6 @@ public class ApiBeftnModelService {
                 apiBeftnModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 apiBeftnModel.setUploadDateTime(currentDateTime);
                 apiBeftnModelList.add(apiBeftnModel);
-                /*
-                if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    continue;
-                }
-                ApiBeftnModel apiBeftnModel = new ApiBeftnModel(
-                        csvRecord.get(0), //exCode
-                        csvRecord.get(1), //Tranno
-                        csvRecord.get(2), //Currency
-                        Double.parseDouble(csvRecord.get(3)), //Amount
-                        csvRecord.get(4), //enteredDate
-                        csvRecord.get(5), //remitter
-                        "", //remitterMobile
-                        csvRecord.get(6), // beneficiary
-                        csvRecord.get(7), //beneficiaryAccount
-                        "", //beneficiaryMobile
-                        csvRecord.get(9), //bankName
-                        csvRecord.get(8), //bankCode
-                        csvRecord.get(10), //branchName
-                        csvRecord.get(11), // branchCode
-                        "", //draweeBranchName
-                        "", //draweeBranchCode
-                        "", //purposeOfRemittance
-                        "", //sourceOfIncome
-                        "",    // processed_flag
-                        CommonService.setTypeFlag(csvRecord.get(7).trim(), csvRecord.get(9).trim(), csvRecord.get(11).trim()), //type_flag
-                        "",      // Processed_by
-                        "",            // processed_date
-                        currentDateTime);
-                apiBeftnModelList.add(apiBeftnModel);
-                */
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -196,7 +147,9 @@ public class ApiBeftnModelService {
                 fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
             }
             resp.put("apiBeftnModelList", apiBeftnModelList);
-            resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            if(!resp.containsKey("errorMessage")){
+                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            }
         }catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);

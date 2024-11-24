@@ -1,12 +1,10 @@
 package abl.frd.qremit.converter.nafex.service;
 
 import abl.frd.qremit.converter.nafex.helper.OnlineModelServiceHelper;
-import abl.frd.qremit.converter.nafex.model.FileInfoModel;
 import abl.frd.qremit.converter.nafex.model.OnlineModel;
 import abl.frd.qremit.converter.nafex.repository.OnlineModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +19,7 @@ public class OnlineModelService {
     MyUserDetailsService myUserDetailsService;
 
     public ByteArrayInputStream load(String fileId, String fileType) {
-        List<OnlineModel> onlineModes = onlineModelRepository.findAllOnlineModelHavingFileInfoId(Integer.parseInt(fileId));
+        List<OnlineModel> onlineModes = onlineModelRepository.findAllOnlineModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = OnlineModelServiceHelper.OnlineModelToCSV(onlineModes);
         return in;
     }
@@ -58,7 +56,7 @@ public class OnlineModelService {
                 if (existingEntity.getId() == (updatedEntity.getId())) {
                     existingEntity.setIsProcessed(processed);
                     existingEntity.setIsDownloaded(processed);
-                    existingEntity.setDownloadDateTime(LocalDateTime.now());
+                    existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
                     // Update other properties as needed
                     break;
@@ -83,5 +81,20 @@ public class OnlineModelService {
     @Transactional
     public void updateIsVoucherGenerated(int id, int isVoucherGenerated, LocalDateTime reportDate){
         onlineModelRepository.updateIsVoucherGenerated(id, isVoucherGenerated, reportDate);
+    }
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        onlineModelRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
+    }
+    public List<OnlineModel> findAllOnlineModelByFileInfoId(int id){
+        return onlineModelRepository.findAllOnlineModelHavingFileInfoId(id);
+    }
+    @Transactional
+    public void updateTempStatusById(int id, int tempStatus){
+        onlineModelRepository.updateTempStatusById(id, tempStatus);
+    }
+    @Transactional
+    public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
+        onlineModelRepository.updateTempStatusBulk(ids, tempStatus);
     }
 }

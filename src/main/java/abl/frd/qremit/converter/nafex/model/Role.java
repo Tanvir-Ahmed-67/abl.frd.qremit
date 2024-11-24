@@ -1,9 +1,5 @@
 package abl.frd.qremit.converter.nafex.model;
-
-
 import javax.persistence.*;
-import java.util.Collection;
-
 @Entity
 @Table(name="role")
 public class Role {

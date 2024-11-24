@@ -1,29 +1,51 @@
+TRUNCATE `base_data_table_alansari`;
+TRUNCATE `base_data_table_alawneh`;
+TRUNCATE `base_data_table_alrostamani`;
+TRUNCATE `base_data_table_alzadeed`;
+TRUNCATE `base_data_table_alzaman`;
+TRUNCATE `base_data_table_aman`;
+TRUNCATE `base_data_table_anb`;
+TRUNCATE `base_data_table_api_beftn`;
+TRUNCATE `base_data_table_api_t24`;
 TRUNCATE `base_data_table_bec`;
+TRUNCATE `base_data_table_belhashaglobal`;
+TRUNCATE `base_data_table_coc_paid`;
+TRUNCATE `base_data_table_eastern`;
 TRUNCATE `base_data_table_ezremit`;
+TRUNCATE `base_data_table_fsie`;
+TRUNCATE `base_data_table_index`;
+TRUNCATE `base_data_table_instantcash`;
+TRUNCATE `base_data_table_lari`;
+TRUNCATE `base_data_table_multinet`;
 TRUNCATE `base_data_table_muzaini`;
 TRUNCATE `base_data_table_nafex`;
+TRUNCATE `base_data_table_necitaly`;
+TRUNCATE `base_data_table_necuk`;
+TRUNCATE `base_data_table_oman`;
+TRUNCATE `base_data_table_omankuwait`;
+TRUNCATE `base_data_table_prabhu`;
 TRUNCATE `base_data_table_ria`;
+TRUNCATE `base_data_table_saib`;
+TRUNCATE `base_data_table_sigue`;
 TRUNCATE `base_data_table_singapore`;
+TRUNCATE `base_data_table_standard`;
+TRUNCATE `base_data_table_sunman`;
+TRUNCATE `base_data_table_unimoni`;
 TRUNCATE `converted_data_account_payee`;
 TRUNCATE `converted_data_beftn`;
 TRUNCATE `converted_data_coc`;
 TRUNCATE `converted_data_online`;
-TRUNCATE `upload_file_info`;
-TRUNCATE`error_data_table`;
+TRUNCATE `error_data_table`;
 TRUNCATE `log`;
-TRUNCATE `base_data_table_api_beftn`;
-TRUNCATE `base_data_table_api_t24`;
-TRUNCATE `base_data_table_coc_paid`;
 TRUNCATE `report`;
 TRUNCATE `temporary_report`;
-TRUNCATE `base_data_table_nec`;
-TRUNCATE `base_data_table_eastern`;
-TRUNCATE `base_data_table_alansari`;
+TRUNCATE `upload_file_info`;
+TRUNCATE `base_data_table_uremit`;
+TRUNCATE `base_data_table_agranimalaysia`;
+TRUNCATE `base_data_table_generic`;
+TRUNCATE `base_data_table_alraji`;
 
-
-DROP TABLE `base_data_table_bec`,`base_data_table_ezremit`,`base_data_table_muzaini`, `base_data_table_nafex`, `base_data_table_ria`,`base_data_table_singapore`;
-DROP TABLE `converted_data_account_payee`,`converted_data_beftn`,`converted_data_coc`,`converted_data_online`,`upload_file_info`,`error_data_table`,`log`;
-DROP TABLE `base_data_table_api_beftn`,`base_data_table_api_t24`,`base_data_table_coc_paid`, `report`, `temporary_report`,`base_data_table_nec`,`base_data_table_eastern`,`base_data_table_alansari`;
+DROP TABLE IF EXISTS `base_data_table_alansari`, `base_data_table_alawneh`, `base_data_table_alrostamani`, `base_data_table_alzadeed`, `base_data_table_alzaman`, `base_data_table_aman`, `base_data_table_anb`, `base_data_table_api_beftn`, `base_data_table_api_t24`, `base_data_table_bec`, `base_data_table_belhashaglobal`, `base_data_table_coc_paid`, `base_data_table_eastern`, `base_data_table_ezremit`, `base_data_table_fsie`, `base_data_table_index`, `base_data_table_instantcash`, `base_data_table_lari`, `base_data_table_multinet`, `base_data_table_muzaini`, `base_data_table_nafex`, `base_data_table_necitaly`, `base_data_table_necuk`, `base_data_table_oman`, `base_data_table_omankuwait`, `base_data_table_prabhu`, `base_data_table_ria`, `base_data_table_saib`, `base_data_table_sigue`, `base_data_table_singapore`, `base_data_table_standard`, `base_data_table_sunman`, `base_data_table_unimoni`, `converted_data_account_payee`, `converted_data_beftn`, `converted_data_coc`, `converted_data_online`, `error_data_table`, `log`, `report`, `temporary_report`, `upload_file_info`,`base_data_table_uremit`,`base_data_table_agranimalaysia`, `base_data_table_generic`,`base_data_table_alraji`;
 
 https://codepen.io/n3k1t/pen/OJMGgyq
 
@@ -32,3 +54,20 @@ delete FROM `report` WHERE exchange_code="7010203";
 delete FROM `report` WHERE exchange_code="7010248";
 delete FROM `report` WHERE exchange_code="7010204";
 delete FROM `report` WHERE exchange_code="7010274";
+
+//exchange codes for user login 
+7010231,7010209,7010234,7010226,7010299,7010290,7010239,7010246,7010240,7010245,7010262,7119,7010263,7010203,7010279,7010206,7010223,7010260,7010242,7010252,7010229,7010285,7010276,7010272,7010208,7010215,7010238,7010256,7010248,7010274,7010266,7010267,7010216,7010289,7010228,111111,222222,333333
+
+// Need to add this in ex_house_list table 
+INSERT INTO `ex_house_list` (`id`, `active_status`, `base_table_name`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `class_name`, `repository_name`, `is_settlement`) VALUES (NULL, '1', 'agranimalaysia', '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', '0');
+
+// Need to add this in ex_house_list table 
+INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `base_table_name`, `class_name`, `repository_name`, `is_settlement`, `active_status`) VALUES (NULL, '', '', '', '', '', '', '', '0', '0'), (NULL, '7010294', 'NBL Money Transfer, Maldives', 'NBL Maldives', '7105', 'nblmaldives', 'NblMaldivesModel', 'nblMaldivesModelRepository', '0', '1');
+UPDATE `ex_house_list` set exchange_short_name = "Bank Al Bilad", base_table_name="albilad", class_name = "AlBiladModel", repository_name = "alBiladModelRepository" where exchange_code = '7010204';
+INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `base_table_name`, `class_name`, `repository_name`, `is_settlement`, `active_status`) VALUES (NULL, '7010300', 'Merchantrade Asia Sdn Bhd', 'Merchantrade', '7049', 'merchantrade', 'MerchantradeModel', 'merchantradeModelRepository', '0', '1');
+UPDATE `ex_house_list` set has_settlement_daily = 1 where exchange_code in ('222222','7010226','333333');
+UPDATE `ex_house_list` set base_table_name = 'generic', class_name = 'GenericModel', repository_name = 'genericModelRepository' where exchange_code = '7010213';
+UPDATE `ex_house_list` set base_table_name = "shah_global", class_name ="ShahGlobalModel", repository_name ="shahGlobalModelRepository", nrta_code = 7104 where exchange_code = '7010294'
+UPDATE `ex_house_list` set exchange_short_name = "City Intl Exchange", base_table_name = 'city', class_name = 'CityModel', repository_name = 'cityModelRepository' where exchange_code = '7010211';
+UPDATE `ex_house_list` set exchange_name = 'Al-Fardan Exchange Co. Doha,Qatar', exchange_short_name ="Al Fardan Doha", base_table_name = "alfardan_doha", class_name = "AlFardanDohaModel", repository_name = "alFardanDohaModelRepository" where exchange_code = '7010205'
+UPDATE `ex_house_list` SET `exchange_short_name` = 'Al Fardan Abu Dhabi', base_table_name = 'alfardan_abudhabi', class_name = "AlFardanAbuDhabiModel", repository_name = "alFardanAbuDhabiModelRepository" WHERE exchange_code = '7010220'

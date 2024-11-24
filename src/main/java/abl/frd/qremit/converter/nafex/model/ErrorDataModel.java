@@ -4,8 +4,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="error_data_table", 
-    //uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}),
-    indexes = { @Index(name = "idx_update_status", columnList = "update_status"), @Index(name = "idx_transaction_no", columnList = "transaction_no")}
+    uniqueConstraints = @UniqueConstraint(columnNames = {"transaction_no", "amount", "exchange_code"}),
+    indexes = { @Index(name = "idx_update_status", columnList = "update_status"), @Index(name = "idx_transaction_no", columnList = "transaction_no"), 
+        @Index(name = "idx_exchange_code", columnList = "exchange_code")
+    }
 )
 
 public class ErrorDataModel {

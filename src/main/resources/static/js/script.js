@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    get_loading();
     $.ajax({
         type: "GET",
         url: "/adminDashboard",
@@ -15,24 +16,33 @@ $(document).ready(function(){
 
 
 function get_cnt(url,tdiv){
-    window.location = url;
     $.ajax({
         url: url,
         type: "get",
-        timeout: "10000",
-    }).done(function(resp,status,xhr){
-        var cnt = xhr.getResponseHeader("count");
-        $(tdiv).text(cnt);
+        timeout: "1000000",
+        dataType: "json"
+    }).done(function(resp){
+        $(tdiv).text(resp.count);
+        window.open(resp.url,"_");
     }).fail(function(params){
-        alert("Error geeting from server");
+        alert("Error getting from server");
     });
 }
 
 function downloadOnline() {
+    console.log("Button clicked");
     var url = "/downloadonline";
     get_cnt(url,"p.onlineCount");
 }
-
+/*
+$(document).off('click','.download_online');
+$(document).on('click','.download_online', function(e){
+    e.preventDefault();
+    console.log("Button clicked");
+    var url = "/downloadonline";
+    get_cnt(url,"p.onlineCount");
+});
+*/
     
 function downloadCoc() {
     var url = "/downloadcoc";
@@ -52,8 +62,8 @@ function  downloadBeftnIncentive(){
     var url ="/downloadBeftnIncentive";
     get_cnt(url,"p.beftnIncentiveCount");
 }
-function GenerateDetailsReport(format) {
-    var url = '/downloadDetailsOfDailyStatement?type='+format;
+function GenerateDetailsReport(format, date) {
+    var url = '/downloadDetailsOfDailyStatement?type='+format + "&date=" + date;
     window.location.href = url;
 }
 
@@ -62,7 +72,7 @@ $( function() {
       $(this).datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "dd-mm-yy",
+        dateFormat: "yy-mm-dd",
         minDate: "-100Y",
         maxDate: "+0d",
         yearRange: "1900:2035" 
@@ -102,4 +112,12 @@ function delete_error(tbl, csrf_token, csrf_header){
         }
     });
 }
+
+function get_loading(){
+    $body = $("body");
+    $(document).on({
+      ajaxStart: function() { $body.addClass("loading");    },
+      ajaxStop: function() { $body.removeClass("loading"); }    
+    });
+  }
 

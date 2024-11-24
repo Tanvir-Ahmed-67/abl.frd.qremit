@@ -1,13 +1,14 @@
 package abl.frd.qremit.converter.nafex.controller;
 import java.io.*;
-import java.time.LocalDateTime;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.*;
-
 import abl.frd.qremit.converter.nafex.helper.NumberToWords;
 import abl.frd.qremit.converter.nafex.model.*;
-import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,6 @@ import abl.frd.qremit.converter.nafex.service.FileInfoModelService;
 import abl.frd.qremit.converter.nafex.service.LogModelService;
 import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.service.ReportService;
-@SuppressWarnings("unchecked")
 @Controller
 public class ReportController {
 
@@ -42,9 +42,7 @@ public class ReportController {
     LogModelService logModelService;
     @Autowired
     CustomQueryService customQueryService;
-    private static final String PDF_DIRECTORY = "D:/Report/";
     
-
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
         this.myUserDetailsService = myUserDetailsService;
         this.fileInfoModelService = fileInfoModelService;
@@ -66,17 +64,17 @@ public class ReportController {
         switch(type){
             case "1":
             default:
-                columnData = new String[] {"sl", "exchangeCode", "uploadDateTime", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount","action"};
-                columnTitles = new String[] {"SL", "Exchange Code", "Upload Date", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total","Action"};
+                columnData = new String[] {"sl", "exchangeCode", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount", "errorCount", "uploadDateTime", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Upload Date", "Action"};
                 break;
             case "2":
-                columnData = new String[] {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "remitterName","remType"};
-                columnTitles = new String[] {"SL", "Bank Name", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Remitter Name","Type"};
+                columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","remitterName", "amount","processedDate","remType"};
+                columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Remitter Name","Amount","Processed Date","Type"};
                 break;
             case "3":
             case "4":
-                columnData = new String[] {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
-                columnTitles = new String[] {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
+                columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","amount","uploadDateTime","errorMessage","action"};
+                columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Amount","Upload Date","Error Mesage","Action"};
                 break;
         }
         return CommonService.createColumns(columnData, columnTitles);
@@ -84,96 +82,89 @@ public class ReportController {
     
     @GetMapping("/report")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model){
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+    public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
         Map<String, Object> resp = new HashMap<>();
-        
+        if(date.isEmpty()){
+            date = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        int userId;
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
-            User user = myUserDetails.getUser();
-            userId = user.getId();
-            List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId);
-            
-            List<Map<String, Object>> dataList = new ArrayList<>();
-            int sl = 1;
-            int totalCount = 0;
-            String action = "";
-            for (FileInfoModel fModel : fileInfoModel) {
-                Map<String, Object> dataMap = new HashMap<>();
-                action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
-                action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
-                dataMap.put("sl", sl++);
-                dataMap.put("id", fModel.getId());
-                dataMap.put("exchangeCode", fModel.getExchangeCode());
-                dataMap.put("uploadDateTime", fModel.getUploadDateTime());
-                dataMap.put("fileName", fModel.getFileName());
-                dataMap.put("cocCount", fModel.getCocCount());
-                dataMap.put("beftnCount", fModel.getBeftnCount());
-                dataMap.put("onlineCount", fModel.getOnlineCount());
-                dataMap.put("accountPayeeCount", fModel.getAccountPayeeCount());
-                totalCount += Integer.valueOf(fModel.getTotalCount());
-                dataMap.put("totalCount", fModel.getTotalCount());
-                dataMap.put("action", action); // Example action, customize as needed
-                dataList.add(dataMap);
-            }
-            resp.put("data", dataList);
-            return ResponseEntity.ok(resp);
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        int userId = (int) userData.get("userid");
+        String baseUrl = (userId == 0) ? "/adminReport": "/user-home-page";
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
+        List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId, date);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if(fileInfoModel.isEmpty())     return ResponseEntity.ok(CommonService.getResp(1, "No data found", dataList));
+        int sl = 1;
+        int totalCount = 0;
+        int totalCocCount = 0;
+        int totalBeftnCount = 0;
+        int totalOnlineCount = 0;
+        int totalAccountPayeeCount = 0;
+        int totalErrorCount = 0;
+        String action = "";
+        for (FileInfoModel fModel : fileInfoModel) {
+            Map<String, Object> dataMap = new HashMap<>();
+            action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
+            action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
+            action += "<input type='hidden' id='base_url' value='" + baseUrl + "' />";
+            int cocCount = CommonService.convertStringToInt(fModel.getCocCount());
+            totalCocCount += cocCount;
+            int beftnCount = CommonService.convertStringToInt(fModel.getBeftnCount());
+            totalBeftnCount += beftnCount;
+            int onlineCount = CommonService.convertStringToInt(fModel.getOnlineCount());
+            totalOnlineCount += onlineCount;
+            int accountPayeeCount = CommonService.convertStringToInt(fModel.getAccountPayeeCount());
+            totalAccountPayeeCount += accountPayeeCount;
+            int errorCount = fModel.getErrorCount();
+            totalErrorCount += errorCount;
+            String errorStr = CommonService.convertIntToString(errorCount);
+            String totalError = (errorCount >= 1) ? CommonService.generateClassForText(errorStr, "text-danger fw-bold"): errorStr;
+            int total = CommonService.convertStringToInt(fModel.getTotalCount());
+            totalCount += total;
+            dataMap.put("sl", sl++);
+            dataMap.put("id", fModel.getId());
+            dataMap.put("exchangeCode", fModel.getExchangeCode());
+            dataMap.put("uploadDateTime", CommonService.convertDateToString(fModel.getUploadDateTime()));
+            dataMap.put("fileName", fModel.getFileName());
+            dataMap.put("cocCount", cocCount);
+            dataMap.put("beftnCount", beftnCount);
+            dataMap.put("onlineCount", onlineCount);
+            dataMap.put("accountPayeeCount", accountPayeeCount);
+            dataMap.put("errorCount", totalError);
+            dataMap.put("totalCount", total);
+            dataMap.put("action", action);
+            dataList.add(dataMap);
         }
-        else{
-           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        Map<String, Object> totalData = reportService.calculateTotalUploadFileInfo(totalCocCount, totalBeftnCount, totalOnlineCount, totalAccountPayeeCount, totalErrorCount, totalCount);
+        dataList.add(totalData);
+        resp.put("data", dataList);
+        return ResponseEntity.ok(resp);
     }
 
     @GetMapping("/fileReport")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getFileDetails(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam String id,@RequestParam String exchangeCode){
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
-        
-        String[] columnData = {"sl", "bankName", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "remitterName","remType"};
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        int userId;
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
-            User user = myUserDetails.getUser();
-            userId = user.getId();
-        }else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        List<Map<String, String>> reportColumn = getReportColumn("2");
+        List<String> columnDataList = new ArrayList<>();
+        for(Map<String, String> column: reportColumn){
+            columnDataList.add(column.get("data"));
+        }
+        String[] columnData = columnDataList.toArray(new String[0]);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
-        
         Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
         if((Integer) fileInfo.get("err") == 1)  return ResponseEntity.ok(fileInfo);
-
-        List<Map<String, Object>> dataList = new ArrayList<>();
-        int sl = 1;
-        double totalAmount = 0;
-
-        for(Map<String,Object> fdata: (List<Map<String, Object>>) fileInfo.get("data")){
-            Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put("sl", sl++);
-            dataMap.put("bankName",fdata.get("bank_name"));
-            dataMap.put("branchName",fdata.get("branch_name"));
-            dataMap.put("beneficiaryAccountNo",fdata.get("beneficiary_account_no"));
-            dataMap.put("beneficiaryName",fdata.get("beneficiary_name"));
-            dataMap.put("remitterName",fdata.get("remitter_name"));
-            dataMap.put("transactionNo",fdata.get("transaction_no"));
-            dataMap.put("exchangeCode",fdata.get("exchange_code"));
-            dataMap.put("amount",fdata.get("amount"));
-            totalAmount += Double.parseDouble(String.valueOf(fdata.get("amount")));
-            Map<String, Object> types = CommonService.getRemittanceTypes();
-            dataMap.put("remType", types.get(fdata.get("type_flag")));
-            dataList.add(dataMap);
-        }
-        //System.out.println(totalAmount);
-        Map<String, Object> totalAmountMap = commonService.getTotalAmountData(columnData, totalAmount,"beneficiaryName");
-        dataList.add(totalAmountMap);
-
-        resp.put("err", fileInfo.get("err"));
-        resp.put("msg", fileInfo.get("msg"));
-        resp.put("data",dataList);
+        resp = reportService.getFileDetails(CommonService.convertStringToInt(id), fileInfo, columnData);
         return ResponseEntity.ok(resp);
     }
 
@@ -184,15 +175,17 @@ public class ReportController {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
         int fileInfoModelId = 0;
-        if(!id.isEmpty())  fileInfoModelId = Integer.parseInt(id);
+        if(!id.isEmpty())  fileInfoModelId = CommonService.convertStringToInt(id);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         int userId;
+        String exchangeCode;
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
             User user = myUserDetails.getUser();
             userId = user.getId();
-            List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId);
+            exchangeCode = user.getExchangeCode();
+            List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode);
             resp.put("data", dataList);
         }else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -211,8 +204,9 @@ public class ReportController {
     }
 
     @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET)
-    public String generateSummaryOfDailyStatement(Model model) {
-        List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyStatement();
+    public String generateSummaryOfDailyStatement(Model model, @RequestParam(defaultValue = "") String date) {
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyStatement(date);
         Double grandTotalAmount = 0.00;
         String commaFormattedGrandTotalAmount="";
         int grandTotalRemittances=0;
@@ -225,48 +219,45 @@ public class ReportController {
         model.addAttribute("summaryReportContent", exchangeReport);
         model.addAttribute("grandTotalAmount", commaFormattedGrandTotalAmount);
         model.addAttribute("grandTotalRemittances", grandTotalRemittances);
-        return "/report/summaryOfDailyRemittance";
+        model.addAttribute("date", date);
+        return "report/summaryOfDailyRemittance";
     }
 
     @RequestMapping(value="/detailsOfDailyStatement", method= RequestMethod.GET)
-    public String generateDetailsOfDailyStatement(@RequestParam(defaultValue = "html") String format, Model model) throws FileNotFoundException {
-        List<ExchangeReportDTO> exchangeReport = reportService.generateDetailsOfDailyStatement();
+    public String generateDetailsOfDailyStatement(@RequestParam(defaultValue = "html") String format, Model model, @RequestParam(defaultValue = "") String date) throws FileNotFoundException {
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        List<ExchangeReportDTO> exchangeReport = reportService.generateDetailsOfDailyStatement(date);
         for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
         }
         model.addAttribute("detailsReportContent", exchangeReport);
-        return "/report/detailsOfDailyRemittance";
+        model.addAttribute("date", date);
+        return "report/detailsOfDailyRemittance";
     }
 
     @RequestMapping(value="/downloadSummaryOfDailyStatementInPdfFormat", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat() throws JRException, FileNotFoundException {
-        // Getting the data as List
-        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement();
-
-        // Generating the PDF report and storing here - D:\\Report"+"\\Report.pdf
-        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data);
-
-        // Set the headers for file download
+    public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement(date);
+        if(data.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Summary_Report.pdf\"");
-
-        // Return the response with the PDF as a byte array
+        String fileName = CommonService.generateFileName("summary_report_", date, ".pdf");
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"" );
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfReport);
     }
     @RequestMapping(value = "/downloadDetailsOfDailyStatement", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format){
+    public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format, @RequestParam(defaultValue = "") String date){
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         try {
-            // Prepare parameters and data source as needed
-            Map<String, Object> parameters = new HashMap<>();
-            List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyStatement();
-
-            // Call the method to generate the report
-            byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format);
-            // Set the content type and header for attachment download
-            String fileName = "Details_Report." + format.toLowerCase();
+            List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyStatement(date);
+            byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format, date);
+            String fileName = CommonService.generateFileName("details_report_", date, "." + format.toLowerCase());
             MediaType mediaType = format.equalsIgnoreCase("pdf") ? MediaType.APPLICATION_PDF : MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
@@ -279,33 +270,30 @@ public class ReportController {
     }
 
     @RequestMapping(value="/downloaDailyVoucherInPdfFormat", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloaDailyVoucherInPdfFormat() throws JRException, FileNotFoundException {
-        NumberToWords numberToWords = new NumberToWords();
-        // Getting the data as List
-        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement();
+    public ResponseEntity<byte[]> downloaDailyVoucherInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyStatement(date);
         for(int i=0; i<data.size();i++){
-            data.get(i).setTotalAmountInWords(numberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
+            data.get(i).setTotalAmountInWords(NumberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
         }
-
-        // Generating the PDF report and storing here - D:\\Report"+"\\DailyVoucher.pdf
-        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data);
-        // Set the headers for file download
+        String fileName = CommonService.generateFileName("daily_voucher_", date, ".pdf");
+        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"DailyVoucher.pdf\"");
-
-        // Return the response with the PDF as a byte array
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfReport);
     }
 
     @GetMapping("/generateReport")
-    public ResponseEntity<?> viewPdf() {
-        String fileName = "Report" + "_" + CommonService.getCurrentDate();
+    public ResponseEntity<?> viewPdf() throws IOException {
+        String date = CommonService.getCurrentDate("yyyy-MM-dd");
+        Path filePath = CommonService.getReportFile(CommonService.generateFileName("summary_report_", date, ".pdf"));
+        String fileName = filePath.toString();
         try {
             // Construct the full file path
-            File file = new File(PDF_DIRECTORY + fileName + ".pdf");
+            File file = new File(fileName);
             // Check if the file exists
             if (!file.exists()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -328,9 +316,6 @@ public class ReportController {
         } catch (FileNotFoundException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("File not found.");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while reading the file.");
         }
     }
 
@@ -341,6 +326,26 @@ public class ReportController {
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         resp = reportService.processReport(currentDate);
         return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/getReportFile")
+    public ResponseEntity<Resource> getReportFile(@RequestParam String fileName){
+        try{
+            Path filePath = CommonService.generateOutputFile(fileName);
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build(); // Handle any IO exceptions
+        }
     }
 
 }

@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import abl.frd.qremit.converter.nafex.model.ErrorDataModel;
-import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.nafex.model.LogModel;
 import abl.frd.qremit.converter.nafex.repository.ErrorDataModelRepository;
 import abl.frd.qremit.converter.nafex.repository.LogModelRepository;
@@ -23,8 +22,6 @@ public class ErrorDataModelService {
     EntityManager entityManager;
     @Autowired
     LogModelRepository logModelRepository;
-    @Autowired
-    ExchangeHouseModelService exchangeHouseModelService;
     @Autowired
     LogModelService logModelService;
 
@@ -43,7 +40,14 @@ public class ErrorDataModelService {
         if(fileInfoModelId != 0){
             return errorDataModelRepository.findByUserModelIdAndUpdateStatusAndFileInfoModelId(userId, updateStatus, fileInfoModelId);
         }else return errorDataModelRepository.findByUserModelIdAndUpdateStatus(userId, updateStatus);
-    } 
+    }
+    
+    public List<ErrorDataModel> findUserModelListByExchangeCodeAndUpdateStatus(String exchangeCode, int updateStatus, int fileInfoModelId){
+        List<String> exchangeCodeList = Arrays.asList(exchangeCode.split(","));
+        if(fileInfoModelId != 0){
+            return errorDataModelRepository.findErrorByExchangeCodeAndFileId(exchangeCodeList, updateStatus, fileInfoModelId);
+        }else return errorDataModelRepository.findErrorByExchangeCode(exchangeCodeList, updateStatus);
+    }
 
     //find errorDataModel 
     public ErrorDataModel findErrorModelById(int id){
@@ -59,18 +63,18 @@ public class ErrorDataModelService {
         errorDataModelRepository.deleteById(id);
     }
 
-    public Map<String, Object> processUpdateErrorDataById(@RequestParam Map<String, String> formData, HttpServletRequest request){
+    public Map<String, Object> processUpdateErrorDataById(@RequestParam Map<String, String> formData, HttpServletRequest request, int userId){
         Map<String, Object> resp = new HashMap<>();
         String exchangeCode = formData.get("exchangeCode");
         String id = formData.get("id");
-        ErrorDataModel errorDataModel = findErrorModelById(Integer.parseInt(id));
+        ErrorDataModel errorDataModel = findErrorModelById(CommonService.convertStringToInt(id));
         entityManager.detach(errorDataModel); // Detach ErrorDataModel to prevent auto-updates
         if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
         if(errorDataModel.getUpdateStatus() != 0)   return CommonService.getResp(1, "Invalid Type for update data", null);  //for update status must be 0
 
         Map<String, Object> errorDataMap = getErrorDataModelMap(errorDataModel); 
-        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
-        String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
+        //ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
+        //String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         Map<String, Object> info = new HashMap<>();
         info.put("oldData", errorDataMap);
         String ipAddress = request.getRemoteAddr();
@@ -109,6 +113,7 @@ public class ErrorDataModelService {
         errorDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
         
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel);
+        updatedData.put("userId", userId);
         info.put("updatedData", updatedData);
         String infoStr = "";
         ObjectMapper objectMapper = new ObjectMapper();
@@ -120,8 +125,8 @@ public class ErrorDataModelService {
         }catch(JsonProcessingException e){
             e.printStackTrace();
         }
-        String userId = String.valueOf(errorDataModel.getUserModel().getId());
-        LogModel logModel = new LogModel(userId, String.valueOf(errorDataModel.getId()), exchangeCode, "1", infoStr, ipAddress);
+        //String userId = String.valueOf(errorDataModel.getUserModel().getId());
+        LogModel logModel = new LogModel(String.valueOf(userId), String.valueOf(errorDataModel.getId()), exchangeCode, "1", infoStr, ipAddress);
         LogModel saveLogModel = logModelRepository.save(logModel);
         if(saveLogModel != null){
             try{
@@ -130,8 +135,6 @@ public class ErrorDataModelService {
             }catch(Exception e){
                 resp = CommonService.getResp(1, "Error Updating status: " + e.getMessage(), null);
             }
-        }else{
-            resp = CommonService.getResp(1, "Error Updating Information", null);
         }
         return resp;
     }
@@ -171,8 +174,9 @@ public class ErrorDataModelService {
         return resp;
     }
 
-    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId){
-        List<ErrorDataModel> errorDataModel = findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
+    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId, String exchangeCode){
+        //List<ErrorDataModel> errorDataModel = findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
+        List<ErrorDataModel> errorDataModel = findUserModelListByExchangeCodeAndUpdateStatus(exchangeCode, 0, fileInfoModelId);
         int sl = 1;
         String action = "";
         String btn = "";
@@ -186,11 +190,12 @@ public class ErrorDataModelService {
             dataMap.put("sl", sl++);
             dataMap.put("bankName", emodel.getBankName());
             dataMap.put("branchName", emodel.getBranchName());
-            dataMap.put("routingNo", emodel.getBranchCode());
+            dataMap.put("branchCode", emodel.getBranchCode());
             dataMap.put("beneficiaryName", emodel.getBeneficiaryName());
             dataMap.put("beneficiaryAccountNo", emodel.getBeneficiaryAccount());
             dataMap.put("transactionNo", emodel.getTransactionNo());
             dataMap.put("amount", emodel.getAmount());
+            dataMap.put("uploadDateTime", CommonService.convertDateToString(emodel.getUploadDateTime()));
             dataMap.put("exchangeCode", emodel.getExchangeCode());
             dataMap.put("errorMessage", emodel.getErrorMessage());
             dataMap.put("action", action);
@@ -214,12 +219,13 @@ public class ErrorDataModelService {
             dataMap.put("sl", sl++);
             dataMap.put("bankName", updatedDataMap.get("bankName"));
             dataMap.put("branchName", updatedDataMap.get("branchName"));
-            dataMap.put("routingNo", updatedDataMap.get("branchCode"));
+            dataMap.put("branchCode", updatedDataMap.get("branchCode"));
             dataMap.put("beneficiaryName", updatedDataMap.get("beneficiaryName"));
             dataMap.put("beneficiaryAccountNo", updatedDataMap.get("beneficiaryAccount"));
             dataMap.put("transactionNo", updatedDataMap.get("transactionNo"));
             dataMap.put("amount", updatedDataMap.get("amount"));
             dataMap.put("exchangeCode", emodel.getExchangeCode());
+            dataMap.put("uploadDateTime", CommonService.convertDateToString(emodel.getUploadDateTime()));
             dataMap.put("errorMessage", emodel.getErrorMessage());
             dataMap.put("action", action);
             dataList.add(dataMap);

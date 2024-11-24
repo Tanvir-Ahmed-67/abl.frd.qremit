@@ -4,7 +4,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="base_data_table_coc_paid", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
+@Table(name="base_data_table_coc_paid", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
+    indexes = { @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id") }
+)
 public class CocPaidModel {
     @Id
     @Column(name = "id")
@@ -50,6 +52,10 @@ public class CocPaidModel {
     private int isVoucherGenerated = 0;
     @Column(name = "incentive", length = 15)
     private Double incentive;
+    @Column(name = "type_flag")
+    private String typeFlag;
+    @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int tempStatus = 0;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
@@ -245,9 +251,25 @@ public class CocPaidModel {
         this.incentive = incentive;
     }
 
+    public String getTypeFlag() {
+        return this.typeFlag;
+    }
+
+    public void setTypeFlag(String typeFlag) {
+        this.typeFlag = typeFlag;
+    }
+
+    public int getTempStatus() {
+        return this.tempStatus;
+    }
+
+    public void setTempStatus(int tempStatus) {
+        this.tempStatus = tempStatus;
+    }
+
     public CocPaidModel(String exchangeCode, String transactionNo, Double amount, LocalDateTime enteredDate, LocalDateTime paidDate, String remitterName, 
         String beneficiaryName, String beneficiaryAccount, String routingNo, String beneficiaryMobile, String bankName, String bankCode, String branchName, 
-        String branchCode, String trMode, LocalDateTime uploadDateTime) {
+        String branchCode, String trMode, LocalDateTime uploadDateTime, String typeFlag) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.amount = amount;
@@ -264,6 +286,7 @@ public class CocPaidModel {
         this.bankCode = bankCode;
         this.bankName = bankName;
         this.branchName = branchName;
+        this.typeFlag = typeFlag;
     }
 
     @Override

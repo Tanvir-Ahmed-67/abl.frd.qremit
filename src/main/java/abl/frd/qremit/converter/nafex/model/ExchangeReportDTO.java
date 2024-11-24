@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.nafex.model;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ExchangeReportDTO {
@@ -10,6 +11,7 @@ public class ExchangeReportDTO {
     private String currency;
     private Double amount;
     private LocalDateTime enteredDate;
+    private LocalDate voucherDate;
     private String remitterName;
     private String remitterMobile;
     private String beneficiaryName;
@@ -162,5 +164,13 @@ public class ExchangeReportDTO {
 
     public void setSumOfAmount(Double sumOfAmount) {
         this.sumOfAmount = sumOfAmount;
+    }
+
+    public LocalDate getVoucherDate() {
+        return voucherDate;
+    }
+
+    public void setVoucherDate(LocalDate voucherDate) {
+        this.voucherDate = voucherDate;
     }
 }

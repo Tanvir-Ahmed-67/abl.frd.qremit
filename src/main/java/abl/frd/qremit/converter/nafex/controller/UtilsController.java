@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.nafex.controller;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +17,6 @@ import abl.frd.qremit.converter.nafex.service.MyUserDetailsService;
 import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
 import abl.frd.qremit.converter.nafex.model.ExchangeHouseModel;
 
-
 @Controller
 @RequestMapping("/utils")
 public class UtilsController {
@@ -29,7 +27,7 @@ public class UtilsController {
     CommonService commonService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    private String fileUploadPage = "/fragments/file_upload_form";
+    private String fileUploadPage = "fragments/file_upload_form";
     public UtilsController(MyUserDetailsService myUserDetailsService){
         this.myUserDetailsService = myUserDetailsService;
     }
@@ -38,6 +36,10 @@ public class UtilsController {
     public String index(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @RequestParam String id){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         int showDropDown = this.showDropDown(id);
+        if(showDropDown == 1){
+            Map<String, Object> dropdown = getDropdown(id);
+            model.addAttribute("dropdown", dropdown);
+        }
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(id);
         model.addAttribute("showDropDown", showDropDown);
         model.addAttribute("exchangeHouseModel", exchangeHouseModel);
@@ -81,6 +83,7 @@ public class UtilsController {
         switch (exCode) {
             case "7010226":
             case "7010299":
+            case "7010228":
                 showDropDown = 1;
                 break;
             default:
@@ -89,19 +92,26 @@ public class UtilsController {
         return showDropDown;
     }
 
+    public Map<String, Object> getDropdown(String exCode){
+        Map<String, Object> resp = new HashMap<>();
+        String api = "API";
+        if(exCode.equals("7010228"))    api = "Account Payee";
+        resp.put("API",api);
+        resp.put("BEFTN", "BEFTN");
+        return resp;
+    }
+
     @GetMapping("/errorReport")
     public String errorReport(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        return "/pages/user/errorReport";
+        return "pages/user/errorReport";
     }
     
     @GetMapping("/uploadApi")
     public String uploadApiUi(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-        //model.addAttribute("exchangeHouseModelList", exchangeHouseModelList);
-        //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         model.addAttribute("currentDate", currentDate);
-        return "/pages/admin/adminApiUpload";
+        return "pages/admin/adminApiUpload";
     }
 
     @GetMapping("/getSettlement")
@@ -115,11 +125,12 @@ public class UtilsController {
         List<Map<String, Object>> dataList = new ArrayList<>();
         int i = 1;
         String action = "";
+        int hasSettlementDailyCount = exchangeHouseModelService.calculateSumOfHasSettlementDaily(exchangeHouseModelList);
         int totalCount = 0;
         for(Map<String, Object> settlement: settlementList){
             Map<String, Object> dataMap = new HashMap<>();
             int count = (int) settlement.get("count");
-            if(count == 1){
+            if(count >= 1){
                 action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-success btn-sm", "","Processed");
                 totalCount++;
             }else action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm", "","Not Processed");
@@ -130,7 +141,7 @@ public class UtilsController {
             dataList.add(dataMap);
         } 
         resp = CommonService.getResp(0, "", dataList);
-        if(totalCount == 5)  resp.put("generateBtn", "1");
+        if(totalCount >= hasSettlementDailyCount)  resp.put("generateBtn", "1");
         return resp;
     }
 

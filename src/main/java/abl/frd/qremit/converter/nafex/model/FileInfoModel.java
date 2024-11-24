@@ -72,7 +72,53 @@ public class FileInfoModel {
     private List<BecModel> becModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
-    private List<NecModel> necModel;
+    private List<NecItalyModel> necItalyModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<NecUkModel> necUkModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AgraniMalaysiaModel> agraniMalaysiaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<SunmanModel> sunmanModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<OmanModel> omanModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<OmanKuwaitModel> omanKuwaitModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<MultinetModel> multinetModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<NblMalaysiaModel> nblMalaysiaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<NblMaldivesModel> nblMaldivesModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<NblUsaModel> nblUsaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlawnehModel> alawnehModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlBiladModel> alBiladModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<MerchantradeModel> merchantradeModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+   
+    @JsonIgnore
+    private List<BelhashaGlobalModel> belhashaGlobalModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<InstantCashModel> instantCashModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<UnimoniModel> unimoniModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<SigueModel> sigueModel;
@@ -80,7 +126,21 @@ public class FileInfoModel {
     @JsonIgnore
     private List<AlzadeedModel> alzadeedModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
-    
+    @JsonIgnore
+    private List<SaibModel> saibModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlRostamaniModel> alRostamaniModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ProgotiModel> progotiModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<UremitModel> uremitModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AnbModel> anbModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<AmanModel> amanModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -92,10 +152,40 @@ public class FileInfoModel {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<EasternModel> easternModel;
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)    
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlZamanModel> alZamanModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<FsieModel> fsieModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<IndexModel> indexModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<LariModel> lariModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<PrabhuModel> prabhuModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<GenericModel> genericModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ShahGlobalModel> shahGlobalModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<CityModel> cityModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlFardanDohaModel> alFardanDohaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlFardanAbuDhabiModel> alFardanAbuDhabiModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+
     @JsonIgnore
     private List<ApiBeftnModel> apiBeftnModel;
-
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<ApiT24Model> apiT24Model;
@@ -131,6 +221,134 @@ public class FileInfoModel {
     @JsonIgnore
     private List<ErrorDataModel> errorDataModelList;
 
+    public List<MerchantradeModel> getMerchantradeModel() {
+        return this.merchantradeModel;
+    }
+
+    public void setMerchantradeModel(List<MerchantradeModel> merchantradeModel) {
+        this.merchantradeModel = merchantradeModel;
+    }
+
+    public List<SaibModel> getSaibModel() {
+        return this.saibModel;
+    }
+
+    public void setSaibModel(List<SaibModel> saibModel) {
+        this.saibModel = saibModel;
+    }
+
+    public List<AlRostamaniModel> getAlRostamaniModel() {
+        return this.alRostamaniModel;
+    }
+
+    public List<AlFardanDohaModel> getAlFardanDohaModel() {
+        return this.alFardanDohaModel;
+    }
+
+    public void setAlFardanDohaModel(List<AlFardanDohaModel> alFardanDohaModel) {
+        this.alFardanDohaModel = alFardanDohaModel;
+    }
+
+    public List<AlFardanAbuDhabiModel> getAlFardanAbuDhabiModel() {
+        return this.alFardanAbuDhabiModel;
+    }
+
+    public void setAlFardanAbuDhabiModel(List<AlFardanAbuDhabiModel> alFardanAbuDhabiModel) {
+        this.alFardanAbuDhabiModel = alFardanAbuDhabiModel;
+    }
+
+    public void setAlRostamaniModel(List<AlRostamaniModel> alRostamaniModel) {
+        this.alRostamaniModel = alRostamaniModel;
+    }
+
+    public List<AnbModel> getAnbModel() {
+        return this.anbModel;
+    }
+
+    public void setAnbModel(List<AnbModel> anbModel) {
+        this.anbModel = anbModel;
+    }
+
+    public List<ShahGlobalModel> getShahGlobalModel() {
+        return this.shahGlobalModel;
+    }
+
+    public List<CityModel> getCityModel() {
+        return this.cityModel;
+    }
+
+    public void setCityModel(List<CityModel> cityModel) {
+        this.cityModel = cityModel;
+    }
+
+    public void setShahGlobalModel(List<ShahGlobalModel> shahGlobalModel) {
+        this.shahGlobalModel = shahGlobalModel;
+    }
+
+    public List<AlBiladModel> getAlBiladModel() {
+        return this.alBiladModel;
+    }
+
+    public void setAlBiladModel(List<AlBiladModel> alBiladModel) {
+        this.alBiladModel = alBiladModel;
+    }
+
+    public List<IndexModel> getIndexModel() {
+        return this.indexModel;
+    }
+
+    public void setIndexModel(List<IndexModel> indexModel) {
+        this.indexModel = indexModel;
+    }
+
+    public List<LariModel> getLariModel() {
+        return this.lariModel;
+    }
+
+    public void setLariModel(List<LariModel> lariModel) {
+        this.lariModel = lariModel;
+    }
+
+    public List<PrabhuModel> getPrabhuModel() {
+        return this.prabhuModel;
+    }
+
+    public void setPrabhuModel(List<PrabhuModel> prabhuModel) {
+        this.prabhuModel = prabhuModel;
+    }
+
+    public List<GenericModel> getGenericModel() {
+        return this.genericModel;
+    }
+
+    public void setGenericModel(List<GenericModel> genericModel) {
+        this.genericModel = genericModel;
+    }
+
+    public List<UremitModel> getUremitModel() {
+        return this.uremitModel;
+    }
+
+    public void setUremitModel(List<UremitModel> uremitModel) {
+        this.uremitModel = uremitModel;
+    }
+
+    public List<AlZamanModel> getAlZamanModel() {
+        return this.alZamanModel;
+    }
+
+    public void setAlZamanModel(List<AlZamanModel> alZamanModel) {
+        this.alZamanModel = alZamanModel;
+    }
+
+    public List<FsieModel> getFsieModel() {
+        return this.fsieModel;
+    }
+
+    public void setFsieModel(List<FsieModel> fsieModel) {
+        this.fsieModel = fsieModel;
+    }
+
     public List<OnlineModel> getOnlineModelList() {
         return onlineModelList;
     }
@@ -145,6 +363,14 @@ public class FileInfoModel {
 
     public void setBeftnModelList(List<BeftnModel> beftnModelList) {
         this.beftnModelList = beftnModelList;
+    }
+
+    public List<NblMaldivesModel> getNblMaldivesModel() {
+        return this.nblMaldivesModel;
+    }
+
+    public void setNblMaldivesModel(List<NblMaldivesModel> nblMaldivesModel) {
+        this.nblMaldivesModel = nblMaldivesModel;
     }
 
     public List<AccountPayeeModel> getAccountPayeeModelList() {
@@ -236,15 +462,94 @@ public class FileInfoModel {
     }
 
 
-
-    public List<NecModel> getNecModel() {
-        return this.necModel;
+    public List<MultinetModel> getMultinetModel() {
+        return this.multinetModel;
     }
 
-    public void setNecModel(List<NecModel> necModel) {
-        this.necModel = necModel;
+    public List<ProgotiModel> getProgotiModel() {
+        return this.progotiModel;
     }
 
+    public void setProgotiModel(List<ProgotiModel> progotiModel) {
+        this.progotiModel = progotiModel;
+    }
+
+    public void setMultinetModel(List<MultinetModel> multinetModel) {
+        this.multinetModel = multinetModel;
+    }
+
+
+    public List<NecItalyModel> getNecItalyModel() {
+        return this.necItalyModel;
+    }
+
+    public void setNecItalyModel(List<NecItalyModel> necItalyModel) {
+        this.necItalyModel = necItalyModel;
+    }
+
+   
+
+    public List<NecUkModel> getNecUkModel() {
+        return this.necUkModel;
+    }
+
+    public void setNecUkModel(List<NecUkModel> necUkModel) {
+        this.necUkModel = necUkModel;
+    }
+    public List<SunmanModel> getSunmanModel() {
+        return this.sunmanModel;
+    }
+
+    public void setSunmanModel(List<SunmanModel> sunmanModel) {
+        this.sunmanModel = sunmanModel;
+    }
+
+    public List<OmanModel> getOmanModel() {
+        return this.omanModel;
+    }
+
+    public void setOmanModel(List<OmanModel> omanModel) {
+        this.omanModel = omanModel;
+    }
+
+    public List<OmanKuwaitModel> getOmanKuwaitModel() {
+        return this.omanKuwaitModel;
+    }
+
+    public void setOmanKuwaitModel(List<OmanKuwaitModel> omanKuwaitModel) {
+        this.omanKuwaitModel = omanKuwaitModel;
+    }
+    public List<AlawnehModel> getAlawnehModel() {
+        return this.alawnehModel;
+    }
+
+    public void setAlawnehModel(List<AlawnehModel> alawnehModel) {
+        this.alawnehModel = alawnehModel;
+    }
+
+
+    public List<BelhashaGlobalModel> getBelhashaGlobalModel() {
+        return this.belhashaGlobalModel;
+    }
+
+    public void setBelhashaGlobalModel(List<BelhashaGlobalModel> belhashaGlobalModel) {
+        this.belhashaGlobalModel = belhashaGlobalModel;
+    }
+
+    public List<InstantCashModel> getInstantCashModel() {
+        return this.instantCashModel;
+    }
+
+    public void setInstantCashModel(List<InstantCashModel> instantCashModel) {
+        this.instantCashModel = instantCashModel;
+    }
+    public List<UnimoniModel> getUnimoniModel() {
+        return this.unimoniModel;
+    }
+
+    public void setUnimoniModel(List<UnimoniModel> unimoniModel) {
+        this.unimoniModel = unimoniModel;
+    }
     
     public List<AlzadeedModel> getAlzadeedModel() {
         return this.alzadeedModel;
@@ -261,6 +566,24 @@ public class FileInfoModel {
     public void setAlzadeedModel(List<AlzadeedModel> alzadeedModel) {
         this.alzadeedModel = alzadeedModel;
     }
+
+    public List<NblMalaysiaModel> getNblMalaysiaModel() {
+        return this.nblMalaysiaModel;
+    }
+
+    public void setNblMalaysiaModel(List<NblMalaysiaModel> nblMalaysiaModel) {
+        this.nblMalaysiaModel = nblMalaysiaModel;
+    }
+
+
+    public List<NblUsaModel> getNblUsaModel() {
+        return this.nblUsaModel;
+    }
+
+    public void setNblUsaModel(List<NblUsaModel> nblUsaModel) {
+        this.nblUsaModel = nblUsaModel;
+    }
+
 
     public List<AmanModel> getAmanModel() {
         return this.amanModel;
@@ -405,6 +728,14 @@ public class FileInfoModel {
 
     public void setErrorDataModelList(List<ErrorDataModel> errorDataModelList) {
         this.errorDataModelList = errorDataModelList;
+    }
+
+    public List<AgraniMalaysiaModel> getAgraniMalaysiaModel() {
+        return this.agraniMalaysiaModel;
+    }
+
+    public void setAgraniMalaysiaModel(List<AgraniMalaysiaModel> agraniMalaysiaModel) {
+        this.agraniMalaysiaModel = agraniMalaysiaModel;
     }
 
     public List<AgexSingaporeModel> getAgexSingaporeModel() {

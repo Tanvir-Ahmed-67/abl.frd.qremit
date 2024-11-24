@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_nafex", uniqueConstraints = @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no"}))
+@Table(name="base_data_table_nafex", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
+    indexes = { @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id") }
+)
 public class NafexEhMstModel {
     @Id
     @Column(name = "id")
@@ -12,7 +14,7 @@ public class NafexEhMstModel {
     private int  id;
     @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "transaction_no", length=30, unique = true, nullable = false)
+    @Column(name = "transaction_no", length=30, nullable = false)
     private String transactionNo;
     @Column(name = "currency", length=32)
     private String currency;

@@ -1,23 +1,21 @@
 package abl.frd.qremit.converter.nafex.service;
-
 import abl.frd.qremit.converter.nafex.helper.RepositoryModelWrapper;
 import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+@SuppressWarnings("unchecked")
 @Service
 public class DynamicOperationService {
     @Autowired
@@ -32,8 +30,6 @@ public class DynamicOperationService {
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     private ApplicationContext context; // To fetch repositories dynamically
-    
-    LocalDateTime currentDateTime = LocalDateTime.now();
     private Map<String, RepositoryModelWrapper<?>> repositoryModelMap = new HashMap<>();
     private String packageName = "abl.frd.qremit.converter.nafex.model.";
 
@@ -58,6 +54,56 @@ public class DynamicOperationService {
     }
 
     public Map<String, Object> transferApiBeftnData(int fileInfoModelId) {
+        Map<String, Object> resp = new HashMap<>();
+        int batchSize = 100; // Process in batches
+        int page = 0;
+        boolean hasMoreData = true;
+        JpaRepository repository = null;
+        try {
+            while (hasMoreData) {
+                Pageable pageable = PageRequest.of(page, batchSize);
+                Page<ApiBeftnModel> pageResult = apiBeftnModelRepository.findByFileInfoModelId(fileInfoModelId, pageable);
+                List<ApiBeftnModel> allRows = pageResult.getContent();
+                hasMoreData = pageResult.hasNext();
+                List<Object> entitiesToSave = new ArrayList<>();
+                for (ApiBeftnModel row : allRows) {
+                    String exchangeCode = row.getExchangeCode();
+                    RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);
+                    if (wrapper != null) {
+                        repository = wrapper.getRepository();
+                        Class<?> modelClass = wrapper.getModelClass();
+                        // Assuming a factory method or builder is available to replace reflection
+                        Object modelInstance = createModelInstanceForApiBeftn(modelClass, row);
+                        entitiesToSave.add(modelInstance);
+                    } else {
+                        return CommonService.getResp(1, "No repository or model class found for exchangeCode: " + exchangeCode, null);
+                    }
+                }
+                // Save batch
+                if (!entitiesToSave.isEmpty()) {
+                    repository.saveAll(entitiesToSave);
+                }
+                page++;
+            }
+            resp = CommonService.getResp(0, "Information processed successfully", null);
+            resp.put("url", "/user-home-page");
+        } catch (Exception e) {
+            return CommonService.getResp(1, e.getMessage(), null);
+        }
+        return resp;
+    }
+
+    private Object createModelInstanceForApiBeftn(Class<?> modelClass, ApiBeftnModel row) {
+        try {
+            // Locate the appropriate constructor
+            Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
+            // Create and return the instance using the data from `row`
+            return constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getUploadDateTime(), row.getFileInfoModel(), row.getUserModel());
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Failed to create model instance for " + modelClass.getName(), e);
+        }
+    }
+    public Map<String, Object> transferApiBeftnData_1(int fileInfoModelId) {
         Map<String, Object> resp = new HashMap<>();
         List<ApiBeftnModel> allRows = apiBeftnModelRepository.findAllByFileInfoModelId(fileInfoModelId);
         for (ApiBeftnModel row : allRows) {
@@ -85,7 +131,56 @@ public class DynamicOperationService {
     }
     public Map<String, Object> transferApiT24Data(int fileInfoModelId) {
         Map<String, Object> resp = new HashMap<>();
-        List<ApiT24Model> allRows = apiT24ModelRepository.findAll();
+        int batchSize = 100; // Process in batches
+        int page = 0;
+        boolean hasMoreData = true;
+        JpaRepository repository = null;
+        try {
+            while (hasMoreData) {
+                Pageable pageable = PageRequest.of(page, batchSize);
+                Page<ApiT24Model> pageResult = apiT24ModelRepository.findAllByFileInfoModelId(fileInfoModelId, pageable);
+                List<ApiT24Model> allRows = pageResult.getContent();
+                hasMoreData = pageResult.hasNext();
+                List<Object> entitiesToSave = new ArrayList<>();
+                for (ApiT24Model row : allRows) {
+                    String exchangeCode = row.getExchangeCode();
+                    RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);
+                    if (wrapper != null) {
+                        repository = wrapper.getRepository();
+                        Class<?> modelClass = wrapper.getModelClass();
+                        // Assuming a factory method or builder is available to replace reflection
+                        Object modelInstance = createModelInstanceForAPIt24(modelClass, row);
+                        entitiesToSave.add(modelInstance);
+                    } else {
+                        return CommonService.getResp(1, "No repository or model class found for exchangeCode: " + exchangeCode, null);
+                    }
+                }
+                // Save batch
+                if (!entitiesToSave.isEmpty()) {
+                    repository.saveAll(entitiesToSave);
+                }
+                page++;
+            }
+            resp = CommonService.getResp(0, "Information processed successfully", null);
+            resp.put("url", "/user-home-page");
+        } catch (Exception e) {
+            return CommonService.getResp(1, e.getMessage(), null);
+        }
+        return resp;
+    }
+    private Object createModelInstanceForAPIt24(Class<?> modelClass, ApiT24Model row) {
+        try {
+            // Locate the appropriate constructor
+            Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
+            // Create and return the instance using the data from `row`
+            return constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getUploadDateTime(), row.getFileInfoModel(), row.getUserModel());
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Failed to create model instance for " + modelClass.getName(), e);
+        }
+    }
+    public Map<String, Object> transferApiT24Data_1(int fileInfoModelId) {
+        Map<String, Object> resp = new HashMap<>();
+        List<ApiT24Model> allRows = apiT24ModelRepository.findAllByFileInfoModelId(fileInfoModelId);
         for (ApiT24Model row : allRows) {
             try {
                 String exchangeCode = row.getExchangeCode();
@@ -101,6 +196,7 @@ public class DynamicOperationService {
                     //throw new IllegalArgumentException("No repository or model class found for exchangeCode: " + exchangeCode);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 return CommonService.getResp(1, e.getMessage(), null);
             }
         }
@@ -111,6 +207,7 @@ public class DynamicOperationService {
 
     public Map<String, Object> transferErrorData(Map<String, Object> updatedData){
         Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try{
             String exchangeCode = updatedData.get("exchangeCode").toString();
             RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);
@@ -119,9 +216,9 @@ public class DynamicOperationService {
                 Class<?> modelClass = wrapper.getModelClass();
                 Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
                 
-                Double amount = updatedData.get("amount") != null ? Double.parseDouble(updatedData.get("amount").toString()) : null;
-                int fileInfoId = updatedData.get("fileInfoId") != null ? Integer.parseInt(updatedData.get("fileInfoId").toString()) : 0;
-                int userId = updatedData.get("userId") != null ? Integer.parseInt(updatedData.get("userId").toString()) : 0;
+                Double amount = updatedData.get("amount") != null ? CommonService.convertStringToDouble(updatedData.get("amount").toString()) : null;
+                int fileInfoId = updatedData.get("fileInfoId") != null ? CommonService.convertStringToInt(updatedData.get("fileInfoId").toString()) : 0;
+                int userId = updatedData.get("userId") != null ? CommonService.convertStringToInt(updatedData.get("userId").toString()) : 0;
                 if(fileInfoId == 0 || userId == 0)    return CommonService.getResp(1, "Invalid File Id or User Id", null);
                 //LocalDateTime uploadDateTime = CommonService.convertStringToDate(updatedData.get("uploadDateTime").toString());
                 String beneficiaryAccount= String.valueOf(updatedData.get("beneficiaryAccount"));
@@ -134,10 +231,10 @@ public class DynamicOperationService {
                 int checkBeftn = (("3").equals(typeFlag))  ? 1:0;
                 int checkCoc = (("4").equals(typeFlag))  ? 1:0;
                 FileInfoModel fileInfoModel = fileInfoModelRepository.findById(fileInfoId);
-                Integer accPayeeCount = Integer.parseInt(fileInfoModel.getAccountPayeeCount()) + checkAccPayee;
-                Integer beftnCount = Integer.parseInt(fileInfoModel.getBeftnCount()) + checkBeftn;
-                Integer cocCount = Integer.parseInt(fileInfoModel.getCocCount()) + checkCoc;
-                Integer t24Count = Integer.parseInt(fileInfoModel.getOnlineCount()) + checkT24;
+                Integer accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount()) + checkAccPayee;
+                Integer beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount()) + checkBeftn;
+                Integer cocCount = CommonService.convertStringToInt(fileInfoModel.getCocCount()) + checkCoc;
+                Integer t24Count = CommonService.convertStringToInt(fileInfoModel.getOnlineCount()) + checkT24;
                 Integer totalCount = accPayeeCount + beftnCount + cocCount + t24Count;
                 fileInfoModel.setAccountPayeeCount(String.valueOf(accPayeeCount));
                 fileInfoModel.setBeftnCount(String.valueOf(beftnCount));
@@ -162,7 +259,7 @@ public class DynamicOperationService {
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved succesfully", null);
             } else {
-                String msg = "No repository or model class found for cxchangeCode: " + exchangeCode;
+                String msg = "No repository or model class found for exchangeCode: " + exchangeCode;
                 resp = CommonService.getResp(1, msg, null);
                 throw new IllegalArgumentException(msg);
             }

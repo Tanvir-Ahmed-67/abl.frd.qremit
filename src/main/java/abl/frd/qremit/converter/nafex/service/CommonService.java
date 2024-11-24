@@ -5,15 +5,14 @@ import abl.frd.qremit.converter.nafex.model.*;
 import abl.frd.qremit.converter.nafex.repository.*;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
+import org.apache.poi.ss.usermodel.*;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
@@ -24,17 +23,18 @@ import java.sql.ResultSetMetaData;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
+@SuppressWarnings("unchecked")
 @Service
 public class CommonService {
     private static final DecimalFormat df = new DecimalFormat("0.00");
@@ -48,27 +48,36 @@ public class CommonService {
     @Autowired
     BeftnModelRepository beftnModelRepository;
     @Autowired
-    NafexModelRepository nafexModelRepository;
-    @Autowired
-    NafexModelRepository BecModelRepository;
-    @Autowired
-    NafexModelRepository MuzainiModelRepository;
-    @Autowired
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
     UserModelRepository userModelRepository;
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
-    public static String uploadSuccesPage = "/pages/user/userUploadSuccessPage";
-    public String uploadApiSuccessPage = "/pages/user/userApiUploadSuccessPage";
-
-    private final EntityManager entityManager;
+    public static String uploadSuccesPage = "pages/user/userUploadSuccessPage";
+    public static String dirPrefix = "../";
+    public static String reportDir = "report/";
     private final DataSource dataSource;
 
-    public CommonService(EntityManager entityManager,DataSource dataSource){
-        this.entityManager = entityManager;
+    public CommonService(DataSource dataSource){
         this.dataSource = dataSource;
+    }
+
+    public static Path generateOutputFile(String file) throws IOException{
+        return generateOutputFile(reportDir, file);
+    }
+    public static Path generateOutputFile(String dir, String file) throws IOException{
+        Path reportPath = Paths.get(dirPrefix, dir);
+        //Path reportPath = Paths.get(dir);
+        if (!Files.exists(reportPath)) {
+            Files.createDirectories(reportPath);
+        }
+        Path outputPath = reportPath.resolve(file);
+        return outputPath;
+    }
+
+    public static Path getReportFile(String file) throws IOException{
+        return generateOutputFile(reportDir + "daily_report/", file);
     }
     
     public static boolean hasCSVFormat(MultipartFile file) {
@@ -165,46 +174,11 @@ public class CommonService {
         for(String cData: columnData){
             resp.put(cData, "");
         }
-        resp.put("amount", totalAmount);
-        resp.put(totalDetails,"Total");
+        resp.put("amount", generateClassForText(totalAmount, "fw-bold"));
+        resp.put(totalDetails,  generateClassForText("Total","fw-bold"));
         return resp;
     }
-        
-    /*
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, LocalDateTime uploadDateTime){
-        return generateOnlineModelList(models, checkT24MethodName,"0", uploadDateTime);
-    }
 
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, String checkT24MethodName, String isProcessed, LocalDateTime uploadDateTime) {
-        List<OnlineModel> onlineList = new ArrayList<>();
-        for (T singleModel : models) {
-            try {
-                Method checkT24Method = singleModel.getClass().getMethod(checkT24MethodName);
-                String checkT24Value = (String) checkT24Method.invoke(singleModel);
-                if ("1".equals(checkT24Value)) {
-                    onlineList.add(generateOnlineModel(singleModel,isProcessed, uploadDateTime));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return onlineList;
-    }
-    
-    public static <T> List<OnlineModel> generatOnlineModelListFromErrorData(Object object, String checkT24MethodName, String isProcessed, LocalDateTime uploadDateTime){
-        List<OnlineModel> onlineList = new ArrayList<>();
-        try{
-            Method checkT24Method = object.getClass().getMethod(checkT24MethodName);
-            String checkT24Value = (String) checkT24Method.invoke(object);
-            if ("1".equals(checkT24Value)) {
-                onlineList.add(generateOnlineModel(object, isProcessed, uploadDateTime));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return onlineList;
-    }    
-    */
     public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, LocalDateTime uploadDateTime, int isProcessed){
         List<OnlineModel> onlineList = new ArrayList<>();
         for (T singleModel : models) {
@@ -220,7 +194,6 @@ public class CommonService {
 
     public static <T> OnlineModel generateOnlineModel(T model, LocalDateTime uploadDateTime, int flag) {
         OnlineModel onlineModel = new OnlineModel();
-          
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -235,7 +208,7 @@ public class CommonService {
             onlineModel.setIsProcessed(flag);
             onlineModel.setIsDownloaded(flag);
             if(flag == 1){
-                onlineModel.setDownloadDateTime(LocalDateTime.now());
+                onlineModel.setDownloadDateTime(uploadDateTime);
             }
             onlineModel.setDownloadUserId(9999);
             onlineModel.setUploadDateTime(uploadDateTime);
@@ -266,40 +239,6 @@ public class CommonService {
         return cocList;
     }
 
-    /*
-    public static <T> List<CocModel> generateCocModelList(List<T> models, String checkCocMethodName, LocalDateTime uploadDateTime) {
-        List<CocModel> cocList = new ArrayList<>();
-        for (T singleModel : models) {
-            try {
-                Method checkCocMethod = singleModel.getClass().getMethod(checkCocMethodName);
-                String checkCocValue = (String) checkCocMethod.invoke(singleModel);
-                if ("1".equals(checkCocValue)) {
-                    cocList.add(generateCocModel(singleModel, uploadDateTime));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Handle exception
-            }
-        }
-        return cocList;
-    }
-    
-
-    public static <T> List<CocModel> generatCocModelListFromErrorData(Object object, String checkCocMethodName, LocalDateTime uploadDateTime){
-        List<CocModel> cocList = new ArrayList<>();
-        try{
-            Method checkCocMethod = object.getClass().getMethod(checkCocMethodName);
-            String checkCocValue = (String) checkCocMethod.invoke(object);
-            if ("1".equals(checkCocValue)) {
-               cocList.add(generateCocModel(object, uploadDateTime));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return cocList;
-    }
-    */
-
     public static <T> CocModel generateCocModel(T model, LocalDateTime uploadDateTime) {
         CocModel cocModel = new CocModel();
         try {
@@ -315,7 +254,6 @@ public class CommonService {
             cocModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             cocModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             cocModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            //cocModel.setDownloadDateTime(LocalDateTime.now());
             cocModel.setDownloadUserId(9999);
             cocModel.setUploadDateTime(uploadDateTime);
             cocModel.setIncentive(00.00);
@@ -327,39 +265,6 @@ public class CommonService {
         }
         return cocModel;
     }
-    /*
-    public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, String checkAccPayeeMethodName, LocalDateTime uploadDateTime) {
-        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
-        for (T singleModel : models) {
-            try {
-                Method checkAccPayeeMethod = singleModel.getClass().getMethod(checkAccPayeeMethodName);
-                String checkAccPayeeValue = (String) checkAccPayeeMethod.invoke(singleModel);
-                if ("1".equals(checkAccPayeeValue)) {
-                    accountPayeeModelList.add(generateAccountPayeeModel(singleModel, uploadDateTime));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Handle exception
-            }
-        }
-        return accountPayeeModelList;
-    }
-
-    public static <T> List<AccountPayeeModel> generatAccountPayeeModelListFromErrorData(Object object, String checkAccPayeeMethodName, LocalDateTime uploadDateTime){
-        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
-        try{
-            Method checkAccPayeeMethod = object.getClass().getMethod(checkAccPayeeMethodName);
-            String checkAccPayeeValue = (String) checkAccPayeeMethod.invoke(object);
-            if ("1".equals(checkAccPayeeValue)) {
-               accountPayeeModelList.add(generateAccountPayeeModel(object, uploadDateTime));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return accountPayeeModelList;
-    }
-    */
-
     public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, LocalDateTime uploadDateTime) {
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
         for (T singleModel : models) {
@@ -389,7 +294,6 @@ public class CommonService {
             accountPayeeModel.setCurrency((String) getPropertyValue(model, "getCurrency"));
             accountPayeeModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             accountPayeeModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
-            //accountPayeeModel.setDownloadDateTime(LocalDateTime.now());
             accountPayeeModel.setDownloadUserId(9999);
             accountPayeeModel.setUploadDateTime(uploadDateTime);
             accountPayeeModel.setIncentive(00.00);
@@ -401,39 +305,6 @@ public class CommonService {
         }
         return accountPayeeModel;
     }
-
-    /*
-    public static <T> List<BeftnModel> generateBeftnModelList(List<T> models, String checkBeftnMethodName, LocalDateTime uploadDateTime) {
-        List<BeftnModel> beftnModelList = new ArrayList<>();
-        for (T singleModel : models) {
-            try {
-                Method checkBeftnMethod = singleModel.getClass().getMethod(checkBeftnMethodName);
-                String checkBeftnValue = (String) checkBeftnMethod.invoke(singleModel);
-                if ("1".equals(checkBeftnValue)) {
-                    beftnModelList.add(generateBeftnModel(singleModel, uploadDateTime));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Handle exception
-            }
-        }
-        return beftnModelList;
-    }
-
-    public static <T> List<BeftnModel> generateBeftnModelListFromErrorData(Object object, String checkBeftnMethodName, LocalDateTime uploadDateTime){
-        List<BeftnModel> beftnModelList = new ArrayList<>();
-        try{
-            Method checkBeftnMethod = object.getClass().getMethod(checkBeftnMethodName);
-            String checkBeftnValue = (String) checkBeftnMethod.invoke(object);
-            if ("1".equals(checkBeftnValue)) {
-                beftnModelList.add(generateBeftnModel(object, uploadDateTime));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return beftnModelList;
-    }
-    */
 
     public static <T> List<BeftnModel> generateBeftnModelList(List<T> models, LocalDateTime uploadDateTime) {
         List<BeftnModel> beftnModelList = new ArrayList<>();
@@ -458,7 +329,6 @@ public class CommonService {
             beftnModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             beftnModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             beftnModel.setDownloadUserId(9999);
-            //beftnModel.setDownloadDateTime(LocalDateTime.now());
             beftnModel.setIncentive(calculatePercentage((Double) getPropertyValue(model, "getAmount")));
             beftnModel.setOrgAccountNo("160954");
             beftnModel.setOrgAccountType("CA");
@@ -551,15 +421,6 @@ public class CommonService {
         if(routingNo.isEmpty() || routingNo.length() != 9 || checkAgraniRoutingNo(routingNo)){
             return false;
         }
-        //if(routingNo.matches("^010.*"))  return false;
-        /* 
-        if(!(routingNo.matches("^010.*") && routingNo.length() == 9)){
-            return true;
-        }
-        else if(!(routingNo.matches("^10.*") && routingNo.length() == 8)){
-            return true;
-        }
-        */
         else if(isOnlineAccoutNumberFound(accountNumber, bankName)){
             return false;
         }
@@ -607,6 +468,20 @@ public class CommonService {
         else{
             return "0";
         }
+    }
+
+    public static Double convertStringToDouble(String str){
+        Double number;
+        try{
+            number = Double.parseDouble(str);
+        }catch(NumberFormatException e){
+            number = 0.0;
+        }
+        return number;
+    }
+
+    public static String convertDoubleToString(Double number){
+        return String.valueOf(number);
     }
 
     public static boolean checkEmptyString(String str){
@@ -730,7 +605,7 @@ public class CommonService {
                     field.set(model, doubleField);
                 }
                 if(field.getType().equals(Integer.class)){
-                    field.set(model, Integer.parseInt((String) fieldValue));
+                    field.set(model, CommonService.convertStringToInt((String) fieldValue));
                 }
             }catch(NoSuchFieldException | IllegalAccessException e){
                 e.printStackTrace();
@@ -762,16 +637,18 @@ public class CommonService {
     }
 
     private static String readTemplateFromFile(String templateName) {
-        try {
-            Path path = Paths.get(ResourceUtils.getFile("classpath:templates/" + templateName).toURI());
-            return new String(Files.readAllBytes(path));
+        StringBuilder templateContent = new StringBuilder();
+        ClassPathResource resource = new ClassPathResource("templates/" + templateName);
+        try (InputStream inputStream = resource.getInputStream();
+            Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
+            while (scanner.hasNextLine()) {
+                templateContent.append(scanner.nextLine()).append("\n");
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return "";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
         }
+        return templateContent.toString();
     }
 
     private static String replaceVariables(String template, Map<String, String> variables) {
@@ -866,18 +743,11 @@ public class CommonService {
     //check ABL A/C starts with 02** and routing no is not matched with ABL
     public static String checkABLAccountAndRoutingNo(String accountNo, String routingNo, String bankName){
         String errorMessage = "";
-        /* 
-        if(!checkAgraniBankName(bankName) || !checkAgraniRoutingNo(routingNo)){
-            errorMessage = "Invalid Routing Number or Bank Name";
-        }else{
-            if()
-        }
-        */
         if(isOnlineAccoutNumberFound(accountNo) && (!checkAgraniRoutingNo(routingNo) || !checkAgraniBankName(bankName))){
             errorMessage = "Invalid Routing Number or Bank Name";
-        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02") && accountNo.length() != 13){
+        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02000") && accountNo.length() != 13){
             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits";  //check routing no
-        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("02") && accountNo.length() != 13){
+        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("02000") && accountNo.length() != 13){
             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits"; //check agrani bankName 
         }
         return errorMessage;
@@ -886,7 +756,7 @@ public class CommonService {
     //string starts with CO
     public static String checkCOString(String accountNo){
         String errorMessage = "";
-        if(accountNo.toLowerCase().contains("co")){
+        if(accountNo.toLowerCase().startsWith("co")){
             errorMessage = "Invalid COC A/C name";
         }
         return errorMessage;
@@ -906,7 +776,6 @@ public class CommonService {
         String branchCode = data.get("branchCode").toString();
         String exchangeCode = data.get("exchangeCode").toString();
         String transactionNo = data.get("transactionNo").toString(); 
-
         //check duplicate data exists in database
         if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
             return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
@@ -969,10 +838,9 @@ public class CommonService {
         if(transactionList.contains(transactionNo)){
             return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }else{
-            if(transactionList.size() > 1){
-                transactionList.add(transactionNo);
-                resp.put("transactionList", transactionList);
-            }
+            transactionList.add(transactionNo);
+            resp.put("transactionList", transactionList);
+            
         }
         return resp;
     }
@@ -987,11 +855,15 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static LocalDateTime getCurrentDateTime(){
+        return LocalDateTime.now(ZoneId.of("UTC+6"));
+    }
+
     public static String getCurrentDate(){
         return getCurrentDate("ddMMyyyy");
     }
     public static String getCurrentDate(String format){
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now(ZoneId.of("UTC+6"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         String formattedDate = currentDate.format(formatter);
         return formattedDate;
@@ -1002,13 +874,18 @@ public class CommonService {
     }
 
     public static String convertDateToString(LocalDateTime date, String format){
+        if(date == null)    return "";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         String formattedDateTime = date.format(formatter);
         return formattedDateTime;
     }
 
     public static LocalDateTime convertStringToDate(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return convertStringToDate(date,"yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static LocalDateTime convertStringToDate(String date, String format){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // Handles milliseconds too
         try{
             return LocalDateTime.parse(date, formatter);
@@ -1051,13 +928,6 @@ public class CommonService {
         return resp;
     }
 
-    //column for error Reporting
-    public List<Map<String, String>> getErrorReportColumn(){
-        String[] columnData = {"sl", "bankName", "routingNo", "branchName", "beneficiaryName", "beneficiaryAccountNo", "transactionNo", "amount", "exchangeCode", "errorMessage","action"};
-        String[] columnTitles = {"SL", "Bank Name", "Routing No", "Branch Name", "Beneficiary Name", "Account No", "Transaction No", "Amount", "Exchange Code", "Error Mesage","Action"};
-        return createColumns(columnData, columnTitles);
-    }
-
     public static Model viewUploadStatus(Map<String, Object> resp, Model model) throws JsonProcessingException{
         FileInfoModel fileInfoModelObject = (FileInfoModel) resp.get("fileInfoModel");
         if(resp.containsKey("errorMessage")){
@@ -1075,6 +945,124 @@ public class CommonService {
             }
         }
         return model;
+    }
+
+    private static byte[] readBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int nRead;
+    
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        return buffer.toByteArray();
+    }
+
+    private static void writeToFile(byte[] contentBytes, String filePath) throws IOException {
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+            bos.write(contentBytes);
+            bos.flush();
+        } catch (IOException e) {
+            System.err.println("Error writing data to file: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public static Map<String, Object> generateFile(ByteArrayInputStream contentStream, int count, String fileName) throws IOException{
+        Map<String, Object> resp = new HashMap<>();
+        byte[] contentBytes = readBytes(contentStream);
+        String tempFilePath =  generateOutputFile(fileName).toString();
+        try {
+            // Write to file
+            writeToFile(contentBytes, tempFilePath);
+        }catch (IOException e) {
+            e.printStackTrace();
+            return getResp(1, e.getMessage(), null);
+        }
+        String url = "/getReportFile?fileName=" + fileName;
+        resp.put("url", url);
+        resp.put("count", count);
+        return resp;
+    }
+
+    public static String generateDynamicFileName(String text, String ext){
+        String formattedDate = CommonService.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
+        String fileName = text + formattedDate + ext;
+        return fileName;
+    }
+
+    public static String convertUnderScore(String str){
+        return str.replace("-", "_");
+    }
+
+    public static String generateFileName(String text, String date, String ext){
+        return text + date.replace("-", "_") + ext;
+    }
+
+    public static Map<String, Object> checkApiOrBeftnData(String bankCode, int type){
+        Map<String, Object> resp = getResp(0, "", null);
+        String msg = "You selected wrong file. Please select the correct file.";
+        switch (type) {
+            case 1: //for api
+                if(!("11").equals(bankCode))  resp = getResp(1, msg, null);
+                break;
+            case 0: //for beftn
+                if(!bankCode.isEmpty()) resp = getResp(1, msg, null);
+                break;
+            default:
+                resp = getResp(1, "Invalid Type", null);
+                break;
+        }
+        return resp;
+    }
+
+    public static Integer convertStringToInt(String str){
+        if(str == null)    return 0;
+        try{
+            return Integer.parseInt(str);
+        }catch(NumberFormatException e){
+            return 0;
+        }
+    }
+
+    public static String convertIntToString(int number){
+        return String.valueOf(number);
+    }
+
+    public static String generateClassForText(String text, String cls){
+        return "<div class='" + cls +"'>" + text + "</div>";
+    }
+
+    public static Workbook getWorkbook(InputStream is) throws IOException {
+        try {
+            // WorkbookFactory automatically detects whether it's .xls or .xlsx
+            return WorkbookFactory.create(is);
+        } catch (Exception e) {
+            throw new IOException("Failed to open the Excel file. Please ensure it's in .xls or .xlsx format.", e);
+        }
+    }
+
+    public static String getCellValueAsString(Cell cell){
+        String str = "";
+        switch (cell.getCellType()){
+            case STRING:
+                str = cell.getStringCellValue().trim();
+                break;
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    str = cell.getDateCellValue().toString();
+                } else {
+                    str = String.valueOf(cell.getNumericCellValue());
+                }
+                break;
+            case BOOLEAN:
+                str = String.valueOf(cell.getBooleanCellValue());
+                break;
+            default:
+                break;
+        }
+        return str;
     }
 
 }
