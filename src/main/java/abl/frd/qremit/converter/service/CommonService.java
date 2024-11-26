@@ -560,6 +560,7 @@ public class CommonService {
             for (OnlineModel onlineModel : onlineModelList) {
                 onlineModel.setFileInfoModel(fileInfoModel);
                 onlineModel.setUserModel(user);
+                if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
             }
         }
 
