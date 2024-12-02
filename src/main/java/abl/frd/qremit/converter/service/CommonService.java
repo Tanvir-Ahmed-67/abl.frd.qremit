@@ -67,7 +67,6 @@ public class CommonService {
     }
     public static Path generateOutputFile(String dir, String file) throws IOException{
         Path reportPath = Paths.get(dirPrefix, dir);
-        //Path reportPath = Paths.get(dir);
         if (!Files.exists(reportPath)) {
             Files.createDirectories(reportPath);
         }
@@ -112,8 +111,8 @@ public class CommonService {
             Connection con = dataSource.getConnection();         
             PreparedStatement pstmt = con.prepareStatement(sql);
             int j = 1;
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
-                pstmt.setObject(j++, entry.getValue());
+            for (Object value : params.values()) {
+                pstmt.setObject(j++, value);
             }
             
             ResultSet rs = pstmt.executeQuery();
@@ -537,23 +536,27 @@ public class CommonService {
         fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
         fileInfoModel.setBeftnModelList(beftnModelList);
         fileInfoModel.setOnlineModelList(onlineModelList);
+        Double totalAmount = 0.0;
 
         if(cocModelList != null){
             for (CocModel cocModel : cocModelList) {
                 cocModel.setFileInfoModel(fileInfoModel);
                 cocModel.setUserModel(user);
+                totalAmount += cocModel.getAmount();
             }
         }
         if(accountPayeeModelList != null){
             for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
                 accountPayeeModel.setUserModel(user);
+                totalAmount += accountPayeeModel.getAmount();
             }
         }
         if(beftnModelList != null){
             for (BeftnModel beftnModel : beftnModelList) {
                 beftnModel.setFileInfoModel(fileInfoModel);
                 beftnModel.setUserModel(user);
+                totalAmount += beftnModel.getAmount();
             }
         }
         if(onlineModelList != null){
@@ -561,8 +564,10 @@ public class CommonService {
                 onlineModel.setFileInfoModel(fileInfoModel);
                 onlineModel.setUserModel(user);
                 if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
+                totalAmount += onlineModel.getAmount();
             }
         }
+        fileInfoModel.setTotalAmount(convertNumberFormat(totalAmount, 2));
 
         resp.put("fileInfoModel", fileInfoModel);
         resp.put("onlineModelList", onlineModelList);
@@ -1028,6 +1033,15 @@ public class CommonService {
 
     public static String convertIntToString(int number){
         return String.valueOf(number);
+    }
+
+    public static Double convertIntToDouble(int number){
+        return Double.valueOf(number);
+    }
+
+    public static String convertNumberFormat(Double number, int digit){
+        String format = "%." + digit + "f";
+        return String.format(format, number);
     }
 
     public static String generateClassForText(String text, String cls){
