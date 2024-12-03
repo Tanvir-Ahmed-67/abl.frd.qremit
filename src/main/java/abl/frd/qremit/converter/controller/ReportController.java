@@ -2,6 +2,7 @@ package abl.frd.qremit.converter.controller;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import abl.frd.qremit.converter.model.ExchangeHouseModel;
@@ -30,7 +31,7 @@ import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.CustomQueryService;
 import abl.frd.qremit.converter.service.ErrorDataModelService;
 import abl.frd.qremit.converter.service.LogModelService;
-
+@SuppressWarnings("unchecked")
 @Controller
 public class ReportController {
 
@@ -69,8 +70,8 @@ public class ReportController {
         switch(type){
             case "1":
             default:
-                columnData = new String[] {"sl", "exchangeCode", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount", "errorCount", "uploadDateTime", "action"};
-                columnTitles = new String[] {"SL", "Exchange Code", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Upload Date", "Action"};
+                columnData = new String[] {"sl", "exchangeCode", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount", "errorCount", "totalAmount", "uploadDateTime", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Total Amount", "Upload Date", "Action"};
                 break;
             case "2":
                 columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","remitterName", "amount","processedDate","remType"};
@@ -102,16 +103,29 @@ public class ReportController {
         List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId, date);
         List<Map<String, Object>> dataList = new ArrayList<>();
         if(fileInfoModel.isEmpty())     return ResponseEntity.ok(CommonService.getResp(1, "No data found", dataList));
-        int sl = 1;
         int totalCount = 0;
         int totalCocCount = 0;
         int totalBeftnCount = 0;
         int totalOnlineCount = 0;
         int totalAccountPayeeCount = 0;
         int totalErrorCount = 0;
+        Double totalAmount = 0.0;
+        String previousExchangeCode = null;
+        int sl = 1;
         String action = "";
+        Map<String, Object> exchangeResp = customQueryService.getFileTotalExchangeWise(date, userId);
+        if((Integer) exchangeResp.get("err") == 1)  return ResponseEntity.ok(exchangeResp);
+        List<Map<String,Object>> exchangeData = (List<Map<String, Object>>) exchangeResp.get("data");
+        
         for (FileInfoModel fModel : fileInfoModel) {
             Map<String, Object> dataMap = new HashMap<>();
+            Map<String, Object> exchangeSummary = new HashMap<>();
+            String currentExchangeCode = fModel.getExchangeCode();
+            if(previousExchangeCode != null && !previousExchangeCode.equals(currentExchangeCode)){
+                exchangeSummary = reportService.calculateExchangeWiseSummary(exchangeData, previousExchangeCode);
+                if(exchangeSummary.containsKey("totalAmount"))  dataList.add(exchangeSummary);
+            }
+
             action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
             action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
             action += "<input type='hidden' id='base_url' value='" + baseUrl + "' />";
@@ -129,6 +143,7 @@ public class ReportController {
             String totalError = (errorCount >= 1) ? CommonService.generateClassForText(errorStr, "text-danger fw-bold"): errorStr;
             int total = CommonService.convertStringToInt(fModel.getTotalCount());
             totalCount += total;
+            totalAmount += CommonService.convertStringToDouble(fModel.getTotalAmount());
             dataMap.put("sl", sl++);
             dataMap.put("id", fModel.getId());
             dataMap.put("exchangeCode", fModel.getExchangeCode());
@@ -140,10 +155,17 @@ public class ReportController {
             dataMap.put("accountPayeeCount", accountPayeeCount);
             dataMap.put("errorCount", totalError);
             dataMap.put("totalCount", total);
+            dataMap.put("totalAmount", fModel.getTotalAmount());
             dataMap.put("action", action);
             dataList.add(dataMap);
+            previousExchangeCode = currentExchangeCode;
         }
-        Map<String, Object> totalData = reportService.calculateTotalUploadFileInfo(totalCocCount, totalBeftnCount, totalOnlineCount, totalAccountPayeeCount, totalErrorCount, totalCount);
+        if(previousExchangeCode != null){
+            Map<String, Object> exchangeSummary = reportService.calculateExchangeWiseSummary(exchangeData, previousExchangeCode);
+            if(exchangeSummary.containsKey("totalAmount")) dataList.add(exchangeSummary);
+        }
+        String totalAmountStr = CommonService.convertNumberFormat(totalAmount, 2);
+        Map<String, Object> totalData = reportService.calculateTotalUploadFileInfo(totalCocCount, totalBeftnCount, totalOnlineCount, totalAccountPayeeCount, totalErrorCount, totalCount, totalAmountStr);
         dataList.add(totalData);
         resp.put("data", dataList);
         return ResponseEntity.ok(resp);
@@ -351,6 +373,21 @@ public class ReportController {
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build(); // Handle any IO exceptions
         }
+    }
+
+    @GetMapping("/getExchangeData")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
+        Map<String, Object> resp = new HashMap<>();
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        int userId = (int) userData.get("userid");
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
+        resp = reportService.getExchangeWiseData(date, userId);
+        return ResponseEntity.ok(resp);
     }
 
 }
