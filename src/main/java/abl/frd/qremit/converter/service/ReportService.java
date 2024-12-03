@@ -601,7 +601,7 @@ public class ReportService {
     }
     
     //last row for showing total data for uploaded file info
-    public Map<String, Object> calculateTotalUploadFileInfo(int totalCocCount, int totalBeftnCount, int totalOnlineCount, int totalAccountPayeeCount, int totalErrorCount, int totalCount){
+    public Map<String, Object> calculateTotalUploadFileInfo(int totalCocCount, int totalBeftnCount, int totalOnlineCount, int totalAccountPayeeCount, int totalErrorCount, int totalCount, String totalAmount){
         Map<String, Object> totalData = new HashMap<>();
         totalData.put("sl","");
         totalData.put("exchangeCode","");
@@ -613,8 +613,51 @@ public class ReportService {
         totalData.put("accountPayeeCount", CommonService.generateClassForText(String.valueOf(totalAccountPayeeCount),"fw-bold"));
         totalData.put("errorCount", CommonService.generateClassForText(String.valueOf(totalErrorCount),"fw-bold"));
         totalData.put("totalCount", CommonService.generateClassForText(String.valueOf(totalCount),"fw-bold"));
+        totalData.put("totalAmount", CommonService.generateClassForText(totalAmount, "fw-bold"));
         totalData.put("action", "");
         return totalData;
+    }
+
+    public Map<String, Object> calculateExchangeWiseSummary(List<Map<String,Object>> exchangeData, String previousExchangeCode){
+        String[] summaryFields = {"sl","action", "uploadDateTime"};
+        Map<String, Object> exchangeSummary = new HashMap<>();
+        for(Map<String, Object> exData: exchangeData){
+            if(exData.get("exchange_code").equals(previousExchangeCode)){
+                exchangeSummary.put("exchangeCode", exData.get("exchange_code"));
+                exchangeSummary.put("totalAmount", CommonService.generateClassForText(exData.get("totalAmount").toString(),"fw-bold text-success"));
+                exchangeSummary.put("onlineCount", CommonService.generateClassForText(exData.get("onlineCount").toString(),"fw-bold text-success"));
+                exchangeSummary.put("accountPayeeCount", CommonService.generateClassForText(exData.get("accountPayeeCount").toString(),"fw-bold text-success"));
+                exchangeSummary.put("beftnCount", CommonService.generateClassForText(exData.get("beftnCount").toString(),"fw-bold text-success"));
+                exchangeSummary.put("cocCount", CommonService.generateClassForText(exData.get("cocCount").toString(),"fw-bold text-success"));
+                exchangeSummary.put("errorCount", CommonService.generateClassForText(exData.get("errorCount").toString(),"fw-bold text-success"));
+                exchangeSummary.put("totalCount", CommonService.generateClassForText(exData.get("totalCount").toString(),"fw-bold text-success"));
+                exchangeSummary.put("fileName", CommonService.generateClassForText("Total","fw-bold text-success"));
+                for(String field: summaryFields)    exchangeSummary.put(field, "");
+            }else continue;
+        }
+        return exchangeSummary;
+    }
+
+    public Map<String, Object> getExchangeWiseData(String date, int userId){
+        Map<String, Object> resp = new HashMap<>();
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
+        LocalDateTime starDateTime = (LocalDateTime) dateTime.get("startDateTime");
+        LocalDateTime enDateTime = (LocalDateTime) dateTime.get("endDateTime");
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
+        System.out.println(exchangeHouseModelList);
+        List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getDataByUploadDate(starDateTime, enDateTime, userId);
+        System.out.println(accountPayeeModelList);
+        int accountPayeeCount = 0;
+        int totalAccountPayee = 0;
+        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+            String exchangeCode = exchangeHouseModel.getExchangeCode();
+            for(AccountPayeeModel accountPayeeModel: accountPayeeModelList){
+                if(exchangeCode.equals(accountPayeeModel.getExchangeCode())){
+                    
+                }else continue;
+            }
+        }
+        return resp;
     }
 
 }

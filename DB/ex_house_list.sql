@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 21, 2024 at 06:09 AM
+-- Generation Time: Dec 03, 2024 at 08:16 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,19 +46,19 @@ CREATE TABLE `ex_house_list` (
 --
 
 INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `base_table_name`, `class_name`, `repository_name`, `is_settlement`, `active_status`, `has_settlement_daily`) VALUES
-(1, '7010231', 'Al Muzaini Exchange Company K', 'Al Muzaini', '7038', 'muzaini', 'MuzainiModel', 'muzainiModelRepository', 0, 1, 0),
+(1, '7010231', 'Al Muzaini Exchange Company Kuwait', 'Al Muzaini', '7038', 'muzaini', 'MuzainiModel', 'muzainiModelRepository', 0, 1, 0),
 (2, '7010209', 'Bahrain Exchange Co Kuwait', 'BEC', '7012', 'bec', 'BecModel', 'becModelRepository', 0, 1, 0),
 (3, '7010234', 'National Finance and Exch. Co.', 'NAFEX', '7046', 'nafex', 'NafexEhMstModel', 'nafexModelRepository', 0, 1, 0),
 (4, '7010226', 'Agrani Exchange House Singapore', 'Singapore', '7025', 'singapore', 'AgexSingaporeModel', 'agexSingaporeModelRepository', 1, 1, 1),
 (5, '7010299', 'Ezremit', 'EZ Remit', '7102', 'ezremit', 'EzRemitModel', 'ezRemitModelRepository', 1, 1, 0),
-(6, '7010290', 'Continental Exchange Solution( Ria)', 'RIA', '7081', 'ria', 'RiaModel', 'riaModelRepository', 1, 1, 0),
+(6, '7010290', 'Continental Exchange Solution (Ria)', 'RIA', '7081', 'ria', 'RiaModel', 'riaModelRepository', 1, 1, 0),
 (7, '111111', 'API BEFTN', 'API BEFTN', '1000', 'api_beftn', '', '', 0, 1, 0),
 (8, '222222', 'API T24', 'API T24', '2000', 'api_t24', '', '', 1, 1, 1),
 (9, '333333', 'COC Paid', 'COC Paid', '3000', 'coc_paid', '', '', 1, 1, 1),
 (112, '7010291', 'Aftab Currency Exchange Ltd.UK', '', '7100', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (113, '7010221', 'Al Ahalia Money Ex. ', '', '7047', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (114, '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', 'alansari', 'AlansariModel', 'alansariModelRepository', 0, 1, 0),
-(115, '7010246', 'Al Jadeed Exchange', 'Al Jadeed', '7058', 'alzadeed', 'AlzadeedModel', 'alzadeedModelRepository', 0, 1, 0),
+(115, '7010246', 'Al Jadeed Exchange. Oman', 'Al Jadeed', '7058', 'alzadeed', 'AlzadeedModel', 'alzadeedModelRepository', 0, 1, 0),
 (116, '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (117, '7010240', 'Al Rostamani Intl Ex. Co. Abu', 'Al Rostamani', '7052', 'alrostamani', 'AlRostamaniModel', 'alRostamaniModelRepository', 0, 1, 0),
 (118, '7010245', 'Al Zaman Ex. , Qatar', 'Al Zaman', '7057', 'alzaman', 'AlZamanModel', 'alZamanModelRepository', 0, 1, 0),
@@ -113,7 +113,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (167, '7010256', 'SIGUE Global Sercice ', 'Sigue Global', '7074', 'sigue', 'SigueModel', 'sigueModelRepository', 0, 1, 0),
 (168, '7010248', 'Standard Express', 'Standard Express', '7060', 'standard', 'StandardModel', 'standardModelRepository', 0, 1, 0),
 (169, '7010274', 'Sunman Express 	', 'Sunman', '7096', 'sunman', 'SunmanModel', 'sunmanModelRepository', 0, 1, 0),
-(170, '7010293', 'Terra Payment Services Ltd. Ma', '', '7101', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(170, '7010293', 'Terra Payment Services Ltd. Malaysia', '', '7101', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (171, '7010266', 'The Saudi Investment Bank (SAIB)', 'SAIB', '7086', 'saib', 'SaibModel', 'saibModelRepository', 0, 1, 0),
 (172, '7010267', 'U REMIT INTERNATIONAL, CANADA', 'U REMIT', '7088', 'uremit', 'UremitModel', 'uremitModelRepository', 0, 1, 0),
 (173, '7010225', 'U.A.E. Exchange LLC, Abu Dhabi', '', '7028', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),

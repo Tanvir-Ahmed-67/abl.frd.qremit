@@ -51,6 +51,8 @@ public class OnlineModel {
     private int isVoucherGenerated = 0;
     @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int tempStatus = 0;
+    @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isApi = 0;
     @Column(name = "report_date", columnDefinition = "DATETIME")
     private LocalDateTime reportDate;
 
@@ -142,6 +144,14 @@ public class OnlineModel {
 
     public int getIsProcessed() {
         return this.isProcessed;
+    }
+
+    public int getIsApi() {
+        return this.isApi;
+    }
+
+    public void setIsApi(int isApi) {
+        this.isApi = isApi;
     }
 
     public void setIsProcessed(int isProcessed) {

@@ -24,6 +24,10 @@ public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeM
     @Query("SELECT n FROM AccountPayeeModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isProcessed= :isProcessed AND n.isVoucherGenerated= :isVoucherGenerated and n.downloadDateTime BETWEEN :startDate AND :endDate and n.tempStatus=0")
     List<AccountPayeeModel> getProcessedDataByUploadDateAndFileId(@Param("fileInfoModelId") int fileInfoModelId, @Param("isProcessed") int isProcessed, 
         @Param("isVoucherGenerated") int isVoucherGenerated, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT n FROM AccountPayeeModel n WHERE n.uploadDateTime BETWEEN :startDate AND :endDate and n.userModel.id=:userId")
+    List<AccountPayeeModel> getDataByUploadDateAndUserId(@Param("userId") int userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT n FROM AccountPayeeModel n WHERE n.uploadDateTime BETWEEN :startDate AND :endDate")
+    List<AccountPayeeModel> getDataByUploadDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     @Transactional
     @Modifying
     @Query("UPDATE AccountPayeeModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate WHERE n.id=:id")

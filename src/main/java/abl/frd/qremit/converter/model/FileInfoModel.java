@@ -29,24 +29,25 @@ public class FileInfoModel {
     @Column(name = "file_name", unique = true, nullable = false)
     private String fileName;
     @Column(name = "coc_count", length = 10)
-    private String cocCount;
+    private String cocCount = "0";
     @Column(name = "beftn_count", length = 10)
-    private String beftnCount;
+    private String beftnCount = "0";
     @Column(name = "online_count", length = 10)
-    private String onlineCount;
+    private String onlineCount = "0";
     @Column(name = "account_payee_count", length = 10)
-    private String accountPayeeCount;
+    private String accountPayeeCount = "0";
     @Column(name = "unprocessed_count", length = 10)
     private String unprocessedCount;
     @Column(name = "error_count", length = 10)
     private int errorCount = 0;
     @Column(name = "total_count", length = 10)
-    private String totalCount;
+    private String totalCount = "0";
     @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isProcessed;
     @Column(name = "is_settlement", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isSettlement = 0;
-
+    @Column(name = "total_amount", length = 20)
+    private String totalAmount = "0";
     //@ManyToOne(cascade=CascadeType.ALL)
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name="user_id")
@@ -724,6 +725,14 @@ public class FileInfoModel {
 
     public List<MuzainiModel> getMuzainiModel() {
         return this.muzainiModel;
+    }
+
+    public String getTotalAmount() {
+        return this.totalAmount;
+    }
+
+    public void setTotalAmount(String totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public void setErrorDataModelList(List<ErrorDataModel> errorDataModelList) {
