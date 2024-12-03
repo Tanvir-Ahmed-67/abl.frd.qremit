@@ -644,19 +644,6 @@ public class ReportService {
         LocalDateTime starDateTime = (LocalDateTime) dateTime.get("startDateTime");
         LocalDateTime enDateTime = (LocalDateTime) dateTime.get("endDateTime");
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
-        System.out.println(exchangeHouseModelList);
-        List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getDataByUploadDate(starDateTime, enDateTime, userId);
-        System.out.println(accountPayeeModelList);
-        int accountPayeeCount = 0;
-        int totalAccountPayee = 0;
-        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
-            String exchangeCode = exchangeHouseModel.getExchangeCode();
-            for(AccountPayeeModel accountPayeeModel: accountPayeeModelList){
-                if(exchangeCode.equals(accountPayeeModel.getExchangeCode())){
-                    
-                }else continue;
-            }
-        }
         return resp;
     }
 
