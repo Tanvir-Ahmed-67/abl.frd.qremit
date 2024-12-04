@@ -390,4 +390,67 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping("/updateTotalAmountBulk")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateFileInfoModelTotalAmountBulk(){
+        Map<String, Object> resp = new HashMap<>();
+        List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileNotHavingTotalAmount();
+        if(fileInfoModel.isEmpty())     return ResponseEntity.ok(CommonService.getResp(1, "No Data Found", null));
+        int totalCount = 0;
+        for(FileInfoModel fModel: fileInfoModel){
+            Double total = 0.0;
+            int onlineCount = CommonService.convertStringToInt(fModel.getOnlineCount());
+            int beftnCount = CommonService.convertStringToInt(fModel.getBeftnCount());
+            int accPayeeCount = CommonService.convertStringToInt(fModel.getAccountPayeeCount());
+            int cocCount = CommonService.convertStringToInt(fModel.getCocCount());
+            int fileInfoModelId = fModel.getId();
+            if(onlineCount > 0){
+                Map<String, Object> onlineMap =  customQueryService.calculateTotalAmountForConvertedModel(1,fileInfoModelId);
+                if((Integer) onlineMap.get("err") == 1) continue;
+                for(Map<String, Object> onlineData: (List<Map<String, Object>>) onlineMap.get("data")){
+                    total += CommonService.convertStringToDouble(onlineData.get("totalAmount").toString());
+                }
+            }
+            if(accPayeeCount > 0){
+                Map<String, Object> accountPayeeMap =  customQueryService.calculateTotalAmountForConvertedModel(2,fileInfoModelId);
+                if((Integer) accountPayeeMap.get("err") == 1) continue;
+                for(Map<String, Object> accountPayeeData: (List<Map<String, Object>>) accountPayeeMap.get("data")){
+                    total += CommonService.convertStringToDouble(accountPayeeData.get("totalAmount").toString());
+                }
+            }
+            
+            if(beftnCount > 0){
+                Map<String, Object> beftnMap =  customQueryService.calculateTotalAmountForConvertedModel(3,fileInfoModelId);
+                if((Integer) beftnMap.get("err") == 1) continue;
+                for(Map<String, Object> beftnData: (List<Map<String, Object>>) beftnMap.get("data")){
+                    total += CommonService.convertStringToDouble(beftnData.get("totalAmount").toString());
+                }
+            }
+            
+            if(cocCount > 0 ){
+                if(fModel.getIsSettlement() == 0){
+                    Map<String, Object> cocMap =  customQueryService.calculateTotalAmountForConvertedModel(4,fileInfoModelId);
+                    if((Integer) cocMap.get("err") == 1) continue;
+                    for(Map<String, Object> cocData: (List<Map<String, Object>>) cocMap.get("data")){
+                        total += CommonService.convertStringToDouble(cocData.get("totalAmount").toString());
+                    }
+                }
+                if(fModel.getIsSettlement() == 1){
+                    Map<String, Object> cocMap =  customQueryService.calculateTotalAmountForConvertedModel(5,fileInfoModelId);
+                    if((Integer) cocMap.get("err") == 1) continue;
+                    for(Map<String, Object> cocData: (List<Map<String, Object>>) cocMap.get("data")){
+                        total += CommonService.convertStringToDouble(cocData.get("totalAmount").toString());
+                    }
+                }
+                
+            }
+            String totalStr = CommonService.convertNumberFormat(total, 2);
+            fileInfoModelService.updateTotalAmountById(fileInfoModelId, totalStr);
+            totalCount++;
+        }
+        if(totalCount == 0)    CommonService.getResp(1, "No Data Found", null);
+        else resp = CommonService.getResp(0, "Data Updated", null);
+        return ResponseEntity.ok(resp);
+    }
+
 }

@@ -36,4 +36,25 @@ public class CustomQueryService {
         }
         return resp;
     }
+
+    public Map<String, Object> calculateTotalAmountForConvertedModel(int type, int fileInfoModelId){
+        String tableName = "";
+        switch(type){
+            case 1:
+                tableName = "online";
+                break;
+            case 2:
+                tableName = "account_payee";
+                break;
+            case 3:
+                tableName = "beftn";
+                break;
+            case 4:
+                tableName = "coc";
+                break;
+        }
+        tableName = "converted_data_" + tableName;
+        if(type == 5)   tableName = "base_data_table_coc_paid";
+        return customQueryRepository.calculateTotalAmountForConvertedModel(tableName, fileInfoModelId);
+    }
 }
