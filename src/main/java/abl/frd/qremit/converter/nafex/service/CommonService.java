@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -478,6 +478,10 @@ public class CommonService {
             number = 0.0;
         }
         return number;
+    }
+
+    public static String convertDoubleToString(Double number){
+        return String.valueOf(number);
     }
 
     public static boolean checkEmptyString(String str){
@@ -1028,6 +1032,37 @@ public class CommonService {
 
     public static String generateClassForText(String text, String cls){
         return "<div class='" + cls +"'>" + text + "</div>";
+    }
+
+    public static Workbook getWorkbook(InputStream is) throws IOException {
+        try {
+            // WorkbookFactory automatically detects whether it's .xls or .xlsx
+            return WorkbookFactory.create(is);
+        } catch (Exception e) {
+            throw new IOException("Failed to open the Excel file. Please ensure it's in .xls or .xlsx format.", e);
+        }
+    }
+
+    public static String getCellValueAsString(Cell cell){
+        String str = "";
+        switch (cell.getCellType()){
+            case STRING:
+                str = cell.getStringCellValue().trim();
+                break;
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    str = cell.getDateCellValue().toString();
+                } else {
+                    str = String.valueOf(cell.getNumericCellValue());
+                }
+                break;
+            case BOOLEAN:
+                str = String.valueOf(cell.getBooleanCellValue());
+                break;
+            default:
+                break;
+        }
+        return str;
     }
 
 }

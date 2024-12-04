@@ -176,6 +176,18 @@ public class FileInfoModel {
     @JsonIgnore
     private List<GenericModel> genericModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ShahGlobalModel> shahGlobalModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<CityModel> cityModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlFardanDohaModel> alFardanDohaModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<AlFardanAbuDhabiModel> alFardanAbuDhabiModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
 
     @JsonIgnore
     private List<ApiBeftnModel> apiBeftnModel;
@@ -234,6 +246,22 @@ public class FileInfoModel {
         return this.alRostamaniModel;
     }
 
+    public List<AlFardanDohaModel> getAlFardanDohaModel() {
+        return this.alFardanDohaModel;
+    }
+
+    public void setAlFardanDohaModel(List<AlFardanDohaModel> alFardanDohaModel) {
+        this.alFardanDohaModel = alFardanDohaModel;
+    }
+
+    public List<AlFardanAbuDhabiModel> getAlFardanAbuDhabiModel() {
+        return this.alFardanAbuDhabiModel;
+    }
+
+    public void setAlFardanAbuDhabiModel(List<AlFardanAbuDhabiModel> alFardanAbuDhabiModel) {
+        this.alFardanAbuDhabiModel = alFardanAbuDhabiModel;
+    }
+
     public List<SwiftModel> getSwiftModel() {
         return this.swiftModel;
     }
@@ -252,6 +280,22 @@ public class FileInfoModel {
 
     public void setAnbModel(List<AnbModel> anbModel) {
         this.anbModel = anbModel;
+    }
+
+    public List<ShahGlobalModel> getShahGlobalModel() {
+        return this.shahGlobalModel;
+    }
+
+    public List<CityModel> getCityModel() {
+        return this.cityModel;
+    }
+
+    public void setCityModel(List<CityModel> cityModel) {
+        this.cityModel = cityModel;
+    }
+
+    public void setShahGlobalModel(List<ShahGlobalModel> shahGlobalModel) {
+        this.shahGlobalModel = shahGlobalModel;
     }
 
     public List<AlBiladModel> getAlBiladModel() {

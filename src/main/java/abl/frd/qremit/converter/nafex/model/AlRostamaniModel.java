@@ -3,10 +3,8 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 @Entity
-@Table(name="base_data_table_alrostamani", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"file_info_model_id", "transaction_no", "amount", "exchange_code"}),
-        @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})
-    }
+@Table(name="base_data_table_alrostamani", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
+    indexes = { @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id") }
 )
 public class AlRostamaniModel {
     @Id

@@ -17,6 +17,11 @@
               <h4 class="card-title">Summary Of Daily Remittances</h4>
             </div>
             <div class="card-content">
+              <div class="row">
+                <div class="col-2 form-group" id="row_report_date">
+                    <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" placeholder="Date" readonly="true">
+                </div>
+              </div>
               <div class="table-responsive">
                 <table class="table table-hover">
                   <thead>
@@ -60,4 +65,15 @@
   </div>
 </div>
 </body>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(document).off('change','#report_date');
+    $(document).on('change','#report_date', function(e){
+        e.preventDefault();
+        var val = $(this).val();
+        var url = "summaryOfDailyStatement?date=" + val;
+        
+    });
+  });
+</script>
 </html>

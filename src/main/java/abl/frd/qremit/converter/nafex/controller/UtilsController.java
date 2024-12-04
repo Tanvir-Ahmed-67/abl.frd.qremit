@@ -36,6 +36,10 @@ public class UtilsController {
     public String index(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @RequestParam String id){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         int showDropDown = this.showDropDown(id);
+        if(showDropDown == 1){
+            Map<String, Object> dropdown = getDropdown(id);
+            model.addAttribute("dropdown", dropdown);
+        }
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(id);
         model.addAttribute("showDropDown", showDropDown);
         model.addAttribute("exchangeHouseModel", exchangeHouseModel);
@@ -79,12 +83,22 @@ public class UtilsController {
         switch (exCode) {
             case "7010226":
             case "7010299":
+            case "7010228":
                 showDropDown = 1;
                 break;
             default:
                 break;
         }
         return showDropDown;
+    }
+
+    public Map<String, Object> getDropdown(String exCode){
+        Map<String, Object> resp = new HashMap<>();
+        String api = "API";
+        if(exCode.equals("7010228"))    api = "Account Payee";
+        resp.put("API",api);
+        resp.put("BEFTN", "BEFTN");
+        return resp;
     }
 
     @GetMapping("/errorReport")
