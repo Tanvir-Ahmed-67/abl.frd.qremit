@@ -1,0 +1,410 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="MO_NEW" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="65dfd549-7d7e-458a-90f9-0cf97b9c210c">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<dataset name="Dataset1" uuid="c6889941-de3e-45bf-80bc-c6cadc71e36e">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
+		<query language="SQL"><![CDATA[select * from orders LIMIT 5]]></query>
+		<field name="ORDERID" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.name" value="ORDERID"/>
+			<property name="com.jaspersoft.studio.field.label" value="ORDERID"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="CUSTOMERID" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="CUSTOMERID"/>
+			<property name="com.jaspersoft.studio.field.label" value="CUSTOMERID"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="EMPLOYEEID" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.name" value="EMPLOYEEID"/>
+			<property name="com.jaspersoft.studio.field.label" value="EMPLOYEEID"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="ORDERDATE" class="java.sql.Timestamp">
+			<property name="com.jaspersoft.studio.field.name" value="ORDERDATE"/>
+			<property name="com.jaspersoft.studio.field.label" value="ORDERDATE"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="REQUIREDDATE" class="java.sql.Timestamp">
+			<property name="com.jaspersoft.studio.field.name" value="REQUIREDDATE"/>
+			<property name="com.jaspersoft.studio.field.label" value="REQUIREDDATE"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="SHIPPEDDATE" class="java.sql.Timestamp">
+			<property name="com.jaspersoft.studio.field.name" value="SHIPPEDDATE"/>
+			<property name="com.jaspersoft.studio.field.label" value="SHIPPEDDATE"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="SHIPVIA" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.name" value="SHIPVIA"/>
+			<property name="com.jaspersoft.studio.field.label" value="SHIPVIA"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="FREIGHT" class="java.math.BigDecimal">
+			<property name="com.jaspersoft.studio.field.name" value="FREIGHT"/>
+			<property name="com.jaspersoft.studio.field.label" value="FREIGHT"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="SHIPNAME" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="SHIPNAME"/>
+			<property name="com.jaspersoft.studio.field.label" value="SHIPNAME"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="SHIPADDRESS" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="SHIPADDRESS"/>
+			<property name="com.jaspersoft.studio.field.label" value="SHIPADDRESS"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="SHIPCITY" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="SHIPCITY"/>
+			<property name="com.jaspersoft.studio.field.label" value="SHIPCITY"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="SHIPREGION" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="SHIPREGION"/>
+			<property name="com.jaspersoft.studio.field.label" value="SHIPREGION"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="SHIPPOSTALCODE" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="SHIPPOSTALCODE"/>
+			<property name="com.jaspersoft.studio.field.label" value="SHIPPOSTALCODE"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+		<field name="SHIPCOUNTRY" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="SHIPCOUNTRY"/>
+			<property name="com.jaspersoft.studio.field.label" value="SHIPCOUNTRY"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+		</field>
+	</dataset>
+	<query language="SQL"><![CDATA[SELECT * FROM orders LIMIT 5]]></query>
+	<field name="ORDERID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="ORDERID"/>
+		<property name="com.jaspersoft.studio.field.label" value="ORDERID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="CUSTOMERID" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CUSTOMERID"/>
+		<property name="com.jaspersoft.studio.field.label" value="CUSTOMERID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="EMPLOYEEID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="EMPLOYEEID"/>
+		<property name="com.jaspersoft.studio.field.label" value="EMPLOYEEID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="ORDERDATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="ORDERDATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ORDERDATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="REQUIREDDATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="REQUIREDDATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="REQUIREDDATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="SHIPPEDDATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="SHIPPEDDATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIPPEDDATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="SHIPVIA" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="SHIPVIA"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIPVIA"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="FREIGHT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="FREIGHT"/>
+		<property name="com.jaspersoft.studio.field.label" value="FREIGHT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="SHIPNAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="SHIPNAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIPNAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="SHIPADDRESS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="SHIPADDRESS"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIPADDRESS"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="SHIPCITY" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="SHIPCITY"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIPCITY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="SHIPREGION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="SHIPREGION"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIPREGION"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="SHIPPOSTALCODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="SHIPPOSTALCODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIPPOSTALCODE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<field name="SHIPCOUNTRY" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="SHIPCOUNTRY"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIPCOUNTRY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ORDERS"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title splitType="Stretch"/>
+	<detail>
+		<band height="759" splitType="Stretch">
+			<element kind="component" uuid="6037f00b-0597-4bd6-9d73-b7f3c14dbc9c" x="0" y="182" width="546" height="39">
+				<component kind="table">
+					<datasetRun uuid="c18d341a-f952-4096-a499-029a504514e4" subDataset="Dataset1">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<column kind="single" uuid="1c40cac9-5eee-4d4e-9d65-a1d2a92393ad" width="187">
+						<tableHeader height="30" rowSpan="1" style="Table_TH">
+							<element kind="staticText" uuid="ab096d3a-8d97-41ae-9ad4-1000e0f708ad" x="0" y="0" width="187" height="30" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<text><![CDATA[Exchange House Name]]></text>
+							</element>
+							<box style="Table_TH">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</tableHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH">
+							<element kind="textField" uuid="4b4099ae-a06d-4c81-b21c-9d8f2279cbf6" x="0" y="0" width="187" height="30" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["TOTAL"]]></expression>
+							</element>
+							<box style="Table_CH">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</columnFooter>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="0297c405-52c2-4495-a322-c107eb73ec7d" mode="Opaque" x="0" y="0" width="187" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{SHIPCITY}]]></expression>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+							</element>
+							<box style="Table_TD">
+								<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+					</column>
+					<column kind="single" uuid="e818ad28-2a8b-415b-a132-6a36a45d2a65" width="187">
+						<tableHeader height="30" rowSpan="1" style="Table_TH">
+							<element kind="staticText" uuid="1aa6bf99-ae70-44d6-bf02-40868dd3ddde" x="0" y="0" width="187" height="30" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<text><![CDATA[Number of Remittances]]></text>
+							</element>
+							<box style="Table_TH">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</tableHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH">
+							<element kind="textField" uuid="78209305-e146-44df-8535-9f398714347e" x="0" y="0" width="187" height="30" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["SUMMATION"]]></expression>
+							</element>
+							<box style="Table_CH">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</columnFooter>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="0a51c4a2-af3e-4983-9008-cfc7db1f52aa" mode="Opaque" x="0" y="0" width="187" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{SHIPCITY}]]></expression>
+							</element>
+							<box style="Table_TD">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+					</column>
+					<column kind="single" uuid="a02aaf77-6a98-4bca-83ff-e6905dbd547b" width="172">
+						<tableHeader height="30" rowSpan="1" style="Table_TH">
+							<element kind="staticText" uuid="a110e808-e3b9-4234-b894-cebcc0eeb840" x="0" y="0" width="172" height="30" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<text><![CDATA[Amount]]></text>
+							</element>
+							<box style="Table_TH">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</tableHeader>
+						<columnFooter height="30" rowSpan="1" style="Table_CH">
+							<element kind="textField" uuid="c7b7e009-ff1f-4963-8409-4c088441fc39" x="0" y="0" width="172" height="30" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["SUMMATION"]]></expression>
+							</element>
+							<box style="Table_CH">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</columnFooter>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="ee7658d7-e566-4ed0-b50d-16b14c385a89" mode="Opaque" x="0" y="0" width="172" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{SHIPCITY}]]></expression>
+							</element>
+							<box style="Table_TD">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+					</column>
+				</component>
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+				<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+			</element>
+			<element kind="staticText" uuid="5b412a0d-eb60-433b-9264-3f6ef064dd08" x="0" y="34" width="279" height="18" fontSize="11.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Main Office A/C Credit Advice]]></text>
+			</element>
+			<element kind="staticText" uuid="d7167699-ba9b-43f7-a24c-b2d969013f37" x="0" y="53" width="118" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[FROM BRANCH]]></text>
+			</element>
+			<element kind="staticText" uuid="2257b212-c2a2-4973-9a9b-1318b8adea07" x="0" y="73" width="279" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[NAME: FOREIGN REMITTANCE DIVISION, HO.]]></text>
+			</element>
+			<element kind="staticText" uuid="db6e7f46-ec4f-4cbd-a7f6-bc9a3ae75204" x="0" y="95" width="118" height="17" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[CODE: 11-104]]></text>
+			</element>
+			<element kind="staticText" uuid="2861bb0c-3d93-4de2-9354-4baa2694aca2" x="0" y="123" width="159" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[ADVICE NO:ARB-MO-1-Txn24-]]></text>
+			</element>
+			<element kind="textField" uuid="be400466-5d84-4288-b880-0961ed964ad0" x="160" y="123" width="106" height="20" fontSize="11.0" hTextAlign="Left" vTextAlign="Middle">
+				<expression><![CDATA[$V{PAGE_NUMBER}]]></expression>
+			</element>
+			<element kind="staticText" uuid="32ce971d-6ed6-4f68-a067-e41c86ba2710" x="322" y="52" width="118" height="21" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[TO BRANCH]]></text>
+			</element>
+			<element kind="staticText" uuid="5917fadd-8055-49cc-be75-3ec78e0c6cb5" x="322" y="73" width="174" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[NAME: PRINCIPAL BRANCH]]></text>
+			</element>
+			<element kind="staticText" uuid="af35b044-140a-46a7-9014-44a03a1a1e03" x="322" y="95" width="118" height="18" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[CODE: 4006]]></text>
+			</element>
+			<element kind="staticText" uuid="3dbc7928-2c99-45a2-a24e-e600e84747b2" x="322" y="122" width="29" height="21" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Date:]]></text>
+			</element>
+			<element kind="textField" uuid="a4a477af-43a0-43d0-aaf7-7dd8bc08de50" x="352" y="122" width="92" height="21" pattern="MMMMM dd, yyyy" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+			<element kind="textField" uuid="a7525c1e-d1de-45f7-a1b7-6bac745dd381" x="443" y="122" width="51" height="20" pattern="HH:mm" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+			<element kind="staticText" uuid="16ffd419-8f60-4891-9c5b-1e842eaa713a" x="1" y="157" width="552" height="19" fontSize="11.0">
+				<text><![CDATA[We advise that your M.O. account has been credited with the following item for crediting the beneficiaries' A/C.]]></text>
+			</element>
+			<element kind="textField" uuid="42910f1c-995d-45a4-9ed9-c231576a3911" x="0" y="385" width="480" height="25" hTextAlign="Left" vTextAlign="Bottom">
+				<expression><![CDATA["IN WORD: "+$F{CUSTOMERID}]]></expression>
+			</element>
+			<element kind="staticText" uuid="32537a4d-d964-452c-b606-e5eaf1bc0482" x="1" y="465" width="170" height="24" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Prepared by: Computer generated.]]></text>
+			</element>
+			<element kind="line" uuid="96bdf86c-3f48-4b74-8bf1-5984f0699b54" x="266" y="471" width="121" height="1"/>
+			<element kind="staticText" uuid="3327bc0e-50a5-4154-9717-fdb45387a6b7" x="258" y="465" width="140" height="24" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Officer]]></text>
+			</element>
+			<element kind="line" uuid="b57024c1-321b-443a-addd-a3b34944c466" x="429" y="471" width="121" height="1"/>
+			<element kind="staticText" uuid="799f66bc-467d-42d6-b227-662452d2559c" x="420" y="465" width="132" height="24" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Manager]]></text>
+			</element>
+			<element kind="staticText" uuid="4741f7e2-0e21-4e55-8345-b17928d73e0d" x="0" y="489" width="555" height="20" bold="true">
+				<text><![CDATA[......................................................................................................................................................................................................]]></text>
+			</element>
+			<element kind="staticText" uuid="543087f5-156b-49aa-aa90-e5cde726f93c" x="5" y="512" width="118" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Responding Branch]]></text>
+			</element>
+			<element kind="staticText" uuid="44da8bc4-999c-4534-8899-6e5f8e72cd5a" x="322" y="511" width="118" height="21" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Orginating Branch]]></text>
+			</element>
+			<element kind="staticText" uuid="54175676-961f-4f35-b660-a978b6b5705d" x="5" y="532" width="279" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[NAME: PRINCIPAL BRANCH]]></text>
+			</element>
+			<element kind="staticText" uuid="f07f3a18-935a-48ef-823a-9c551b8b02cb" x="322" y="532" width="246" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[NAME: FOREIGN REMITTANCE DIVISION, HO.]]></text>
+			</element>
+			<element kind="staticText" uuid="187962c9-01e2-40ae-918f-afaf584b90ab" x="5" y="554" width="118" height="17" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[CODE: 4006]]></text>
+			</element>
+			<element kind="staticText" uuid="b079a2a6-821a-4efb-8ff4-54d16f2a862a" x="322" y="554" width="118" height="18" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[CODE: 11-104]]></text>
+			</element>
+			<element kind="staticText" uuid="88d576a4-d188-4115-aabc-8be5a966eaa7" x="322" y="573" width="29" height="21" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Date:]]></text>
+			</element>
+			<element kind="textField" uuid="83d00d3c-acfd-472e-ad39-07064e778e0e" x="352" y="573" width="92" height="21" pattern="MMMMM dd, yyyy" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+			<element kind="staticText" uuid="7d4adbee-1f53-43ff-a959-7138de4bd66f" x="5" y="572" width="224" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Debit M . O . A/C, Head Office, Dhaka.]]></text>
+			</element>
+			<element kind="staticText" uuid="5cfad394-6a40-4996-a93b-3b7101b0a43b" x="1" y="659" width="178" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[AUTH. COUNTER SIGNATURE]]></text>
+			</element>
+			<element kind="staticText" uuid="ea6482b9-b771-400b-a731-4f95702358b2" x="412" y="659" width="130" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[AUTH. SIGNATURE]]></text>
+			</element>
+			<element kind="staticText" uuid="5f8189cf-2ef5-4fbb-bb2c-c1c7c99c6c11" x="10" y="735" width="140" height="24" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Officer]]></text>
+			</element>
+			<element kind="staticText" uuid="3a85b733-fbf2-4f09-816f-bb0dfdf94047" x="416" y="734" width="132" height="24" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Manager]]></text>
+			</element>
+			<element kind="line" uuid="6b81abcb-e940-4671-9e74-b4371a554095" x="421" y="739" width="121" height="1"/>
+			<element kind="line" uuid="f71e392c-4981-4640-813c-d9d005461bf0" x="18" y="740" width="121" height="1"/>
+			<element kind="textField" uuid="0af2b1fe-5ca0-434a-a715-dd47ceaa19b5" x="178" y="3" width="204" height="27" fontSize="16.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA["Agrani Bank PLC"]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="38" splitType="Stretch"/>
+</jasperReport>
