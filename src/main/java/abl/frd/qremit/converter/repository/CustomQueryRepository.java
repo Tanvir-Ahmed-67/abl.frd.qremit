@@ -1,15 +1,10 @@
 package abl.frd.qremit.converter.repository;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import abl.frd.qremit.converter.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class CustomQueryRepository {
@@ -27,7 +22,7 @@ public class CustomQueryRepository {
     }
 
     public Map<String, Object> getFileTotalExchangeWise(String starDateTime, String endDateTime, int userId){
-        String fields = "exchange_code as exchangeCode, REPLACE(FORMAT(SUM(total_amount), 2),',','')  as totalAmount, SUM(DISTINCT CAST(IFNULL(total_count, '0') AS UNSIGNED)) AS totalCount";
+        String fields = "exchange_code, REPLACE(FORMAT(SUM(total_amount), 2),',','')  as totalAmount, SUM(DISTINCT CAST(IFNULL(total_count, '0') AS UNSIGNED)) AS totalCount";
         fields += " ,SUM(DISTINCT CAST(IFNULL(online_count, '0') AS UNSIGNED)) AS onlineCount, SUM(DISTINCT CAST(IFNULL(account_payee_count, '0') AS UNSIGNED)) AS accountPayeeCount";
         fields += " ,SUM(DISTINCT CAST(IFNULL(coc_count, '0') AS UNSIGNED)) AS cocCount, SUM(DISTINCT CAST(IFNULL(beftn_count, '0') AS UNSIGNED)) AS beftnCount";
         fields += " ,SUM(error_count) AS errorCount";
@@ -39,6 +34,14 @@ public class CustomQueryRepository {
         params.put("1", starDateTime);
         params.put("2", endDateTime);
         return commonService.getData(sql, params);
+    }
+
+    public Map<String, Object> calculateTotalAmountForConvertedModel(String tableName, int fileInfoModelId){
+        String sql = "SELECT file_info_model_id, REPLACE(FORMAT(SUM(amount), 2),',','')  as totalAmount FROM %s WHERE file_info_model_id = ?";
+        String queryStr = String.format(sql, tableName,fileInfoModelId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("1", fileInfoModelId);
+        return commonService.getData(queryStr,params);
     }
 
     public Map<String,Object> getRoutingDetails(String routingNo){
