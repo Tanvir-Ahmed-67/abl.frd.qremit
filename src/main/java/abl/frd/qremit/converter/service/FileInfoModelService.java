@@ -7,6 +7,7 @@ import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.FileInfoModelDTO;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
@@ -74,6 +75,15 @@ public class FileInfoModelService {
 
     public FileInfoModel findAllById(int id){
         return fileInfoModelRepository.findById(id);
+    }
+
+    public List<FileInfoModel> getUploadedFileNotHavingTotalAmount(){
+        return fileInfoModelRepository.getUploadedFileNotHavingTotalAmount();
+    }
+
+    @Transactional
+    public void updateTotalAmountById(int id, String totalAmount){
+        fileInfoModelRepository.updateTotalAmountById(id, totalAmount);
     }
 
 }
