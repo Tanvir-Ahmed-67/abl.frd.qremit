@@ -85,5 +85,10 @@ public class FileInfoModelService {
     public void updateTotalAmountById(int id, String totalAmount){
         fileInfoModelRepository.updateTotalAmountById(id, totalAmount);
     }
+    
+    @Transactional
+    public void updateErrorCountById(int id, int errorCount){
+        fileInfoModelRepository.updateErrorCountById(id, errorCount);
+    }
 
 }

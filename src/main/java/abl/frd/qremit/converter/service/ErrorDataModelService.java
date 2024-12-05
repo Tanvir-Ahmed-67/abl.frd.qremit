@@ -60,8 +60,16 @@ public class ErrorDataModelService {
         errorDataModelRepository.updateUpdateStatusById(id, updateStatus);
     }
 
-    public void deleteErrorDataById(int id){
-        errorDataModelRepository.deleteById(id);
+    public Map<String, Object> deleteErrorDataById(int id){
+        Map<String, Object> resp = new HashMap<>();
+        ErrorDataModel errorDataModel = errorDataModelRepository.findById(id);
+        if(errorDataModel != null){
+            errorDataModelRepository.deleteById(id);
+            int fileInfoModelId = errorDataModel.getFileInfoModel().getId();
+            resp = CommonService.getResp(0, "Information Deleted", null);
+            resp.put("fileInfoModelId", fileInfoModelId);
+        }else resp = CommonService.getResp(1, "No Data Found", null);
+        return resp;
     }
 
     public Map<String, Object> processUpdateErrorDataById(@RequestParam Map<String, String> formData, HttpServletRequest request, int userId){
