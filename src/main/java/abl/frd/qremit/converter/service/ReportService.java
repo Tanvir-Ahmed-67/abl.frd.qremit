@@ -398,8 +398,8 @@ public class ReportService {
                         reportModel.setFileInfoModelId((int) fileInfoModel.getId());
                     }
 
-                    String branchMethod = (("3").matches(type)) ? "getRoutingNo": "getBranchCode";
-                    String downloadTimeMethod = (("4").matches(type)) ? "getUploadDateTime":"getDownloadDateTime";
+                    String branchMethod = (("3").equals(type)) ? "getRoutingNo": "getBranchCode";
+                    String downloadTimeMethod = (("4").equals(type)) ? "getUploadDateTime":"getDownloadDateTime";
                     reportModel.setExchangeCode(exchangeCode);
                     reportModel.setTransactionNo(transactionNo);
                     reportModel.setBankCode((String) CommonService.getPropertyValue(model, "getBankCode"));
@@ -416,8 +416,7 @@ public class ReportService {
                     reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
-                    //reportModelRepository.save(reportModel);
-                    //setIsVoucherGenerated(types, id, currentDateTime);
+                    if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":
                             onlineInsertList.add(id);

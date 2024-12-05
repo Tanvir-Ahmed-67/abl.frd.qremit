@@ -67,7 +67,7 @@ public class TemporaryReportService {
                     Optional<TemporaryReportModel> temporaryReport = temporaryReportRepository.findByExchangeCodeAndTransactionNoAndAmount(exchangeCode, transactionNo, amount);
                     if(temporaryReport.isPresent()) continue;
 
-                    String branchMethod = (("3").matches(type)) ? "getRoutingNo": "getBranchCode";
+                    String branchMethod = (("3").equals(type)) ? "getRoutingNo": "getBranchCode";
                     temporaryReportModel.setExchangeCode(exchangeCode);
                     temporaryReportModel.setTransactionNo(transactionNo);
                     temporaryReportModel.setBankCode((String) CommonService.getPropertyValue(model, "getBankCode"));
@@ -87,9 +87,8 @@ public class TemporaryReportService {
                     temporaryReportModel.setFileInfoModelId((int) fileInfoModel.getId());
                     temporaryReportModel.setType(type);
                     temporaryReportModel.setDataModelId(id);
-                    //System.out.println(temporaryReportModel);
-                    //temporaryReportRepository.save(temporaryReportModel);
-                    //setTempStatus(type, id);
+                    //added api for online model
+                    if(("1").equals(type))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     tempInsertList.add(temporaryReportModel);
                     count++;
                 }catch(Exception e){
