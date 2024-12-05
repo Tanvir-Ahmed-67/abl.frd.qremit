@@ -1,6 +1,6 @@
 package abl.frd.qremit.converter;
 
-import abl.frd.qremit.converter.nafex.helper.MyUserDetails;
+import abl.frd.qremit.converter.helper.MyUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
