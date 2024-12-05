@@ -272,7 +272,7 @@ public class ReportController {
         byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        String fileName = CommonService.generateFileName("summary_report_", date, ".pdf");
+        String fileName = commonService.generateFileName("summary_report_", date, ".pdf");
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"" );
         return ResponseEntity.ok()
                 .headers(headers)
@@ -284,7 +284,7 @@ public class ReportController {
         try {
             List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyStatement(date);
             byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format, date);
-            String fileName = CommonService.generateFileName("details_report_", date, "." + format.toLowerCase());
+            String fileName = commonService.generateFileName("details_report_", date, "." + format.toLowerCase());
             MediaType mediaType = format.equalsIgnoreCase("pdf") ? MediaType.APPLICATION_PDF : MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
@@ -303,7 +303,7 @@ public class ReportController {
         for(int i=0; i<data.size();i++){
             data.get(i).setTotalAmountInWords(NumberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
         }
-        String fileName = CommonService.generateFileName("daily_voucher_", date, ".pdf");
+        String fileName = commonService.generateFileName("daily_voucher_", date, ".pdf");
         byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -316,7 +316,7 @@ public class ReportController {
     @GetMapping("/generateReport")
     public ResponseEntity<?> viewPdf() throws IOException {
         String date = CommonService.getCurrentDate("yyyy-MM-dd");
-        Path filePath = CommonService.getReportFile(CommonService.generateFileName("summary_report_", date, ".pdf"));
+        Path filePath = commonService.getReportFile(commonService.generateFileName("summary_report_", date, ".pdf"));
         String fileName = filePath.toString();
         try {
             // Construct the full file path
@@ -358,7 +358,7 @@ public class ReportController {
     @GetMapping("/getReportFile")
     public ResponseEntity<Resource> getReportFile(@RequestParam String fileName){
         try{
-            Path filePath = CommonService.generateOutputFile(fileName);
+            Path filePath = commonService.generateOutputFile(fileName);
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()

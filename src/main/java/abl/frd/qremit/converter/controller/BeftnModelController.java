@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class BeftnModelController {
     private final BeftnModelService beftnModelService;
+    @Autowired
+    CommonService commonService;
     public BeftnModelController(BeftnModelService beftnModelService){
         this.beftnModelService = beftnModelService;
     }
@@ -38,7 +41,7 @@ public class BeftnModelController {
         ByteArrayInputStream contentStream  = beftnModelService.loadAndUpdateUnprocessedBeftnMainData(0);
         int countRemaining = beftnModelService.countRemainingBeftnDataMain();
         String fileName = CommonService.generateDynamicFileName("Beftn_Main", ".xlsx");
-        resp = CommonService.generateFile(contentStream, countRemaining, fileName);
+        resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }
 
@@ -58,7 +61,7 @@ public class BeftnModelController {
         ByteArrayInputStream contentStream  = beftnModelService.loadAndUpdateUnprocessedBeftnIncentiveData(0);
         int countRemaining = beftnModelService.countRemainingBeftnDataIncentive();
         String fileName = CommonService.generateDynamicFileName("Beftn_Incentive", ".xlsx");
-        resp = CommonService.generateFile(contentStream, countRemaining, fileName);
+        resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }
 
