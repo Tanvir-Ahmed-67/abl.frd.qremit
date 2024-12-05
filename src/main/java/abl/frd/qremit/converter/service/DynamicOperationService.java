@@ -53,6 +53,27 @@ public class DynamicOperationService {
         return repositoryModelMap;
     }
 
+    public Map<String, RepositoryModelWrapper<?>> repositoryModelMapByExchangeCode(String exchangeCode){
+        ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+        String className = packageName + exchangeHouseModel.getClassName();
+        String repositoryName = exchangeHouseModel.getRepositoryName();
+        if(!CommonService.checkEmptyString(className) && !CommonService.checkEmptyString(repositoryName)){
+            try{
+                JpaRepository<?, ?> repository = (JpaRepository<?, ?>) context.getBean(repositoryName);
+                Class<?> modelClass = Class.forName(className);
+                repositoryModelMap.put(exchangeCode, new RepositoryModelWrapper<>((JpaRepository) repository, modelClass));
+            }catch(ClassNotFoundException | BeansException e){
+                e.printStackTrace();
+            }
+        }
+        return repositoryModelMap;
+    }
+
+    public void findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String exchangeCode){
+        RepositoryModelWrapper<?> wrapper = (RepositoryModelWrapper<?>) repositoryModelMapByExchangeCode(exchangeCode);
+        System.out.println(wrapper);
+    }
+
     public Map<String, Object> transferApiBeftnData(int fileInfoModelId) {
         Map<String, Object> resp = new HashMap<>();
         int batchSize = 100; // Process in batches
@@ -94,6 +115,17 @@ public class DynamicOperationService {
     }
 
     private Object createModelInstanceForApiBeftn(Class<?> modelClass, ApiBeftnModel row) {
+        try {
+            // Locate the appropriate constructor
+            Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
+            // Create and return the instance using the data from `row`
+            return constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getUploadDateTime(), row.getFileInfoModel(), row.getUserModel());
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Failed to create model instance for " + modelClass.getName(), e);
+        }
+    }
+
+    public Object createModelInstanceForSwift(Class<?> modelClass, SwiftModel row) {
         try {
             // Locate the appropriate constructor
             Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
