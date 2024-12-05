@@ -60,6 +60,8 @@ public class TemporaryReportModel {
     private LocalDateTime reportDate;
     @Column(name = "data_model_id")
     private int dataModelId;
+    @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isApi = 0;
 
     public int getId() {
         return this.id;
@@ -195,6 +197,14 @@ public class TemporaryReportModel {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getIsApi() {
+        return this.isApi;
+    }
+
+    public void setIsApi(int isApi) {
+        this.isApi = isApi;
     }
 
     public String getZoneCode() {

@@ -60,6 +60,8 @@ public class ReportModel {
     private String districtCode;
     @Column(name = "report_date", columnDefinition = "DATE")
     private LocalDate reportDate; 
+    @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isApi = 0;
     @Column(name = "data_model_id")
     private int dataModelId;
 
@@ -166,6 +168,14 @@ public class ReportModel {
 
     public void setRemitterName(String remitterName) {
         this.remitterName = remitterName;
+    }
+
+    public int getIsApi() {
+        return this.isApi;
+    }
+
+    public void setIsApi(int isApi) {
+        this.isApi = isApi;
     }
 
 
