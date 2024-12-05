@@ -73,7 +73,7 @@ public class ReportService {
         parameters.put("ReportTitle", "Sample Report");
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         //Path reportPath = CommonService.getReportFile("summary_report_" + date.replace("-", "_") +".pdf");
-        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("summary_report_", date, ".pdf"));
+        Path reportPath = commonService.getReportFile(commonService.generateFileName("summary_report_", date, ".pdf"));
         String outputFile = reportPath.toString();
         if(!Files.exists(reportPath)){
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
@@ -104,7 +104,7 @@ public class ReportService {
         parameters.put("ReportTitle", "Sample Report");
         // Fill the report
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("daily_voucher_", date, ".pdf"));
+        Path reportPath = commonService.getReportFile(commonService.generateFileName("daily_voucher_", date, ".pdf"));
         String outputFile = reportPath.toString();
         if(!Files.exists(reportPath)){
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
@@ -126,7 +126,7 @@ public class ReportService {
         // Parameters map if needed
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("REPORT_DATA_SOURCE", dataSource);
-        Path reportPath = CommonService.getReportFile(CommonService.generateFileName("details_report_", date, "." + format.toLowerCase()));
+        Path reportPath = commonService.getReportFile(commonService.generateFileName("details_report_", date, "." + format.toLowerCase()));
         String outputFile = reportPath.toString();
         if (format.equalsIgnoreCase("pdf")) {
             // Load the JRXML file for PDF format

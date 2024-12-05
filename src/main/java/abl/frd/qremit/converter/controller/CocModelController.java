@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class CocModelController {
     private final CocModelService cocModelService;
-
+    @Autowired
+    CommonService commonService;
     @Autowired
     public CocModelController(CocModelService cocModelService){
         this.cocModelService = cocModelService;
@@ -40,7 +41,7 @@ public class CocModelController {
         ByteArrayInputStream contentStream  = cocModelService.loadAndUpdateUnprocessedCocData(0,0);
         int countRemaining = cocModelService.countRemainingCocData();
         String fileName = CommonService.generateDynamicFileName("COC", ".txt");
-        resp = CommonService.generateFile(contentStream, countRemaining, fileName);
+        resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }
 }

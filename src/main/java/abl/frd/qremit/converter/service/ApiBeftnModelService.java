@@ -54,10 +54,12 @@ public class ApiBeftnModelService {
                 fileInfoModelRepository.save(fileInfoModel);
             }
             if(apiBeftnModels.size()!=0) {
+                /*
                 for(ApiBeftnModel apiBeftnModel : apiBeftnModels){
                     apiBeftnModel.setFileInfoModel(fileInfoModel);
                     apiBeftnModel.setUserModel(user);
                 }
+                */
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
                 Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(apiBeftnModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
@@ -133,6 +135,8 @@ public class ApiBeftnModelService {
                 apiBeftnModel = CommonService.createDataModel(apiBeftnModel, data);
                 apiBeftnModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 apiBeftnModel.setUploadDateTime(currentDateTime);
+                apiBeftnModel.setFileInfoModel(fileInfoModel);
+                apiBeftnModel.setUserModel(user);
                 apiBeftnModelList.add(apiBeftnModel);
             }
             //save error data

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class OnlineModelController {
     private final OnlineModelService onlineModelService;
     @Autowired
+    CommonService commonService;
+    @Autowired
     public OnlineModelController(OnlineModelService onlineModelService){
         this.onlineModelService = onlineModelService;
     }
@@ -38,7 +40,7 @@ public class OnlineModelController {
         ByteArrayInputStream contentStream  = onlineModelService.loadAndUpdateUnprocessedOnlineData(0);
         int countRemaining = onlineModelService.countRemainingOnlineData();
         String fileName = CommonService.generateDynamicFileName("Online", ".txt");
-        resp = CommonService.generateFile(contentStream, countRemaining, fileName);
+        resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }
 

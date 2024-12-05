@@ -4,6 +4,7 @@ import abl.frd.qremit.converter.controller.ReportController;
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -54,7 +55,9 @@ public class CommonService {
     ExchangeHouseModelRepository exchangeHouseModelRepository;
 
     public static String uploadSuccesPage = "pages/user/userUploadSuccessPage";
-    public static String dirPrefix = "../";
+    //public static String dirPrefix = "../";
+    @Value("${app.dir-prefix}")
+    private String dirPrefix;
     public static String reportDir = "report/";
     private final DataSource dataSource;
 
@@ -62,10 +65,10 @@ public class CommonService {
         this.dataSource = dataSource;
     }
 
-    public static Path generateOutputFile(String file) throws IOException{
+    public Path generateOutputFile(String file) throws IOException{
         return generateOutputFile(reportDir, file);
     }
-    public static Path generateOutputFile(String dir, String file) throws IOException{
+    public Path generateOutputFile(String dir, String file) throws IOException{
         Path reportPath = Paths.get(dirPrefix, dir);
         if (!Files.exists(reportPath)) {
             Files.createDirectories(reportPath);
@@ -74,7 +77,7 @@ public class CommonService {
         return outputPath;
     }
 
-    public static Path getReportFile(String file) throws IOException{
+    public Path getReportFile(String file) throws IOException{
         return generateOutputFile(reportDir + "daily_report/", file);
     }
     
@@ -974,7 +977,7 @@ public class CommonService {
         }
     }
 
-    public static Map<String, Object> generateFile(ByteArrayInputStream contentStream, int count, String fileName) throws IOException{
+    public Map<String, Object> generateFile(ByteArrayInputStream contentStream, int count, String fileName) throws IOException{
         Map<String, Object> resp = new HashMap<>();
         byte[] contentBytes = readBytes(contentStream);
         String tempFilePath =  generateOutputFile(fileName).toString();
@@ -1001,7 +1004,7 @@ public class CommonService {
         return str.replace("-", "_");
     }
 
-    public static String generateFileName(String text, String date, String ext){
+    public String generateFileName(String text, String date, String ext){
         return text + date.replace("-", "_") + ext;
     }
 

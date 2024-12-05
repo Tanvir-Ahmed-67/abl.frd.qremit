@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class AccountPayeeModelController {
     private final AccountPayeeModelService accountPayeeModelService;
-
+    @Autowired
+    CommonService commonService;
     @Autowired
     public AccountPayeeModelController(AccountPayeeModelService accountPayeeModelService){
         this.accountPayeeModelService = accountPayeeModelService;
@@ -39,7 +40,7 @@ public class AccountPayeeModelController {
         ByteArrayInputStream contentStream  = accountPayeeModelService.loadAndUpdateUnprocessedAccountPayeeData(0);
         int countRemaining = accountPayeeModelService.countRemainingAccountPayeeData();
         String fileName = CommonService.generateDynamicFileName("Account_Payee", ".txt");
-        resp = CommonService.generateFile(contentStream, countRemaining, fileName);
+        resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }
 }
