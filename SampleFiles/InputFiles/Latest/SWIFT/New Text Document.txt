@@ -1,0 +1,168 @@
+
+:20:(.*?)(?=\n:|$)
+:32A:\d{6}BDT[0-9,]+
+:50K:(?s).*?(?=:\d{2}|\z)
+:57A:(?s).*?(?=:\d{2}|\z)
+:53B:\/\d+
+:57D:(?s).*?(?=:\d{2}|\z)
+:59:(?s).*?(?=:\d{2}|\z)
+:70:[^:]+
+
+(:20:)\S*\n(:23B:)\S*\n(:32A:)\S*\n*(((:33B:)\S*\n|((:50K:)\S*\n\w\S*).*\n))
+
+
+(:20:)\S*\n(:23B:)\S*\n(:32A:)\S*\n*((((:33B:)\S.*\n) :50K:([\s\S]*?):70:)|((:50K:)\S*\n\w\S*).*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*)
+
+(:20:)\S*\n(:23B:)\S*\n*(:32A:([\s\S]*?):70:)\S*\D*
+
+
+[
+{branchCode=, 
+transactionNo=null, 
+purposeOfRemittance=, 
+remitterName=MOHAMMAD NAZMUL HASAN}, 
+{branchCode=, 
+transactionNo=null, 
+purposeOfRemittance=, 
+remitterName=ABDUL KADER ABDUL SATTAR}, 
+{branchCode=, 
+transactionNo=null, 
+purposeOfRemittance=, 
+remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR}
+]
+
+{
+branchCode=, 
+amount=15000000, 
+transactionNo=FT24304440396437, 
+purposeOfRemittance=, 
+currency=BDT, 
+transactionDate=241030
+}
+
+[
+{branchCode=, amount=150000.00, transactionNo=FT24304440396437, purposeOfRemittance=, currency=BDT, remitterName=MOHAMMAD NAZMUL HASAN, transactionDate=241030}, 
+{branchCode=, amount=100036.36, transactionNo=437839815, purposeOfRemittance=, currency=BDT, remitterName=ABDUL KADER ABDUL SATTAR, transactionDate=241030}, 
+{branchCode=, amount=41357.81, transactionNo=PO43785267404033, purposeOfRemittance=, currency=BDT, remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR, transactionDate=241030}
+]
+
+[
+{branchCode=, amount=150000.00, transactionNo=FT24304440396437, purposeOfRemittance=, currency=BDT, remitterName=MOHAMMAD NAZMUL HASAN, transactionDate=241030}, 
+{branchCode=, amount=100036.36, transactionNo=437839815, purposeOfRemittance=, currency=BDT, remitterName=ABDUL KADER ABDUL SATTAR, transactionDate=241030}, 
+{branchCode=, amount=41357.81, transactionNo=PO43785267404033, purposeOfRemittance=, currency=BDT, remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR, transactionDate=241030}
+]
+
+
+[
+{
+branchCode=AGBKBDDH033, 
+amount=150000.00, 
+beneficiaryName=DUDU MIAH MATBAR, 
+beneficiaryAccount=0200012311740, 
+transactionNo=10006743.2024, 
+purposeOfRemittance=P, 
+currency=BDT, 
+remitterName=MOHAMMAD NAZMUL HASAN, 
+transactionDate=241030, 
+exchangeCode=
+}, 
+
+{
+branchCode=BSONBDDH, 
+amount=100036.36, 
+beneficiaryName=SALAHA NO LAST NAME
+BANG0000 BANG 001 BAMNG 00
+BDBAMNG00
+NATBD, 
+beneficiaryAccount=4447934078252, 
+transactionNo=10006743.2024, 
+purposeOfRemittance=/, 
+currency=BDT, 
+remitterName=ABDUL KADER ABDUL SATTAR, 
+transactionDate=241030, 
+exchangeCode=}, 
+
+{branchCode=, 
+amount=41357.81, 
+beneficiaryName=MD KHALIL MIA
+BANG, 
+beneficiaryAccount=0200014729882, 
+transactionNo=PO43785267404033, 
+purposeOfRemittance=F, 
+branchName=, 
+currency=BDT, 
+bankName=AGRANI BANK LIMITED, 
+remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR, 
+transactionDate=241030, 
+exchangeCode=7009}
+
+]
+
+
+
+
+[
+{branchCode=AGBKBDDH033, 
+amount=150000.00, 
+beneficiaryName=DUDU MIAH MATBAR, 
+beneficiaryAccount=0200012311740, 
+transactionNo=FT24304440396437, 
+purposeOfRemittance=PURCHASE OF PROPERTIES, 
+currency=BDT, 
+remitterName=MOHAMMAD NAZMUL HASAN, 
+transactionDate=241030, 
+exchangeCode=}
+, 
+{branchCode=BSONBDDH, 
+amount=100036.36, 
+beneficiaryName=SALAHA NO LAST NAME    
+BANG0000 BANG 001 BAMNG 00
+BDBAMNG00
+NATBD, 
+beneficiaryAccount=4447934078252, 
+transactionNo=437839815, 
+purposeOfRemittance=/25/Family Expenses, 
+currency=BDT, 
+remitterName=ABDUL KADER ABDUL SATTAR, 
+transactionDate=241030, 
+exchangeCode=}
+, 
+{branchCode=, 
+amount=41357.81, 
+beneficiaryName=MD KHALIL MIA
+BANG, 
+beneficiaryAccount=0200014729882, 
+transactionNo=PO43785267404033, 
+purposeOfRemittance=Family Expenses, 
+branchName=, 
+currency=BDT, 
+bankName=AGRANI BANK LIMITED, 
+remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR, 
+transactionDate=241030, 
+exchangeCode=7009}
+
+]
+
+{bankCode=, amount=150000.00, remitterMobile=, enteredDate=241030, transactionNo=FT24304440396437, branchName=, remitterName=MOHAMMAD NAZMUL HASAN, branchCode=AGBKBDDH033, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=DUDU MIAH MATBAR, beneficiaryAccount=0200012311740, purposeOfRemittance=PURCHASE OF PROPERTIES, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7010204}
+{bankCode=, amount=41357.81, remitterMobile=, enteredDate=241030, transactionNo=PO43785267404033, branchName=, bankName=AGRANI BANK LIMITED, remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR, branchCode=, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=MD KHALIL MIA
+BANG, beneficiaryAccount=0200014729882, purposeOfRemittance=Family Expenses, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7119}
+
+ LAST NAME
+BANG0000 BANG 001 BAMNG 00
+BDBAMNG00
+NATBD, beneficiaryAccount=4447934078252, purposeOfRemittance=/25/Family Expenses, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7119}
+{bankCode=, amount=41357.81, remitterMobile=, enteredDate=241030, transactionNo=PO43785267404033, branchName=, bankName=AGRANI BANK LIMITED, remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR, branchCode=, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=MD KHALIL MIA
+BANG, beneficiaryAccount=0200014729882, purposeOfRemittance=Family Expenses, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7119}
+[{bankCode=, amount=150000.00, remitterMobile=, enteredDate=241030, transactionNo=FT24304440396437, branchName=, remitterName=MOHAMMAD NAZMUL HASAN, branchCode=AGBKBDDH033, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=DUDU MIAH MATBAR, beneficiaryAccount=0200012311740, purposeOfRemittance=PURCHASE OF PROPERTIES, draweeBranchName=, currency=BDT, 
+sourceOfIncome=, processedBy=, exchangeCode=7010204}, {bankCode=, amount=100036.36, remitterMobile=, enteredDate=241030, transactionNo=437839815, branchName=, remitterName=ABDUL KADER ABDUL SATTAR, branchCode=BSONBDDH, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=SALAHA NO LAST NAME
+BANG0000 BANG 001 BAMNG 00
+BDBAMNG00
+NATBD, beneficiaryAccount=4447934078252, purposeOfRemittance=/25/Family Expenses, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7119}, {bankCode=, amount=41357.81, remitterMobile=, enteredDate=241030, transactionNo=PO43785267404033, branchName=, bankName=AGRANI BANK LIMITED, remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR, branchCode=, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=MD KHALIL MIA
+BANG, beneficiaryAccount=0200014729882, purposeOfRemittance=Family Expenses, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7119}]
+{bankCode=, amount=150000.00, remitterMobile=, enteredDate=241030, transactionNo=FT24304440396437, branchName=, remitterName=MOHAMMAD NAZMUL HASAN, branchCode=AGBKBDDH033, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=DUDU MIAH MATBAR, beneficiaryAccount=0200012311740, purposeOfRemittance=PURCHASE OF PROPERTIES, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7010204}
+{bankCode=, amount=100036.36, remitterMobile=, enteredDate=241030, transactionNo=437839815, branchName=, remitterName=ABDUL KADER ABDUL SATTAR, branchCode=BSONBDDH, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=SALAHA NO LAST NAME
+BANG0000 BANG 001 BAMNG 00
+BDBAMNG00
+NATBD, beneficiaryAccount=4447934078252, purposeOfRemittance=/25/Family Expenses, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7119}
+{bankCode=, amount=41357.81, remitterMobile=, enteredDate=241030, transactionNo=PO43785267404033, branchName=, bankName=AGRANI BANK LIMITED, remitterName=MUTEB MOHAMMED NAJEEB ALJUBAYR, branchCode=, draweeBranchCode=, processFlag=, processedDate=, beneficiaryMobile=, beneficiaryName=MD KHALIL MIA
+BANG, beneficiaryAccount=0200014729882, purposeOfRemittance=Family Expenses, draweeBranchName=, currency=BDT, sourceOfIncome=, processedBy=, exchangeCode=7119}
