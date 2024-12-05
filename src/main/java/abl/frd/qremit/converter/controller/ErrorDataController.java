@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.ErrorDataModelService;
 import abl.frd.qremit.converter.service.ExchangeHouseModelService;
+import abl.frd.qremit.converter.service.FileInfoModelService;
 import abl.frd.qremit.converter.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import abl.frd.qremit.converter.helper.MyUserDetails;
 import abl.frd.qremit.converter.model.ErrorDataModel;
+import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
+import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.service.DynamicOperationService;
 import abl.frd.qremit.converter.service.LogModelService;
 
@@ -41,6 +44,8 @@ public class ErrorDataController {
     LogModelService logModelService;
     @Autowired
     DynamicOperationService dynamicOperationService;
+    @Autowired
+    FileInfoModelService fileInfoModelService;
     
     public ErrorDataController(MyUserDetailsService myUserDetailsService){
         this.myUserDetailsService = myUserDetailsService;
@@ -125,12 +130,14 @@ public class ErrorDataController {
     @DeleteMapping("/delete/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteErrorDataById(@PathVariable int id){
-        Map<String, Object> resp = new HashMap<>();
-        errorDataModelService.deleteErrorDataById(id);
-        resp = CommonService.getResp(0,"Information Deleted", null);
+        Map<String, Object> resp = errorDataModelService.deleteErrorDataById(id);
+        if((Integer) resp.get("err") == 0){
+            int fileInfoModelId = (Integer) resp.get("fileInfoModelId");
+            FileInfoModel fileInfoModel = fileInfoModelService.findAllById(fileInfoModelId);
+            int errorCount = fileInfoModel.getErrorCount();
+            errorCount = errorCount - 1;
+            fileInfoModelService.updateErrorCountById(fileInfoModelId, errorCount);
+        }
         return ResponseEntity.ok(resp);
     }
-
-    
-    
 }
