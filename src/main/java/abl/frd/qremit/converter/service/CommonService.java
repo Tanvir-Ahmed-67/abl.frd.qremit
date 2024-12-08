@@ -539,7 +539,8 @@ public class CommonService {
         fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
         fileInfoModel.setBeftnModelList(beftnModelList);
         fileInfoModel.setOnlineModelList(onlineModelList);
-        Double totalAmount = 0.0;
+        Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
+        Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
 
         if(cocModelList != null){
             for (CocModel cocModel : cocModelList) {
