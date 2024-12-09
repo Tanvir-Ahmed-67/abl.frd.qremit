@@ -143,20 +143,20 @@ public class AlFardanDohaModelService {
                 alFardanDohaModel.setUploadDateTime(currentDateTime);
                 alFardanDohaModelList.add(alFardanDohaModel);
             }
-           //save error data
-           Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
-           if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
-           if(saveError.containsKey("errorMessage")){
-               resp.put("errorMessage", saveError.get("errorMessage"));
-               return resp;
-           }
-           //if both model is empty then delete fileInfoModel
-           if(errorDataModelList.isEmpty() && alFardanDohaModelList.isEmpty()){
-               fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
-           }
-           resp.put("alFardanDohaModelList", alFardanDohaModelList);
-           if(!resp.containsKey("errorMessage")){
-                resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+            //save error data
+            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
+            if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
+            if(saveError.containsKey("errorMessage")){
+                resp.put("errorMessage", saveError.get("errorMessage"));
+                return resp;
+            }
+            //if both model is empty then delete fileInfoModel
+            if(errorDataModelList.isEmpty() && alFardanDohaModelList.isEmpty()){
+                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
+            }
+            resp.put("alFardanDohaModelList", alFardanDohaModelList);
+            if(!resp.containsKey("errorMessage")){
+                    resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
             }
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();

@@ -247,8 +247,7 @@ public class DynamicOperationService {
                 JpaRepository repository = wrapper.getRepository();
                 Class<?> modelClass = wrapper.getModelClass();
                 Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
-                
-                Double amount = updatedData.get("amount") != null ? CommonService.convertStringToDouble(updatedData.get("amount").toString()) : null;
+                Double amount = updatedData.get("amount") != null ? CommonService.convertStringToDouble(updatedData.get("amount").toString()) : 0.0;
                 int fileInfoId = updatedData.get("fileInfoId") != null ? CommonService.convertStringToInt(updatedData.get("fileInfoId").toString()) : 0;
                 int userId = updatedData.get("userId") != null ? CommonService.convertStringToInt(updatedData.get("userId").toString()) : 0;
                 if(fileInfoId == 0 || userId == 0)    return CommonService.getResp(1, "Invalid File Id or User Id", null);
@@ -283,11 +282,10 @@ public class DynamicOperationService {
                     updatedData.get("branchName"), branchCode, updatedData.get("draweeBranchName"), updatedData.get("draweeBranchCode"), 
                     updatedData.get("purposeOfRemittance"), updatedData.get("sourceOfIncome"), updatedData.get("processFlag"), typeFlag, 
                     updatedData.get("processedBy"), updatedData.get("processedDate"), currentDateTime, fileInfoModel, user);
-
                 List<Object> modelInstanceList = new ArrayList<>();
                 modelInstanceList.add(modelInstance);
                 Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
-                fileInfoModel = (FileInfoModel)  convertedDataModels.get("fileInfoModel");           
+                fileInfoModel = (FileInfoModel)  convertedDataModels.get("fileInfoModel");     
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved succesfully", null);
             } else {

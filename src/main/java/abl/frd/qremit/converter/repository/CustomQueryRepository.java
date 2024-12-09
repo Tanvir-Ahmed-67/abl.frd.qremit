@@ -22,9 +22,9 @@ public class CustomQueryRepository {
     }
 
     public Map<String, Object> getFileTotalExchangeWise(String starDateTime, String endDateTime, int userId){
-        String fields = "exchange_code, REPLACE(FORMAT(SUM(total_amount), 2),',','')  as totalAmount, SUM(DISTINCT CAST(IFNULL(total_count, '0') AS UNSIGNED)) AS totalCount";
-        fields += " ,SUM(DISTINCT CAST(IFNULL(online_count, '0') AS UNSIGNED)) AS onlineCount, SUM(DISTINCT CAST(IFNULL(account_payee_count, '0') AS UNSIGNED)) AS accountPayeeCount";
-        fields += " ,SUM(DISTINCT CAST(IFNULL(coc_count, '0') AS UNSIGNED)) AS cocCount, SUM(DISTINCT CAST(IFNULL(beftn_count, '0') AS UNSIGNED)) AS beftnCount";
+        String fields = "exchange_code, REPLACE(FORMAT(SUM(total_amount), 2),',','')  as totalAmount, SUM(CAST(IFNULL(total_count, '0') AS UNSIGNED)) AS totalCount";
+        fields += " ,SUM(CAST(IFNULL(online_count, '0') AS UNSIGNED)) AS onlineCount, SUM(CAST(IFNULL(account_payee_count, '0') AS UNSIGNED)) AS accountPayeeCount";
+        fields += " ,SUM(CAST(IFNULL(coc_count, '0') AS UNSIGNED)) AS cocCount, SUM(CAST(IFNULL(beftn_count, '0') AS UNSIGNED)) AS beftnCount";
         fields += " ,SUM(error_count) AS errorCount";
         String sql = "SELECT " + fields + " FROM upload_file_info where upload_date_time BETWEEN ? AND ?";
         String extra = (userId != 0)   ?    " AND user_id=?":"";

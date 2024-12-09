@@ -448,6 +448,7 @@ public class FileInfoModel {
                 ", unprocessedCount='" + unprocessedCount + '\'' +
                 ", errorCount='" + errorCount + '\'' +
                 ", totalCount='" + totalCount + '\'' +
+                ", totalAmount='" + totalAmount + '\'' +
                 '}';
     }
 
