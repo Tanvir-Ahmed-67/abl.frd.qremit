@@ -1083,4 +1083,26 @@ public class CommonService {
         return str;
     }
 
+    public static List<String[]> setUniqueIndexList(String transactionNo, String amount, String exchangeCode, List<String[]> data){
+        data.add(new String[]{transactionNo, amount, exchangeCode});
+        return data;
+    }
+
+    public static Map<String, Object> getDuplicateTransactionNo(String transactionNo, Map<String, Object> apiBeftnModelList){
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("isDuplicate", 0);
+        if((Integer) apiBeftnModelList.get("err") == 0){
+            List<Map<String, Object>> apiBeftnDataList = (List<Map<String, Object>>) apiBeftnModelList.get("data");
+            if(apiBeftnDataList.isEmpty())  return resp;
+            for(Map<String, Object> apiBeftnData: apiBeftnDataList){
+                String transNo = apiBeftnData.get("transactionNo").toString().toLowerCase();
+                if(transactionNo.toLowerCase().equals(transNo)){
+                    resp.put("isDuplicate", 1);
+                    break;
+                }
+            }
+        }
+        return resp;
+    }
+
 }
