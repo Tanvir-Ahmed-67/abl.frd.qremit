@@ -36,6 +36,8 @@ public class ApiT24ModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
+    @Autowired
+    CustomQueryRepository customQueryRepository;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -91,7 +93,7 @@ public class ApiT24ModelService {
     }
     public Map<String, Object> csvToApiT24Models(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<ApiT24Model> duplicateData;
+        Optional<ApiT24Model> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
@@ -103,6 +105,8 @@ public class ApiT24ModelService {
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String nrtaCode = csvRecord.get(0);
@@ -111,17 +115,38 @@ public class ApiT24ModelService {
                 String amount = csvRecord.get(3).trim();
                 String bankName = csvRecord.get(8);
                 String bankCode = csvRecord.get(9).trim();
-                Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 1);
-                if((Integer) apiCheckResp.get("err") == 1){
-                    resp.put("errorMessage", apiCheckResp.get("msg"));
-                    break;
+                if(i == 1){
+                    Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 1);
+                    if((Integer) apiCheckResp.get("err") == 1){
+                        resp.put("errorMessage", apiCheckResp.get("msg"));
+                        break;
+                    }
                 }
-                duplicateData = apiT24ModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
+                data.put("nrtaCode", nrtaCode);
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+            }
+            Map<String, Object> uniqueDataList = getUniqueList(uniqueKeys);
+            for(Map<String, Object> data: dataList){
+                String transactionNo = data.get("transactionNo").toString();
+                String exchangeCode = data.get("exchangeCode").toString();
+                String nrtaCode = data.get("nrtaCode").toString();
+                String bankName = data.get("bankName").toString();
+                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+                String branchCode = data.get("branchCode").toString();
+                data.remove("nrtaCode");
+                Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
+                if((Integer) dupResp.get("isDuplicate") == 1){
+                    duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                    duplicateCount++;
+                    continue;
+                }
+            
+                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, exchangeCode, duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
                     continue;
@@ -129,11 +154,6 @@ public class ApiT24ModelService {
                 if((Integer) errResp.get("err") == 2){
                     resp.put("errorMessage", errResp.get("msg"));
                     break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
                 }
                 if((Integer) errResp.get("err") == 4){
                     duplicateMessage += errResp.get("msg");
@@ -145,6 +165,7 @@ public class ApiT24ModelService {
                 apiT24Model.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
                 apiT24Model.setUploadDateTime(currentDateTime);
                 apiT24ModelList.add(apiT24Model);
+                
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -193,5 +214,8 @@ public class ApiT24ModelService {
         data.put("processedBy", "");
         data.put("processedDate", "");
         return data;
+    }
+    public Map<String, Object> getUniqueList(List<String[]> data){
+        return customQueryRepository.getBaseDataByTransactionNoAndAmountAndExchangeCodeIn(data, "api_t24");
     }
 }

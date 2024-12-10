@@ -1,6 +1,8 @@
 package abl.frd.qremit.converter.repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import abl.frd.qremit.converter.model.ApiBeftnModel;
 import abl.frd.qremit.converter.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -50,5 +52,21 @@ public class CustomQueryRepository {
         params.put("1", routingNo);
         return commonService.getData(queryStr,params);
     }
+    
+    public Map<String, Object> getBaseDataByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
+        tbl = "base_data_table_" + tbl;
+        Map<String, Object> params = new HashMap<>();
+        List<String> tuples = new ArrayList<>();
+        for(String[] record: data){
+            tuples.add(String.format("('%s', %s, '%s')", record[0], record[1], record[2]));
+        }
+        
+        String sql = "SELECT * FROM %s WHERE (transaction_no, CAST(amount AS CHAR), exchange_code) IN ( ";
+        String queryStr = String.format(sql, tbl);
+        StringBuilder queryBuilder = new StringBuilder(queryStr);
+        queryBuilder.append(String.join(", ", tuples)).append(")");
+        return commonService.getData(queryBuilder.toString(),params); 
+    }
+        
 
 }
