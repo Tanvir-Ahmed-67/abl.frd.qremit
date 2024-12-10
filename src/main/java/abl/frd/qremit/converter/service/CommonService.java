@@ -1095,8 +1095,8 @@ public class CommonService {
             List<Map<String, Object>> apiBeftnDataList = (List<Map<String, Object>>) apiBeftnModelList.get("data");
             if(apiBeftnDataList.isEmpty())  return resp;
             for(Map<String, Object> apiBeftnData: apiBeftnDataList){
-                String transNo = apiBeftnData.get("transactionNo").toString().toLowerCase();
-                if(transactionNo.toLowerCase().equals(transNo)){
+                String transNo = apiBeftnData.get("transaction_no").toString();
+                if(transactionNo.toLowerCase().equals(transNo.toLowerCase())){
                     resp.put("isDuplicate", 1);
                     break;
                 }
