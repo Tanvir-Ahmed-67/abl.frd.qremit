@@ -52,6 +52,13 @@ public class CustomQueryRepository {
         params.put("1", routingNo);
         return commonService.getData(queryStr,params);
     }
+
+    public Map<String,Object> getBranchDetailsFromSwiftCode(String swiftCode){
+        Map<String, Object> params = new HashMap<>();
+        String queryStr = "SELECT * FROM swift_code_to_branch_code  where swift_code = ?";
+        params.put("1", swiftCode);
+        return commonService.getData(queryStr,params);
+    }
     
     public Map<String, Object> getBaseDataByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
         tbl = "base_data_table_" + tbl;
