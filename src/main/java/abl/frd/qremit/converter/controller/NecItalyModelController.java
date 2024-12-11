@@ -34,7 +34,7 @@ public class NecItalyModelController {
     
     @PostMapping("/necitalyUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode,
-        @RequestParam("tbl") String tbl, @RequestParam("nrtaCode") String nrtaCode, Model model) {
+        @RequestParam("nrtaCode") String nrtaCode, @RequestParam("tbl") String tbl, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));  
         int userId = 000000000;
         // Getting Logged In user Details in this block
