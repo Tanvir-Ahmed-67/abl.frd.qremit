@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.service;
-
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
 import org.apache.commons.csv.*;
@@ -7,11 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 @SuppressWarnings("unchecked")
@@ -32,9 +29,9 @@ public class ApiBeftnModelService {
     @Autowired
     FileInfoModelService fileInfoModelService;
     @Autowired
-    CustomQueryRepository customQueryRepository;
+    CustomQueryService customQueryService;
     
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode) {
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -48,7 +45,7 @@ public class ApiBeftnModelService {
             fileInfoModelRepository.save(fileInfoModel);
 
             //List<ApiBeftnModel> apiBeftnModels = csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel);
-            Map<String, Object> apiBeftnData= csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel, currentDateTime);
+            Map<String, Object> apiBeftnData= csvToApiBeftnModels(file.getInputStream(), user, fileInfoModel, currentDateTime, tbl);
             List<ApiBeftnModel> apiBeftnModels = (List<ApiBeftnModel>) apiBeftnData.get("apiBeftnModelList");
             if(apiBeftnData.containsKey("errorMessage")){
                 resp.put("errorMessage", apiBeftnData.get("errorMessage"));
@@ -87,7 +84,7 @@ public class ApiBeftnModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToApiBeftnModels(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToApiBeftnModels(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         Optional<ApiBeftnModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -126,7 +123,7 @@ public class ApiBeftnModelService {
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-            Map<String, Object> uniqueDataList = getUniqueList(uniqueKeys);
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             //if((Integer) uniqueDataList.get("err") == 1)     return uniqueDataList;
             
             for(Map<String, Object> data: dataList){
@@ -246,8 +243,6 @@ public class ApiBeftnModelService {
         return data;
     }
 
-    public Map<String, Object> getUniqueList(List<String[]> data){
-        return customQueryRepository.getBaseDataByTransactionNoAndAmountAndExchangeCodeIn(data, "api_beftn");
-    }
+    
 
 }

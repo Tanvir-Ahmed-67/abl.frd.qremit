@@ -53,7 +53,7 @@ public class CustomQueryRepository {
         return commonService.getData(queryStr,params);
     }
     
-    public Map<String, Object> getBaseDataByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
+    public Map<String, Object> getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
         tbl = "base_data_table_" + tbl;
         Map<String, Object> params = new HashMap<>();
         List<String> tuples = new ArrayList<>();

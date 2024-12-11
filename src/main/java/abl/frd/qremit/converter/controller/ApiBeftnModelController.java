@@ -29,9 +29,8 @@ public class ApiBeftnModelController {
 
     @PostMapping("/api_beftnUpload")
     public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode,
-                           Model model) {
+        @RequestParam("tbl") String tbl, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-
         int userId = 000000000;
         // Getting Logged In user Details in this block
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -44,7 +43,7 @@ public class ApiBeftnModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = apiBeftnModelService.save(file, userId, exchangeCode);
+                    Map<String, Object> resp = apiBeftnModelService.save(file, userId, exchangeCode, tbl);
                     model = CommonService.viewUploadStatus(resp, model);
                     model.addAttribute("apiBtn", 1);
                     model.addAttribute("apiUrl", "/apibeftntransfer");
