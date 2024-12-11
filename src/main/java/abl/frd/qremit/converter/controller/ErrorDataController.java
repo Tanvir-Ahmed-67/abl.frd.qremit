@@ -56,7 +56,7 @@ public class ErrorDataController {
         model.addAttribute("errorDataModel", errorDataModel);
         return "pages/user/editErrorForm";
     }
-    @PostMapping("/update")
+    @PostMapping(value="/update", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateErrorDataById(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam Map<String, String> formData, Model model, HttpServletRequest request){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
@@ -94,7 +94,7 @@ public class ErrorDataController {
         return page;
     }
 
-    @PostMapping("/approve")
+    @PostMapping(value="/approve", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> approveErrorDataById(@RequestParam String id){
         int errorDataId = CommonService.convertStringToInt(id);
@@ -125,7 +125,7 @@ public class ErrorDataController {
         return CommonService.getResp(0, "", logData);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping(value="/delete/{id}", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteErrorDataById(@PathVariable int id){
         Map<String, Object> resp = errorDataModelService.deleteErrorDataById(id);

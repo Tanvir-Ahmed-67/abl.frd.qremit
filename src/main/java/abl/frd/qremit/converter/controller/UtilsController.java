@@ -116,7 +116,7 @@ public class UtilsController {
         return "pages/admin/adminApiUpload";
     }
 
-    @GetMapping("/getSettlement")
+    @GetMapping(value="/getSettlement", produces = "application/json")
     @ResponseBody
     public Map<String, Object> getSettlement(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @RequestParam(defaultValue = "") String currentDate){
         Map<String, Object> resp = new HashMap<>();

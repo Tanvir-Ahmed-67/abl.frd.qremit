@@ -69,7 +69,7 @@ public class ApiBeftnModelController {
         return CommonService.uploadSuccesPage;
     }
 
-    @PostMapping("/apibeftntransfer")
+    @PostMapping(value="/apibeftntransfer", produces = "application/json")
     @ResponseBody
     public Map<String, Object> transferApiBeftnData(@RequestParam("id") String id){
         if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);

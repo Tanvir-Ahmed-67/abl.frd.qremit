@@ -33,7 +33,7 @@ public class OnlineModelController {
                 .body(file);
     }
     
-    @GetMapping("/downloadonline")
+    @GetMapping(value="/downloadonline", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
         Map<String, Object> resp = new HashMap<>();

@@ -34,7 +34,7 @@ public class CocModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
-    @GetMapping("/downloadcoc")
+    @GetMapping(value="/downloadcoc", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
         Map<String, Object> resp = new HashMap<>();
