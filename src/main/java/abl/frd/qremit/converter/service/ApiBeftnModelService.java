@@ -3,14 +3,11 @@ import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
 import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 @SuppressWarnings("unchecked")
 @Service
 public class ApiBeftnModelService {
