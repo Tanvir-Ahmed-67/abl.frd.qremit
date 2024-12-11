@@ -36,6 +36,17 @@ public class CustomQueryService {
         return resp;
     }
 
+    public Map<String, Object> getBranchDetailsFromSwiftCode(String swiftCode){
+        Map<String, Object> resp = new HashMap<>();
+        Map<String, Object> swiftDetails = customQueryRepository.getBranchDetailsFromSwiftCode(swiftCode);
+        if((Integer) swiftDetails.get("err") == 0){
+            for(Map<String,Object> rdata: (List<Map<String, Object>>) swiftDetails.get("data")){
+                return rdata;
+            }
+        }
+        return resp;
+    }
+
     public Map<String, Object> calculateTotalAmountForConvertedModel(int type, int fileInfoModelId){
         String tableName = "";
         switch(type){
