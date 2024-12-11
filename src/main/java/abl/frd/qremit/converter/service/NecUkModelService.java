@@ -1,14 +1,10 @@
 package abl.frd.qremit.converter.service;
-
 import java.io.*;
 import java.time.LocalDateTime;
-
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,8 +41,10 @@ public class NecUkModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
+    @Autowired
+    CustomQueryService customQueryService;
     
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -59,7 +57,7 @@ public class NecUkModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> necUkData = csvToNecUkModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            Map<String, Object> necUkData = csvToNecUkModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             List<NecUkModel> necUkModels = (List<NecUkModel>) necUkData.get("necUkDataModelList");
 
             if(necUkData.containsKey("errorMessage")){
@@ -100,9 +98,9 @@ public class NecUkModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToNecUkModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToNecUkModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<NecUkModel> duplicateData;
+        Optional<NecUkModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
@@ -112,17 +110,35 @@ public class NecUkModelService {
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            String fileExchangeCode = "";
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = necUkModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+                fileExchangeCode = csvRecord.get(0).trim();   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+            }
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            for(Map<String, Object> data: dataList){
+                String transactionNo = data.get("transactionNo").toString();
+                String bankName = data.get("bankName").toString();
+                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+                String branchCode = data.get("branchCode").toString();
+                Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
+                if((Integer) dupResp.get("isDuplicate") == 1){
+                    duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                    duplicateCount++;
+                    continue;
+                }
 
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
+                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
                     continue;
@@ -130,11 +146,6 @@ public class NecUkModelService {
                 if((Integer) errResp.get("err") == 2){
                     resp.put("errorMessage", errResp.get("msg"));
                     break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
                 }
                 if((Integer) errResp.get("err") == 4){
                     duplicateMessage += errResp.get("msg");

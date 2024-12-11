@@ -56,4 +56,8 @@ public class CustomQueryService {
         if(type == 5)   tableName = "base_data_table_coc_paid";
         return customQueryRepository.calculateTotalAmountForConvertedModel(tableName, fileInfoModelId);
     }
+
+    public Map<String, Object> getUniqueList(List<String[]> data, String tbl){
+        return customQueryRepository.getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(data, tbl);
+    }
 }
