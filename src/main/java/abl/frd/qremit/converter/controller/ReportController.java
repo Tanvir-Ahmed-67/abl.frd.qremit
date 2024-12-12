@@ -452,4 +452,16 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping("/search")
+    public String search(){
+        return "";
+    }
+
+    @GetMapping(value="/getSearch", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getSearch(@RequestParam("searchType") String searchType, @RequestParam("searchValue") String searchValue){
+        Map<String, Object> resp = reportService.getSearch(searchType, searchValue);
+        return ResponseEntity.ok(resp);
+    }
+
 }

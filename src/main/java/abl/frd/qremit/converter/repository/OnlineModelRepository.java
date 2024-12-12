@@ -42,4 +42,6 @@ public interface OnlineModelRepository extends JpaRepository<OnlineModel, Intege
     @Modifying
     @Query("UPDATE OnlineModel n SET n.tempStatus=:tempStatus WHERE n.id in :ids")
     int updateTempStatusBulk(@Param("ids") List<Integer> ids, @Param("tempStatus") int tempStatus);
+    List<OnlineModel> findOnlineModelByTransactionNo(String transactionNo);
+    List<OnlineModel> findOnlineModelByBeneficiaryAccount(String beneficiaryAccount);
 }

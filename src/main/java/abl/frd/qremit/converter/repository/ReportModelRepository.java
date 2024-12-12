@@ -11,4 +11,6 @@ public interface ReportModelRepository  extends JpaRepository<ReportModel, Integ
     Optional<ReportModel> findByExchangeCodeAndTransactionNoAndAmount(String exchangeCode, String transactionNo, Double amount);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate = :reportDate")
     List<ReportModel> getReportModelByReportDate(@Param("reportDate") LocalDate reportDate);
+    List<ReportModel> findReportModelByTransactionNo(String transactionNo);
+    List<ReportModel> findReportModelByBeneficiaryAccount(String beneficiaryAccount);
 }

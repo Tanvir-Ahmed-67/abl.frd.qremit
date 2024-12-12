@@ -1,6 +1,9 @@
 package abl.frd.qremit.converter.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -8,7 +11,7 @@ import java.time.LocalDateTime;
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
         @Index(name = "idx_is_processed_main", columnList = "is_processed_main"), @Index(name = "idx_is_processed_incentive", columnList = "is_processed_incentive"),
-        @Index(name = "idx_temp_status", columnList = "temp_status")
+        @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account")
     }
 )
 public class BeftnModel {
@@ -72,6 +75,7 @@ public class BeftnModel {
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="upload_user_id")
+    @JsonIgnore
     private User userModel;
 
     public User getUserModel() {
@@ -85,6 +89,7 @@ public class BeftnModel {
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
+    @JsonIgnore
     private FileInfoModel fileInfoModel;
 
     public FileInfoModel getFileInfoModel() {
