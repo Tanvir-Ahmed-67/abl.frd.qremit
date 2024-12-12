@@ -88,7 +88,8 @@ public class CommonService {
                         contentType.equalsIgnoreCase("application/csv") ||
                         contentType.equalsIgnoreCase("application/vnd.ms-excel") ||
                         contentType.equalsIgnoreCase("text/plain") ||
-                        contentType.equalsIgnoreCase("application/vnd.oasis.opendocument.spreadsheet"));
+                        contentType.equalsIgnoreCase("application/vnd.oasis.opendocument.spreadsheet")||
+                        contentType.equalsIgnoreCase("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
     }
     public boolean ifFileExist(String fileName){
         if (fileInfoModelRepository.findByFileName(fileName) != null) {
@@ -1072,6 +1073,7 @@ public class CommonService {
                     str = cell.getDateCellValue().toString();
                 } else {
                     str = String.valueOf(cell.getNumericCellValue());
+                    //str = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
                 }
                 break;
             case BOOLEAN:

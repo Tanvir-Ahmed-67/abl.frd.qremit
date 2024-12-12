@@ -151,6 +151,9 @@ public class FileInfoModel {
     private List<AmanModel> amanModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<KandHModel> kandhModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<StandardModel>standardModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -261,6 +264,13 @@ public class FileInfoModel {
 
     public void setAlFardanAbuDhabiModel(List<AlFardanAbuDhabiModel> alFardanAbuDhabiModel) {
         this.alFardanAbuDhabiModel = alFardanAbuDhabiModel;
+    }
+
+    public List<KandHModel> getKandhModel() {
+        return this.kandhModel;
+    }
+    public void setKandHModel(List<KandHModel> kandhModel) {
+        this.kandhModel = kandhModel;
     }
 
     public List<SwiftModel> getSwiftModel() {

@@ -1,0 +1,2 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Remitter Name|Beneficiary Name|Beneficiary Bank Account/mobile  Number|Beneficiary Bank|Benificiary Bank Code|Beneficiary Bank Branch Name|Beneficiary Bank Branch Code|Beneficiary Mobile No|Drawee Bank Branch Name|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter Mobile No
+7040|9786100002|BDT|1000.00|26/11/2024|MD NAZMUL|SOHAG HUSSEN|20501740204226000|ISLAMI BANK BANGLDESH LTD|11|BHOLA|125090108||||||
