@@ -34,7 +34,7 @@ public class BeftnModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
-    @GetMapping("/downloadbeftnMain")
+    @GetMapping(value="/downloadbeftnMain", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadMainFile() throws IOException {
         Map<String, Object> resp = new HashMap<>();
@@ -54,7 +54,7 @@ public class BeftnModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
-    @GetMapping("/downloadBeftnIncentive")
+    @GetMapping(value="/downloadBeftnIncentive", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadIncentiveFile() throws IOException {
         Map<String, Object> resp = new HashMap<>();

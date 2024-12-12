@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -131,6 +132,19 @@ public class BeftnModelService {
     @Transactional
     public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
         beftnModelRepository.updateTempStatusBulk(ids, tempStatus);
+    }
+
+    public List<BeftnModel> getDataByTransactionNoOrBenificiaryAccount(String type, String searchValue){
+        List<BeftnModel> beftnModelList = new ArrayList<>();
+        switch (type) {
+            case "1":
+                beftnModelList = beftnModelRepository.findBeftnModelByTransactionNo(searchValue);
+                break;
+            case "2":
+                beftnModelList = beftnModelRepository.findBeftnModelByBeneficiaryAccount(searchValue);
+                break;
+        }
+        return beftnModelList;
     }
 
 }

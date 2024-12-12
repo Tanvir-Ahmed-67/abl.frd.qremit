@@ -54,7 +54,7 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    @GetMapping("/getReportColumn")
+    @GetMapping(value="/getReportColumn", produces = "application/json")
     @ResponseBody
     public Map<String, Object> getReportColumnUrl(String type){
         Map<String, Object> resp = new HashMap<>();
@@ -85,7 +85,7 @@ public class ReportController {
         return CommonService.createColumns(columnData, columnTitles);
     }
     
-    @GetMapping("/report")
+    @GetMapping(value="/report", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
         Map<String, Object> resp = new HashMap<>();
@@ -170,7 +170,7 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-    @GetMapping("/fileReport")
+    @GetMapping(value="/fileReport", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getFileDetails(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam String id,@RequestParam String exchangeCode){
         Map<String, Object> resp = new HashMap<>();
@@ -194,7 +194,7 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-    @GetMapping("/errorReport")
+    @GetMapping(value="/errorReport", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, 
         @RequestParam(defaultValue = "") String id){
@@ -219,7 +219,7 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-    @GetMapping("/getErrorUpdateReport")
+    @GetMapping(value="/getErrorUpdateReport", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getErrorUpdateReport(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         //model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
@@ -345,7 +345,7 @@ public class ReportController {
         }
     }
 
-    @GetMapping("/processReport")
+    @GetMapping(value="/processReport", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> generateReport(@AuthenticationPrincipal MyUserDetails userDetails){
         Map<String, Object> resp = new HashMap<>();
@@ -374,7 +374,7 @@ public class ReportController {
         }
     }
 
-    @GetMapping("/getExchangeData")
+    @GetMapping(value="/getExchangeData", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
         Map<String, Object> resp = new HashMap<>();
@@ -389,7 +389,7 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-    @GetMapping("/updateTotalAmountBulk")
+    @GetMapping(value="/updateTotalAmountBulk", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateFileInfoModelTotalAmountBulk(){
         Map<String, Object> resp = new HashMap<>();
@@ -449,6 +449,18 @@ public class ReportController {
         }
         if(totalCount == 0)    CommonService.getResp(1, "No Data Found", null);
         else resp = CommonService.getResp(0, "Data Updated", null);
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/search")
+    public String search(){
+        return "";
+    }
+
+    @GetMapping(value="/getSearch", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getSearch(@RequestParam("searchType") String searchType, @RequestParam("searchValue") String searchValue){
+        Map<String, Object> resp = reportService.getSearch(searchType, searchValue);
         return ResponseEntity.ok(resp);
     }
 

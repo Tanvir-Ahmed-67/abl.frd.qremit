@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -636,6 +638,54 @@ public class ReportService {
         }
         return exchangeSummary;
     }
+    //1- transactionNo, 2- benificiaryNo
+    public Map<String, Object> getSearch(String searchType, String searchValue){
+        Map<String, Object> resp = new HashMap<>();
+        
+        List<ReportModel> reportModelList = new ArrayList<>();
+        switch(searchType){
+            case "1":
+                reportModelList = reportModelRepository.findReportModelByTransactionNo(searchValue);
+                break;
+            case "2":
+                reportModelList = reportModelRepository.findReportModelByBeneficiaryAccount(searchValue);
+                break;
+        }
+        if(searchType.isEmpty() || searchValue.isEmpty())     return CommonService.getResp(1, "Please Select Search Type or Value", null);
+        if(reportModelList.isEmpty()){
+            //search 4 tables for live data if empty
+            List<OnlineModel> onlineModelList = onlineModelService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
+            if(!onlineModelList.isEmpty()){
+                resp = CommonService.getResp(0, "", null);
+                resp.put("data", onlineModelList);
+                return resp;
+            }
+            List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
+            if(!accountPayeeModelList.isEmpty()){
+                resp = CommonService.getResp(0, "", null);
+                resp.put("data", accountPayeeModelList);
+                return resp;
+            }
+            List<BeftnModel> beftnModelList = beftnModelService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
+            if(!beftnModelList.isEmpty()){
+                resp = CommonService.getResp(0, "", null);
+                resp.put("data", beftnModelList);
+                return resp;
+            }
+            List<CocModel> cocModelList = cocModelService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
+            if(!cocModelList.isEmpty()){
+                resp = CommonService.getResp(0, "", null);
+                resp.put("data", cocModelList);
+                return resp;
+            }
+            return CommonService.getResp(1, "No data found", null);
+        }
+        resp = CommonService.getResp(0, "", null);
+        resp.put("data", reportModelList);
+        return resp;
+    }
+
+    
 
     public Map<String, Object> getExchangeWiseData(String date, int userId){
         Map<String, Object> resp = new HashMap<>();

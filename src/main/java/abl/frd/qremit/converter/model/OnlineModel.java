@@ -1,13 +1,16 @@
 package abl.frd.qremit.converter.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="converted_data_online",
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
-        @Index(name = "idx_temp_status", columnList = "temp_status")
+        @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account")
     }
 )
 public class OnlineModel {
@@ -59,6 +62,7 @@ public class OnlineModel {
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="upload_user_id")
+    @JsonIgnore
     private User userModel;
 
     public User getUserModel() {
@@ -72,6 +76,7 @@ public class OnlineModel {
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
+    @JsonIgnore
     private FileInfoModel fileInfoModel;
 
     public FileInfoModel getFileInfoModel() {

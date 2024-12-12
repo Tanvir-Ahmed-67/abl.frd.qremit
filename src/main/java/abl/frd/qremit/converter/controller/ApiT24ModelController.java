@@ -72,7 +72,7 @@ public class ApiT24ModelController {
         model.addAttribute("message", message);
         return CommonService.uploadSuccesPage;
     }
-    @PostMapping("/apit24transfer")
+    @PostMapping(value="/apit24transfer", produces = "application/json")
     @ResponseBody
     public Map<String, Object> transferApiT24Data(@RequestParam("id") String id){
         if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);

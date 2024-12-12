@@ -5,7 +5,7 @@ import abl.frd.qremit.converter.repository.CocModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CocModelService {
@@ -55,5 +55,18 @@ public class CocModelService {
     }
     public List<CocModel> findAllCocModelByFileInfoId(int id){
         return cocModelRepository.findAllCocModelHavingFileInfoId(id);
+    }
+
+    public List<CocModel> getDataByTransactionNoOrBenificiaryAccount(String type, String searchValue){
+        List<CocModel> cocModelList = new ArrayList<>();
+        switch (type) {
+            case "1":
+                cocModelList = cocModelRepository.findCocModelByTransactionNo(searchValue);
+                break;
+            case "2":
+                cocModelList = cocModelRepository.findCocModelByBeneficiaryAccount(searchValue);
+                break;
+        }
+        return cocModelList;
     }
 }

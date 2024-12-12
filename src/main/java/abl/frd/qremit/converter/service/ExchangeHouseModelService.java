@@ -4,9 +4,8 @@ import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.*;
 
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class ExchangeHouseModelService {
@@ -58,5 +57,33 @@ public class ExchangeHouseModelService {
     public Integer calculateSumOfHasSettlementDaily(List<ExchangeHouseModel> exchangeHouseModelList){
         int hasSettlementDailyCount = exchangeHouseModelList.stream().mapToInt(ExchangeHouseModel::getHasSettlementDaily).sum();
         return hasSettlementDailyCount;
+    }
+
+    public Map<String, Object> getExchangeHouse(String exchangeCode, String nrtaCode){
+        Map<String, Object> resp = new HashMap<>();
+        ExchangeHouseModel exchangeHouseModel;
+        String msg = "Exchange Code and Nrta Code Mismatched";
+        if(exchangeCode.isEmpty() && nrtaCode.isEmpty())    return CommonService.getResp(1, "Please select Exchange Code or Nrta Code", null);
+        if(!exchangeCode.isEmpty()){
+            exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+            if(exchangeHouseModel != null){
+                if(!nrtaCode.isEmpty()){
+                    if(!nrtaCode.equals(exchangeHouseModel.getNrtaCode()))  return CommonService.getResp(1, msg, null);
+                }
+                resp =  CommonService.getResp(0, "", null);
+                resp.put("data", exchangeHouseModel);
+            }
+        }
+        if(!nrtaCode.isEmpty()){
+            exchangeHouseModel = exchangeHouseModelRepository.findExchangeHouseModelByNrtaCode(nrtaCode);
+            if(exchangeHouseModel != null){
+                if(!exchangeCode.isEmpty()){
+                    if(!exchangeCode.equals(exchangeHouseModel.getExchangeCode()))  return CommonService.getResp(1, msg, null);
+                }
+                resp =  CommonService.getResp(0, "", null);
+                resp.put("data", exchangeHouseModel);
+            }
+        }
+        return resp;
     }
 }

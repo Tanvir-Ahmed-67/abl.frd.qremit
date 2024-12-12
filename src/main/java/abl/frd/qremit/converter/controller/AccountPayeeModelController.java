@@ -33,7 +33,7 @@ public class AccountPayeeModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
-    @GetMapping("/downloadaccountpayee")
+    @GetMapping(value="/downloadaccountpayee", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
         Map<String, Object> resp = new HashMap<>();

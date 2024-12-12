@@ -18,7 +18,7 @@ public class TemporaryReportController {
     public TemporaryReportController(){
     }
 
-    @GetMapping("/generateTemporaryReport")
+    @GetMapping(value="/generateTemporaryReport", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> generateTemporaryReport(@AuthenticationPrincipal MyUserDetails userDetails){
         Map<String, Object> resp = new HashMap<>();
