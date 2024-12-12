@@ -85,7 +85,7 @@ public class AgraniMalaysiaModelService {
                     agraniMalaysiaModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(agraniMalaysiaModels.size()));
                 fileInfoModel.setIsSettlement(0);

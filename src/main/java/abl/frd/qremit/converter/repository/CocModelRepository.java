@@ -18,4 +18,6 @@ public interface CocModelRepository extends JpaRepository<CocModel, Integer> {
 
     @Query("SELECT n FROM CocModel n WHERE n.isProcessed= :isProcessed and n.isDownloaded= :isDownloaded")
     List<CocModel> loadUnprocessedCocData(@Param("isProcessed") int isProcessed, @Param("isDownloaded") int isDownloaded);
+    List<CocModel> findCocModelByTransactionNo(String transactionNo);
+    List<CocModel> findCocModelByBeneficiaryAccount(String beneficiaryAccount);
 }

@@ -40,4 +40,6 @@ public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeM
     @Modifying
     @Query("UPDATE AccountPayeeModel n SET n.tempStatus=:tempStatus WHERE n.id in :ids")
     int updateTempStatusBulk(@Param("ids") List<Integer> ids, @Param("tempStatus") int tempStatus);
+    List<AccountPayeeModel> findAccountPayeeModelByTransactionNo(String transactionNo);
+    List<AccountPayeeModel> findAccountPayeeModelByBeneficiaryAccount(String beneficiaryAccount);
 }

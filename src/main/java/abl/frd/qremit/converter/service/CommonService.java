@@ -221,10 +221,14 @@ public class CommonService {
         return onlineModel;
     }
 
-
     public static Object getPropertyValue(Object obj, String methodName) throws Exception {
         Method method = obj.getClass().getMethod(methodName);
         return method.invoke(obj);
+    }
+    
+    public static Object findDynamicMethodByParameter(Object obj, String methodName, Object params) throws Exception{
+        Method method = obj.getClass().getMethod(methodName, params.getClass());
+        return method.invoke(obj, params);
     }
 
     public static <T> List<CocModel> generateCocModelList(List<T> models, LocalDateTime uploadDateTime) {

@@ -1,24 +1,14 @@
 package abl.frd.qremit.converter.service;
-
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
 @SuppressWarnings("unchecked")
 @Service
 public class ApiT24ModelService {
@@ -37,8 +27,8 @@ public class ApiT24ModelService {
     @Autowired
     FileInfoModelService fileInfoModelService;
     @Autowired
-    CustomQueryRepository customQueryRepository;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode) {
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -52,7 +42,7 @@ public class ApiT24ModelService {
             fileInfoModelRepository.save(fileInfoModel);
 
             //List<ApiT24Model> apiT24Models = csvToApiT24Models(file.getInputStream());
-            Map<String, Object> apiT24Data= csvToApiT24Models(file.getInputStream(), user, fileInfoModel, currentDateTime);
+            Map<String, Object> apiT24Data= csvToApiT24Models(file.getInputStream(), user, fileInfoModel, currentDateTime, tbl);
             List<ApiT24Model> apiT24Models = (List<ApiT24Model>) apiT24Data.get("apiT24ModelList");
             if(apiT24Data.containsKey("errorMessage")){
                 resp.put("errorMessage", apiT24Data.get("errorMessage"));
@@ -91,7 +81,7 @@ public class ApiT24ModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToApiT24Models(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToApiT24Models(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         Optional<ApiT24Model> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -130,7 +120,7 @@ public class ApiT24ModelService {
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-            Map<String, Object> uniqueDataList = getUniqueList(uniqueKeys);
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             for(Map<String, Object> data: dataList){
                 String transactionNo = data.get("transactionNo").toString();
                 String exchangeCode = data.get("exchangeCode").toString();
@@ -214,8 +204,5 @@ public class ApiT24ModelService {
         data.put("processedBy", "");
         data.put("processedDate", "");
         return data;
-    }
-    public Map<String, Object> getUniqueList(List<String[]> data){
-        return customQueryRepository.getBaseDataByTransactionNoAndAmountAndExchangeCodeIn(data, "api_t24");
     }
 }

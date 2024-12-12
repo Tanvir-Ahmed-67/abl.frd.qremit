@@ -37,8 +37,10 @@ public class AgexSingaporeModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
+    @Autowired
+    CustomQueryService customQueryService;
     
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode){
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode, String tbl){
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -54,7 +56,7 @@ public class AgexSingaporeModelService {
             int type = 0;
             if(fileType.equalsIgnoreCase("API")) type = 1;
             //List<AgexSingaporeModel> agexSingaporeModelList = csvToAgexSingaporeModels(file.getInputStream(),type);
-            Map<String, Object> agexSingaporeData = csvToAgexSingaporeModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            Map<String, Object> agexSingaporeData = csvToAgexSingaporeModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             List<AgexSingaporeModel> agexSingaporeModelList = (List<AgexSingaporeModel>) agexSingaporeData.get("agexSingaporeModelList");
             if(agexSingaporeData.containsKey("errorMessage")){
                 resp.put("errorMessage", agexSingaporeData.get("errorMessage"));
@@ -93,9 +95,9 @@ public class AgexSingaporeModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToAgexSingaporeModels(InputStream is, int type, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
+    public Map<String, Object> csvToAgexSingaporeModels(InputStream is, int type, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AgexSingaporeModel> duplicateData;
+        Optional<AgexSingaporeModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
@@ -105,6 +107,9 @@ public class AgexSingaporeModelService {
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            String fileExchangeCode = "";
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
@@ -113,16 +118,34 @@ public class AgexSingaporeModelService {
                 String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
-                if((Integer) apiCheckResp.get("err") == 1){
-                    resp.put("errorMessage", apiCheckResp.get("msg"));
-                    break;
-                }
-                duplicateData = agexSingaporeModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 
-
+                if(i == 1){
+                    Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
+                    if((Integer) apiCheckResp.get("err") == 1){
+                        resp.put("errorMessage", apiCheckResp.get("msg"));
+                        break;
+                    }
+                }
+                
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
+                fileExchangeCode = csvRecord.get(0).trim();   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+            }
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            for(Map<String, Object> data: dataList){
+                String transactionNo = data.get("transactionNo").toString();
+                String bankName = data.get("bankName").toString();
+                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+                String branchCode = data.get("branchCode").toString();
+                Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
+                if((Integer) dupResp.get("isDuplicate") == 1){
+                    duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                    duplicateCount++;
+                    continue;
+                }
+
+                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
                     continue;
@@ -130,11 +153,6 @@ public class AgexSingaporeModelService {
                 if((Integer) errResp.get("err") == 2){
                     resp.put("errorMessage", errResp.get("msg"));
                     break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
                 }
                 if((Integer) errResp.get("err") == 4){
                     duplicateMessage += errResp.get("msg");

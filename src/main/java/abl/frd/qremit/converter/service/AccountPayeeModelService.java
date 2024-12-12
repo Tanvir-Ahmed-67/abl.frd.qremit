@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AccountPayeeModelService {
@@ -84,5 +84,18 @@ public class AccountPayeeModelService {
     @Transactional
     public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
         accountPayeeModelRepository.updateTempStatusBulk(ids, tempStatus);
+    }
+
+    public List<AccountPayeeModel> getDataByTransactionNoOrBenificiaryAccount(String type, String searchValue){
+        List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
+        switch (type) {
+            case "1":
+                accountPayeeModelList = accountPayeeModelRepository.findAccountPayeeModelByTransactionNo(searchValue);
+                break;
+            case "2":    
+                accountPayeeModelList = accountPayeeModelRepository.findAccountPayeeModelByBeneficiaryAccount(searchValue);
+                break;
+        }
+        return accountPayeeModelList;
     }
 }

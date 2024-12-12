@@ -31,9 +31,9 @@ public class ApiT24ModelController {
     private MyUserDetailsService myUserDetailsService;
 
     @PostMapping("/api_t24Upload")
-    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
+    public String saveData(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, 
+        @RequestParam("tbl") String tbl, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-
 
         int userId = 000000000;
         // Getting Logged In user Details in this block
@@ -47,7 +47,7 @@ public class ApiT24ModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = apit24ModelService.save(file, userId, exchangeCode);
+                    Map<String, Object> resp = apit24ModelService.save(file, userId, exchangeCode, tbl);
                     model = CommonService.viewUploadStatus(resp, model);
                     model.addAttribute("apiBtn", 1);
                     model.addAttribute("apiUrl", "/apit24transfer");
@@ -72,7 +72,7 @@ public class ApiT24ModelController {
         model.addAttribute("message", message);
         return CommonService.uploadSuccesPage;
     }
-    @PostMapping("/apit24transfer")
+    @PostMapping(value="/apit24transfer", produces = "application/json")
     @ResponseBody
     public Map<String, Object> transferApiT24Data(@RequestParam("id") String id){
         if(("").matches(id))   return CommonService.getResp(1, "Please select Id", null);

@@ -30,7 +30,7 @@ public class AgexSingaporeModelController {
     }
     @PostMapping("/singaporeUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("fileType") String fileType,
-        @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, Model model) {
+        @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, @RequestParam("tbl") String tbl, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 
         int userId = 000000000;
@@ -45,7 +45,7 @@ public class AgexSingaporeModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = agexSingaporeModelService.save(file, userId, exchangeCode, fileType, nrtaCode);
+                    Map<String, Object> resp = agexSingaporeModelService.save(file, userId, exchangeCode, fileType, nrtaCode, tbl);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 }
