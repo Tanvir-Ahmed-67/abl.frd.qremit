@@ -1092,14 +1092,14 @@ public class CommonService {
         return data;
     }
 
-    public static Map<String, Object> getDuplicateTransactionNo(String transactionNo, Map<String, Object> apiBeftnModelList){
+    public static Map<String, Object> getDuplicateTransactionNo(String transactionNo, Map<String, Object> modelResp){
         Map<String, Object> resp = new HashMap<>();
         resp.put("isDuplicate", 0);
-        if((Integer) apiBeftnModelList.get("err") == 0){
-            List<Map<String, Object>> apiBeftnDataList = (List<Map<String, Object>>) apiBeftnModelList.get("data");
-            if(apiBeftnDataList.isEmpty())  return resp;
-            for(Map<String, Object> apiBeftnData: apiBeftnDataList){
-                String transNo = apiBeftnData.get("transaction_no").toString();
+        if((Integer) modelResp.get("err") == 0){
+            List<Map<String, Object>> data = (List<Map<String, Object>>) modelResp.get("data");
+            if(data.isEmpty())  return resp;
+            for(Map<String, Object> rdata: data){
+                String transNo = rdata.get("transaction_no").toString();
                 if(transactionNo.toLowerCase().equals(transNo.toLowerCase())){
                     resp.put("isDuplicate", 1);
                     break;
@@ -1109,4 +1109,10 @@ public class CommonService {
         return resp;
     }
 
+    public static Map<String, Object> getSerachType(){
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("1", "Transaction No");
+        resp.put("2", "Beneficiary Account No");
+        return resp;
+    }
 }

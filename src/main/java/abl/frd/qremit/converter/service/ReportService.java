@@ -641,7 +641,6 @@ public class ReportService {
     //1- transactionNo, 2- benificiaryNo
     public Map<String, Object> getSearch(String searchType, String searchValue){
         Map<String, Object> resp = new HashMap<>();
-        
         List<ReportModel> reportModelList = new ArrayList<>();
         switch(searchType){
             case "1":
@@ -656,33 +655,68 @@ public class ReportService {
             //search 4 tables for live data if empty
             List<OnlineModel> onlineModelList = onlineModelService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
             if(!onlineModelList.isEmpty()){
-                resp = CommonService.getResp(0, "", null);
-                resp.put("data", onlineModelList);
+                resp = CommonService.getResp(0, "", processSearchData(onlineModelList, "1"));
                 return resp;
             }
             List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
             if(!accountPayeeModelList.isEmpty()){
-                resp = CommonService.getResp(0, "", null);
-                resp.put("data", accountPayeeModelList);
+                resp = CommonService.getResp(0, "", processSearchData(accountPayeeModelList, "2"));
                 return resp;
             }
             List<BeftnModel> beftnModelList = beftnModelService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
             if(!beftnModelList.isEmpty()){
-                resp = CommonService.getResp(0, "", null);
-                resp.put("data", beftnModelList);
+                resp = CommonService.getResp(0, "", processSearchData(beftnModelList, "3"));
                 return resp;
             }
             List<CocModel> cocModelList = cocModelService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
             if(!cocModelList.isEmpty()){
-                resp = CommonService.getResp(0, "", null);
-                resp.put("data", cocModelList);
+                resp = CommonService.getResp(0, "", processSearchData(cocModelList, "4"));
                 return resp;
             }
             return CommonService.getResp(1, "No data found", null);
         }
-        resp = CommonService.getResp(0, "", null);
-        resp.put("data", reportModelList);
+        resp = CommonService.getResp(0, "", processSearchData(reportModelList, ""));
         return resp;
+    }
+
+    public <T> List<Map<String, Object>> processSearchData(List<T> modelList, String type){
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if(modelList != null && !modelList.isEmpty()){
+            int i = 1;
+            Map<String, Object> data = new HashMap<>();
+            Map<String, Object> remType = CommonService.getRemittanceTypes();
+
+            for(T model: modelList){
+                try{
+                    String action = "";
+                    String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
+                    data.put("sl", i++);
+                    data.put("transactionNo", (String) CommonService.getPropertyValue(model, "getTransactionNo"));
+                    data.put("exchangeCode", (String) CommonService.getPropertyValue(model, "getExchangeCode"));
+                    data.put("beneficiaryName", (String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
+                    data.put("beneficiaryAccount", (String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
+                    
+                    String branchCode = (("3").equals(type)) ? "getRoutingNo": "getBranchCode";
+                    String bankDetails = "Bank Name:" + (String) CommonService.getPropertyValue(model, "getBankName") + "<br>Branch Code/ Routing No: " 
+                    + (String) CommonService.getPropertyValue(model, branchCode) + "<br> Branch Name: " + (String) CommonService.getPropertyValue(model, "getBranchName"); 
+                    data.put("bankDetails", bankDetails);
+                    //data.put("bankName", (String) CommonService.getPropertyValue(model, "getBankName"));
+                    //data.put("branchCode", (String) CommonService.getPropertyValue(model, branchCode));
+                    //data.put("branchName", (String) CommonService.getPropertyValue(model, "getBranchName"));
+                    data.put("amount", (Double) CommonService.getPropertyValue(model, "getAmount"));
+                    LocalDateTime downloaDateTime = (LocalDateTime) CommonService.getPropertyValue(model, "getDownloadDateTime");
+                    String downloadDate = CommonService.convertDateToString(downloaDateTime);
+                    data.put("downloadDateTime", downloadDate);
+                    data.put("reportDate", (LocalDate) CommonService.getPropertyValue(model, "getReportDate"));
+                    data.put("type", remType.get(typeFlag));
+                    dataList.add(data);
+                }catch(Exception e){
+                    e.printStackTrace();
+                    //CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
+                }  
+            }
+        }
+        return dataList;
     }
 
     
