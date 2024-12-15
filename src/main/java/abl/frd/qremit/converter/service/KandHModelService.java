@@ -117,9 +117,7 @@ public class KandHModelService {
                 row = worksheet.getRow(rowIndex);
                 if(row == null) continue;
                 if (row.getCell(0) == null || row.getCell(0).getCellType() == CellType.BLANK) continue;
-                // int columnCount = getNonEmptyCellCount(row);
-                // if(columnCount != 9)    continue;
-                // i++;
+                i++;
                 Map<String, Object> data = getBeftnData(row, exchangeCode);
                 String transactionNo = data.get("transactionNo").toString();
                 String amount = data.get("amount").toString();
@@ -205,13 +203,4 @@ public class KandHModelService {
 
         return data;
     }
-    // private static int getNonEmptyCellCount(Row row) {
-    //     int count = 0;
-    //     for (Cell cell : row) {
-    //         if (cell != null && cell.getCellType() != CellType.BLANK) {
-    //             count++;
-    //         }
-    //     }
-    //     return count;
-    // }
 }

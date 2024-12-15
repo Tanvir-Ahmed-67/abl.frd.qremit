@@ -453,8 +453,10 @@ public class ReportController {
     }
 
     @GetMapping("/search")
-    public String search(){
-        return "";
+    public String search(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        model.addAttribute("searchType", CommonService.getSerachType());
+        return "pages/user/search";
     }
 
     @GetMapping(value="/getSearch", produces = "application/json")
