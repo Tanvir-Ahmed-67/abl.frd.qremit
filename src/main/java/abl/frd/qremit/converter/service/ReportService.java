@@ -683,11 +683,11 @@ public class ReportService {
         List<Map<String, Object>> dataList = new ArrayList<>();
         if(modelList != null && !modelList.isEmpty()){
             int i = 1;
-            Map<String, Object> data = new HashMap<>();
             Map<String, Object> remType = CommonService.getRemittanceTypes();
 
             for(T model: modelList){
                 try{
+                    Map<String, Object> data = new HashMap<>();
                     String action = "";
                     String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
                     data.put("sl", i++);
