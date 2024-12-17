@@ -25,7 +25,7 @@
     
                 <section id="input-style">
                     <div class="row" style="min-height: 58vh">
-                        <div class="col-md-12">
+                        <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-header">
                                 </div>
@@ -33,11 +33,11 @@
                                     <div id="up-form">
                                         <form id="adminUploadApiForm" method="POST" th:action="@{#}" enctype="multipart/form-data">
                                             <div class="row">
-                                                <div class="col-2"><label>Report Generation Date</label></div>
-                                                <div class="col-2 form-group">
+                                                <div class="col-sm-2"><label>Report Generation Date</label></div>
+                                                <div class="col-sm-2 form-group">
                                                     <input class="form-control" type="text" name="report_date" id="report_date" placeholder="Report Date" th:value="${currentDate}" readonly="true">
                                                 </div>
-                                                <div class="col-2"><button type="button" id="search" class="btn btn-info">Search</button></div>
+                                                <div class="col-sm-2"><button type="button" id="search" class="btn btn-info">Search</button></div>
                                             </div>
                                             
                                         </form>
@@ -67,7 +67,6 @@
             <span th:replace="fragments/footer :: footer"></span>
         </div>
     </div>
-    <script src="/js/script.js"></script>
     <script src="/js/admin_api_upload.js"></script>
 </body>
 </html>
