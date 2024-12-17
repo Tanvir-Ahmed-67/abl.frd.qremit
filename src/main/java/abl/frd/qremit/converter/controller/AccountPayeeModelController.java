@@ -39,7 +39,7 @@ public class AccountPayeeModelController {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = accountPayeeModelService.loadAndUpdateUnprocessedAccountPayeeData(0);
         int countRemaining = accountPayeeModelService.countRemainingAccountPayeeData();
-        String fileName = CommonService.generateDynamicFileName("Account_Payee", ".txt");
+        String fileName = CommonService.generateDynamicFileName("Account_Payee_", ".txt");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }
