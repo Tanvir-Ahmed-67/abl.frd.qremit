@@ -40,7 +40,7 @@ public class BeftnModelController {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = beftnModelService.loadAndUpdateUnprocessedBeftnMainData(0);
         int countRemaining = beftnModelService.countRemainingBeftnDataMain();
-        String fileName = CommonService.generateDynamicFileName("Beftn_Main", ".xlsx");
+        String fileName = CommonService.generateDynamicFileName("Beftn_Main_", ".xlsx");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }
@@ -60,7 +60,7 @@ public class BeftnModelController {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = beftnModelService.loadAndUpdateUnprocessedBeftnIncentiveData(0);
         int countRemaining = beftnModelService.countRemainingBeftnDataIncentive();
-        String fileName = CommonService.generateDynamicFileName("Beftn_Incentive", ".xlsx");
+        String fileName = CommonService.generateDynamicFileName("Beftn_Incentive_", ".xlsx");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }

@@ -40,7 +40,7 @@ public class CocModelController {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = cocModelService.loadAndUpdateUnprocessedCocData(0,0);
         int countRemaining = cocModelService.countRemainingCocData();
-        String fileName = CommonService.generateDynamicFileName("COC", ".txt");
+        String fileName = CommonService.generateDynamicFileName("COC_", ".txt");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }
