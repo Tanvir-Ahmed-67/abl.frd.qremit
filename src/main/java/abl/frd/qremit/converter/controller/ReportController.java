@@ -454,7 +454,16 @@ public class ReportController {
 
     @GetMapping("/search")
     public String search(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        //if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return HttpStatus.UNAUTHORIZED.build();
+        int userId = (int) userData.get("userid");
+        Map<String, String> exchangeMap = new HashMap<>();
+        if(userData.containsKey("exchangeMap")) exchangeMap = (Map<String, String>) userData.get("exchangeMap");
+        model.addAttribute("exchangeMap", exchangeMap);
+        String sidebar = (userId == 0) ? "sidebarAdmin":"sidebarUser";
+        model.addAttribute("sidebar", sidebar);
         model.addAttribute("searchType", CommonService.getSerachType());
         return "pages/user/search";
     }

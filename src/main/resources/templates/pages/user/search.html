@@ -3,7 +3,12 @@
 <head th:replace="fragments/header :: head-css"></head>
 <body th:fragment="fileUploadForm">
     <div id="app"><!--main content-->
-        <span th:replace="fragments/sidebarUser :: sidebarUser"></span>
+        <div th:if="${sidebar == 'sidebarAdmin'}">
+            <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
+        </div>
+        <div th:if="${sidebar == 'sidebarUser'}">
+            <span th:replace="fragments/sidebarUser :: sidebarUser"></span>
+        </div>
         <div id="main"><!--content Id-->
             <span th:replace="fragments/header :: header"></span>
             <div class="main-content container-fluid">
