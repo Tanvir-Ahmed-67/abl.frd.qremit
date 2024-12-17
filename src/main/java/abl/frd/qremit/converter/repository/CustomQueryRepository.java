@@ -1,8 +1,6 @@
 package abl.frd.qremit.converter.repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import abl.frd.qremit.converter.model.ApiBeftnModel;
 import abl.frd.qremit.converter.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
