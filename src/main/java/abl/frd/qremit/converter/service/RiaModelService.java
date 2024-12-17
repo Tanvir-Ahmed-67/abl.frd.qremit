@@ -52,6 +52,15 @@ public class RiaModelService {
 
             Map<String, Object> riaData = csvToRiaModels(file.getInputStream(), exchangeCode, user, fileInfoModel, nrtaCode, currentDateTime);
             List<RiaModel> riaModelList = (List<RiaModel>) riaData.get("riaModelList");
+            if(riaData.containsKey("errorMessage")){
+                resp.put("errorMessage", riaData.get("errorMessage"));
+            }
+            if(riaData.containsKey("errorCount") && ((Integer) riaData.get("errorCount") >= 1)){
+                int errorCount = (Integer) riaData.get("errorCount");
+                fileInfoModel.setErrorCount(errorCount);
+                resp.put("fileInfoModel", fileInfoModel);
+                fileInfoModelRepository.save(fileInfoModel);
+            }
             if(riaModelList.size()!=0) {
                 for (RiaModel riaModel : riaModelList) {
                     riaModel.setFileInfoModel(fileInfoModel);
@@ -118,9 +127,15 @@ public class RiaModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
+                String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
+                if(!CommonService.convertStringToInt(typeFlag).equals(1)){
+                    String msg = "Invalid Remittence Type for API";
+                    CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
                 RiaModel riaModel = new RiaModel();
                 riaModel = CommonService.createDataModel(riaModel, data);
-                riaModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                riaModel.setTypeFlag(typeFlag);
                 riaModel.setUploadDateTime(currentDateTime);
                 riaModelList.add(riaModel);
             }
