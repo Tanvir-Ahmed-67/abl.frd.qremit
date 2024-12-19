@@ -96,6 +96,22 @@ public class UserController {
         }
         return "allUsers";
     }
+
+    
+    @GetMapping(value = "/getChartData", produces = "application/json")
+    @ResponseBody
+    public Map<String, List<?>> getChartData() {
+        List<String> labels = Arrays.asList("January", "February", "March", "April");
+        List<Integer> data = Arrays.asList(5000, 10000, 7500, 9000); // Replace with DB calls
+        List<Integer> data2 = Arrays.asList(3000, 8000, 6500, 7000); // Optional
+    
+        Map<String, List<?>> result = new HashMap<>();
+        result.put("labels", labels);
+        result.put("data", data);
+        result.put("data2", data2);
+        return result;
+    }
+    
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromAdmin(Model model){
         model.addAttribute("user", new User());
