@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.controller;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -372,11 +373,11 @@ public class ReportController {
     @PostMapping("/downloadMoInPdfFormat")
     public ResponseEntity<byte[]> downloadMoInPdfFormat(@RequestParam String date, @ModelAttribute MoModel moModel) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        MoDTO moDTO = moModelService.generateMoDTOForPreparingPdfFile(moModel, date);
-        if(moDTO == null){
+        MoModel moModelForPdf = moModelService.generateMoDTOForPreparingPdfFile(moModel, date);
+        if(moModelForPdf == null){
             return ResponseEntity.noContent().build();
         }
-        byte[] pdfReport = moModelService.generateMoInPdfFormat(moDTO, date);
+        byte[] pdfReport = moModelService.generateMoInPdfFormat(moModelForPdf, date);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         String fileName = commonService.generateFileName("MO_", date, ".pdf");

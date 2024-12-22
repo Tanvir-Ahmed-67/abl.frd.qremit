@@ -45,7 +45,7 @@
                                                         <label class="col-form-label">Total ICash Number</label>
                                                     </div>
                                                     <div class="col-lg-10 col-9">
-                                                        <input type="text" id="total_number" class="form-control" th:name="totalNumberIcash" th:field="*{totalNumberIcash}"  required placeholder="Total Number">
+                                                        <input type="text" id="total_number" class="form-control" th:name="totalNumberIcash" th:field="*{totalNumberIcash}"  required placeholder="Total Number" th:minlength="1" th:maxlength="6">
                                                     </div>
                                                 </div>
                                             </div>

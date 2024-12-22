@@ -27,29 +27,40 @@
                   <thead>
                   <tr>
                     <th>Remittance Type</th>
+                    <th>Total Numbers</th>
                     <th>Total Amount</th>
                   </tr>
                   </thead>
                   <tbody>
                   <tr>
                     <td>For Beftn</td>
+                    <td class="text-bold-500" th:text="${moModel.getTotalNumberBeftn()}"></td>
                     <td class="text-bold-500" th:text="${moModel.getTotalAmountBeftn()}"></td>
                   </tr>
                   <tr>
                     <td>For All Other Branche</td>
+                    <td class="text-bold-500" th:text="${moModel.getTotalNumberAllOtherBranch()}"></td>
                     <td class="text-bold-500" th:text="${moModel.getTotalAmountAllOtherBranch()}"></td>
                   </tr>
                   <tr>
                     <td>For Instant Cash</td>
+                    <td class="text-bold-500" th:text="${moModel.getTotalNumberIcash()}"></td>
                     <td class="text-bold-500" th:text="${moModel.getTotalAmountIcash()}"></td>
                   </tr>
                   <tr>
                     <td>Online A/C Transfer</td>
+                    <td class="text-bold-500" th:text="${moModel.getTotalNumberOnline()}"></td>
                     <td class="text-bold-500" th:text="${moModel.getTotalAmountOnline()}"></td>
                   </tr>
                   <tr>
                     <td>For API</td>
+                    <td class="text-bold-500" th:text="${moModel.getTotalNumberApi()}"></td>
                     <td class="text-bold-500" th:text="${moModel.getTotalAmountApi()}"></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Grand Total</td>
+                    <td class="fw-bold" th:text="${moModel.getGrandTotalNumber()}"></td>
+                    <td class="fw-bold" th:text="${moModel.getGrandTotalAmount()}"></td>
                   </tr>
                   </tbody>
                 </table>
@@ -58,6 +69,7 @@
           </div>
           <div class="d-flex justify-content-center mt-3">
             <form th:action="@{/downloadMoInPdfFormat(date=${date})}" th:object="${moModel}" method="post">
+              <input type="hidden" th:field="*{id}" />
               <input type="hidden" th:field="*{totalNumberBeftn}" />
               <input type="hidden" th:field="*{totalAmountBeftn}" />
               <input type="hidden" th:field="*{totalNumberAllOtherBranch}" />

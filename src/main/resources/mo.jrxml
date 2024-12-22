@@ -15,6 +15,7 @@
 		<field name="grandTotalNumber" class="java.lang.Long"></field>
 		<field name="grandTotalAmount" class="java.math.BigDecimal"></field>
 		<field name="totalAmountInWords" class="java.lang.String"></field>
+		<field name="id" class="java.lang.Integer"></field>
 	</dataset>
 	<field name="moDate" class="java.time.LocalDate"></field>
 	<field name="totalNumberBeftn" class="java.lang.Long"></field>
@@ -30,8 +31,9 @@
 	<field name="grandTotalNumber" class="java.lang.Long"></field>
 	<field name="grandTotalAmount" class="java.math.BigDecimal"></field>
 	<field name="totalAmountInWords" class="java.lang.String"></field>
-	<variable name="IncrementedPageNumber" class="java.lang.Integer" calculation="System">
-		<expression><![CDATA[String.format("%06d", $V{PAGE_NUMBER} + 1)]]></expression>
+	<field name="id" class="java.lang.Integer"></field>
+	<variable name="IncrementedPageNumber" class="java.lang.String" calculation="Nothing">
+		<expression><![CDATA[String.format("%06d", $F{id})]]></expression>
 	</variable>
 	<background splitType="Stretch"/>
 	<title splitType="Stretch"/>
@@ -76,7 +78,7 @@
 			<element kind="staticText" x="1" y="157" width="552" height="19" fontSize="11.0">
 				<text><![CDATA[We advise that your M.O. account has been credited with the following item for crediting the beneficiaries' A/C.]]></text>
 			</element>
-			<element kind="textField" x="0" y="331" width="552" height="25" hTextAlign="Left" vTextAlign="Middle">
+			<element kind="textField" x="0" y="331" width="552" height="25" textAdjust="StretchHeight" hTextAlign="Left" vTextAlign="Middle">
 				<expression><![CDATA["IN WORDS: "+$F{totalAmountInWords}]]></expression>
 			</element>
 			<element kind="staticText" x="1" y="435" width="170" height="24" hTextAlign="Left" vTextAlign="Middle">

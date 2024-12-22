@@ -1,8 +1,5 @@
 package abl.frd.qremit.converter.service;
 
-import abl.frd.qremit.converter.helper.NumberToWords;
-import abl.frd.qremit.converter.model.ExchangeReportDTO;
-import abl.frd.qremit.converter.model.MoDTO;
 import abl.frd.qremit.converter.model.MoModel;
 import abl.frd.qremit.converter.repository.MoModelRepository;
 import net.sf.jasperreports.engine.*;
@@ -36,25 +33,34 @@ public class MoModelService {
 
         moModel.setTotalNumberBeftn((Long) beftnData.get(0));
         moModel.setTotalAmountBeftn(BigDecimal.valueOf((Double) beftnData.get(1)).setScale(2, RoundingMode.DOWN));
+        moModel.doSumGrandTotalNumber(moModel.getTotalNumberBeftn());
+        moModel.doSumGrandTotalAmount(moModel.getTotalAmountBeftn());
 
         List<Object> allOtherSummaryData = reportService.getAllOtherSummaryForMo(reportDate);
 
         moModel.setTotalNumberAllOtherBranch((Long) allOtherSummaryData.get(0));
         moModel.setTotalAmountAllOtherBranch(BigDecimal.valueOf((Double) allOtherSummaryData.get(1)).setScale(2, RoundingMode.DOWN));
-
+        moModel.doSumGrandTotalNumber(moModel.getTotalNumberAllOtherBranch());
+        moModel.doSumGrandTotalAmount(moModel.getTotalAmountAllOtherBranch());
 
         moModel.setTotalNumberIcash(moModel.getTotalNumberIcash());
         moModel.setTotalAmountIcash(moModel.getTotalAmountIcash());
+        moModel.doSumGrandTotalNumber(moModel.getTotalNumberIcash());
+        moModel.doSumGrandTotalAmount(moModel.getTotalAmountIcash());
 
         List<Object> onlineData = reportService.getAllOnlineSummaryForMo(reportDate);
 
         moModel.setTotalNumberOnline((Long) onlineData.get(0));
         moModel.setTotalAmountOnline(BigDecimal.valueOf((Double) onlineData.get(1)).setScale(2, RoundingMode.DOWN));
+        moModel.doSumGrandTotalNumber(moModel.getTotalNumberOnline());
+        moModel.doSumGrandTotalAmount(moModel.getTotalAmountOnline());
 
         List<Object> apiData = reportService.getAllApiSummaryForMo(reportDate);
 
         moModel.setTotalNumberApi((Long) apiData.get(0));
         moModel.setTotalAmountApi(BigDecimal.valueOf((Double) apiData.get(1)).setScale(2, RoundingMode.DOWN));
+        moModel.doSumGrandTotalNumber(moModel.getTotalNumberApi());
+        moModel.doSumGrandTotalAmount(moModel.getTotalAmountApi());
 
         return moModelRepository.save(moModel);
     }
@@ -64,43 +70,43 @@ public class MoModelService {
         return model;
     }
 
-    public MoDTO generateMoDTOForPreparingPdfFile(MoModel moModel, String date){
-        MoDTO moDTO = new MoDTO();
-        moDTO.setMoDate(LocalDate.parse(date));
+    public MoModel generateMoDTOForPreparingPdfFile(MoModel moModel, String date){
+        MoModel model = new MoModel();
+        model.setId(moModel.getId());
+        model.setMoDate(LocalDate.parse(date));
+
         // For BEFTN
-        moDTO.setTotalNumberBeftn(moModel.getTotalNumberBeftn());
-        moDTO.setTotalAmountBeftn(moModel.getTotalAmountBeftn());
-        moDTO.doSumGrandTotalNumber(moDTO.getTotalNumberBeftn());
-        moDTO.doSumGrandTotalAmount(moDTO.getTotalAmountBeftn());
+        model.setTotalNumberBeftn(moModel.getTotalNumberBeftn());
+        model.setTotalAmountBeftn(moModel.getTotalAmountBeftn());
+        model.doSumGrandTotalNumber(moModel.getTotalNumberBeftn());
+        model.doSumGrandTotalAmount(moModel.getTotalAmountBeftn());
         // For All Other Brancs
-        moDTO.setTotalNumberAllOtherBranch(moModel.getTotalNumberAllOtherBranch());
-        moDTO.setTotalAmountAllOtherBranch(moModel.getTotalAmountAllOtherBranch());
-        moDTO.doSumGrandTotalNumber(moDTO.getTotalNumberAllOtherBranch());
-        moDTO.doSumGrandTotalAmount(moDTO.getTotalAmountAllOtherBranch());
+        model.setTotalNumberAllOtherBranch(moModel.getTotalNumberAllOtherBranch());
+        model.setTotalAmountAllOtherBranch(moModel.getTotalAmountAllOtherBranch());
+        model.doSumGrandTotalNumber(model.getTotalNumberAllOtherBranch());
+        model.doSumGrandTotalAmount(model.getTotalAmountAllOtherBranch());
         // For I Cash
-        moDTO.setTotalNumberIcash(moModel.getTotalNumberIcash());
-        moDTO.setTotalAmountIcash(moModel.getTotalAmountIcash());
-        moDTO.doSumGrandTotalNumber(moDTO.getTotalNumberIcash());
-        moDTO.doSumGrandTotalAmount(moDTO.getTotalAmountIcash());
+        model.setTotalNumberIcash(moModel.getTotalNumberIcash());
+        model.setTotalAmountIcash(moModel.getTotalAmountIcash());
+        model.doSumGrandTotalNumber(model.getTotalNumberIcash());
+        model.doSumGrandTotalAmount(model.getTotalAmountIcash());
         //For Online A/C Transfer
-        moDTO.setTotalNumberOnline(moModel.getTotalNumberOnline());
-        moDTO.setTotalAmountOnline(moModel.getTotalAmountOnline());
-        moDTO.doSumGrandTotalNumber(moDTO.getTotalNumberOnline());
-        moDTO.doSumGrandTotalAmount(moDTO.getTotalAmountOnline());
+        model.setTotalNumberOnline(moModel.getTotalNumberOnline());
+        model.setTotalAmountOnline(moModel.getTotalAmountOnline());
+        model.doSumGrandTotalNumber(model.getTotalNumberOnline());
+        model.doSumGrandTotalAmount(model.getTotalAmountOnline());
         //For API
-        moDTO.setTotalNumberApi(moModel.getTotalNumberApi());
-        moDTO.setTotalAmountApi(moModel.getTotalAmountApi());
-        moDTO.doSumGrandTotalNumber(moDTO.getTotalNumberApi());
-        moDTO.doSumGrandTotalAmount(moDTO.getTotalAmountApi());
+        model.setTotalNumberApi(moModel.getTotalNumberApi());
+        model.setTotalAmountApi(moModel.getTotalAmountApi());
+        model.doSumGrandTotalNumber(model.getTotalNumberApi());
+        model.doSumGrandTotalAmount(model.getTotalAmountApi());
 
-        moDTO.setTotalAmountInWords(NumberToWords.convertBigDecimalToWords(moDTO.getGrandTotalAmount()));
-
-        return moDTO;
+        return model;
     }
-    public byte[] generateMoInPdfFormat(MoDTO moDTO, String date) throws Exception {
-        List<MoDTO> moDTOList = Collections.singletonList(moDTO);
+    public byte[] generateMoInPdfFormat(MoModel moModel, String date) throws Exception {
+        List<MoModel> moModelList = Collections.singletonList(moModel);
         JasperReport jasperReport = loadJasperReport("mo.jrxml");
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource( moDTOList);
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource( moModelList);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("ReportTitle", "Sample Report");
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);

@@ -1,5 +1,7 @@
 package abl.frd.qremit.converter.model;
 
+import abl.frd.qremit.converter.helper.NumberToWords;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,6 +41,33 @@ public class MoModel {
     private Long totalNumberApi;
     @Column(name = "total_amount_api", length=30, nullable = false)
     private BigDecimal totalAmountApi;
+    @Column(name = "grand_total_number", length = 20)
+    private Long grandTotalNumber= 0L;
+    @Column(name = "grand_total_amount", length=30, nullable = false)
+    private BigDecimal grandTotalAmount = BigDecimal.ZERO;
+
+    public Long doSumGrandTotalNumber(Long totalNumber){
+        return this.grandTotalNumber = this.grandTotalNumber+totalNumber;
+    }
+    public BigDecimal doSumGrandTotalAmount(BigDecimal totalAmount){
+        return this.grandTotalAmount = this.grandTotalAmount.add(totalAmount);
+    }
+
+    public Long getGrandTotalNumber() {
+        return grandTotalNumber;
+    }
+
+    public void setGrandTotalNumber(Long grandTotalNumber) {
+        this.grandTotalNumber = grandTotalNumber;
+    }
+
+    public BigDecimal getGrandTotalAmount() {
+        return grandTotalAmount;
+    }
+
+    public void setGrandTotalAmount(BigDecimal grandTotalAmount) {
+        this.grandTotalAmount = grandTotalAmount;
+    }
 
     public LocalDate getMoDate() {
         return moDate;
@@ -126,5 +155,19 @@ public class MoModel {
 
     public void setTotalAmountApi(BigDecimal totalAmountApi) {
         this.totalAmountApi = totalAmountApi;
+    }
+    public String getTotalAmountInWords() {
+        return convertAmountToWords(this.grandTotalAmount);
+    }
+    private String convertAmountToWords(BigDecimal amount) {
+        return NumberToWords.convertBigDecimalToWords(amount);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
