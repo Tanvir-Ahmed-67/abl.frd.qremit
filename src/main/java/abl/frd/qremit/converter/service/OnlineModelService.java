@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -97,4 +98,18 @@ public class OnlineModelService {
     public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
         onlineModelRepository.updateTempStatusBulk(ids, tempStatus);
     }
+
+    public List<OnlineModel> getDataByTransactionNoOrBenificiaryAccount(String type, String searchValue){
+        List<OnlineModel> onlineModelList = new ArrayList<>();
+        switch (type) {
+            case "1":
+                onlineModelList = onlineModelRepository.findOnlineModelByTransactionNo(searchValue);
+                break;
+            case "2":    
+                onlineModelList =onlineModelRepository.findOnlineModelByBeneficiaryAccount(searchValue);
+                break;
+        }
+        return onlineModelList;
+    }
+
 }

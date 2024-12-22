@@ -33,13 +33,13 @@ public class AccountPayeeModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
-    @GetMapping("/downloadaccountpayee")
+    @GetMapping(value="/downloadaccountpayee", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = accountPayeeModelService.loadAndUpdateUnprocessedAccountPayeeData(0);
         int countRemaining = accountPayeeModelService.countRemainingAccountPayeeData();
-        String fileName = CommonService.generateDynamicFileName("Account_Payee", ".txt");
+        String fileName = CommonService.generateDynamicFileName("Account_Payee_", ".txt");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }

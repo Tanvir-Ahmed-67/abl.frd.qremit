@@ -34,13 +34,13 @@ public class CocModelController {
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(file);
     }
-    @GetMapping("/downloadcoc")
+    @GetMapping(value="/downloadcoc", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = cocModelService.loadAndUpdateUnprocessedCocData(0,0);
         int countRemaining = cocModelService.countRemainingCocData();
-        String fileName = CommonService.generateDynamicFileName("COC", ".txt");
+        String fileName = CommonService.generateDynamicFileName("COC_", ".txt");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }

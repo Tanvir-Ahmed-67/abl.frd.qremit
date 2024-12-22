@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.*;
 
 @Controller
 public class CocPaidModelController {
@@ -44,6 +45,10 @@ public class CocPaidModelController {
         if (CommonService.hasCSVFormat(file)) {
             if (!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
+                    Map<String, Object> resp = cocPaidModelService.save(file, userId, exchangeCode);
+                    model = CommonService.viewUploadStatus(resp, model);
+                    return CommonService.uploadSuccesPage;
+                    /*
                     fileInfoModelObject = cocPaidModelService.save(file, userId, exchangeCode);
                     if (fileInfoModelObject != null) {
                         model.addAttribute("fileInfo", fileInfoModelObject);
@@ -53,6 +58,7 @@ public class CocPaidModelController {
                         model.addAttribute("message", message);
                         return CommonService.uploadSuccesPage;
                     }
+                        */
                 } catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);

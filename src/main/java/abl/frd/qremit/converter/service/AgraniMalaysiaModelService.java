@@ -85,7 +85,7 @@ public class AgraniMalaysiaModelService {
                     agraniMalaysiaModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(agraniMalaysiaModels.size()));
                 fileInfoModel.setIsSettlement(0);
@@ -149,7 +149,6 @@ public class AgraniMalaysiaModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
                 AgraniMalaysiaModel agraniMalaysiaDataModel = new AgraniMalaysiaModel();
                 agraniMalaysiaDataModel = CommonService.createDataModel(agraniMalaysiaDataModel, data);
                 agraniMalaysiaDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
@@ -250,10 +249,15 @@ public class AgraniMalaysiaModelService {
                     continue;
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
+                String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
+                if(!CommonService.convertStringToInt(typeFlag).equals(3)){
+                    String msg = "Invalid Remittence Type for BEFTN";
+                    CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
                 AgraniMalaysiaModel agraniMalaysiaDataModel = new AgraniMalaysiaModel();
                 agraniMalaysiaDataModel = CommonService.createDataModel(agraniMalaysiaDataModel, data);
-                agraniMalaysiaDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+                agraniMalaysiaDataModel.setTypeFlag(typeFlag);
                 agraniMalaysiaDataModel.setUploadDateTime(currentDateTime);
                 agraniMalaysiaDataModelList.add(agraniMalaysiaDataModel);
             }

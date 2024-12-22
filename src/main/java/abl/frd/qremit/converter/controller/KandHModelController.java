@@ -1,9 +1,4 @@
 package abl.frd.qremit.converter.controller;
-
-import abl.frd.qremit.converter.helper.MyUserDetails;
-import abl.frd.qremit.converter.model.User;
-import abl.frd.qremit.converter.service.CommonService;
-import abl.frd.qremit.converter.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,27 +10,30 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import abl.frd.qremit.converter.service.NecUkModelService;
+import abl.frd.qremit.converter.helper.MyUserDetails;
+import abl.frd.qremit.converter.model.User;
+import abl.frd.qremit.converter.service.KandHModelService;
+import abl.frd.qremit.converter.service.CommonService;
+import abl.frd.qremit.converter.service.MyUserDetailsService;
 import java.util.*;
 
 @Controller
-public class NecUkModelController {
+public class KandHModelController {
     private final MyUserDetailsService myUserDetailsService;
-    private final NecUkModelService necUkModelService;
     private final CommonService commonService;
-    
+    private final  KandHModelService kandhModelService;
+
     @Autowired
-    public NecUkModelController(NecUkModelService necUkModelService,MyUserDetailsService myUserDetailsService, CommonService commonService){
+    public KandHModelController(KandHModelService kandhModelService, MyUserDetailsService myUserDetailsService, CommonService commonService) {
         this.myUserDetailsService = myUserDetailsService;
-        this.necUkModelService = necUkModelService;
+        this.kandhModelService = kandhModelService;
         this.commonService = commonService;
     }
-    
-    @PostMapping("/necukUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode,
-        @RequestParam("nrtaCode") String nrtaCode, @RequestParam("tbl") String tbl, Model model) {
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));  
+
+    @PostMapping("/kandhUpload")
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, 
+        @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, Model model) {
+        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         int userId = 000000000;
         // Getting Logged In user Details in this block
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -46,15 +44,17 @@ public class NecUkModelController {
         }
         String message = "";
         if (CommonService.hasCSVFormat(file)) {
-            if(!commonService.ifFileExist(file.getOriginalFilename())) {
+            if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = necUkModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
+                    Map<String, Object> resp = kandhModelService.save(file, userId, exchangeCode, nrtaCode);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
-                }catch (IllegalArgumentException e) {
-                    model.addAttribute("message", e.getMessage());
+                } catch (IllegalArgumentException e) {
+                    message = e.getMessage();
+                    model.addAttribute("message", message);
                     return CommonService.uploadSuccesPage;
-                }catch (Exception e) {
+                }
+                catch (Exception e) {
                     message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
                     model.addAttribute("message", message);
                     return CommonService.uploadSuccesPage;
@@ -64,7 +64,7 @@ public class NecUkModelController {
             model.addAttribute("message", message);
             return CommonService.uploadSuccesPage;
         }
-        message = "Please Upload a CSV File!";
+        message = "Please Upload a XLXS File!";
         model.addAttribute("message", message);
         return CommonService.uploadSuccesPage;
     }

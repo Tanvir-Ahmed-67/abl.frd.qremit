@@ -33,13 +33,13 @@ public class OnlineModelController {
                 .body(file);
     }
     
-    @GetMapping("/downloadonline")
+    @GetMapping(value="/downloadonline", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = onlineModelService.loadAndUpdateUnprocessedOnlineData(0);
         int countRemaining = onlineModelService.countRemainingOnlineData();
-        String fileName = CommonService.generateDynamicFileName("Online", ".txt");
+        String fileName = CommonService.generateDynamicFileName("Online_", ".txt");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
         return ResponseEntity.ok(resp);
     }

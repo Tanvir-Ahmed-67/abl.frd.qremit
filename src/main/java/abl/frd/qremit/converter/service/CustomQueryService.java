@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.service;
-import java.time.LocalDateTime;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +36,17 @@ public class CustomQueryService {
         return resp;
     }
 
+    public Map<String, Object> getBranchDetailsFromSwiftCode(String swiftCode){
+        Map<String, Object> resp = new HashMap<>();
+        Map<String, Object> swiftDetails = customQueryRepository.getBranchDetailsFromSwiftCode(swiftCode);
+        if((Integer) swiftDetails.get("err") == 0){
+            for(Map<String,Object> rdata: (List<Map<String, Object>>) swiftDetails.get("data")){
+                return rdata;
+            }
+        }
+        return resp;
+    }
+
     public Map<String, Object> calculateTotalAmountForConvertedModel(int type, int fileInfoModelId){
         String tableName = "";
         switch(type){
@@ -56,5 +66,9 @@ public class CustomQueryService {
         tableName = "converted_data_" + tableName;
         if(type == 5)   tableName = "base_data_table_coc_paid";
         return customQueryRepository.calculateTotalAmountForConvertedModel(tableName, fileInfoModelId);
+    }
+
+    public Map<String, Object> getUniqueList(List<String[]> data, String tbl){
+        return customQueryRepository.getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(data, tbl);
     }
 }

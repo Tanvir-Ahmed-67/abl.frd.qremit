@@ -1,24 +1,14 @@
 package abl.frd.qremit.converter.service;
-
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
 @SuppressWarnings("unchecked")
 @Service
 public class ApiT24ModelService {
@@ -36,7 +26,9 @@ public class ApiT24ModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode) {
+    @Autowired
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -50,7 +42,7 @@ public class ApiT24ModelService {
             fileInfoModelRepository.save(fileInfoModel);
 
             //List<ApiT24Model> apiT24Models = csvToApiT24Models(file.getInputStream());
-            Map<String, Object> apiT24Data= csvToApiT24Models(file.getInputStream(), user, fileInfoModel, currentDateTime);
+            Map<String, Object> apiT24Data= csvToApiT24Models(file.getInputStream(), user, fileInfoModel, currentDateTime, tbl);
             List<ApiT24Model> apiT24Models = (List<ApiT24Model>) apiT24Data.get("apiT24ModelList");
             if(apiT24Data.containsKey("errorMessage")){
                 resp.put("errorMessage", apiT24Data.get("errorMessage"));
@@ -89,9 +81,9 @@ public class ApiT24ModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToApiT24Models(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToApiT24Models(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<ApiT24Model> duplicateData;
+        Optional<ApiT24Model> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
@@ -103,6 +95,9 @@ public class ApiT24ModelService {
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String nrtaCode = csvRecord.get(0);
@@ -111,41 +106,68 @@ public class ApiT24ModelService {
                 String amount = csvRecord.get(3).trim();
                 String bankName = csvRecord.get(8);
                 String bankCode = csvRecord.get(9).trim();
-                Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 1);
-                if((Integer) apiCheckResp.get("err") == 1){
-                    resp.put("errorMessage", apiCheckResp.get("msg"));
-                    break;
+                if(i == 1){
+                    Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 1);
+                    if((Integer) apiCheckResp.get("err") == 1){
+                        resp.put("errorMessage", apiCheckResp.get("msg"));
+                        isValidFile = 0;
+                        break;
+                    }
                 }
-                duplicateData = apiT24ModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                ApiT24Model apiT24Model = new ApiT24Model();
-                apiT24Model = CommonService.createDataModel(apiT24Model, data);
-                apiT24Model.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                apiT24Model.setUploadDateTime(currentDateTime);
-                apiT24ModelList.add(apiT24Model);
+                data.put("nrtaCode", nrtaCode);
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
+            if(isValidFile == 1){
+                Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                for(Map<String, Object> data: dataList){
+                    String transactionNo = data.get("transactionNo").toString();
+                    String exchangeCode = data.get("exchangeCode").toString();
+                    String nrtaCode = data.get("nrtaCode").toString();
+                    String bankName = data.get("bankName").toString();
+                    String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+                    String branchCode = data.get("branchCode").toString();
+                    data.remove("nrtaCode");
+                    Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
+                    if((Integer) dupResp.get("isDuplicate") == 1){
+                        duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                        duplicateCount++;
+                        continue;
+                    }
+                
+                    Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, exchangeCode, duplicateData, transactionList);
+                    if((Integer) errResp.get("err") == 1){
+                        errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
+                        continue;
+                    }
+                    if((Integer) errResp.get("err") == 2){
+                        resp.put("errorMessage", errResp.get("msg"));
+                        break;
+                    }
+                    if((Integer) errResp.get("err") == 4){
+                        duplicateMessage += errResp.get("msg");
+                        continue;
+                    }
+                    if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
+                    String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
+                    if(!CommonService.convertStringToInt(typeFlag).equals(1)){
+                        String msg = "Invalid Remittence Type for API";
+                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                    ApiT24Model apiT24Model = new ApiT24Model();
+                    apiT24Model = CommonService.createDataModel(apiT24Model, data);
+                    apiT24Model.setTypeFlag(typeFlag);
+                    apiT24Model.setUploadDateTime(currentDateTime);
+                    apiT24ModelList.add(apiT24Model);
+                    
+                }
+            }
+            
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));

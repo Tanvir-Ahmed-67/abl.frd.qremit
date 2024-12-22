@@ -2,7 +2,6 @@ package abl.frd.qremit.converter.controller;
 
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
-
 import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.ErrorDataModelService;
 import abl.frd.qremit.converter.service.ExchangeHouseModelService;
@@ -27,7 +26,6 @@ import abl.frd.qremit.converter.helper.MyUserDetails;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
-import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.service.DynamicOperationService;
 import abl.frd.qremit.converter.service.LogModelService;
 
@@ -58,7 +56,7 @@ public class ErrorDataController {
         model.addAttribute("errorDataModel", errorDataModel);
         return "pages/user/editErrorForm";
     }
-    @PostMapping("/update")
+    @PostMapping(value="/update", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateErrorDataById(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam Map<String, String> formData, Model model, HttpServletRequest request){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
@@ -96,7 +94,7 @@ public class ErrorDataController {
         return page;
     }
 
-    @PostMapping("/approve")
+    @PostMapping(value="/approve", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> approveErrorDataById(@RequestParam String id){
         int errorDataId = CommonService.convertStringToInt(id);
@@ -127,7 +125,7 @@ public class ErrorDataController {
         return CommonService.getResp(0, "", logData);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping(value="/delete/{id}", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteErrorDataById(@PathVariable int id){
         Map<String, Object> resp = errorDataModelService.deleteErrorDataById(id);

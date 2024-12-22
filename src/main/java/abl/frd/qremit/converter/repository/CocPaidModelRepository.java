@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface CocPaidModelRepository extends JpaRepository<CocPaidModel, Integer> {
-    Optional<CocPaidModel> findByTransactionNoEqualsIgnoreCase(String transactionNo);
+    Optional<CocPaidModel> findByTransactionNoEqualsIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
     @Query("SELECT n FROM CocPaidModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isVoucherGenerated= :isVoucherGenerated and n.uploadDateTime BETWEEN :startDate AND :endDate and n.tempStatus=0")
     List<CocPaidModel> getProcessedDataByUploadDateAndFileId(@Param("fileInfoModelId") int fileInfoModelId, @Param("isVoucherGenerated") int isVoucherGenerated, 
         @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);

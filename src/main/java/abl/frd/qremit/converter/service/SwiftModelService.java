@@ -1,20 +1,13 @@
 package abl.frd.qremit.converter.service;
-
 import java.io.*;
 import java.time.LocalDateTime;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import abl.frd.qremit.converter.helper.RepositoryModelWrapper;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
-import abl.frd.qremit.converter.model.SunmanModel;
 import abl.frd.qremit.converter.model.SwiftModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.AccountPayeeModelRepository;
@@ -22,15 +15,14 @@ import abl.frd.qremit.converter.repository.AlBiladModelRepository;
 import abl.frd.qremit.converter.repository.AlRajiModelRepository;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.repository.CocModelRepository;
+import abl.frd.qremit.converter.repository.CustomQueryRepository;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.SwiftModelRepository;
 import abl.frd.qremit.converter.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.regex.*;
-
 
 @SuppressWarnings("unchecked")
 @Service
@@ -61,6 +53,8 @@ public class SwiftModelService {
     DynamicOperationService dynamicOperationService;
     @Autowired
     SwiftModelRepository swiftModelRepository;
+    @Autowired
+    CustomQueryService customQueryService;
 
     private Map<String, RepositoryModelWrapper<?>> repositoryModelMap = new HashMap<>();
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
@@ -281,12 +275,12 @@ public class SwiftModelService {
         // Extract branch code from `:57A:`
         String branchCodeStr = extractField(rawData, ":57A:", "(?s).*?(?=:\\d{2}|\\z)");
         String branchCode = branchCodeStr != null ? branchCodeStr.replaceAll("\\s+", " ").trim() : "";
-
-        data.put("branchCode", branchCode);
+        
         // Extract bank name and branch name from `:57D:`
         String bankDetails = extractField(rawData, ":57D:", "(?s).*?(?=:\\d{2}|$)");
         String bankName = "";
         String branchName = "";
+        String bankCode = "";
         if (bankDetails != null) {
             String[] bankLines = bankDetails.trim().split("\\n", 2);
             if (bankLines.length > 0 && bankLines[0].contains("-")) {
@@ -295,10 +289,20 @@ public class SwiftModelService {
             branchName = bankLines.length > 1 ? bankLines[1].trim() : "";
         }
         if(bankName.isEmpty()){
-            if(branchCode.toUpperCase().startsWith("AGBKBD"))   bankName = "Agrani Bank";
+            if(branchCode.toUpperCase().startsWith("AGBKBD")){
+                bankName = "Agrani Bank";
+                Map<String, Object> branchDetails = customQueryService.getBranchDetailsFromSwiftCode(branchCode);
+                if(!branchDetails.isEmpty()){
+                    branchCode = branchDetails.get("branch_code").toString();
+                    branchName = branchDetails.get("branch_name").toString();
+                }
+                bankCode = "11";
+            }   
         }
         data.put("bankName", bankName);
         data.put("branchName", branchName);
+        data.put("branchCode", branchCode);
+        data.put("bankCode", bankCode);
     
         String beneficiaryBlock = extractField(rawData, ":59:", "(?s).*?(?=:\\d{2}|$\\\\z)");
                 
@@ -311,8 +315,8 @@ public class SwiftModelService {
         // Extract purpose of remittance from `:70:`
         String purpose = extractField(rawData, ":70:", "(?s).*?(?=:\\d{2}|$)");
         data.put("purposeOfRemittance", purpose != null ? purpose.trim() : "");
-        data.put("branchName","");
-        String[] fields = {"remitterMobile","beneficiaryMobile","bankCode","draweeBranchName","draweeBranchCode","sourceOfIncome","processFlag","processedBy","processedDate"};
+       // data.put("branchName","");
+        String[] fields = {"remitterMobile","beneficiaryMobile","draweeBranchName","draweeBranchCode","sourceOfIncome","processFlag","processedBy","processedDate"};
         for(String field: fields)   data.put(field, "");
         //System.out.println(data); // Debugging output
         return data;

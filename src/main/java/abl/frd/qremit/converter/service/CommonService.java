@@ -88,7 +88,8 @@ public class CommonService {
                         contentType.equalsIgnoreCase("application/csv") ||
                         contentType.equalsIgnoreCase("application/vnd.ms-excel") ||
                         contentType.equalsIgnoreCase("text/plain") ||
-                        contentType.equalsIgnoreCase("application/vnd.oasis.opendocument.spreadsheet"));
+                        contentType.equalsIgnoreCase("application/vnd.oasis.opendocument.spreadsheet")||
+                        contentType.equalsIgnoreCase("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
     }
     public boolean ifFileExist(String fileName){
         if (fileInfoModelRepository.findByFileName(fileName) != null) {
@@ -220,10 +221,14 @@ public class CommonService {
         return onlineModel;
     }
 
-
     public static Object getPropertyValue(Object obj, String methodName) throws Exception {
         Method method = obj.getClass().getMethod(methodName);
         return method.invoke(obj);
+    }
+    
+    public static Object findDynamicMethodByParameter(Object obj, String methodName, Object params) throws Exception{
+        Method method = obj.getClass().getMethod(methodName, params.getClass());
+        return method.invoke(obj, params);
     }
 
     public static <T> List<CocModel> generateCocModelList(List<T> models, LocalDateTime uploadDateTime) {
@@ -539,7 +544,8 @@ public class CommonService {
         fileInfoModel.setAccountPayeeModelList(accountPayeeModelList);
         fileInfoModel.setBeftnModelList(beftnModelList);
         fileInfoModel.setOnlineModelList(onlineModelList);
-        Double totalAmount = 0.0;
+        Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
+        Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
 
         if(cocModelList != null){
             for (CocModel cocModel : cocModelList) {
@@ -1071,6 +1077,7 @@ public class CommonService {
                     str = cell.getDateCellValue().toString();
                 } else {
                     str = String.valueOf(cell.getNumericCellValue());
+                    //str = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
                 }
                 break;
             case BOOLEAN:
@@ -1082,4 +1089,32 @@ public class CommonService {
         return str;
     }
 
+    public static List<String[]> setUniqueIndexList(String transactionNo, String amount, String exchangeCode, List<String[]> data){
+        data.add(new String[]{transactionNo, amount, exchangeCode});
+        return data;
+    }
+
+    public static Map<String, Object> getDuplicateTransactionNo(String transactionNo, Map<String, Object> modelResp){
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("isDuplicate", 0);
+        if((Integer) modelResp.get("err") == 0){
+            List<Map<String, Object>> data = (List<Map<String, Object>>) modelResp.get("data");
+            if(data.isEmpty())  return resp;
+            for(Map<String, Object> rdata: data){
+                String transNo = rdata.get("transaction_no").toString();
+                if(transactionNo.toLowerCase().equals(transNo.toLowerCase())){
+                    resp.put("isDuplicate", 1);
+                    break;
+                }
+            }
+        }
+        return resp;
+    }
+
+    public static Map<String, Object> getSerachType(){
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("1", "Transaction No");
+        resp.put("2", "Beneficiary Account No");
+        return resp;
+    }
 }

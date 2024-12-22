@@ -1,6 +1,8 @@
 package abl.frd.qremit.converter.repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import abl.frd.qremit.converter.model.ApiBeftnModel;
 import abl.frd.qremit.converter.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,9 +24,9 @@ public class CustomQueryRepository {
     }
 
     public Map<String, Object> getFileTotalExchangeWise(String starDateTime, String endDateTime, int userId){
-        String fields = "exchange_code, REPLACE(FORMAT(SUM(total_amount), 2),',','')  as totalAmount, SUM(DISTINCT CAST(IFNULL(total_count, '0') AS UNSIGNED)) AS totalCount";
-        fields += " ,SUM(DISTINCT CAST(IFNULL(online_count, '0') AS UNSIGNED)) AS onlineCount, SUM(DISTINCT CAST(IFNULL(account_payee_count, '0') AS UNSIGNED)) AS accountPayeeCount";
-        fields += " ,SUM(DISTINCT CAST(IFNULL(coc_count, '0') AS UNSIGNED)) AS cocCount, SUM(DISTINCT CAST(IFNULL(beftn_count, '0') AS UNSIGNED)) AS beftnCount";
+        String fields = "exchange_code, REPLACE(FORMAT(SUM(total_amount), 2),',','')  as totalAmount, SUM(CAST(IFNULL(total_count, '0') AS UNSIGNED)) AS totalCount";
+        fields += " ,SUM(CAST(IFNULL(online_count, '0') AS UNSIGNED)) AS onlineCount, SUM(CAST(IFNULL(account_payee_count, '0') AS UNSIGNED)) AS accountPayeeCount";
+        fields += " ,SUM(CAST(IFNULL(coc_count, '0') AS UNSIGNED)) AS cocCount, SUM(CAST(IFNULL(beftn_count, '0') AS UNSIGNED)) AS beftnCount";
         fields += " ,SUM(error_count) AS errorCount";
         String sql = "SELECT " + fields + " FROM upload_file_info where upload_date_time BETWEEN ? AND ?";
         String extra = (userId != 0)   ?    " AND user_id=?":"";
@@ -50,5 +52,28 @@ public class CustomQueryRepository {
         params.put("1", routingNo);
         return commonService.getData(queryStr,params);
     }
+
+    public Map<String,Object> getBranchDetailsFromSwiftCode(String swiftCode){
+        Map<String, Object> params = new HashMap<>();
+        String queryStr = "SELECT * FROM swift_code_to_branch_code  where swift_code = ?";
+        params.put("1", swiftCode);
+        return commonService.getData(queryStr,params);
+    }
+    
+    public Map<String, Object> getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
+        tbl = "base_data_table_" + tbl;
+        Map<String, Object> params = new HashMap<>();
+        List<String> tuples = new ArrayList<>();
+        for(String[] record: data){
+            tuples.add(String.format("('%s', %s, '%s')", record[0], record[1], record[2]));
+        }
+        
+        String sql = "SELECT * FROM %s WHERE (transaction_no, CAST(amount AS CHAR), exchange_code) IN ( ";
+        String queryStr = String.format(sql, tbl);
+        StringBuilder queryBuilder = new StringBuilder(queryStr);
+        queryBuilder.append(String.join(", ", tuples)).append(")");
+        return commonService.getData(queryBuilder.toString(),params); 
+    }
+        
 
 }

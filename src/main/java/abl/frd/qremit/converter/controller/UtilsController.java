@@ -74,7 +74,8 @@ public class UtilsController {
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         if(exchangeHouseModel != null && exchangeCode.equals(exchangeHouseModel.getExchangeCode())){
             model.addAttribute("nrtaCode", exchangeHouseModel.getNrtaCode());
-            redirectUrl = "/" + exchangeHouseModel.getBaseTableName() + "Upload?nrtaCode=" + exchangeHouseModel.getNrtaCode();  //generate dynamic URL from database
+            String tbl = exchangeHouseModel.getBaseTableName();
+            redirectUrl = "/" + exchangeHouseModel.getBaseTableName() + "Upload?nrtaCode=" + exchangeHouseModel.getNrtaCode() + "&tbl=" + tbl;  //generate dynamic URL from database
         }
         return "forward:" + redirectUrl;
     }
@@ -115,7 +116,7 @@ public class UtilsController {
         return "pages/admin/adminApiUpload";
     }
 
-    @GetMapping("/getSettlement")
+    @GetMapping(value="/getSettlement", produces = "application/json")
     @ResponseBody
     public Map<String, Object> getSettlement(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @RequestParam(defaultValue = "") String currentDate){
         Map<String, Object> resp = new HashMap<>();

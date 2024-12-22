@@ -65,3 +65,8 @@ body.loading .lmodal {
     display: block;
 }
 
+/* hide div */
+.hdiv{
+    display: none;
+}
+
