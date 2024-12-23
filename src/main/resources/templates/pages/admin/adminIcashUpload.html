@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head-css"></head>
+<body th:fragment="fileUploadForm">
+    <div id="app"><!--main content-->
+        <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
+        <div id="main"><!--content Id-->
+            <span th:replace="fragments/header :: header"></span>
+            <div class="main-content container-fluid">
+                <div class="page-title">
+                    <div class="row">
+                        <div class="col-12 col-md-6 order-md-1 order-last">
+                            <h3>Generation Of MO</h3>
+                        </div>
+                        <div class="col-12 col-md-6 order-md-2 order-first">
+                            <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#">Main Menu</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Report Management</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <section id="input-style">
+                    <div class="row" style="min-height: 58vh">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div id="up-form">
+                                        <form th:action="@{#}" id="adminUploadIcashForm" method="POST" enctype="multipart/form-data">
+                                            <div class="row">
+                                                <div class="col-2"><label>MO Generation Date</label></div>
+                                                <div class="col-2 form-group">
+                                                    <input class="form-control" type="text" name="report_date" id="report_date" placeholder="Report Date" th:value="${currentDate}" readonly="true">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <form th:action="@{/generateMo}" th:object="${mo}"  th:name="moGenerationForm" method="post" class="form form-horizontal">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row align-items-center">
+                                                    <div class="col-lg-2 col-3">
+                                                        <label class="col-form-label">Total ICash Number</label>
+                                                    </div>
+                                                    <div class="col-lg-10 col-9">
+                                                        <input type="text" id="total_number" class="form-control" th:name="totalNumberIcash" th:field="*{totalNumberIcash}"  required placeholder="Total Number" th:minlength="1" th:maxlength="6">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row align-items-center">
+                                                    <div class="col-lg-2 col-3">
+                                                        <label class="col-form-label">Total ICash Amount</label>
+                                                    </div>
+                                                    <div class="col-lg-10 col-9">
+                                                        <input type="text" id="total_amount" class="form-control" th:name="totalAmountIcash" th:field="*{totalAmountIcash}" required placeholder="Total Amount">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div id="moBtn" class="text-center">
+                                        <button type="submit" class="btn btn-sm btn-danger generate_mo">Generate Mo</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div id="modal_wrap"></div><div class="lmodal"></div>
+            </div>
+            <span th:replace="fragments/footer :: footer"></span>
+        </div>
+    </div>
+    <script src="/js/script.js"></script>
+    <script src="/js/admin_api_upload.js"></script>
+</body>
+</html>

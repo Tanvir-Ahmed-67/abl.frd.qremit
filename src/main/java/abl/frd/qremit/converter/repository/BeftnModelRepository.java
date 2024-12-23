@@ -24,10 +24,11 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     @Query("SELECT n FROM BeftnModel n")
     List<BeftnModel> findAllBeftnModelForIncentive();
     Integer countByIsProcessedMain(int isProcessed);
-    Integer countByIsProcessedIncentive(int isProcessed);
+    @Query("SELECT COUNT(n) FROM BeftnModel n WHERE n.isProcessedIncentive = :isProcessed AND n.incentive <> 0")
+    Integer countByIsProcessedIncentive(@Param("isProcessed") int isProcessed);
     @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedMain= :isProcessed")
     List<BeftnModel> loadUnprocessedBeftnMainData(@Param("isProcessed") int isProcessed);
-    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedIncentive= :isProcessed")
+    @Query("SELECT n FROM BeftnModel n WHERE n.isProcessedIncentive= :isProcessed AND n.incentive <> 0")
     List<BeftnModel> loadUnprocessedBeftnIncentiveData(@Param("isProcessed") int isProcessed);
     @Query("SELECT n FROM BeftnModel n WHERE n.isProcessed= :isProcessed and n.isVoucherGenerated= :isVoucherGenerated and n.downloadDateTime BETWEEN :startDate AND :endDate")
     List<BeftnModel> getProcessedDataByUploadDate(@Param("isProcessed") int isProcessed, @Param("isVoucherGenerated") int isVoucherGenerated, 
