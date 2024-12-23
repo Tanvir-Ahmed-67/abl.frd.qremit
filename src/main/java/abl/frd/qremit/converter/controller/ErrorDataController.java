@@ -132,8 +132,7 @@ public class ErrorDataController {
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
         int userId = (int) userData.get("userid");
-        int isAdmin = role.get("isAdmin");
-        if(isAdmin == 1){
+        if(role.get("isAdmin") == 1){
             userId = (int) userData.get("adminUserId");
         }
         
