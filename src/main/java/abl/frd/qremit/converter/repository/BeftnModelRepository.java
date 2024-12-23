@@ -53,6 +53,12 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     int updateTempStatusBulk(@Param("ids") List<Integer> ids, @Param("tempStatus") int tempStatus);
     List<BeftnModel> findBeftnModelByTransactionNo(String transactionNo);
     List<BeftnModel> findBeftnModelByBeneficiaryAccount(String beneficiaryAccount);
+    @Query("SELECT n FROM BeftnModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isDownloaded= :isDownloaded")
+    List<BeftnModel> findBeftnModelByFileInfoModelIdAndIsDownloaded(@Param("fileInfoModelId") int fileInfoModelId, @Param("isDownloaded") int isDownloaded);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM BeftnModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
+    void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
 
 }
 /*

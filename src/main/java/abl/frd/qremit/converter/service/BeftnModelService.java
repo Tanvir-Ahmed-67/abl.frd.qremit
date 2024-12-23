@@ -147,4 +147,8 @@ public class BeftnModelService {
         return beftnModelList;
     }
 
+    public List<BeftnModel> findBeftnModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
+        return beftnModelRepository.findBeftnModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
+    }
+
 }

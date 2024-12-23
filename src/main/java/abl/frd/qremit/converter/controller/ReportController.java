@@ -87,10 +87,12 @@ public class ReportController {
     
     @GetMapping(value="/report", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
+    public ResponseEntity<Map<String, Object>> getUploadedFileInfo(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date,
+    @RequestParam(defaultValue = "") String type){
         Map<String, Object> resp = new HashMap<>();
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         if(date.isEmpty()){
-            date = CommonService.getCurrentDate("yyyy-MM-dd");
+            date = currentDate;
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
@@ -115,7 +117,7 @@ public class ReportController {
         Map<String, Object> exchangeResp = customQueryService.getFileTotalExchangeWise(date, userId);
         if((Integer) exchangeResp.get("err") == 1)  return ResponseEntity.ok(exchangeResp);
         List<Map<String,Object>> exchangeData = (List<Map<String, Object>>) exchangeResp.get("data");
-        
+        String btn = "";
         for (FileInfoModel fModel : fileInfoModel) {
             Map<String, Object> dataMap = new HashMap<>();
             Map<String, Object> exchangeSummary = new HashMap<>();
@@ -124,9 +126,15 @@ public class ReportController {
                 exchangeSummary = reportService.calculateExchangeWiseSummary(exchangeData, previousExchangeCode);
                 if(exchangeSummary.containsKey("totalAmount"))  dataList.add(exchangeSummary);
             }
+            int id = fModel.getId();
+            
+            btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(id),"View");
+            //delete button shows only for admin using current date data and type = 5 
+            if(userId == 0 && ("5").equals(type) && date.equals(currentDate)) btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete_file", String.valueOf(id),"Delete");
+            action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
 
-            action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
-            action += "<input type='hidden' id='exCode_" + fModel.getId() + "' value='" + fModel.getExchangeCode() + "' />";
+            //action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_exchange", String.valueOf(fModel.getId()),"View");
+            action += "<input type='hidden' id='exCode_" + id + "' value='" + fModel.getExchangeCode() + "' />";
             action += "<input type='hidden' id='base_url' value='" + baseUrl + "' />";
             int cocCount = CommonService.convertStringToInt(fModel.getCocCount());
             totalCocCount += cocCount;
@@ -472,6 +480,18 @@ public class ReportController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getSearch(@RequestParam("searchType") String searchType, @RequestParam("searchValue") String searchValue){
         Map<String, Object> resp = reportService.getSearch(searchType, searchValue);
+        return ResponseEntity.ok(resp);
+    }
+
+    @DeleteMapping(value="/file/delete/{id}", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteByFileInfoModelById(@PathVariable int id){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        int userId = (int) userData.get("userid");
+        if(userId != 0) return ResponseEntity.ok(CommonService.getResp(1, "You are not allowed to perform this operation", null));
+        Map<String, Object> resp = reportService.deleteByFileInfoModelById(id);
         return ResponseEntity.ok(resp);
     }
 

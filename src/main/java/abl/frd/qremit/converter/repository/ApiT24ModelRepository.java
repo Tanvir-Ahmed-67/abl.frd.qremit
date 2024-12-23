@@ -10,4 +10,5 @@ public interface ApiT24ModelRepository extends JpaRepository<ApiT24Model, Intege
     Optional<ApiT24Model> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
     List<ApiT24Model> findAllByFileInfoModelId(int fileInfoModelId);
     Page<ApiT24Model> findAllByFileInfoModelId(int fileInfoModelId, Pageable pageable);
+    List<ApiT24Model> findAllByFileInfoModelIdOrderByExchangeCodeAsc(int fileInfoModelId);
 }

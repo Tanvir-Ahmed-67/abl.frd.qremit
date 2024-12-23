@@ -27,4 +27,6 @@ public interface CocPaidModelRepository extends JpaRepository<CocPaidModel, Inte
     int updateIsVoucherGeneratedBulk(@Param("ids") List<Integer> ids, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
     @Query("SELECT n FROM CocPaidModel n WHERE n.fileInfoModel.id=:id")
     List<CocPaidModel> findAllCocPaidModelHavingFileInfoId(int id);
+    @Query("SELECT n FROM CocPaidModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isVoucherGenerated= :isVoucherGenerated")
+    List<CocPaidModel> findCocPaidModelByFileInfoModelIdAndIsVoucherGenerated(@Param("fileInfoModelId") int fileInfoModelId, @Param("isVoucherGenerated") int isVoucherGenerated);
 }

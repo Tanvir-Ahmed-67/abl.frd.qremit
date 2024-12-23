@@ -1,10 +1,15 @@
 package abl.frd.qremit.converter.repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import abl.frd.qremit.converter.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
+
 
 @Repository
 public class CustomQueryRepository {
@@ -71,6 +76,22 @@ public class CustomQueryRepository {
         StringBuilder queryBuilder = new StringBuilder(queryStr);
         queryBuilder.append(String.join(", ", tuples)).append(")");
         return commonService.getData(queryBuilder.toString(),params); 
+    }
+
+    @Transactional
+    public Map<String, Object> deleteByFileInfoModelId(String entityName, int fileInfoModelId){
+        Map<String, Object> resp = CommonService.getResp(1, "Data not deleted", null);
+        try{
+            Query query = entityManager.createQuery("DELETE FROM " + entityName + " e WHERE e.fileInfoModel.id = :fileInfoModelId");
+            query.setParameter("fileInfoModelId", fileInfoModelId);
+            int affectedRows = query.executeUpdate();
+            resp = CommonService.getResp(0, "Data deleted successful", null);
+            resp.put("affectedRows", affectedRows);
+        }catch(Exception e){
+            e.printStackTrace();
+            return CommonService.getResp(1, e.getMessage(), null);
+        }
+        return resp;
     }
         
 
