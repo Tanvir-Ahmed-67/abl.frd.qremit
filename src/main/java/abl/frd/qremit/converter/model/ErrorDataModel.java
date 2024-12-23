@@ -2,6 +2,8 @@ package abl.frd.qremit.converter.model;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="error_data_table", 
     uniqueConstraints = @UniqueConstraint(columnNames = {"transaction_no", "amount", "exchange_code"}),
@@ -68,12 +70,12 @@ public class ErrorDataModel {
     private int updateStatus = 0;
 
     @ManyToOne(cascade= { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    //@ManyToOne(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name="file_info_model_id")
     private FileInfoModel fileInfoModel;
     
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
-    //@ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
     @JoinColumn(name="user_id")
     private User userModel;
           

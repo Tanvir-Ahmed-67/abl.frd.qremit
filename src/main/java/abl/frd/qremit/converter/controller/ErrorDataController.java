@@ -1,6 +1,8 @@
 package abl.frd.qremit.converter.controller;
 
 import java.util.*;
+
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.servlet.http.HttpServletRequest;
 import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.ErrorDataModelService;
@@ -127,8 +129,18 @@ public class ErrorDataController {
 
     @DeleteMapping(value="/delete/{id}", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> deleteErrorDataById(@PathVariable int id){
-        Map<String, Object> resp = errorDataModelService.deleteErrorDataById(id);
+    public ResponseEntity<Map<String, Object>> deleteErrorDataById(@AuthenticationPrincipal MyUserDetails userDetails, @PathVariable int id, HttpServletRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
+        int userId = (int) userData.get("userid");
+        int isAdmin = role.get("isAdmin");
+        if(isAdmin == 1){
+            userId = (int) userData.get("adminUserId");
+        }
+        
+        Map<String, Object> resp = errorDataModelService.deleteErrorDataById(id, request, userId);
         if((Integer) resp.get("err") == 0){
             int fileInfoModelId = (Integer) resp.get("fileInfoModelId");
             FileInfoModel fileInfoModel = fileInfoModelService.findFileInfoModelById(fileInfoModelId);
