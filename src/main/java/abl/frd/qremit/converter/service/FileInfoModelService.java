@@ -1,22 +1,18 @@
 package abl.frd.qremit.converter.service;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.FileInfoModelDTO;
 import abl.frd.qremit.converter.repository.AccountPayeeModelRepository;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.repository.CocModelRepository;
-import abl.frd.qremit.converter.repository.CustomQueryRepository;
 import abl.frd.qremit.converter.repository.ErrorDataModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.OnlineModelRepository;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 @Service
 public class FileInfoModelService {
