@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
 import net.sf.jasperreports.engine.*;
@@ -51,6 +54,8 @@ public class ReportService {
     TemporaryReportService temporaryReportService;
     @Autowired
     CommonService commonService;
+    @Autowired
+    LogModelService logModelService;
     
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
@@ -717,7 +722,7 @@ public class ReportService {
         return dataList;
     }
 
-    public Map<String, Object> deleteByFileInfoModelById(int id){
+    public Map<String, Object> deleteByFileInfoModelById(int id, int userId, HttpServletRequest request){
         Map<String, Object> resp = new HashMap<>();
         if(id == 0) return CommonService.getResp(1, "Please select id", null);
         String pmsg = "Data has processed from this file. You can't delete it";
@@ -753,6 +758,13 @@ public class ReportService {
 
         if(cnt > 0) return CommonService.getResp(1, pmsg, null);
         resp = fileInfoModelService.deleteFileInfoModel(fileInfoModel);
+        if((Integer) resp.get("err") == 0){
+            Map<String, Object> info = new HashMap<>();
+            info.put("fileInfoModel", fileInfoModel);
+            String exchangeCode = fileInfoModel.getExchangeCode();
+            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, "", "3", info, request);
+            if((Integer) logResp.get("err") == 1)   return logResp;
+        }
         return resp;
     }
     

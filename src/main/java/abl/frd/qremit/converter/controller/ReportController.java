@@ -4,6 +4,8 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.model.ExchangeReportDTO;
 import abl.frd.qremit.converter.model.FileInfoModel;
@@ -485,13 +487,17 @@ public class ReportController {
 
     @DeleteMapping(value="/file/delete/{id}", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> deleteByFileInfoModelById(@PathVariable int id){
+    public ResponseEntity<Map<String, Object>> deleteByFileInfoModelById(@PathVariable int id, HttpServletRequest request){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         int userId = (int) userData.get("userid");
         if(userId != 0) return ResponseEntity.ok(CommonService.getResp(1, "You are not allowed to perform this operation", null));
-        Map<String, Object> resp = reportService.deleteByFileInfoModelById(id);
+        Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
+        if(role.get("isAdmin") == 1){
+            userId = (int) userData.get("adminUserId");
+        }
+        Map<String, Object> resp = reportService.deleteByFileInfoModelById(id, userId, request);
         return ResponseEntity.ok(resp);
     }
 
