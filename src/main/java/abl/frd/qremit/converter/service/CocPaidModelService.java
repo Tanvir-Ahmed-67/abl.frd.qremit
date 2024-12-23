@@ -255,4 +255,8 @@ public class CocPaidModelService {
     public List<CocPaidModel> findAllCocPaidModelHavingFileInfoId(int id){
         return cocPaidModelRepository.findAllCocPaidModelHavingFileInfoId(id);
     }
+
+    public List<CocPaidModel> findCocPaidModelByFileInfoModelIdAndIsVoucherGenerated(int fileInfoModelId){
+        return cocPaidModelRepository.findCocPaidModelByFileInfoModelIdAndIsVoucherGenerated(fileInfoModelId, 1);
+    }
 }

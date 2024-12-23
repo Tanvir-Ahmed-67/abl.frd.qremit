@@ -10,4 +10,5 @@ public interface ApiBeftnModelRepository extends JpaRepository<ApiBeftnModel, In
     Optional<ApiBeftnModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
     List<ApiBeftnModel> findAllByFileInfoModelId(int fileInfoModelId);
     Page<ApiBeftnModel> findByFileInfoModelId(int fileInfoModelId, Pageable pageable);
+    List<ApiBeftnModel> findAllByFileInfoModelIdOrderByExchangeCodeAsc(int fileInfoModelId);
 }

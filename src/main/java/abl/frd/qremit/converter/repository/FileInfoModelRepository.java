@@ -35,5 +35,9 @@ public interface FileInfoModelRepository extends JpaRepository<FileInfoModel, In
     @Modifying
     @Query("UPDATE FileInfoModel n SET n.errorCount=:errorCount WHERE n.id=:id")
     int updateErrorCountById(@Param("id") int id, @Param("errorCount") int errorCount);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM FileInfoModel n WHERE n.id=:id")
+    int deleteFileInfoModelById(@Param("id") int id);
 
 }

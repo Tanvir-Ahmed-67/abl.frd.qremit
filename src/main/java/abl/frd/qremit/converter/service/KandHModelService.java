@@ -81,7 +81,7 @@ public class KandHModelService {
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(kandhModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setKandHModel(kandhModels);
+                fileInfoModel.setKandhModel(kandhModels);
                 
                 // SAVING TO MySql Data Table
                 try{

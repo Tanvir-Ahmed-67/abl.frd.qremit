@@ -15,7 +15,6 @@ import abl.frd.qremit.converter.repository.AlBiladModelRepository;
 import abl.frd.qremit.converter.repository.AlRajiModelRepository;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.repository.CocModelRepository;
-import abl.frd.qremit.converter.repository.CustomQueryRepository;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.SwiftModelRepository;
@@ -56,7 +55,6 @@ public class SwiftModelService {
     @Autowired
     CustomQueryService customQueryService;
 
-    private Map<String, RepositoryModelWrapper<?>> repositoryModelMap = new HashMap<>();
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -136,7 +134,7 @@ public class SwiftModelService {
                 int duplicateCount = 0;
                 List<String> transactionList = new ArrayList<>();
                 for(Map<String, Object> data: transactions){
-                    System.out.println(data);
+                    //System.out.println(data);
                     String transactionNo = data.get("transactionNo").toString();
                     String amount = data.get("amount").toString();
                     String beneficiaryAccount = data.get("beneficiaryAccount").toString();
@@ -151,7 +149,7 @@ public class SwiftModelService {
                         continue; // Skip adding this duplicate transaction
                     }
                     Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, duplicateMessage, duplicateData, transactionList);
-                    System.out.println(errResp);
+                    //System.out.println(errResp);
                     if ((Integer) errResp.get("err") == 1) {
                         errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
                         continue; // Skip this transaction due to errors

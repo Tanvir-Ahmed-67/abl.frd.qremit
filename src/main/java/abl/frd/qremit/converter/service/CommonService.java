@@ -11,6 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.lang.reflect.Field;
@@ -1116,5 +1119,20 @@ public class CommonService {
         resp.put("1", "Transaction No");
         resp.put("2", "Beneficiary Account No");
         return resp;
+    }
+
+    public static String serializeInfoToJson(Map<String, Object> info){
+        String infoStr = "";
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        try{
+            infoStr = objectMapper.writeValueAsString(info);
+        }catch(JsonProcessingException e){
+            e.printStackTrace();
+            return null;
+        }
+        return infoStr;
     }
 }

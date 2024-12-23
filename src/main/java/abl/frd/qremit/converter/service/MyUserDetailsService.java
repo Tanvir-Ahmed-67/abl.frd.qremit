@@ -76,9 +76,12 @@ public class MyUserDetailsService implements UserDetailsService {
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             User user = myUserDetails.getUser();
             resp.put("user", user);
+            resp.put("role", role);
             if(role.get("isUser") == 1){
                 userId = user.getId();
                 if(myUserDetails != null) resp.put("exchangeMap",getLoggedInUserMenu(myUserDetails));
+            }else if(role.get("isAdmin") == 1){
+                resp.put("adminUserId", user.getId());
             }
             resp.put("status", HttpStatus.OK);
         }else{
