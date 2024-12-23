@@ -131,7 +131,7 @@ public class ErrorDataController {
         Map<String, Object> resp = errorDataModelService.deleteErrorDataById(id);
         if((Integer) resp.get("err") == 0){
             int fileInfoModelId = (Integer) resp.get("fileInfoModelId");
-            FileInfoModel fileInfoModel = fileInfoModelService.findAllById(fileInfoModelId);
+            FileInfoModel fileInfoModel = fileInfoModelService.findFileInfoModelById(fileInfoModelId);
             int errorCount = fileInfoModel.getErrorCount();
             errorCount = errorCount - 1;
             fileInfoModelService.updateErrorCountById(fileInfoModelId, errorCount);
