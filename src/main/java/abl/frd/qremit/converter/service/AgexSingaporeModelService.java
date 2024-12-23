@@ -119,6 +119,7 @@ public class AgexSingaporeModelService {
                 String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
+                if(type == 1 && branchCode.startsWith("11"))    branchCode = branchCode.replaceFirst("11", ""); //remove 11 from branch code
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
                     if((Integer) apiCheckResp.get("err") == 1){
