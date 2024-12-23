@@ -778,4 +778,35 @@ public class ReportService {
         return resp;
     }
 
+   //------------------------- Below Methods for getting data from Report Table for generating MO -----------------------
+    public List<Object> getAllBeftnSummaryForMo(LocalDate date){
+        Object[] result = reportModelRepository.getAllBeftnSummaryForMo(date);
+        return getSummary(result);
+    }
+    public List<Object> getAllOtherSummaryForMo(LocalDate date){
+        Object[] result = reportModelRepository.getAllOtherSummaryForMo(date);
+        return getSummary(result);
+    }
+    public List<Object> getAllOnlineSummaryForMo(LocalDate date){
+        Object[] result = reportModelRepository.getAllOnlineSummaryForMo(date);
+        return getSummary(result);
+    }
+    public List<Object> getAllApiSummaryForMo(LocalDate date){
+        Object[] result = reportModelRepository.getAllApiSummaryForMo(date);
+        return getSummary(result);
+    }
+    private List<Object> getSummary(Object[] result) {
+        List<Object> summary = new ArrayList<>();
+        if (result != null && result.length == 1 && result[0] instanceof Object[]) {
+            Object[] innerResult = (Object[]) result[0]; // Extract the nested Object[]
+            Long totalRows = innerResult[0] instanceof Number ? ((Number) innerResult[0]).longValue() : 0L;
+            Double totalAmount = innerResult[1] instanceof Number ? ((Number) innerResult[1]).doubleValue() : 0.0;
+
+            summary.add(totalRows);
+            summary.add(totalAmount);
+        }
+        return summary;
+    }
+    // ---------------------------- End of Methods Block for getting data from Report Table for generating MO -------------------------------
+
 }

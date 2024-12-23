@@ -1,5 +1,8 @@
 package abl.frd.qremit.converter.helper;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class NumberToWords {
     private static final String[] belowTwenty = {
             "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven",
@@ -72,6 +75,25 @@ public class NumberToWords {
             currencyInWords += " and " + poyshaInWords + " Poysha";
         }
         currencyInWords = currencyInWords+" Only.";
+
+        return currencyInWords;
+    }
+    public static String convertBigDecimalToWords(BigDecimal amount) {
+        // Split BigDecimal into integer (Taka) and fractional (Poysha) parts
+        BigDecimal[] parts = amount.setScale(2, RoundingMode.DOWN).divideAndRemainder(BigDecimal.ONE);
+        long taka = parts[0].longValue(); // Whole number part (Taka)
+        long poysha = parts[1].multiply(BigDecimal.valueOf(100)).longValue(); // Fractional part (Poysha)
+
+        // Convert Taka and Poysha to words
+        String takaInWords = convertNumberToWords(taka);
+        String poyshaInWords = poysha > 0 ? convertNumberToWords(poysha) : "";
+
+        // Combine Taka and Poysha in the result
+        String currencyInWords = takaInWords + " Taka";
+        if (poysha > 0) {
+            currencyInWords += " and " + poyshaInWords + " Poysha";
+        }
+        currencyInWords += " Only.";
 
         return currencyInWords;
     }

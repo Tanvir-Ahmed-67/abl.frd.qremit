@@ -1,20 +1,17 @@
 package abl.frd.qremit.converter.controller;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import abl.frd.qremit.converter.model.ExchangeHouseModel;
-import abl.frd.qremit.converter.model.ExchangeReportDTO;
-import abl.frd.qremit.converter.model.FileInfoModel;
+import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.helper.NumberToWords;
-import abl.frd.qremit.converter.model.User;
-import abl.frd.qremit.converter.service.ExchangeHouseModelService;
-import abl.frd.qremit.converter.service.FileInfoModelService;
-import abl.frd.qremit.converter.service.MyUserDetailsService;
-import abl.frd.qremit.converter.service.ReportService;
+import abl.frd.qremit.converter.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -28,10 +25,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import abl.frd.qremit.converter.helper.MyUserDetails;
-import abl.frd.qremit.converter.service.CommonService;
-import abl.frd.qremit.converter.service.CustomQueryService;
-import abl.frd.qremit.converter.service.ErrorDataModelService;
-import abl.frd.qremit.converter.service.LogModelService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 @SuppressWarnings("unchecked")
 @Controller
 public class ReportController {
@@ -49,7 +44,9 @@ public class ReportController {
     LogModelService logModelService;
     @Autowired
     CustomQueryService customQueryService;
-    
+    @Autowired
+    MoModelService moModelService;
+
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
         this.myUserDetailsService = myUserDetailsService;
         this.fileInfoModelService = fileInfoModelService;
@@ -362,6 +359,42 @@ public class ReportController {
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         resp = reportService.processReport(currentDate);
         return ResponseEntity.ok(resp);
+    }
+    @GetMapping("/showIcashEntryForm")
+    public String showIcashEntryForm(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        model.addAttribute("currentDate", currentDate);
+        model.addAttribute("mo", new MoModel());
+        return "pages/admin/adminIcashUpload";
+    }
+
+    @RequestMapping(value="/generateMo", method= RequestMethod.POST)
+    public String generateMo(MoModel mo, RedirectAttributes ra, @RequestParam(defaultValue = "html") String format, Model model, @RequestParam(defaultValue = "") String date) {
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        mo.setMoDate(LocalDate.parse(date));
+        MoModel moModel = moModelService.findIfAlreadyGenerated(mo);
+        if (moModel == null) {
+            moModel = moModelService.processAndGenerateMoData(mo);
+        }
+        model.addAttribute("moModel", moModel);
+        model.addAttribute("date", date);
+        return "report/mo";
+    }
+    @PostMapping("/downloadMoInPdfFormat")
+    public ResponseEntity<byte[]> downloadMoInPdfFormat(@RequestParam String date, @ModelAttribute MoModel moModel) throws Exception {
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        MoModel moModelForPdf = moModelService.generateMoDTOForPreparingPdfFile(moModel, date);
+        if(moModelForPdf == null){
+            return ResponseEntity.noContent().build();
+        }
+        byte[] pdfReport = moModelService.generateMoInPdfFormat(moModelForPdf, date);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        String fileName = commonService.generateFileName("MO_", date, ".pdf");
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"" );
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
     }
 
     @GetMapping("/getReportFile")
