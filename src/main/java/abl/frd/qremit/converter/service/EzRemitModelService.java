@@ -36,7 +36,8 @@ public class EzRemitModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CustomQueryService customQueryService;
-    
+    @Autowired
+    CommonService commonService;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -70,7 +71,7 @@ public class EzRemitModelService {
                     ezRemitModel.setUserModel(user);
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(ezRemitModelList, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(ezRemitModelList, fileInfoModel, user, currentDateTime, type);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(ezRemitModelList.size()));
                 fileInfoModel.setIsSettlement(type);

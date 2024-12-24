@@ -47,6 +47,8 @@ public class AgraniMalaysiaModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CustomQueryService customQueryService;
+    @Autowired
+    CommonService commonService;
     
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
@@ -85,7 +87,8 @@ public class AgraniMalaysiaModelService {
                     agraniMalaysiaModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, 0);
+                //Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(agraniMalaysiaModels.size()));
                 fileInfoModel.setIsSettlement(0);
@@ -288,7 +291,7 @@ public class AgraniMalaysiaModelService {
         Map<String, Object> data = new HashMap<>();
         String[] fields = {"beneficiaryMobile","draweeBranchName","draweeBranchCode","purposeOfRemittance","sourceOfIncome","processFlag","processedBy","processedDate","remitterMobile"};
         String branchCode = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(8)));
-        Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode,"");
+        Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode);
         String bankName = "";
         String bankCode = "";
         String branchName = "";

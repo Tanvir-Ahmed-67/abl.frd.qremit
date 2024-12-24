@@ -13,27 +13,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
@@ -498,7 +490,19 @@ public class CommonService {
         return errorMessage;
     }
 
-    public static <T> Map<String, Object> generateFourConvertedDataModel(List<T> model, FileInfoModel fileInfoModel, User user, LocalDateTime currentDateTime, int isProcessed){
+    public Map<String,Object> convertAblRoutingToBranchCode(String branchCode, List<Map<String, Object>> routingData){
+        Map<String,Object> data = new HashMap<>();
+        if(branchCode.startsWith("010")){
+            Map<String, Object> rdata = customQueryService.generateRoutingDetailsByRoutingNo(routingData, branchCode);
+            if(!rdata.isEmpty()){
+                data.put("branchCode", rdata.get("abl_branch_code").toString());
+                data.put("branchName", rdata.get("branch_name").toString());
+            }
+        }
+        return data;
+    }
+
+    public <T> Map<String, Object> generateFourConvertedDataModel(List<T> model, FileInfoModel fileInfoModel, User user, LocalDateTime currentDateTime, int isProcessed){
         Map<String, Object> resp = new HashMap<>();
         List<OnlineModel> onlineModelList = generateOnlineModelList(model, currentDateTime, isProcessed);
         List<CocModel> cocModelList = generateCocModelList(model, currentDateTime);
@@ -512,6 +516,10 @@ public class CommonService {
         Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
         Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
 
+        List<Map<String, Object>> routingData = new ArrayList<>();
+        if(!accountPayeeModelList.isEmpty() || !onlineModelList.isEmpty()){
+            routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        }
         if(cocModelList != null){
             for (CocModel cocModel : cocModelList) {
                 cocModel.setFileInfoModel(fileInfoModel);
@@ -523,6 +531,11 @@ public class CommonService {
             for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
                 accountPayeeModel.setUserModel(user);
+                Map<String, Object> rdata = convertAblRoutingToBranchCode(accountPayeeModel.getBranchCode(), routingData);
+                if(!rdata.isEmpty()){
+                    accountPayeeModel.setBranchCode(rdata.get("branchCode").toString());
+                    accountPayeeModel.setBranchName(rdata.get("branchName").toString());
+                }
                 totalAmount += accountPayeeModel.getAmount();
             }
         }
@@ -538,6 +551,12 @@ public class CommonService {
                 onlineModel.setFileInfoModel(fileInfoModel);
                 onlineModel.setUserModel(user);
                 if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
+                Map<String, Object> rdata = convertAblRoutingToBranchCode(onlineModel.getBranchCode(), routingData);
+                if(!rdata.isEmpty() && isProcessed == 0){
+                    onlineModel.setBranchCode(rdata.get("branchCode").toString());
+                    onlineModel.setBranchName(rdata.get("branchName").toString());
+                }
+                
                 totalAmount += onlineModel.getAmount();
             }
         }
@@ -810,6 +829,13 @@ public class CommonService {
                 resp.put("errorDataModelList", errorDataModelList);
                 return resp;
             }
+            if(checkEmptyString(branchCode)){
+                errorMessage = "Branch Code can not be empty for A/C payee";
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
         }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
             
         }
@@ -833,6 +859,8 @@ public class CommonService {
         }else if(duplicateCount >= 1) errorMessage = duplicateMessage;
         return errorMessage;
     }
+
+
 
     public static LocalDateTime getCurrentDateTime(){
         return LocalDateTime.now(ZoneId.of("UTC+6"));

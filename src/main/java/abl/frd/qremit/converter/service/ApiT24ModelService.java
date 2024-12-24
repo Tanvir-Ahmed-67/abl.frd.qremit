@@ -28,6 +28,8 @@ public class ApiT24ModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CustomQueryService customQueryService;
+    @Autowired
+    CommonService commonService;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -61,7 +63,7 @@ public class ApiT24ModelService {
                 }
 
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(apiT24Models, fileInfoModel, user, currentDateTime, 1);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(apiT24Models, fileInfoModel, user, currentDateTime, 1);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(apiT24Models.size()));
                 fileInfoModel.setIsSettlement(1);

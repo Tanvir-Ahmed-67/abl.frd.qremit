@@ -25,12 +25,34 @@ public class CustomQueryService {
         return customQueryRepository.getRoutingDetails(routingNo, bankCode);
     }
 
-    public Map<String, Object> getRoutingDetailsByRoutingNo(String routingNo, String bankCode){
+    public Map<String, Object> getRoutingDetailsByRoutingNo(String routingNo){
         Map<String, Object> resp = new HashMap<>();
-        Map<String, Object> routingDetails = getRoutingDetails(routingNo, bankCode);
+        Map<String, Object> routingDetails = getRoutingDetails(routingNo, "");
         if((Integer) routingDetails.get("err") == 0){
             for(Map<String,Object> rdata: (List<Map<String, Object>>) routingDetails.get("data")){
                 return rdata;
+            }
+        }
+        return resp;
+    }
+
+    public List<Map<String,Object>> getRoutingDetailsByBankCode(String bankCode){
+        Map<String, Object> routingDetails = new HashMap<>();
+        List<Map<String, Object>> routingData = new ArrayList<>();
+        routingDetails = getRoutingDetails("", bankCode);
+        if((Integer) routingDetails.get("err") == 0){
+            routingData = (List<Map<String, Object>>) routingDetails.get("data");
+        }
+        return routingData;
+    }
+
+    public Map<String, Object> generateRoutingDetailsByRoutingNo(List<Map<String,Object>> routingData, String routingNo){
+        Map<String, Object> resp = new HashMap<>();
+        if(!routingData.isEmpty()){
+            for(Map<String, Object> rdata: routingData){
+                if(rdata.get("routing_no").equals(routingNo)){
+                    return rdata;
+                }
             }
         }
         return resp;

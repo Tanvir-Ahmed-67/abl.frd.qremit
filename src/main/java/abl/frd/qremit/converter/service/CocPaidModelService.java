@@ -219,7 +219,7 @@ public class CocPaidModelService {
 
     public Map<String, Object> getCsvData(CSVRecord csvRecord){
         String routingNo = CommonService.fixRoutingNo(csvRecord.get(8));
-        Map<String, Object> routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo,"");
+        Map<String, Object> routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo);
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", csvRecord.get(0));
         data.put("transactionNo", csvRecord.get(1));
