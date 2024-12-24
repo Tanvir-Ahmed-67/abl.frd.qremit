@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header :: head-css"></head>
+<body>
+<div id="app"><!--main content-->
+    <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <div id="main"><!--content Id-->
+        <span th:replace="fragments/header :: header"></span>
+        <div class="main-content container-fluid"><!--dynamic content-->
+            <div class="page-title">
+                <h3>Daily Reimbursement Data</h3>
+            </div>
+            <div class="row" id="table-hover-row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Daily Reimbursement Data for Date: <span th:text="${date}"></span></h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="row">
+                                <div class="col-2 form-group" id="row_report_date">
+                                    <input class="form-control report_date" type="text" name="report_date" id="report_date" th:placeholder="${date}" readonly="true">
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Serial</th>
+                                        <th>Ex Code</th>
+                                        <th>Tran. No</th>
+                                        <th>Ben A/C No</th>
+                                        <th>Branch Code</th>
+                                        <th>Branch Name</th>
+                                        <th>Main Amount</th>
+                                        <th>Govt. Inc. Amount</th>
+                                        <th>Agrani Inc. Amount</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="rmModel, iterStat : ${rmModel}">
+                                        <td class="text-bold-500" th:text="${iterStat.index + 1}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getExchangeCode()}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getTransactionNo()}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getBeneficiaryAccount()}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getBranchCode()}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getBranchName()}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getMainAmount()}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getGovtIncentiveAmount()}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getAgraniIncentiveAmount()}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a th:href="@{/downloadDailyReimbursement(date=${date})}" class="btn btn-primary">Download Reimbursement File</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <span th:replace="fragments/footer :: footer"></span>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(document).off('change','#report_date');
+        $(document).on('change','#report_date', function(e){
+            e.preventDefault();
+            var val = $(this).val();
+            var url = "summaryOfDailyStatement?date=" + val;
+
+        });
+    });
+</script>
+</html>
