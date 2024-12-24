@@ -39,6 +39,8 @@ public class AgexSingaporeModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CustomQueryService customQueryService;
+    @Autowired
+    CommonService commonService;
     
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode, String tbl){
         Map<String, Object> resp = new HashMap<>();
@@ -74,7 +76,7 @@ public class AgexSingaporeModelService {
                     agexSingaporeModel.setUserModel(user);
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(agexSingaporeModelList, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(agexSingaporeModelList, fileInfoModel, user, currentDateTime, type);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(agexSingaporeModelList.size()));
                 fileInfoModel.setIsSettlement(type);
@@ -119,6 +121,7 @@ public class AgexSingaporeModelService {
                 String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
+                if(type == 1 && branchCode.startsWith("11"))    branchCode = branchCode.replaceFirst("11", ""); //remove 11 from branch code
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
                     if((Integer) apiCheckResp.get("err") == 1){

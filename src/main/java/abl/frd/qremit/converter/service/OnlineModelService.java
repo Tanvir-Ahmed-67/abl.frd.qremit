@@ -112,4 +112,10 @@ public class OnlineModelService {
         return onlineModelList;
     }
 
+    public List<OnlineModel> findOnlineModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId, int isSettlement){
+        if(isSettlement == 1){
+            return onlineModelRepository.findOnlineModelByApiAndFileInfoModelId(fileInfoModelId, 1);
+        }else return onlineModelRepository.findOnlineModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
+    }
+
 }

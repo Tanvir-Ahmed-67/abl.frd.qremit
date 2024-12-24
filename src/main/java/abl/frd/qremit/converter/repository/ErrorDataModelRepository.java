@@ -30,4 +30,10 @@ public interface ErrorDataModelRepository extends JpaRepository<ErrorDataModel, 
     void updateUpdateStatusById(int id, int updateStatus);
     void deleteById(int id);
     Optional<ErrorDataModel> findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String transactionNo, double amount, String exchangeCode);
+    @Query("SELECT n from ErrorDataModel n where n.fileInfoModel.id =:fileInfoModelId and n.updateStatus != 0")
+    List<ErrorDataModel> getErrorSubmittedByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ErrorDataModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
+    void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
 }

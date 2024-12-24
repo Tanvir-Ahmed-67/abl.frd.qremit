@@ -98,4 +98,8 @@ public class AccountPayeeModelService {
         }
         return accountPayeeModelList;
     }
+
+    public List<AccountPayeeModel> findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
+        return accountPayeeModelRepository.findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
+    }
 }

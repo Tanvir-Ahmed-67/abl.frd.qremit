@@ -2,17 +2,11 @@ package abl.frd.qremit.converter.service;
 import java.util.*;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
-
 import abl.frd.qremit.converter.repository.LogModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import abl.frd.qremit.converter.model.ErrorDataModel;
-import abl.frd.qremit.converter.model.LogModel;
 import abl.frd.qremit.converter.repository.ErrorDataModelRepository;
 
 @Service
@@ -60,12 +54,17 @@ public class ErrorDataModelService {
         errorDataModelRepository.updateUpdateStatusById(id, updateStatus);
     }
 
-    public Map<String, Object> deleteErrorDataById(int id){
+    public Map<String, Object> deleteErrorDataById(int id, HttpServletRequest request, int userId){
         Map<String, Object> resp = new HashMap<>();
         ErrorDataModel errorDataModel = errorDataModelRepository.findById(id);
         if(errorDataModel != null){
-            errorDataModelRepository.deleteById(id);
             int fileInfoModelId = errorDataModel.getFileInfoModel().getId();
+            String exchangeCode = errorDataModel.getExchangeCode();
+            errorDataModelRepository.deleteById(id);
+            Map<String, Object> info = new HashMap<>();
+            info.put("errorDataModel", errorDataModel);
+            Map<String, Object> logResp = logModelService.addLogModel(userId, fileInfoModelId, exchangeCode, String.valueOf(id), "2", info, request);
+            if((Integer) logResp.get("err") == 1)   return logResp;
             resp = CommonService.getResp(0, "Information Deleted", null);
             resp.put("fileInfoModelId", fileInfoModelId);
         }else resp = CommonService.getResp(1, "No Data Found", null);
@@ -80,13 +79,13 @@ public class ErrorDataModelService {
         entityManager.detach(errorDataModel); // Detach ErrorDataModel to prevent auto-updates
         if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
         if(errorDataModel.getUpdateStatus() != 0)   return CommonService.getResp(1, "Invalid Type for update data", null);  //for update status must be 0
+        int fileInfoModelId = errorDataModel.getFileInfoModel().getId();
 
         Map<String, Object> errorDataMap = getErrorDataModelMap(errorDataModel); 
         //ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         //String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
         Map<String, Object> info = new HashMap<>();
         info.put("oldData", errorDataMap);
-        String ipAddress = request.getRemoteAddr();
         String bankName = formData.get("bankName").trim();
         String beneficiaryAccount =formData.get("beneficiaryAccount").trim();
         String branchCode = formData.get("branchCode").trim();
@@ -124,6 +123,18 @@ public class ErrorDataModelService {
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel);
         updatedData.put("userId", userId);
         info.put("updatedData", updatedData);
+        int errorDataModelId = errorDataModel.getId();
+        resp = logModelService.addLogModel(userId, fileInfoModelId, exchangeCode, String.valueOf(errorDataModelId), "1", info, request);
+        if((Integer) resp.get("err") == 0){
+            try{
+                updateErrorDataModelUpdateStatus(errorDataModelId, 1);
+                resp = CommonService.getResp(0, "Data updated", null);
+            }catch(Exception e){
+                resp = CommonService.getResp(1, "Error Updating status: " + e.getMessage(), null);
+            }
+        }
+        /*
+        String ipAddress = request.getRemoteAddr();
         String infoStr = "";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -135,7 +146,7 @@ public class ErrorDataModelService {
             e.printStackTrace();
         }
         //String userId = String.valueOf(errorDataModel.getUserModel().getId());
-        LogModel logModel = new LogModel(String.valueOf(userId), String.valueOf(errorDataModel.getId()), exchangeCode, "1", infoStr, ipAddress);
+        LogModel logModel = new LogModel(String.valueOf(userId), String.valueOf(errorDataModel.getId()), fileInfoModelId, exchangeCode, "1", infoStr, ipAddress);
         LogModel saveLogModel = logModelRepository.save(logModel);
         if(saveLogModel != null){
             try{
@@ -145,6 +156,7 @@ public class ErrorDataModelService {
                 resp = CommonService.getResp(1, "Error Updating status: " + e.getMessage(), null);
             }
         }
+            */
         return resp;
     }
 
@@ -175,7 +187,6 @@ public class ErrorDataModelService {
         resp.put("processedBy", errorDataModel.getProcessedBy());
         resp.put("processedDate", errorDataModel.getProcessedDate());
         resp.put("errorMessage", errorDataModel.getErrorMessage());
-        //resp.put("uploadDateTime", errorDataModel.getUploadDateTime());
         resp.put("uploadDateTime", uploadDateTime);
         resp.put("typeFlag", errorDataModel.getTypeFlag());
         resp.put("userId", errorDataModel.getUserModel().getId());

@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -8,6 +7,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
 import net.sf.jasperreports.engine.*;
@@ -20,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -53,6 +54,8 @@ public class ReportService {
     TemporaryReportService temporaryReportService;
     @Autowired
     CommonService commonService;
+    @Autowired
+    LogModelService logModelService;
     
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
@@ -500,7 +503,7 @@ public class ReportService {
         Map<String, Object> resp = new HashMap<>();
 
         List<Map<String, Object>> fileData = (List<Map<String, Object>>) fileInfo.get("data");
-        FileInfoModel fileInfoModel = fileInfoModelService.findAllById(id);
+        FileInfoModel fileInfoModel = fileInfoModelService.findFileInfoModelById(id);
         int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
         int accountPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
         int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
@@ -719,6 +722,51 @@ public class ReportService {
         return dataList;
     }
 
+    public Map<String, Object> deleteByFileInfoModelById(int id, int userId, HttpServletRequest request){
+        Map<String, Object> resp = new HashMap<>();
+        if(id == 0) return CommonService.getResp(1, "Please select id", null);
+        String pmsg = "Data has processed from this file. You can't delete it";
+        FileInfoModel fileInfoModel = fileInfoModelService.findFileInfoModelById(id);
+        if(fileInfoModel == null)   return CommonService.getResp(1, "No data found following this fileInfoModel Id", null);
+        int cnt = 0;
+        if(CommonService.convertStringToInt(fileInfoModel.getOnlineCount()) >= 1){
+            List<OnlineModel> onlineModels = onlineModelService.findOnlineModelByFileInfoModelIdAndIsDownloaded(id, fileInfoModel.getIsSettlement());
+            cnt += onlineModels.size();
+        }
+        if(CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount()) >= 1){
+            List<AccountPayeeModel> accountPayeeModels = accountPayeeModelService.findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(id);
+            cnt += accountPayeeModels.size();
+        }
+        if(CommonService.convertStringToInt(fileInfoModel.getBeftnCount()) >= 1){
+            List<BeftnModel> beftnModels = beftnModelService.findBeftnModelByFileInfoModelIdAndIsDownloaded(id);
+            cnt += beftnModels.size();
+        }
+        if(CommonService.convertStringToInt(fileInfoModel.getCocCount()) >= 1){
+            if(fileInfoModel.getIsSettlement() == 1){
+                List<CocPaidModel> cocPaidModels = cocPaidModelService.findCocPaidModelByFileInfoModelIdAndIsVoucherGenerated(id);
+                cnt += cocPaidModels.size();
+            }else{
+                List<CocModel> cocModels = cocModelService.findCocModelByFileInfoModelIdAndIsDownloaded(id);
+                cnt += cocModels.size();
+            }
+            
+        }
+        if(fileInfoModel.getErrorCount() >= 1){
+            List<ErrorDataModel> errorDataModels = errorDataModelRepository.getErrorSubmittedByFileInfoModelId(id);
+            cnt += errorDataModels.size();
+        }
+
+        if(cnt > 0) return CommonService.getResp(1, pmsg, null);
+        resp = fileInfoModelService.deleteFileInfoModel(fileInfoModel);
+        if((Integer) resp.get("err") == 0){
+            Map<String, Object> info = new HashMap<>();
+            info.put("fileInfoModel", fileInfoModel);
+            String exchangeCode = fileInfoModel.getExchangeCode();
+            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, "", "3", info, request);
+            if((Integer) logResp.get("err") == 1)   return logResp;
+        }
+        return resp;
+    }
     
 
     public Map<String, Object> getExchangeWiseData(String date, int userId){

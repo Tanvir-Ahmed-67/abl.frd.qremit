@@ -28,6 +28,10 @@ $(document).ready(function(){
                 var url = "/getErrorUpdateReport";
                 page_header = "Error Data Report Update for Admin";
                 break;
+            case '5':
+                var url = "/report?date=" + date + "&type=" + type;
+                $('#row_report_date').show();
+                break;
         }
         return {'url': url, 'page_header': page_header};
     }
@@ -89,6 +93,18 @@ $(document).ready(function(){
         var url  = "/error/approve";
         var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
         get_ajax(url,data,success_modal,fail_func,"post","json",params);
+    });
+
+    $(document).off('click',".delete_file");
+    $(document).on('click',".delete_file",function(e){
+        e.preventDefault();
+        var id = $(this).attr("id");
+        var url  = "/file/delete/" + id;
+        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
+        var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
+        if(confirm("Are you sure you want to delete this data?")){
+            get_ajax(url,data,success_modal,fail_func,"DELETE","json",params);
+        }
     });
 
 });

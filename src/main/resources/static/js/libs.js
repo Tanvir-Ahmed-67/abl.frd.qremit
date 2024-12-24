@@ -87,7 +87,7 @@ function checkDataTable(tbl){
     type = (type) ? type:"get";
     data = (data) ? data : "";
     dataType = (dataType) ? dataType : "";
-    timeout = (timeout) ? timeout:10000;
+    timeout = (timeout) ? timeout:100000;
     params = (params) ? params:'';
     
 
