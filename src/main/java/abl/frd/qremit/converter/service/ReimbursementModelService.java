@@ -7,7 +7,6 @@ import abl.frd.qremit.converter.repository.ReimbursementModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,8 @@ public class ReimbursementModelService {
         byte[] in = reimbursementModelServiceHelper.ReimbursementModelsToExcel(reimbursementModels, localDate);
         return in;
     }
-    public List<ReimbursementModel> saveReportModelListToReimbursementModelList(List<ReportModel> reportModelList, LocalDate localDate){
+    public List<ReimbursementModel> insertReimbursementData(LocalDate localDate){
+        List<ReportModel> reportModelList = findAllAccountPayeeAndCocPaidDataForReimbursement(localDate);
         List<ReimbursementModel> reimbursementModelList = new ArrayList<>();
         if (reportModelList == null || reportModelList.isEmpty()) {
             return reimbursementModelList; // Return an empty list if input is null or empty

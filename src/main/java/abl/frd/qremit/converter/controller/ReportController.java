@@ -398,8 +398,7 @@ public class ReportController {
     public String showDailyReimbursement(Model model, ReimbursementModel reimbursementModel, @RequestParam(defaultValue = "") String date) {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         reimbursementModel.setReimbursementDate(LocalDate.parse(date));
-        List<ReportModel> reportModel = reimbursementModelService.findAllAccountPayeeAndCocPaidDataForReimbursement(LocalDate.parse(date));
-        List<ReimbursementModel> rmModel = reimbursementModelService.saveReportModelListToReimbursementModelList(reportModel, LocalDate.parse(date));
+        List<ReimbursementModel> rmModel = reimbursementModelService.insertReimbursementData(LocalDate.parse(date));
         if (reimbursementModel == null) {
             model.addAttribute("message", "Reimbursement Is Not Generated Yet. Please check settlement File Uploaded or Not");
             return "report/reimbursement";

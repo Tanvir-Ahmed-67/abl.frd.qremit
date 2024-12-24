@@ -4,7 +4,12 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="reimbursement")
+@Table(name="reimbursement", uniqueConstraints = { @UniqueConstraint(name = "exchange_code_transaction_no_main_amount_beneficiary_account", columnNames = { "exchange_code", "transaction_no","main_amount", "beneficiary_account"})},
+indexes = { @Index(name = "idx_exchange_code", columnList = "exchange_code"),
+        @Index(name = "idx_transaction_no", columnList = "transaction_no"),
+        @Index(name = "idx_main_amount", columnList = "main_amount"),
+        @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account")})
+
 public class ReimbursementModel {
     @Id
     @Column(name = "id")
