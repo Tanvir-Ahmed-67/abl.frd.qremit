@@ -21,13 +21,13 @@ public class CustomQueryService {
     }
     
 
-    public Map<String, Object> getRoutingDetails(String routingNo){
-        return customQueryRepository.getRoutingDetails(routingNo);
+    public Map<String, Object> getRoutingDetails(String routingNo, String bankCode){
+        return customQueryRepository.getRoutingDetails(routingNo, bankCode);
     }
 
-    public Map<String, Object> getRoutingDetailsByRoutingNo(String routingNo){
+    public Map<String, Object> getRoutingDetailsByRoutingNo(String routingNo, String bankCode){
         Map<String, Object> resp = new HashMap<>();
-        Map<String, Object> routingDetails = getRoutingDetails(routingNo);
+        Map<String, Object> routingDetails = getRoutingDetails(routingNo, bankCode);
         if((Integer) routingDetails.get("err") == 0){
             for(Map<String,Object> rdata: (List<Map<String, Object>>) routingDetails.get("data")){
                 return rdata;

@@ -288,7 +288,7 @@ public class AgraniMalaysiaModelService {
         Map<String, Object> data = new HashMap<>();
         String[] fields = {"beneficiaryMobile","draweeBranchName","draweeBranchCode","purposeOfRemittance","sourceOfIncome","processFlag","processedBy","processedDate","remitterMobile"};
         String branchCode = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(8)));
-        Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode);
+        Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode,"");
         String bankName = "";
         String bankCode = "";
         String branchName = "";
