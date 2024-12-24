@@ -11,13 +11,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.*;
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 @Service
 public class DynamicOperationService {
     @Autowired
@@ -36,6 +34,8 @@ public class DynamicOperationService {
     private String packageName = "abl.frd.qremit.converter.model.";
     @Autowired
     CustomQueryRepository customQueryRepository;
+    @Autowired
+    CommonService commonService;
     @Bean
     public Map<String, RepositoryModelWrapper<?>> repositoryModelMap(){
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAll();
@@ -291,7 +291,7 @@ public class DynamicOperationService {
                     updatedData.get("processedBy"), updatedData.get("processedDate"), currentDateTime, fileInfoModel, user);
                 List<Object> modelInstanceList = new ArrayList<>();
                 modelInstanceList.add(modelInstance);
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = (FileInfoModel)  convertedDataModels.get("fileInfoModel");     
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved succesfully", null);

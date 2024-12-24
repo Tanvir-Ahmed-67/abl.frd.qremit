@@ -43,7 +43,8 @@ public class NecUkModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CustomQueryService customQueryService;
-    
+    @Autowired
+    CommonService commonService;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -76,7 +77,7 @@ public class NecUkModelService {
                     necUkModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(necUkModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(necUkModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(necUkModels.size()));
                 fileInfoModel.setIsSettlement(0);

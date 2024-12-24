@@ -2,28 +2,63 @@ package abl.frd.qremit.converter.repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.*;
 import abl.frd.qremit.converter.service.CommonService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-
 
 @Repository
 public class CustomQueryRepository {
     @PersistenceContext
     private EntityManager entityManager;
-    @Autowired
-    CommonService commonService;
+    private final DataSource dataSource;
+    public CustomQueryRepository(DataSource dataSource){
+        this.dataSource = dataSource;
+    }
+
+    public Map<String,Object> getData(String sql, Map<String, Object> params){
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> rows = new ArrayList<>();
+        try{
+            Connection con = dataSource.getConnection();         
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            int j = 1;
+            for (Object value : params.values()) {
+                pstmt.setObject(j++, value);
+            }
+            
+            ResultSet rs = pstmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            if(!rs.next()){
+                return CommonService.getResp(1,"No data found",rows);
+            }else{
+                do{
+                    Map<String,Object> row = new HashMap<>();
+                    for(int i = 1; i<= columnsNumber; i++) {
+                        String columnName = rsmd.getColumnName(i);
+                        Object columnValue = rs.getObject(i);
+                        row.put(columnName, columnValue);
+                    }
+                    rows.add(row);
+                }while(rs.next());
+                con.close();
+                return CommonService.getResp(0, "Data Found", rows);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return resp;
+    }
 
     public Map<String,Object> getFileDetails(String tableName, String fileInfoId) {
         String sql = "SELECT a.* FROM %s a, upload_file_info b WHERE a.file_info_model_id = b.id AND b.id = ?";
         String queryStr = String.format(sql, tableName,fileInfoId);
         Map<String, Object> params = new HashMap<>();
         params.put("1", fileInfoId);
-        return commonService.getData(queryStr,params);
+        return getData(queryStr,params);
     }
 
     public Map<String, Object> getFileTotalExchangeWise(String starDateTime, String endDateTime, int userId){
@@ -38,7 +73,7 @@ public class CustomQueryRepository {
         if(userId != 0) params.put("3", userId);
         params.put("1", starDateTime);
         params.put("2", endDateTime);
-        return commonService.getData(sql, params);
+        return getData(sql, params);
     }
 
     public Map<String, Object> calculateTotalAmountForConvertedModel(String tableName, int fileInfoModelId){
@@ -46,21 +81,46 @@ public class CustomQueryRepository {
         String queryStr = String.format(sql, tableName,fileInfoModelId);
         Map<String, Object> params = new HashMap<>();
         params.put("1", fileInfoModelId);
-        return commonService.getData(queryStr,params);
+        return getData(queryStr,params);
     }
-
+    /*
     public Map<String,Object> getRoutingDetails(String routingNo){
         Map<String, Object> params = new HashMap<>();
-        String queryStr = String.format("SELECT * FROM routing_no where routing_no = ?", routingNo);
+        String queryStr = "SELECT * FROM routing_no where routing_no = ?";
         params.put("1", routingNo);
-        return commonService.getData(queryStr,params);
+        return getData(queryStr,params);
     }
+    */
+
+    public Map<String,Object> getRoutingDetails(String routingNo, String bankCode){
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryStr = new StringBuilder("SELECT * FROM routing_no");
+        boolean hasRoutingNo = routingNo != null && !routingNo.trim().isEmpty();
+        boolean hasBankCode = bankCode != null && !bankCode.trim().isEmpty();
+
+        if (hasRoutingNo || hasBankCode) {
+            queryStr.append(" WHERE");
+            if (hasRoutingNo) {
+                queryStr.append(" routing_no = ?");
+                params.put("1", routingNo);
+            }
+            if (hasBankCode) {
+                if (hasRoutingNo) {
+                    queryStr.append(" AND");
+                }
+                queryStr.append(" bank_code = ?");
+                params.put(hasRoutingNo ? "2" : "1", bankCode);
+            }
+        }
+        return getData(queryStr.toString(),params);
+    }
+    
 
     public Map<String,Object> getBranchDetailsFromSwiftCode(String swiftCode){
         Map<String, Object> params = new HashMap<>();
         String queryStr = "SELECT * FROM swift_code_to_branch_code  where swift_code = ?";
         params.put("1", swiftCode);
-        return commonService.getData(queryStr,params);
+        return getData(queryStr,params);
     }
     
     public Map<String, Object> getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
@@ -75,7 +135,7 @@ public class CustomQueryRepository {
         String queryStr = String.format(sql, tbl);
         StringBuilder queryBuilder = new StringBuilder(queryStr);
         queryBuilder.append(String.join(", ", tuples)).append(")");
-        return commonService.getData(queryBuilder.toString(),params); 
+        return getData(queryBuilder.toString(),params); 
     }
 
     @Transactional

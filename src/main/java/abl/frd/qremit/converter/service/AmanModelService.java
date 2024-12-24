@@ -45,7 +45,8 @@ public class AmanModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    
+    @Autowired
+    CommonService commonService;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -78,7 +79,7 @@ public class AmanModelService {
                     amanModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(amanModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(amanModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(amanModels.size()));
                 fileInfoModel.setIsSettlement(0);

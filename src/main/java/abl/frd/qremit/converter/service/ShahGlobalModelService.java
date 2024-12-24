@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +43,8 @@ public class ShahGlobalModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
-    
+    @Autowired
+    CommonService commonService;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -77,7 +77,7 @@ public class ShahGlobalModelService {
                     shahGlobalModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(shahGlobalModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(shahGlobalModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(shahGlobalModels.size()));
                 fileInfoModel.setIsSettlement(0);
