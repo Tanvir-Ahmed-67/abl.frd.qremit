@@ -411,7 +411,6 @@ public class ReportController {
 
     @RequestMapping(value = "/downloadDailyReimbursement", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloadDailyReimbursement(@RequestParam String date, @ModelAttribute MoModel moModel){
-        System.out.println("Inside Download.....");
         try {
             byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDate(LocalDate.parse(date));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_", ".csv");
