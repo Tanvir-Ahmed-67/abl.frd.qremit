@@ -38,6 +38,20 @@ public class ReimbursementModel {
     @Column(name = "agrani_incentive_amount", length=30, nullable = false)
     private Double agraniIncentiveAmount = 0.0;
 
+    public ReimbursementModel() {
+    }
+    public ReimbursementModel(String exchangeCode, String transactionNo, LocalDate reimbursementDate, String beneficiaryName, String beneficiaryAccount, String remitterName, String branchCode, String branchName, Double mainAmount) {
+        this.exchangeCode = exchangeCode;
+        this.transactionNo = transactionNo;
+        this.reimbursementDate = reimbursementDate;
+        this.beneficiaryName = beneficiaryName;
+        this.beneficiaryAccount = beneficiaryAccount;
+        this.remitterName = remitterName;
+        this.branchCode = branchCode;
+        this.branchName = branchName;
+        this.mainAmount = mainAmount;
+    }
+
     public LocalDate getReimbursementDate() {
         return reimbursementDate;
     }

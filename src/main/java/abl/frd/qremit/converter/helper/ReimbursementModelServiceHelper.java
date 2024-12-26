@@ -96,7 +96,7 @@ public class ReimbursementModelServiceHelper {
                 row = sheet.createRow(rowIndex++);
 
                 Cell cell0 = row.createCell(0);
-                cell0.setCellValue(count);
+                cell0.setCellValue(rowIndex);
 
                 Cell cell1 = row.createCell(1);
                 cell1.setCellValue(getGovtIncentiveAccountNoForReimbursement().trim());
@@ -122,7 +122,7 @@ public class ReimbursementModelServiceHelper {
                 row = sheet.createRow(rowIndex++);
 
                 Cell cell0 = row.createCell(0);
-                cell0.setCellValue(count);
+                cell0.setCellValue(rowIndex);
 
                 Cell cell1 = row.createCell(1);
                 cell1.setCellValue(getAgraniIncentiveAccountNoForReimbursement().trim());

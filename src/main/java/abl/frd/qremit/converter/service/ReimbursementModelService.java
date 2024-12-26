@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReimbursementModelService {
@@ -28,30 +29,41 @@ public class ReimbursementModelService {
         return in;
     }
     public List<ReimbursementModel> insertReimbursementData(LocalDate localDate){
-        List<ReportModel> reportModelList = findAllAccountPayeeAndCocPaidDataForReimbursement(localDate);
-        List<ReimbursementModel> reimbursementModelList = new ArrayList<>();
-        if (reportModelList == null || reportModelList.isEmpty()) {
-            return reimbursementModelList; // Return an empty list if input is null or empty
-        }
-        for (ReportModel reportModel : reportModelList) {
-            ReimbursementModel reimbursementModel = new ReimbursementModel();
-            reimbursementModel.setReimbursementDate(localDate);
-            reimbursementModel.setTransactionNo(reportModel.getTransactionNo());
-            reimbursementModel.setExchangeCode(reportModel.getExchangeCode());
-            reimbursementModel.setBeneficiaryName(reportModel.getBeneficiaryName());
-            reimbursementModel.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
-            reimbursementModel.setRemitterName(reportModel.getRemitterName());
-            reimbursementModel.setBranchCode(reportModel.getBranchCode());
-            reimbursementModel.setBranchName(reportModel.getBranchName());
-            reimbursementModel.setMainAmount(reportModel.getAmount());
-            reimbursementModel.setGovtIncentiveAmount(reimbursementModelServiceHelper.calculateGovtIncentivePercentage(reportModel.getAmount()));
-            reimbursementModel.setAgraniIncentiveAmount(reimbursementModelServiceHelper.calculateAgraniIncentivePercentage(reportModel.getAmount()));
-
-            reimbursementModelList.add(reimbursementModel);
-        }
-        return reimbursementModelRepository.saveAll(reimbursementModelList);
+        List<ReportModel> reports  = findAllAccountPayeeAndCocPaidDataForReimbursement(localDate);
+        List<ReimbursementModel> allReimbursements = reports.stream()
+                .map(report -> {
+                    ReimbursementModel reimbursement = new ReimbursementModel(
+                            report.getExchangeCode(),
+                            report.getTransactionNo(),
+                            report.getReportDate(),
+                            report.getBeneficiaryName(),
+                            report.getBeneficiaryAccount(),
+                            report.getRemitterName(),
+                            report.getBranchCode(),
+                            report.getBranchName(),
+                            report.getAmount()
+                    );
+                    // Calculate and set incentive amounts
+                    reimbursement.setGovtIncentiveAmount(
+                            reimbursementModelServiceHelper.calculateGovtIncentivePercentage(report.getAmount())
+                    );
+                    reimbursement.setAgraniIncentiveAmount(
+                            reimbursementModelServiceHelper.calculateAgraniIncentivePercentage(report.getAmount())
+                    );
+                    return reimbursement;
+                })
+                .collect(Collectors.toList());
+        // Filter out duplicates and save the non-duplicate entries
+        List<ReimbursementModel> nonDuplicateReimbursements = allReimbursements.stream()
+                .filter(this::isNotDuplicate)
+                .collect(Collectors.toList());
+        reimbursementModelRepository.saveAll(nonDuplicateReimbursements);
+        // Return the complete list of reimbursements, including duplicates
+        return allReimbursements;
     }
-
+    private boolean isNotDuplicate(ReimbursementModel reimbursementModel) {
+        return !Boolean.TRUE.equals(reimbursementModelRepository.existsByExchangeCodeAndTransactionNoAndMainAmountAndBeneficiaryAccount(reimbursementModel.getExchangeCode(),reimbursementModel.getTransactionNo(), reimbursementModel.getMainAmount(), reimbursementModel.getBeneficiaryAccount()));
+    }
     public List<ReimbursementModel> findAllReimbursementByDate(LocalDate reimbursementDate){
         return reimbursementModelRepository.findAllReimbursementByDate(reimbursementDate);
     }
