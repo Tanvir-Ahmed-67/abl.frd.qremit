@@ -27,6 +27,8 @@ public class ApiBeftnModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CustomQueryService customQueryService;
+    @Autowired
+    CommonService commonService;
     
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
@@ -61,7 +63,7 @@ public class ApiBeftnModelService {
                 }
                 */
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(apiBeftnModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(apiBeftnModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(apiBeftnModels.size()));
                 fileInfoModel.setIsSettlement(0);

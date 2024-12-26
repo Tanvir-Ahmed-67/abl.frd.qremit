@@ -42,4 +42,10 @@ public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeM
     int updateTempStatusBulk(@Param("ids") List<Integer> ids, @Param("tempStatus") int tempStatus);
     List<AccountPayeeModel> findAccountPayeeModelByTransactionNo(String transactionNo);
     List<AccountPayeeModel> findAccountPayeeModelByBeneficiaryAccount(String beneficiaryAccount);
+    @Query("SELECT n FROM AccountPayeeModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isDownloaded= :isDownloaded")
+    List<AccountPayeeModel> findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(@Param("fileInfoModelId") int fileInfoModelId, @Param("isDownloaded") int isDownloaded);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM AccountPayeeModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
+    void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
 }

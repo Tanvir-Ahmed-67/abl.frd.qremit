@@ -28,6 +28,9 @@ public class MyUserDetails implements UserDetails {
         }
         return authorities;
     }
+    public Set<Role> getRolesWithIds() {
+        return user.getRoles();
+    }
 
     @Override
     public String getPassword() {

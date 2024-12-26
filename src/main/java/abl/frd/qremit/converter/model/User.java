@@ -27,7 +27,7 @@ public class User {
     private List<BeftnModel> beftnModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<CocModel> cocModel;
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
+    @OneToMany(cascade= { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "userModel")
     private List<FileInfoModel> fileInfoModels;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<NafexEhMstModel> nafexEhMstModel;

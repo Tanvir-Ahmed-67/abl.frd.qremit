@@ -15,7 +15,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.*;
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 @Service
 public class DynamicOperationService {
     @Autowired
@@ -32,7 +32,10 @@ public class DynamicOperationService {
     private ApplicationContext context; // To fetch repositories dynamically
     private Map<String, RepositoryModelWrapper<?>> repositoryModelMap = new HashMap<>();
     private String packageName = "abl.frd.qremit.converter.model.";
-
+    @Autowired
+    CustomQueryRepository customQueryRepository;
+    @Autowired
+    CommonService commonService;
     @Bean
     public Map<String, RepositoryModelWrapper<?>> repositoryModelMap(){
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAll();
@@ -69,6 +72,10 @@ public class DynamicOperationService {
         return repositoryModelMap;
     }
 
+    public String getRepositoryErrorMsg(String exchangeCode){
+        return "No repository or model class found for exchangeCode: " + exchangeCode;
+    }
+
     public void findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(String exchangeCode){
         RepositoryModelWrapper<?> wrapper = (RepositoryModelWrapper<?>) repositoryModelMapByExchangeCode(exchangeCode);
         System.out.println(wrapper);
@@ -97,7 +104,7 @@ public class DynamicOperationService {
                         Object modelInstance = createModelInstanceForApiBeftn(modelClass, row);
                         entitiesToSave.add(modelInstance);
                     } else {
-                        return CommonService.getResp(1, "No repository or model class found for exchangeCode: " + exchangeCode, null);
+                        return CommonService.getResp(1, getRepositoryErrorMsg(exchangeCode), null);
                     }
                 }
                 // Save batch
@@ -149,7 +156,7 @@ public class DynamicOperationService {
                     Object modelInstance = constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getUploadDateTime(), row.getFileInfoModel(), row.getUserModel());
                     repository.save(modelInstance);
                 } else {
-                    resp = CommonService.getResp(1, "No repository or model class found for exchangeCode: " + exchangeCode, null);
+                    resp = CommonService.getResp(1, getRepositoryErrorMsg(exchangeCode), null);
                     //throw new IllegalArgumentException("No repository or model class found for exchangeCode: " + exchangeCode);
                 }
             } catch (Exception e) {
@@ -184,7 +191,7 @@ public class DynamicOperationService {
                         Object modelInstance = createModelInstanceForAPIt24(modelClass, row);
                         entitiesToSave.add(modelInstance);
                     } else {
-                        return CommonService.getResp(1, "No repository or model class found for exchangeCode: " + exchangeCode, null);
+                        return CommonService.getResp(1, getRepositoryErrorMsg(exchangeCode), null);
                     }
                 }
                 // Save batch
@@ -224,7 +231,7 @@ public class DynamicOperationService {
                     Object modelInstance = constructor.newInstance(row.getExchangeCode(), row.getTransactionNo(), row.getCurrency(), row.getAmount(), row.getEnteredDate(), row.getRemitterName(), row.getRemitterMobile(), row.getBeneficiaryName(), row.getBeneficiaryAccount(), row.getBeneficiaryMobile(), row.getBankName(), row.getBankCode(), row.getBranchName(), row.getBranchCode(), row.getDraweeBranchName(), row.getDraweeBranchCode(), row.getPurposeOfRemittance(), row.getSourceOfIncome(), row.getProcessFlag(), row.getTypeFlag(), row.getProcessedBy(), row.getProcessedDate(), row.getUploadDateTime(), row.getFileInfoModel(), row.getUserModel());
                     repository.save(modelInstance);
                 } else {
-                    resp = CommonService.getResp(1, "No repository or model class found for exchangeCode: " + exchangeCode, null);
+                    resp = CommonService.getResp(1, getRepositoryErrorMsg(exchangeCode), null);
                     //throw new IllegalArgumentException("No repository or model class found for exchangeCode: " + exchangeCode);
                 }
             } catch (Exception e) {
@@ -284,12 +291,12 @@ public class DynamicOperationService {
                     updatedData.get("processedBy"), updatedData.get("processedDate"), currentDateTime, fileInfoModel, user);
                 List<Object> modelInstanceList = new ArrayList<>();
                 modelInstanceList.add(modelInstance);
-                Map<String, Object> convertedDataModels = CommonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = (FileInfoModel)  convertedDataModels.get("fileInfoModel");     
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved succesfully", null);
             } else {
-                String msg = "No repository or model class found for exchangeCode: " + exchangeCode;
+                String msg = getRepositoryErrorMsg(exchangeCode);
                 resp = CommonService.getResp(1, msg, null);
                 throw new IllegalArgumentException(msg);
             }
@@ -299,4 +306,80 @@ public class DynamicOperationService {
         }
         return resp;
     }
+
+    public Map<String, Object> deleteFilInfoModelById(String exchangeCode, int fileInfoModelId){
+        Map<String, Object> resp = new HashMap<>();
+        String[] exchangeList = new String[]{"111111","222222","444444"};
+        try{
+            RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);
+            if(wrapper != null){
+                JpaRepository repository = wrapper.getRepository();
+                Class<?> modelClass = wrapper.getModelClass();
+                String entityName = modelClass.getSimpleName();
+                List<?> records = new ArrayList<>();
+                if(repository instanceof ApiBeftnModelRepository){
+                    ApiBeftnModelRepository apiBeftnModelRepository = (ApiBeftnModelRepository) repository;
+                    records = apiBeftnModelRepository.findAllByFileInfoModelIdOrderByExchangeCodeAsc(fileInfoModelId);
+                }else if(repository instanceof ApiT24ModelRepository){
+                    ApiT24ModelRepository apiT24ModelRepository = (ApiT24ModelRepository) repository;
+                    records = apiT24ModelRepository.findAllByFileInfoModelIdOrderByExchangeCodeAsc(fileInfoModelId);
+                }else if(repository instanceof SwiftModelRepository){
+                    SwiftModelRepository swiftModelRepository = (SwiftModelRepository) repository;
+                    records = swiftModelRepository.findAllByFileInfoModelIdOrderByExchangeCodeAsc(fileInfoModelId);
+                }
+                resp = customQueryRepository.deleteByFileInfoModelId(entityName, fileInfoModelId);
+                if((Integer) resp.get("err") == 0){
+                    if((Integer) resp.get("affectedRows") == 0)  return CommonService.getResp(1, "No data found for delete", null);
+                    if(Arrays.asList(exchangeList).contains(exchangeCode)){
+                        return deleteIndividualBeftnOrApiOrSwiftData(exchangeCode, fileInfoModelId, records);
+                    }
+                    
+                }else return resp;
+            }else resp = CommonService.getResp(1, getRepositoryErrorMsg(exchangeCode), null);
+        }catch(Exception e){
+            e.printStackTrace();
+            resp = CommonService.getResp(1, e.getMessage(), null);
+        }
+        return resp;
+    }
+    
+    public Map<String, Object> deleteIndividualBeftnOrApiOrSwiftData(String exchangeCode, int fileInfoModelId, List<?> records){
+        Map<String, Object> resp = new HashMap<>();
+        String[] exchangeList = new String[]{"111111","222222","444444"};
+        if(!Arrays.asList(exchangeList).contains(exchangeCode)){
+            return CommonService.getResp(1, "Invalid exchange code for individual delete data", null);
+        }
+        List<String> processedExchangeCodes = new ArrayList<>();
+        if(!records.isEmpty()){
+            for(Object record: records){
+                String exCode = "";
+                if(exchangeCode.equals("111111") && record instanceof ApiBeftnModel){
+                    ApiBeftnModel model = (ApiBeftnModel) record;
+                    exCode = model.getExchangeCode();
+                }   
+                else if(exchangeCode.equals("222222") && record instanceof ApiT24Model){
+                    ApiT24Model model = (ApiT24Model) record;
+                    exCode = model.getExchangeCode();
+                }   
+                else if(exchangeCode.equals("444444") && record instanceof SwiftModel){
+                    SwiftModel model = (SwiftModel) record;
+                    exCode = model.getExchangeCode();
+                }   
+                if(!exCode.isEmpty()){
+                    if(!processedExchangeCodes.contains(exCode)){
+                        processedExchangeCodes.add(exCode);
+                        RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exCode);
+                        if(wrapper != null){
+                            Class<?> modelClass = wrapper.getModelClass();
+                            resp = customQueryRepository.deleteByFileInfoModelId(modelClass.getSimpleName(), fileInfoModelId);
+                        }
+                    }else continue;
+                }
+            }
+            return resp;
+        }
+        return resp;
+    }
+
+ 
 }

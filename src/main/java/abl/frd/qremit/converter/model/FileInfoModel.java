@@ -49,7 +49,7 @@ public class FileInfoModel {
     @Column(name = "total_amount", length = 20)
     private String totalAmount = "0";
     //@ManyToOne(cascade=CascadeType.ALL)
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="user_id")
     @JsonIgnore 
     private User userModel;
@@ -181,6 +181,9 @@ public class FileInfoModel {
     private List<GenericModel> genericModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    private List<AlRajiModel> alRajiModel;
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<ShahGlobalModel> shahGlobalModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -203,13 +206,14 @@ public class FileInfoModel {
     @JsonIgnore
     private List<MuzainiModel> muzainiModel;
 
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "fileInfoModel")
+    @JsonIgnore
+    private List<CocPaidModel> cocPaidModelList;
+
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
     //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<CocModel> cocModelList;
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
-    @JsonIgnore
-    private List<CocPaidModel> cocPaidModelList;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
     //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
@@ -226,6 +230,7 @@ public class FileInfoModel {
     @JsonIgnore
     private List<OnlineModel> onlineModelList;
 
+    //@OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @OneToMany(cascade={ CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<ErrorDataModel> errorDataModelList;
@@ -269,9 +274,18 @@ public class FileInfoModel {
     public List<KandHModel> getKandhModel() {
         return this.kandhModel;
     }
-    public void setKandHModel(List<KandHModel> kandhModel) {
+    public void setKandhModel(List<KandHModel> kandhModel) {
         this.kandhModel = kandhModel;
     }
+
+    public List<AlRajiModel> getAlRajiModel() {
+        return this.alRajiModel;
+    }
+
+    public void setAlRajiModel(List<AlRajiModel> alRajiModel) {
+        this.alRajiModel = alRajiModel;
+    }
+
 
     public List<SwiftModel> getSwiftModel() {
         return this.swiftModel;

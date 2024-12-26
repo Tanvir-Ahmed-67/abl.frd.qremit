@@ -69,4 +69,8 @@ public class CocModelService {
         }
         return cocModelList;
     }
+
+    public List<CocModel> findCocModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
+        return cocModelRepository.findCocModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
+    }
 }

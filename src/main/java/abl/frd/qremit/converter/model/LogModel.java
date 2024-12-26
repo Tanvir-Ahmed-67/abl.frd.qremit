@@ -22,6 +22,8 @@ public class LogModel {
     private String info;
     @Column(name = "action", length = 10)
     private String action;
+    @Column(name = "file_info_model_id", length = 10)
+    private int fileInfoModelId;
     
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)
@@ -91,17 +93,30 @@ public class LogModel {
         this.createdAt = createdAt;
     }
 
+
+    public int getFileInfoModelId() {
+        return this.fileInfoModelId;
+    }
+
+    public void setFileInfoModelId(int fileInfoModelId) {
+        this.fileInfoModelId = fileInfoModelId;
+    }
+    
+
     public LogModel(){
         
     }
-
-    public LogModel(String userId, String errorDataId, String exchangeCode, String action, String info, String ipAddress){
+    /*
+     *action: 1- error data update, 2 - error data delete, 3 - file delete
+     */
+    public LogModel(String userId, String errorDataId, int fileInfoModelId, String exchangeCode, String action, String info, String ipAddress){
         this.userId = userId;
         this.errorDataId = errorDataId;
         this.exchangeCode = exchangeCode;
         this.action = action;
         this.info = info;
         this.ipAddress = ipAddress;
+        this.fileInfoModelId = fileInfoModelId;
     }
 
     public String toString(){
