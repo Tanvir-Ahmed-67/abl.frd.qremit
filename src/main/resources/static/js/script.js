@@ -1,4 +1,5 @@
 $(document).ready(function(){
+  window.targetAchievementChart = null;
     get_loading();
     $.ajax({
         type: "GET",
@@ -13,50 +14,6 @@ $(document).ready(function(){
         }
     });
 
-    $.ajax({
-        url: '/getChartData', // Endpoint defined in your Spring Controller
-        type: 'GET',
-        success: function (response) {
-          renderBarChart(response);
-        },
-        error: function (error) {
-          console.error("Error fetching chart data", error);
-        }
-      });
-    
-      function renderBarChart(response) {
-        const ctx = document.getElementById('bars').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: response.labels, // X-axis labels
-            datasets: [
-              {
-                label: 'Sales',
-                data: response.data, // Y-axis data
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-              },
-              {
-                label: 'Revenue',
-                data: response.data2, // Optional secondary data
-                backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
-          }
-        });
-      }
 
 
 });
