@@ -42,6 +42,8 @@ public class ReportController {
     CustomQueryService customQueryService;
     @Autowired
     MoModelService moModelService;
+    @Autowired
+    ReimbursementModelService reimbursementModelService;
 
     public ReportController(MyUserDetailsService myUserDetailsService,FileInfoModelService fileInfoModelService,ReportService reportService){
         this.myUserDetailsService = myUserDetailsService;
@@ -391,6 +393,35 @@ public class ReportController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfReport);
+    }
+    @RequestMapping(value="/showDailyReimbursement", method= RequestMethod.GET)
+    public String showDailyReimbursement(Model model, ReimbursementModel reimbursementModel, @RequestParam(defaultValue = "") String date) {
+        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        reimbursementModel.setReimbursementDate(LocalDate.parse(date));
+        List<ReimbursementModel> rmModel = reimbursementModelService.insertReimbursementData(LocalDate.parse(date));
+        if (reimbursementModel == null) {
+            model.addAttribute("message", "Reimbursement Is Not Generated Yet. Please check settlement File Uploaded or Not");
+            return "report/reimbursement";
+        }
+        model.addAttribute("rmModel", rmModel);
+        model.addAttribute("date", date);
+        return "report/reimbursement";
+    }
+
+    @RequestMapping(value = "/downloadDailyReimbursement", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDailyReimbursement(@RequestParam String date, @ModelAttribute MoModel moModel){
+        try {
+            byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDate(LocalDate.parse(date));
+            String fileName = CommonService.generateDynamicFileName("Reimbursement_", ".csv");
+            MediaType mediaType = MediaType.TEXT_PLAIN;
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(mediaType)
+                    .body(contentStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
 
     @GetMapping("/getReportFile")
