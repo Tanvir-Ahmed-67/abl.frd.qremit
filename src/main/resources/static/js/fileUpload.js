@@ -29,25 +29,27 @@ $(document).ready(function(){
    
     });
 
-    function view_data(resp){
+    function view_data(resp, params){
         var tbl = "#error_data_tbl";
         var csrf_token = $('#_csrf').val();
         var csrf_header = $('#_csrf_header').val();
+        var beftnIncentive = $("#beftnIncentive").val();
+        console.log(beftnIncentive);
+        if(beftnIncentive == 1){
+            var url = "/notProcessingBeftnIncentive";
+            get_ajax(url,"", success_beftn_incentive, fail_func,'get','json',params);
+        }
         $('.view_btn').on('click', function(e){
             e.preventDefault();
             var id = $(this).attr('id');
             var exchange_code = $('#exchange_code').val();
             var url = '/user-home-page?type=2&exchangeCode=' + exchange_code + '&id=' + id;
             window.open(url, '_blank');
-            /*
-            var id = $(this).attr('id');
-            var params = { tdiv: '.modal-body'};
-            var mparams = { 'modalID': 'myModal', 'modal_wrap':'#modal_wrap','modal_class':'modal-lg', 'modal_title': 'View Data', 'sfunc': view_exchange_data };
-            var url = "/viewData?type=2&exchangeCode=" + exchange_code + "&id=" + id;
-            var data = {'id': id};
-            gen_modal(url,params,mparams,data);
-            */
         });
+
+        function success_beftn_incentive(resp, params){
+            //if(resp.err == 1)   alert(resp.msg);
+        }
 
         function view_exchange_data(resp){
             var id = $("#fid").val();

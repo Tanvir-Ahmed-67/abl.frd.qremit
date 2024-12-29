@@ -8,6 +8,7 @@
     </div>
     <div th:if="${fileInfo != null and fileInfo.totalCount != null}">
         <h4>Uploaded File Statistics</h4>
+        <input type="hidden" th:value="${beftnIncentive}" name="beftnIncentive" id="beftnIncentive"/>
             <table class='table table-striped' id="table1">
                 <thead>
                 <tr>

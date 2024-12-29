@@ -942,7 +942,12 @@ public class CommonService {
         }
         if(fileInfoModelObject != null){
             model.addAttribute("fileInfo", fileInfoModelObject);
+            model.addAttribute("beftnIncentive", 0);
             int errorCount = fileInfoModelObject.getErrorCount();
+            int beftnCount = CommonService.convertStringToInt(fileInfoModelObject.getBeftnCount());
+            if(beftnCount > 0){
+                model.addAttribute("beftnIncentive", 1);
+            }
             if(errorCount >= 1){
             List<Map<String, String>> columns = ReportController.getReportColumn("3");
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -1125,4 +1130,16 @@ public class CommonService {
         }
         return infoStr;
     }
+
+    public static String[] beftnIncentiveNotProcessingKeywords(){
+        String[] keywords = {
+            " PHONE", " CENTER", " LTD", " BANK", "BANK ", " TELECOM", " TRADERS", " STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", " TRAVELS", 
+            " TOURS", " NETWORK", " FARM "," ASSETS", " ASSET", " SOLUTIONS", " FUND", " ELECTRON", " SECURITIES", " EQUIPMENT", " COMPENSATION", "DEATH ", " GALLERY", " HOUSE", "M/S ", " BANGLADESH", 
+            " BD", " LIMITED", " OVERSEAS", " DAIRY", " COLLECTION", " RICE", " AGENCY", " TEXTILE", " VARAITY", " MEDICAL", " HALL", " PHARMA", " OPTICAL", "PRIZE", " FAIR ",
+            " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", " FURNITURE", " PURBACHAL", 
+            "PURBACHAL ","PROBASHI", " PALLI", " GLOBAL", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION"
+        };
+        return keywords;
+    }
+
 }

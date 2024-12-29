@@ -2,22 +2,22 @@ package abl.frd.qremit.converter.service;
 import abl.frd.qremit.converter.helper.BeftnModelServiceHelper;
 import abl.frd.qremit.converter.model.BeftnModel;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
+import abl.frd.qremit.converter.repository.CustomQueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.*;
 import javax.transaction.Transactional;
-
+@SuppressWarnings("unchecked")
 @Service
 public class BeftnModelService {
     @Autowired
     BeftnModelRepository beftnModelRepository;
     @Autowired
     MyUserDetailsService myUserDetailsService;
+    @Autowired
+    CustomQueryRepository customQueryRepository;
     public ByteArrayInputStream load(String fileId, String fileType) {
         List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(beftnModels);
@@ -149,6 +149,31 @@ public class BeftnModelService {
 
     public List<BeftnModel> findBeftnModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
         return beftnModelRepository.findBeftnModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
+    }
+
+    public Map<String, Object> calculateNotProcessingBeftnIncentive(){
+        Map<String, Object> resp = new HashMap<>();
+        String[] keywords = CommonService.beftnIncentiveNotProcessingKeywords();
+        resp = customQueryRepository.getBeftnIncentiveNotProcessing(keywords);
+        if((Integer) resp.get("err") == 1)  return resp;
+        List<Integer> idList = new ArrayList<>();
+        List<Map<String, Object>> dataList = (List<Map<String, Object>>)  resp.get("data");
+        for(Map<String, Object> data: dataList){
+            int id = CommonService.convertStringToInt(data.get("id").toString());
+            idList.add(id);
+        }
+        return updateNotProcessingIncentive(idList);
+    }
+
+    
+
+    @Transactional
+    public Map<String,Object> updateNotProcessingIncentive(List<Integer> idList){
+        if(!idList.isEmpty()){
+            int rowsUpdated  = beftnModelRepository.updateNotProcessingIncentive(idList, 0.0);
+            if(rowsUpdated > 0) return CommonService.getResp(0, "Data updated successful", null);
+            else return CommonService.getResp(1, "No data updated", null);
+        }else return CommonService.getResp(1, "No data updated", null);
     }
 
 }
