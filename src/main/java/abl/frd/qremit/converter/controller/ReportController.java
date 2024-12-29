@@ -60,6 +60,8 @@ public class ReportController {
         return resp;
     }
 
+
+
     public static List<Map<String, String>> getReportColumn(String type){
         String[] columnData = null;
         String[] columnTitles = null;

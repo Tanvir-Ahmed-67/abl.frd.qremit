@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/dashboard}">
-<head>
-    <meta charset="UTF-8">
-  <title>FRD Remittance</title>
-</head>
-<body>
+<body class="main-content container-fluid" th:fragment="superAdminContent">
 <div class="main-content container-fluid" th:fragment="superAdminContent">
   <div class="page-title">
     <h3>Super Admin Dashboard</h3>
@@ -12,278 +8,213 @@
   </div>
   <section class="section">
   <div class="row mb-2">
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3">  
+
       <div class="card card-statistic">
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
               <h3 class='card-title'>Online</h3>
               <div class="card-right d-flex align-items-center">
-                <p>10</p>
+                <p class="onlineCount" th:text="${onlineCount}"></p>
               </div>
             </div>
-            <!--
-            <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round">Download Online</button>
-            </div> -->
           </div>
         </div>
       </div>
+
     </div>
     <div class="col-12 col-md-3">
+
       <div class="card card-statistic">
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
               <h3 class='card-title'>COC</h3>
               <div class="card-right d-flex align-items-center">
-                <p>20</p>
+                <p class="cocCount" th:text="${cocCount}"></p>
               </div>
             </div>
-            <!--
-            <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round">Download COC</button>
-            </div>
-          -->
           </div>
         </div>
       </div>
+
     </div>
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3"> 
+
       <div class="card card-statistic">
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
               <h3 class='card-title'>A/C Payee</h3>
               <div class="card-right d-flex align-items-center">
-                <p>15</p>
+                <p class="accountPayeeCount" th:text="${accountPayeeCount}"></p>
               </div>
             </div>
-            <!--
-            <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round">Download A/C Payee</button>
-            </div>
-          -->
           </div>
         </div>
       </div>
+
+
     </div>
     <div class="col-12 col-md-3">
+
       <div class="card card-statistic">
         <div class="card-body p-0">
           <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
               <h3 class='card-title'>BEFTN</h3>
               <div class="card-right d-flex align-items-center">
-                <p>423</p>
+                <p class="beftnIncentiveCount" th:text="${beftnIncentiveCount}"></p>
               </div>
             </div>
-            <!--
-            <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round">Main</button>
-              <button type="submit" class="btn btn-success round">Incentive</button>
-            </div>
-          -->
           </div>
         </div>
       </div>
+
     </div>
   </div>
+
+
   <div class="row mb-4">
-    <div class="col-md-8">
+    <div class=" row col-md-12">
+      <div class="col-md-6">
+
+        <div class="card" >
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-heading">Yearly (2021-2024) Target and Achievement in BDT (Cr.) </h3>
+            <div class="d-flex ">
+              <i data-feather="download"></i>
+            </div>
+          </div>
+          <div class="card-body px-0 pb-0">
+            <div class="table-responsive">
+      
+              <canvas id="targetAchievementChart" width="800" height="600"></canvas>
+              
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="col-md-6">
+
+        
+        <div class="card" >
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="card-heading">Current Year (2024) Target and Achievement  in BDT (Cr.)</h6>
+            <div class="d-flex ">
+              <i data-feather="download"></i>
+            </div>
+          </div>
+          <div class="card-body px-0 pb-0">
+            <div class="table-responsive">
+      
+              <canvas id="monthlyAnalyticsChart" width="800" height="600"></canvas>
+              
+            </div>
+          </div>
+        </div>
+
+        
+
+      </div>
+
+    </div>
+
+    <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h3 class='card-heading p-1 pl-3'>Sales</h3>
+          <h3 class='card-heading p-1 pl-3'>Remittance inflow from 2014 to 2024</h3>
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col-md-4 col-12">
-              <div class="pl-3">
-                <h1 class='mt-5'>$21,102</h1>
-                <p class='text-xs'><span class="text-green"><i data-feather="bar-chart" width="15"></i> +19%</span> than last month</p>
-                <div class="legends">
-                  <div class="legend d-flex flex-row align-items-center">
-                    <div class='w-3 h-3 rounded-full bg-info me-2'></div><span class='text-xs'>Last Month</span>
-                  </div>
-                  <div class="legend d-flex flex-row align-items-center">
-                    <div class='w-3 h-3 rounded-full bg-blue me-2'></div><span class='text-xs'>Current Month</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-8 col-12">
-              <canvas id="bar"></canvas>
+          
+            <div class="col-md-12 col-12">
+              <canvas id="multiYearChart" width="800" height="400"></canvas>
             </div>
           </div>
         </div>
       </div>
+     
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h4 class="card-title">Orders Today</h4>
+          <h3 class="card-heading">Bankwise Yearly Report 2020-2023</h3>
           <div class="d-flex ">
             <i data-feather="download"></i>
           </div>
         </div>
         <div class="card-body px-0 pb-0">
           <div class="table-responsive">
-            <table class='table mb-0' id="table1">
-              <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>City</th>
-                <th>Status</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>Graiden</td>
-                <td>vehicula.aliquet@semconsequat.co.uk</td>
-                <td>076 4820 8838</td>
-                <td>Offenburg</td>
-                <td>
-                  <span class="badge bg-success">Active</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Dale</td>
-                <td>fringilla.euismod.enim@quam.ca</td>
-                <td>0500 527693</td>
-                <td>New Quay</td>
-                <td>
-                  <span class="badge bg-success">Active</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Nathaniel</td>
-                <td>mi.Duis@diam.edu</td>
-                <td>(012165) 76278</td>
-                <td>Grumo Appula</td>
-                <td>
-                  <span class="badge bg-danger">Inactive</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Darius</td>
-                <td>velit@nec.com</td>
-                <td>0309 690 7871</td>
-                <td>Ways</td>
-                <td>
-                  <span class="badge bg-success">Active</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Ganteng</td>
-                <td>velit@nec.com</td>
-                <td>0309 690 7871</td>
-                <td>Ways</td>
-                <td>
-                  <span class="badge bg-success">Active</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Oleg</td>
-                <td>rhoncus.id@Aliquamauctorvelit.net</td>
-                <td>0500 441046</td>
-                <td>Rossignol</td>
-                <td>
-                  <span class="badge bg-success">Active</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Kermit</td>
-                <td>diam.Sed.diam@anteVivamusnon.org</td>
-                <td>(01653) 27844</td>
-                <td>Patna</td>
-                <td>
-                  <span class="badge bg-success">Active</span>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+            <canvas id="bankRemittanceChart" width="800" height="400"></canvas>
           </div>
         </div>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card ">
-        <div class="card-header">
-          <h4>Your Earnings</h4>
-        </div>
-        <div class="card-body">
-          <div id="radialBars"></div>
-          <div class="text-center mb-5">
-            <h6>From last month</h6>
-            <h1 class='text-green'>+$2,134</h1>
-          </div>
-        </div>
-      </div>
-      <div class="card widget-todo">
-        <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-          <h4 class="card-title d-flex">
-            <i class='bx bx-check font-medium-5 pl-25 pr-75'></i>Progress
-          </h4>
 
+
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="card-heading">Bankwise Yearly Report 2020-2023</h3>
+          <div class="d-flex ">
+            <i data-feather="download"></i>
+          </div>
         </div>
-        <div class="card-body px-0 py-1">
-          <table class='table table-borderless'>
-            <tr>
-              <td class='col-3'>UI Design</td>
-              <td class='col-6'>
-                <div class="progress progress-info">
-                  <div class="progress-bar" role="progressbar" style="width: 60%" aria-valuenow="0"
-                       aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-              <td class='col-3 text-center'>60%</td>
-            </tr>
-            <tr>
-              <td class='col-3'>VueJS</td>
-              <td class='col-6'>
-                <div class="progress progress-success">
-                  <div class="progress-bar" role="progressbar" style="width: 35%" aria-valuenow="0"
-                       aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-              <td class='col-3 text-center'>30%</td>
-            </tr>
-            <tr>
-              <td class='col-3'>Laravel</td>
-              <td class='col-6'>
-                <div class="progress progress-danger">
-                  <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="0"
-                       aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-              <td class='col-3 text-center'>50%</td>
-            </tr>
-            <tr>
-              <td class='col-3'>ReactJS</td>
-              <td class='col-6'>
-                <div class="progress progress-primary">
-                  <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="0"
-                       aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-              <td class='col-3 text-center'>80%</td>
-            </tr>
-            <tr>
-              <td class='col-3'>Go</td>
-              <td class='col-6'>
-                <div class="progress progress-secondary">
-                  <div class="progress-bar" role="progressbar" style="width: 65%" aria-valuenow="0"
-                       aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </td>
-              <td class='col-3 text-center'>65%</td>
-            </tr>
-          </table>
+        <div class="card-body px-0 pb-0">
+          <div class="table-responsive">
+            <canvas id="bankRemittanceChartByYear" width="800" height="400"></canvas>
+          </div>
         </div>
       </div>
+
+
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="card-heading">Bankwise Yearly Report 2020-2023</h3>
+          <div class="d-flex ">
+            <i data-feather="download"></i>
+          </div>
+        </div>
+        <div class="card-body px-0 pb-0">
+          <div class="table-responsive">
+             <!-- Table -->
+            <table id="remittanceTable" class="display table table-responsive" style="width: 100%">
+              <thead>
+                <tr>
+                  <th>Bank Name</th>
+                  <th>Year</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+            </table>
+
+            <!-- Chart -->
+            <canvas id="remittanceChart" width="800" height="400"></canvas>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+    
+
+
+
     </div>
+
   </div>
-  </section>
+  </section> 
 </div>
+  <script type="text/javascript">
+    var url = "/js/analytics_script.js";
+    document.addEventListener('DOMContentLoaded', function(){
+        var id = document.getElementById(id);
+        var scriptElement = document.createElement('script');
+        scriptElement.type = 'text/javascript';
+        scriptElement.src = url;
+        document.querySelector('footer').appendChild(scriptElement);
+    });
+  </script>
 </body>
 </html>

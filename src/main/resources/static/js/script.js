@@ -1,4 +1,5 @@
 $(document).ready(function(){
+  window.targetAchievementChart = null;
     get_loading();
     $.ajax({
         type: "GET",
@@ -12,6 +13,9 @@ $(document).ready(function(){
             $("p.beftnIncentiveCount").html(count[4]);
         }
     });
+
+
+
 });
 
 
