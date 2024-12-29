@@ -470,6 +470,19 @@ public class CommonService {
         return false;
     }
 
+    public static boolean checkAblIslamiBankingWindow(String accountNo){
+        if(accountNo.startsWith("60") && accountNo.length() == 13){
+            int prefix = convertStringToInt(accountNo.substring(0,4));
+            if(prefix >= 6001 && prefix <= 6099)    return true;
+        }
+        return false;
+    }
+
+    public static boolean checkAccountToBeOpened(String accountNo){
+        if(accountNo.equalsIgnoreCase("Account to be opened"))  return true;
+        return false;
+    }
+
     public static String setTypeFlag(String benificiaryAccount, String bankName, String branchCode){
         String typeFlag = "0";
         String onlineFlag = putOnlineFlag(benificiaryAccount, bankName);
@@ -836,6 +849,16 @@ public class CommonService {
                 resp.put("errorDataModelList", errorDataModelList);
                 return resp;
             }
+            else{
+                if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
+                    //only processed for a/c payee
+                }
+                errorMessage = "No Legacy Account will not be processed";
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
         }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
             
         }
@@ -859,8 +882,6 @@ public class CommonService {
         }else if(duplicateCount >= 1) errorMessage = duplicateMessage;
         return errorMessage;
     }
-
-
 
     public static LocalDateTime getCurrentDateTime(){
         return LocalDateTime.now(ZoneId.of("UTC+6"));
