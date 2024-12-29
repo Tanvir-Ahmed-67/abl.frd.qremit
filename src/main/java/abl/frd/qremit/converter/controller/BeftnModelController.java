@@ -41,4 +41,11 @@ public class BeftnModelController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping(value = "/notProcessingBeftnIncentive", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> calculateNotProcessingBeftnIncentive(){
+        Map<String, Object> resp = beftnModelService.calculateNotProcessingBeftnIncentive();
+        return ResponseEntity.ok(resp);
+    }
+
+
 }
