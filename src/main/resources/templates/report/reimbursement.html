@@ -19,7 +19,7 @@
                         <div class="card-content">
                             <div class="row">
                                 <div class="col-2 form-group" id="row_report_date">
-                                    <input class="form-control report_date" type="text" name="report_date" id="report_date" th:placeholder="${date}" readonly="true">
+                                    <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" th:placeholder="${date}" readonly="true">
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -35,6 +35,7 @@
                                         <th>Main Amount</th>
                                         <th>Govt. Inc. Amount</th>
                                         <th>Agrani Inc. Amount</th>
+                                        <th>Type</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -48,6 +49,7 @@
                                         <td class="text-bold-500" th:text="${rmModel.getMainAmount()}"></td>
                                         <td class="text-bold-500" th:text="${rmModel.getGovtIncentiveAmount()}"></td>
                                         <td class="text-bold-500" th:text="${rmModel.getAgraniIncentiveAmount()}"></td>
+                                        <td class="text-bold-500" th:text="${rmModel.getType() == '4' ? 'COC' : (rmModel.getType() == '2' ? 'A/C Payee' : '')}"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -57,22 +59,16 @@
                     <div class="d-flex justify-content-center mt-3">
                         <a th:href="@{/downloadDailyReimbursement(date=${date})}" class="btn btn-primary">Download Reimbursement File</a>
                     </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a th:href="@{/downloadDailyReimbursementForIcash(date=${date})}" class="btn btn-primary">Download Reimbursement File For ICash</a>
+                    </div>
                 </div>
             </div>
         </div>
         <span th:replace="fragments/footer :: footer"></span>
+        <script src="/js/reimbursement.js"></script>
     </div>
 </div>
-</body>
-<script type="text/javascript">
-    $(document).ready(function(){
-        $(document).off('change','#report_date');
-        $(document).on('change','#report_date', function(e){
-            e.preventDefault();
-            var val = $(this).val();
-            var url = "summaryOfDailyStatement?date=" + val;
 
-        });
-    });
-</script>
+</body>
 </html>

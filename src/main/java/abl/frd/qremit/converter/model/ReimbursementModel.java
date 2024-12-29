@@ -37,10 +37,20 @@ public class ReimbursementModel {
     private Double govtIncentiveAmount = 0.0;
     @Column(name = "agrani_incentive_amount", length=30, nullable = false)
     private Double agraniIncentiveAmount = 0.0;
+    @Column(name = "type", length = 10)
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public ReimbursementModel() {
     }
-    public ReimbursementModel(String exchangeCode, String transactionNo, LocalDate reimbursementDate, String beneficiaryName, String beneficiaryAccount, String remitterName, String branchCode, String branchName, Double mainAmount) {
+    public ReimbursementModel(String exchangeCode, String transactionNo, LocalDate reimbursementDate, String beneficiaryName, String beneficiaryAccount, String remitterName, String branchCode, String branchName, Double mainAmount, String type) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.reimbursementDate = reimbursementDate;
@@ -50,6 +60,7 @@ public class ReimbursementModel {
         this.branchCode = branchCode;
         this.branchName = branchName;
         this.mainAmount = mainAmount;
+        this.type = type;
     }
 
     public LocalDate getReimbursementDate() {

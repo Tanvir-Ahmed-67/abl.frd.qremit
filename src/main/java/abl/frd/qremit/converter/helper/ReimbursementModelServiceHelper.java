@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -92,24 +93,26 @@ public class ReimbursementModelServiceHelper {
         count = 1;
         while (iterator.hasNext()) {
             ReimbursementModel reimbursementModel = iterator.next();
-            if (reimbursementModel.getGovtIncentiveAmount() != 0) {
-                row = sheet.createRow(rowIndex++);
+            if(!reimbursementModel.getType().equals("4")) {
+                if (reimbursementModel.getGovtIncentiveAmount() != 0) {
+                    row = sheet.createRow(rowIndex++);
 
-                Cell cell0 = row.createCell(0);
-                cell0.setCellValue(rowIndex);
+                    Cell cell0 = row.createCell(0);
+                    cell0.setCellValue(rowIndex);
 
-                Cell cell1 = row.createCell(1);
-                cell1.setCellValue(getGovtIncentiveAccountNoForReimbursement().trim());
+                    Cell cell1 = row.createCell(1);
+                    cell1.setCellValue(getGovtIncentiveAccountNoForReimbursement().trim());
 
-                Cell cell2 = row.createCell(2);
-                cell2.setCellValue(reimbursementModel.getBranchCode().trim());
+                    Cell cell2 = row.createCell(2);
+                    cell2.setCellValue(reimbursementModel.getBranchCode().trim());
 
-                Cell cell3 = row.createCell(3);
-                cell3.setCellValue(reimbursementModel.getBranchName().trim());
+                    Cell cell3 = row.createCell(3);
+                    cell3.setCellValue(reimbursementModel.getBranchName().trim());
 
-                Cell cell4 = row.createCell(4);
-                cell4.setCellValue(reimbursementModel.getGovtIncentiveAmount());
-                count++;
+                    Cell cell4 = row.createCell(4);
+                    cell4.setCellValue(reimbursementModel.getGovtIncentiveAmount());
+                    count++;
+                }
             }
         }
         // Third Portion: Fill cell 4 with agraniIncentiveAmount if non-zero
@@ -117,25 +120,26 @@ public class ReimbursementModelServiceHelper {
         count = 1;
         while (iterator.hasNext()) {
             ReimbursementModel reimbursementModel = iterator.next();
+            if(!reimbursementModel.getType().equals("4")) {
+                if (reimbursementModel.getAgraniIncentiveAmount() != 0) {
+                    row = sheet.createRow(rowIndex++);
 
-            if (reimbursementModel.getAgraniIncentiveAmount() != 0) {
-                row = sheet.createRow(rowIndex++);
+                    Cell cell0 = row.createCell(0);
+                    cell0.setCellValue(rowIndex);
 
-                Cell cell0 = row.createCell(0);
-                cell0.setCellValue(rowIndex);
+                    Cell cell1 = row.createCell(1);
+                    cell1.setCellValue(getAgraniIncentiveAccountNoForReimbursement().trim());
 
-                Cell cell1 = row.createCell(1);
-                cell1.setCellValue(getAgraniIncentiveAccountNoForReimbursement().trim());
+                    Cell cell2 = row.createCell(2);
+                    cell2.setCellValue(reimbursementModel.getBranchCode().trim());
 
-                Cell cell2 = row.createCell(2);
-                cell2.setCellValue(reimbursementModel.getBranchCode().trim());
+                    Cell cell3 = row.createCell(3);
+                    cell3.setCellValue(reimbursementModel.getBranchName().trim());
 
-                Cell cell3 = row.createCell(3);
-                cell3.setCellValue(reimbursementModel.getBranchName().trim());
-
-                Cell cell4 = row.createCell(4);
-                cell4.setCellValue(reimbursementModel.getAgraniIncentiveAmount());
-                count++;
+                    Cell cell4 = row.createCell(4);
+                    cell4.setCellValue(reimbursementModel.getAgraniIncentiveAmount());
+                    count++;
+                }
             }
         }
         ByteArrayOutputStream fos = new ByteArrayOutputStream();
@@ -154,6 +158,57 @@ public class ReimbursementModelServiceHelper {
         catch (IOException e) {
             e.printStackTrace();
         }
+        return xls;
+    }
+    public static byte[] ReimbursementModelsToExcelForIcash(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Reimbursement_ICash_" + localDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        byte[] xls = null;
+        int rowIndex = 0; // Start with header row at index 0
+
+        // Create the header row
+        Row row = sheet.createRow(rowIndex++);
+        row.createCell(0).setCellValue("BR CODE");
+        row.createCell(1).setCellValue("REF NO");
+        row.createCell(2).setCellValue("REMITTANCE");
+        row.createCell(3).setCellValue("INCENTIVE");
+        row.createCell(4).setCellValue("DATE");
+        row.createCell(5).setCellValue("EX CODE");
+        row.createCell(6).setCellValue("CONTACT NO");
+        row.createCell(7).setCellValue("REMITTER");
+        row.createCell(8).setCellValue("BENEFICIARY");
+
+        // Add data rows
+        for (ReimbursementModel reimbursementModel : reimbursementModelList) {
+            if (reimbursementModel.getMainAmount() != 0) {
+                row = sheet.createRow(rowIndex++);
+
+                row.createCell(0).setCellValue(reimbursementModel.getBranchCode().trim());
+                row.createCell(1).setCellValue(reimbursementModel.getTransactionNo().trim());
+                row.createCell(2).setCellValue(reimbursementModel.getMainAmount());
+                row.createCell(3).setCellValue(reimbursementModel.getGovtIncentiveAmount());
+                row.createCell(4).setCellValue(reimbursementModel.getReimbursementDate().format(formatter));
+                row.createCell(5).setCellValue(reimbursementModel.getExchangeCode().trim());
+                row.createCell(6).setCellValue(reimbursementModel.getBeneficiaryAccount().trim());
+                row.createCell(7).setCellValue(reimbursementModel.getRemitterName().trim());
+                row.createCell(8).setCellValue(reimbursementModel.getBeneficiaryName().trim());
+            }
+        }
+
+        try (ByteArrayOutputStream fos = new ByteArrayOutputStream()) {
+            workbook.write(fos);
+            xls = fos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return xls;
     }
 
