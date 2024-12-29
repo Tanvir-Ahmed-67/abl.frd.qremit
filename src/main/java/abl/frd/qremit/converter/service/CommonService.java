@@ -796,6 +796,14 @@ public class CommonService {
         if(!exchangeMessage.isEmpty()){
             return getResp(2, exchangeMessage, null);
         }
+        errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
+        if(!errorMessage.isEmpty()){
+            addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+            resp = getResp(1, errorMessage, null);
+            resp.put("errorDataModelList", errorDataModelList);
+            return resp;
+        }
+        /*
         //a/c no, benficiary name, amount empty or null check
         errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
         if(!errorMessage.isEmpty()){
@@ -862,6 +870,7 @@ public class CommonService {
         }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
             
         }
+        */
         //check duplicate data exists in csv data
         if(transactionList.contains(transactionNo)){
             return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
@@ -871,6 +880,50 @@ public class CommonService {
             
         }
         return resp;
+    }
+
+    public static String getErrorMessage(String beneficiaryAccount, String beneficiaryName, String amount, String bankName, String branchCode){
+        String errorMessage = "";
+        //a/c no, benficiary name, amount empty or null check
+        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
+        if(!errorMessage.isEmpty())  return errorMessage;
+        if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = validateBeftn(bankName, branchCode);
+            if(!errorMessage.isEmpty())  return errorMessage;
+        }else if(isCocFound(beneficiaryAccount)){
+            errorMessage = checkCOCBankName(bankName);
+            if(!errorMessage.isEmpty())  return errorMessage;
+        }else if(isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = validateAccountPayee(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
+            if(!errorMessage.isEmpty())  return errorMessage;
+        }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
+            
+        }
+        return errorMessage;
+    }
+
+    public static String validateBeftn(String bankName, String branchCode){
+        String errorMessage = "";
+        if(checkEmptyString(bankName)){
+            return "Bank Name is empty. Please correct it";
+        }
+        errorMessage = checkBEFTNRouting(branchCode);
+        return errorMessage;
+    }
+
+    public static String validateAccountPayee(String beneficiaryAccount, String beneficiaryName, String amount, String bankName, String branchCode){
+        String errorMessage = "";
+        errorMessage = checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
+        if(!errorMessage.isEmpty())     return errorMessage;     
+        errorMessage = checkCOString(beneficiaryAccount);
+        if(!errorMessage.isEmpty())     return errorMessage;
+        if(checkEmptyString(branchCode)){
+            return "Branch Code can not be empty for A/C payee";
+        }
+        if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
+            //only processed for a/c payee
+        }else   return "No Legacy Account will not be processed";
+        return errorMessage;
     }
     //error message
     public static String setErrorMessage(String duplicateMessage, int duplicateCount, int totalCount){

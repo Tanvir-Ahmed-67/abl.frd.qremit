@@ -82,42 +82,61 @@ public class ErrorDataModelService {
         int fileInfoModelId = errorDataModel.getFileInfoModel().getId();
 
         Map<String, Object> errorDataMap = getErrorDataModelMap(errorDataModel); 
-        //ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
-        //String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
+
         Map<String, Object> info = new HashMap<>();
         info.put("oldData", errorDataMap);
         String bankName = formData.get("bankName").trim();
         String beneficiaryAccount =formData.get("beneficiaryAccount").trim();
+        String beneficiaryName = formData.get("beneficiaryName").trim();
         String branchCode = formData.get("branchCode").trim();
+        String amount = formData.get("amount").toString();
 
         String errorMessage = "";
         //check amount and reference number same
-        if(!errorDataModel.getAmount().equals(Double.valueOf(formData.get("amount"))) || !errorDataModel.getTransactionNo().equals(formData.get("transactionNo"))){
+        if(!errorDataModel.getAmount().equals(Double.valueOf(amount)) || !errorDataModel.getTransactionNo().equals(formData.get("transactionNo"))){
             errorMessage = "Amount or Transaction No mismatched";
             return CommonService.getResp(1, errorMessage, null);
         }
+        errorMessage = CommonService.getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
+        /*
         //check empty 
-        errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(formData.get("beneficiaryAccount"), formData.get("beneficiaryName"), formData.get("amount"));
+        errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
         if(!errorMessage.isEmpty()) return CommonService.getResp(1, errorMessage, null);
 
-        if(CommonService.isBeftnFound(formData.get("bankName"), formData.get("beneficiaryAccount"), formData.get("branchCode"))){
-            errorMessage = CommonService.checkBEFTNRouting(formData.get("branchCode"));
-        }else if(CommonService.isCocFound(formData.get("beneficiaryAccount"))){
-            errorMessage = CommonService.checkCOCBankName(formData.get("bankName"));
-        }else if(CommonService.isAccountPayeeFound(formData.get("bankName"), formData.get("beneficiaryAccount"), formData.get("branchCode"))){
-            errorMessage = CommonService.checkABLAccountAndRoutingNo(formData.get("beneficiaryAccount"), formData.get("branchCode"), formData.get("bankName"));
-            if(errorMessage.isEmpty()) errorMessage = CommonService.checkCOString(formData.get("beneficiaryAccount"));
-        }else if(CommonService.isOnlineAccoutNumberFound(formData.get("beneficiaryAccount"))){
+        if(CommonService.isBeftnFound(bankName, beneficiaryAccount, branchCode)){
+            if(CommonService.checkEmptyString(bankName)){
+                errorMessage = "Bank Name is empty. Please correct it";
+            }
+            errorMessage = CommonService.checkBEFTNRouting(branchCode);
+        }else if(CommonService.isCocFound(beneficiaryAccount)){
+            errorMessage = CommonService.checkCOCBankName(bankName);
+        }else if(CommonService.isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = CommonService.checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
+            if(errorMessage.isEmpty()) errorMessage = CommonService.checkCOString(beneficiaryAccount);
+            if(errorMessage.isEmpty()){
+                if(CommonService.checkEmptyString(branchCode)){
+                    errorMessage = "Branch Code can not be empty for A/C payee";
+                }
+            }
+            if(errorMessage.isEmpty()){
+                if(CommonService.checkAblIslamiBankingWindow(beneficiaryAccount) || CommonService.checkAccountToBeOpened(beneficiaryAccount)){
+
+                }else{
+                    errorMessage = "No Legacy Account will not be processed";
+                }
+            }
+        }else if(CommonService.isOnlineAccoutNumberFound(beneficiaryAccount)){
 
         }
+        */
         if(!errorMessage.isEmpty()) return CommonService.getResp(1, errorMessage, null);
 
         errorDataModel.setBankCode(formData.get("bankCode"));
-        errorDataModel.setBankName(formData.get("bankName"));
-        errorDataModel.setBranchCode(formData.get("branchCode"));
+        errorDataModel.setBankName(bankName);
+        errorDataModel.setBranchCode(branchCode);
         errorDataModel.setBranchName(formData.get("branchName"));
-        errorDataModel.setBeneficiaryAccount(formData.get("beneficiaryAccount"));
-        errorDataModel.setBeneficiaryName(formData.get("beneficiaryName"));
+        errorDataModel.setBeneficiaryAccount(beneficiaryAccount);
+        errorDataModel.setBeneficiaryName(beneficiaryName);
         errorDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
         
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel);
