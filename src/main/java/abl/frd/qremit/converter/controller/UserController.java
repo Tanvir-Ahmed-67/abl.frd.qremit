@@ -8,6 +8,8 @@ import abl.frd.qremit.converter.service.ExchangeHouseModelService;
 import abl.frd.qremit.converter.service.MyUserDetailsService;
 import abl.frd.qremit.converter.service.RoleModelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -30,6 +34,9 @@ public class UserController {
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
     private final CommonService commonService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     public UserController(MyUserDetailsService myUserDetailsService, ExchangeHouseModelService exchangeHouseModelService, RoleModelService roleModelService, PasswordEncoder passwordEncoder, CommonService commonService) {
@@ -96,6 +103,287 @@ public class UserController {
         }
         return "allUsers";
     }
+
+    
+@GetMapping(value = "/getChartData", produces = "application/json")
+@ResponseBody
+public Map<String, Object> getChartData() {
+    // SQL query to fetch data for all years
+    // String query = "SELECT year, month_name, CAST(abl_amount AS DOUBLE) AS abl_amount " +
+    //                "FROM analytics_abl_growth " +
+    //                "ORDER BY year, id";
+
+                   String query = "SELECT year, month_name, CAST(abl_amount AS DOUBLE) AS abl_amount FROM analytics_abl_growth WHERE year > 2013 ORDER BY year, id";
+    // Execute query
+    List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+    // Transform results
+    Map<String, Map<String, Double>> yearDataMap = new HashMap<>();
+    List<String> labels = new ArrayList<>();
+    for (Object[] row : resultList) {
+        String year = String.valueOf(row[0]); // Year
+        String month = (String) row[1];      // Month Name
+        Double amount = (Double) row[2];     // National Amount
+
+        // Add unique months to labels
+        if (!labels.contains(month)) {
+            labels.add(month);
+        }
+
+        // Organize data by year
+        yearDataMap.putIfAbsent(year, new HashMap<>());
+        yearDataMap.get(year).put(month, amount);
+    }
+
+    // Prepare datasets for Chart.js
+    List<Map<String, Object>> datasets = new ArrayList<>();
+    String[] colors = {"#54a0ff", "#ff6b6b", "#1dd1a1", "#feca57", "#5f27cd", "#c8d6e5"};
+    int colorIndex = 0;
+    for (String year : yearDataMap.keySet()) {
+        Map<String, Double> monthData = yearDataMap.get(year);
+
+        List<Double> data = new ArrayList<>();
+        for (String month : labels) {
+            data.add(monthData.getOrDefault(month, 0.0));
+        }
+
+        Map<String, Object> dataset = new HashMap<>();
+        dataset.put("year", year);
+        dataset.put("data", data);
+        dataset.put("backgroundColor", colors[colorIndex % colors.length] + "80"); // Transparent color
+        dataset.put("borderColor", colors[colorIndex % colors.length]); // Solid color
+        datasets.add(dataset);
+        colorIndex++;
+    }
+
+    // Prepare response
+    Map<String, Object> response = new HashMap<>();
+    response.put("labels", labels);
+    response.put("datasets", datasets);
+
+    return response;
+}
+
+
+
+@GetMapping(value = "/getTargetAchievementData", produces = "application/json")
+@ResponseBody
+public Map<String, Object> getTargetAchievementData() {
+    // SQL query with CAST to convert VARCHAR fields to DOUBLE
+    String query = "SELECT year, CAST(target AS DOUBLE) AS target, " +
+                   "CAST(achievement AS DOUBLE) AS achievement, " +
+                   "CAST(percentage AS DOUBLE) AS percentage " +
+                   "FROM analytics_abl_target_achievement ORDER BY year";
+
+    // Execute the query
+    List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+    // Prepare response data
+    List<String> labels = new ArrayList<>();
+    List<Double> targets = new ArrayList<>();
+    List<Double> achievements = new ArrayList<>();
+    List<Double> percentages = new ArrayList<>();
+
+    for (Object[] row : resultList) {
+        labels.add(String.valueOf(row[0])); // year
+        targets.add((Double) row[1]);      // target
+        achievements.add((Double) row[2]); // achievement
+        percentages.add((Double) row[3]);  // percentage
+    }
+
+    // Prepare response
+    Map<String, Object> response = new HashMap<>();
+    response.put("labels", labels);
+    response.put("targets", targets);
+    response.put("achievements", achievements);
+    response.put("percentages", percentages);
+
+    return response;
+}
+
+
+@GetMapping(value = "/getBankRemittanceData", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> getBankRemittanceData() {
+        // SQL Query
+        String query = "SELECT bank_name, year, SUM(amount) AS total_amount " +
+                       "FROM analytics_all_bank_remittance " +
+                       "GROUP BY bank_name, year " +
+                       "ORDER BY bank_name, year";
+
+        // Execute query
+        List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+        // Transform results
+        Map<String, Map<String, Double>> bankDataMap = new LinkedHashMap<>();
+        Set<String> years = new TreeSet<>(); // Maintain ordered unique years
+
+        for (Object[] row : resultList) {
+            String bankName = (String) row[0];
+            String year = String.valueOf(row[1]);
+            Double amount = ((Number) row[2]).doubleValue();
+
+            years.add(year);
+            bankDataMap.putIfAbsent(bankName, new LinkedHashMap<>());
+            bankDataMap.get(bankName).put(year, amount);
+        }
+
+        // Prepare datasets for Chart.js
+        List<Map<String, Object>> datasets = new ArrayList<>();
+        List<String> yearLabels = new ArrayList<>(years);
+        String[] colors = {"#54a0ff", "#ff6b6b", "#1dd1a1", "#feca57", "#5f27cd", "#c8d6e5"};
+        int colorIndex = 0;
+
+        for (Map.Entry<String, Map<String, Double>> entry : bankDataMap.entrySet()) {
+            String bankName = entry.getKey();
+            Map<String, Double> yearData = entry.getValue();
+
+            List<Double> data = new ArrayList<>();
+            for (String year : yearLabels) {
+                data.add(yearData.getOrDefault(year, 0.0));
+            }
+
+            Map<String, Object> dataset = new HashMap<>();
+            dataset.put("label", bankName);
+            dataset.put("data", data);
+            dataset.put("backgroundColor", colors[colorIndex % colors.length] + "80"); // Transparent color
+            dataset.put("borderColor", colors[colorIndex % colors.length]); // Solid color
+            dataset.put("borderWidth", 1);
+            datasets.add(dataset);
+
+            colorIndex++;
+        }
+
+        // Prepare response
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", yearLabels);
+        response.put("datasets", datasets);
+
+        return response;
+    } 
+
+    @GetMapping(value = "/getBankRemittanceDataByYear", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> getBankRemittanceDataByYear() {
+          // SQL Query
+          String query = "SELECT bank_name, year, SUM(amount) AS total_amount " +
+          "FROM analytics_all_bank_remittance " +
+          "GROUP BY bank_name, year " +
+          "ORDER BY bank_name, year";
+
+            // Execute query
+            List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+            // Transform results
+            Map<String, Map<String, Double>> bankDataMap = new LinkedHashMap<>();
+            Set<String> years = new TreeSet<>(); // Maintain ordered unique years
+            Set<String> banks = new LinkedHashSet<>(); // Maintain ordered unique banks
+
+            for (Object[] row : resultList) {
+            String bankName = (String) row[0];
+            String year = String.valueOf(row[1]);
+            Double amount = ((Number) row[2]).doubleValue();
+
+            years.add(year);
+            banks.add(bankName);
+
+            bankDataMap.putIfAbsent(bankName, new LinkedHashMap<>());
+            bankDataMap.get(bankName).put(year, amount);
+            }
+
+            // Prepare datasets for Chart.js
+            List<Map<String, Object>> datasets = new ArrayList<>();
+            List<String> yearLabels = new ArrayList<>(years);
+            String[] colors = {"#54a0ff", "#ff6b6b", "#1dd1a1", "#feca57", "#5f27cd", "#c8d6e5"};
+            int colorIndex = 0;
+
+            for (String year : yearLabels) {
+            List<Double> data = new ArrayList<>();
+            for (String bank : banks) {
+            Map<String, Double> yearData = bankDataMap.getOrDefault(bank, Collections.emptyMap());
+            data.add(yearData.getOrDefault(year, 0.0));
+            }
+
+            Map<String, Object> dataset = new HashMap<>();
+            dataset.put("label", year);
+            dataset.put("data", data);
+            dataset.put("backgroundColor", colors[colorIndex % colors.length] + "80"); // Transparent color
+            dataset.put("borderColor", colors[colorIndex % colors.length]); // Solid color
+            dataset.put("borderWidth", 1);
+            datasets.add(dataset);
+
+            colorIndex++;
+            }
+
+            // Prepare response
+            Map<String, Object> response = new HashMap<>();
+            response.put("labels", new ArrayList<>(banks)); // X-axis banks
+            response.put("datasets", datasets);
+
+            return response;
+    }
+
+    @GetMapping(value = "/getBankRemittanceDataForTable", produces = "application/json")
+@ResponseBody
+public List<Map<String, Object>> getBankRemittanceDataForTable() {
+    // SQL Query
+    String query = "SELECT bank_name, year, SUM(amount) AS total_amount " +
+                   "FROM analytics_all_bank_remittance " +
+                   "GROUP BY bank_name, year " +
+                   "ORDER BY bank_name, year";
+
+    // Execute query
+    List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+    // Transform results
+    List<Map<String, Object>> response = new ArrayList<>();
+    for (Object[] row : resultList) {
+        Map<String, Object> record = new HashMap<>();
+        record.put("bankName", row[0]); // Bank name
+        record.put("year", row[1]);    // Year
+        record.put("amount", ((Number) row[2]).doubleValue()); // Total amount
+        response.add(record);
+    }
+
+    return response;
+}
+
+ @GetMapping(value = "/getMonthlyAnalytics", produces = "application/json")
+    public ResponseEntity<?> getMonthlyAnalytics() {
+        try {
+            // SQL query
+            String query = "SELECT month_name, target, achievement " +
+                           "FROM analytics_abl_current_year_target_achievement " +
+                           "ORDER BY id";
+
+            // Execute query
+            List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+            // Process results into structured data
+            List<String> labels = new ArrayList<>(); // Month names
+            List<Double> targets = new ArrayList<>(); // Target values
+            List<Double> achievements = new ArrayList<>(); // Achievement values
+
+            for (Object[] row : resultList) {
+                labels.add((String) row[0]); // Month name
+                targets.add(Double.parseDouble((String) row[1])); // Convert target to Double
+                achievements.add(Double.parseDouble((String) row[2])); // Convert achievement to Double
+            }
+
+            // Prepare the response
+            Map<String, Object> response = new HashMap<>();
+            response.put("labels", labels); // Y-axis (Month names)
+            response.put("targets", targets); // X-axis (Target)
+            response.put("achievements", achievements); // X-axis (Achievement)
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching analytics data.");
+        }
+    }
+
+    
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromAdmin(Model model){
         model.addAttribute("user", new User());

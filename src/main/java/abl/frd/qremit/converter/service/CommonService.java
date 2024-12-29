@@ -470,6 +470,19 @@ public class CommonService {
         return false;
     }
 
+    public static boolean checkAblIslamiBankingWindow(String accountNo){
+        if(accountNo.startsWith("60") && accountNo.length() == 13){
+            int prefix = convertStringToInt(accountNo.substring(0,4));
+            if(prefix >= 6001 && prefix <= 6099)    return true;
+        }
+        return false;
+    }
+
+    public static boolean checkAccountToBeOpened(String accountNo){
+        if(accountNo.equalsIgnoreCase("Account to be opened"))  return true;
+        return false;
+    }
+
     public static String setTypeFlag(String benificiaryAccount, String bankName, String branchCode){
         String typeFlag = "0";
         String onlineFlag = putOnlineFlag(benificiaryAccount, bankName);
@@ -783,6 +796,14 @@ public class CommonService {
         if(!exchangeMessage.isEmpty()){
             return getResp(2, exchangeMessage, null);
         }
+        errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
+        if(!errorMessage.isEmpty()){
+            addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+            resp = getResp(1, errorMessage, null);
+            resp.put("errorDataModelList", errorDataModelList);
+            return resp;
+        }
+        /*
         //a/c no, benficiary name, amount empty or null check
         errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
         if(!errorMessage.isEmpty()){
@@ -836,9 +857,20 @@ public class CommonService {
                 resp.put("errorDataModelList", errorDataModelList);
                 return resp;
             }
+            if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
+                //only processed for a/c payee
+            }
+            else{
+                errorMessage = "No Legacy Account will not be processed";
+                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                resp = getResp(1, errorMessage, null);
+                resp.put("errorDataModelList", errorDataModelList);
+                return resp;
+            }
         }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
             
         }
+        */
         //check duplicate data exists in csv data
         if(transactionList.contains(transactionNo)){
             return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
@@ -848,6 +880,50 @@ public class CommonService {
             
         }
         return resp;
+    }
+
+    public static String getErrorMessage(String beneficiaryAccount, String beneficiaryName, String amount, String bankName, String branchCode){
+        String errorMessage = "";
+        //a/c no, benficiary name, amount empty or null check
+        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
+        if(!errorMessage.isEmpty())  return errorMessage;
+        if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = validateBeftn(bankName, branchCode);
+            if(!errorMessage.isEmpty())  return errorMessage;
+        }else if(isCocFound(beneficiaryAccount)){
+            errorMessage = checkCOCBankName(bankName);
+            if(!errorMessage.isEmpty())  return errorMessage;
+        }else if(isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
+            errorMessage = validateAccountPayee(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
+            if(!errorMessage.isEmpty())  return errorMessage;
+        }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
+            
+        }
+        return errorMessage;
+    }
+
+    public static String validateBeftn(String bankName, String branchCode){
+        String errorMessage = "";
+        if(checkEmptyString(bankName)){
+            return "Bank Name is empty. Please correct it";
+        }
+        errorMessage = checkBEFTNRouting(branchCode);
+        return errorMessage;
+    }
+
+    public static String validateAccountPayee(String beneficiaryAccount, String beneficiaryName, String amount, String bankName, String branchCode){
+        String errorMessage = "";
+        errorMessage = checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
+        if(!errorMessage.isEmpty())     return errorMessage;     
+        errorMessage = checkCOString(beneficiaryAccount);
+        if(!errorMessage.isEmpty())     return errorMessage;
+        if(checkEmptyString(branchCode)){
+            return "Branch Code can not be empty for A/C payee";
+        }
+        if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
+            //only processed for a/c payee
+        }else   return "No Legacy Account will not be processed";
+        return errorMessage;
     }
     //error message
     public static String setErrorMessage(String duplicateMessage, int duplicateCount, int totalCount){
@@ -859,8 +935,6 @@ public class CommonService {
         }else if(duplicateCount >= 1) errorMessage = duplicateMessage;
         return errorMessage;
     }
-
-
 
     public static LocalDateTime getCurrentDateTime(){
         return LocalDateTime.now(ZoneId.of("UTC+6"));
@@ -942,7 +1016,12 @@ public class CommonService {
         }
         if(fileInfoModelObject != null){
             model.addAttribute("fileInfo", fileInfoModelObject);
+            model.addAttribute("beftnIncentive", 0);
             int errorCount = fileInfoModelObject.getErrorCount();
+            int beftnCount = CommonService.convertStringToInt(fileInfoModelObject.getBeftnCount());
+            if(beftnCount > 0){
+                model.addAttribute("beftnIncentive", 1);
+            }
             if(errorCount >= 1){
             List<Map<String, String>> columns = ReportController.getReportColumn("3");
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -1125,4 +1204,16 @@ public class CommonService {
         }
         return infoStr;
     }
+
+    public static String[] beftnIncentiveNotProcessingKeywords(){
+        String[] keywords = {
+            " PHONE", " CENTER", " LTD", " BANK", "BANK ", " TELECOM", " TRADERS", " STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", " TRAVELS", 
+            " TOURS", " NETWORK", " FARM "," ASSETS", " ASSET", " SOLUTIONS", " FUND", " ELECTRON", " SECURITIES", " EQUIPMENT", " COMPENSATION", "DEATH ", " GALLERY", " HOUSE", "M/S ", " BANGLADESH", 
+            " BD", " LIMITED", " OVERSEAS", " DAIRY", " COLLECTION", " RICE", " AGENCY", " TEXTILE", " VARAITY", " MEDICAL", " HALL", " PHARMA", " OPTICAL", "PRIZE", " FAIR ",
+            " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", " FURNITURE", " PURBACHAL", 
+            "PURBACHAL ","PROBASHI", " PALLI", " GLOBAL", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION"
+        };
+        return keywords;
+    }
+
 }

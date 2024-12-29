@@ -83,14 +83,6 @@ public class CustomQueryRepository {
         params.put("1", fileInfoModelId);
         return getData(queryStr,params);
     }
-    /*
-    public Map<String,Object> getRoutingDetails(String routingNo){
-        Map<String, Object> params = new HashMap<>();
-        String queryStr = "SELECT * FROM routing_no where routing_no = ?";
-        params.put("1", routingNo);
-        return getData(queryStr,params);
-    }
-    */
 
     public Map<String,Object> getRoutingDetails(String routingNo, String bankCode){
         Map<String, Object> params = new HashMap<>();
@@ -152,6 +144,26 @@ public class CustomQueryRepository {
             return CommonService.getResp(1, e.getMessage(), null);
         }
         return resp;
+    }
+
+    public Map<String, Object> getBeftnIncentiveNotProcessing(String[] keywords){
+        StringBuilder whereClause = new StringBuilder();
+        for(String keyword: keywords){
+            if(whereClause.length() > 0){
+                whereClause.append(" OR ");
+            }
+            whereClause.append("beneficiary_name LIKE '%").append(keyword).append("%'");
+        }
+        String specialCase = " OR beneficiary_name LIKE ' FARM%' OR beneficiary_name LIKE '% FARM'";
+        specialCase += " OR beneficiary_name LIKE ' FAIR%' OR beneficiary_name LIKE '% FAIR'";
+        whereClause.append(specialCase);
+        
+        String sql = "SELECT * FROM converted_data_beftn WHERE is_downloaded= ? and incentive != ? AND (" + whereClause.toString() + ")";
+        //System.out.println(sql);
+        Map<String, Object> params = new HashMap<>();
+        params.put("1", 0);
+        params.put("2", 0);
+        return getData(sql,params);
     }
         
 
