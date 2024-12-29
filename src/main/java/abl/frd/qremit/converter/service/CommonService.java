@@ -849,10 +849,10 @@ public class CommonService {
                 resp.put("errorDataModelList", errorDataModelList);
                 return resp;
             }
+            if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
+                //only processed for a/c payee
+            }
             else{
-                if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
-                    //only processed for a/c payee
-                }
                 errorMessage = "No Legacy Account will not be processed";
                 addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                 resp = getResp(1, errorMessage, null);
