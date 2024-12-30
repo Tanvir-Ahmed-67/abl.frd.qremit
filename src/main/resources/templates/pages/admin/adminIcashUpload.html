@@ -27,17 +27,13 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <div id="up-form">
-                                        <form th:action="@{#}" id="adminUploadIcashForm" method="POST" enctype="multipart/form-data">
-                                            <div class="row">
-                                                <div class="col-2"><label>MO Generation Date</label></div>
-                                                <div class="col-2 form-group">
-                                                    <input class="form-control" type="text" name="report_date" id="report_date" placeholder="Report Date" th:value="${currentDate}" readonly="true">
-                                                </div>
+                                        <form th:action="@{/generateMo(date=${currentDate})}" th:object="${mo}"  th:name="moGenerationForm" method="post" class="form form-horizontal">
+                                        <div class="row">
+                                            <div class="col-2"><label>MO Generation Date</label></div>
+                                            <div class="col-2 form-group">
+                                                <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" th:placeholder="${currentDate}" readonly="true">
                                             </div>
-                                        </form>
-                                    </div>
-                                    <form th:action="@{/generateMo}" th:object="${mo}"  th:name="moGenerationForm" method="post" class="form form-horizontal">
+                                        </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group row align-items-center">

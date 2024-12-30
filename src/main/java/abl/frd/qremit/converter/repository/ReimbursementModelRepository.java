@@ -13,6 +13,9 @@ import java.util.List;
 public interface ReimbursementModelRepository extends JpaRepository<ReimbursementModel, Integer> {
     @Query("SELECT n FROM ReimbursementModel n WHERE n.reimbursementDate = :reimbursementDate")
     List<ReimbursementModel> findAllReimbursementByDate(@Param("reimbursementDate") LocalDate reimbursementDate);
+    @Query("SELECT n FROM ReimbursementModel n WHERE n.reimbursementDate = :reimbursementDate AND n.type='4'")
+    List<ReimbursementModel> findAllCocReimbursementByDate(@Param("reimbursementDate") LocalDate reimbursementDate);
+
     boolean existsByExchangeCodeAndTransactionNoAndMainAmountAndBeneficiaryAccount(String exchangeCode, String transactionNo, Double mainAmount, String beneficiaryAccount);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate = :reimbursementDate AND n.isApi=0 AND n.type IN ('2', '4')")
     List<ReportModel> findAllAccountPayeeAndCocPaidDataForReimbursement(@Param("reimbursementDate") LocalDate reimbursementDate);

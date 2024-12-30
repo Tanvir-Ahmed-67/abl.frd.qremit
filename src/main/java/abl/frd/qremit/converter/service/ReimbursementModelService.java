@@ -28,6 +28,11 @@ public class ReimbursementModelService {
         byte[] in = reimbursementModelServiceHelper.ReimbursementModelsToExcel(reimbursementModels, localDate);
         return in;
     }
+    public byte[] loadAllReimbursementForIcashByDate(LocalDate localDate) {
+        List<ReimbursementModel> reimbursementModels = findAllCocReimbursementByDate(localDate);
+        byte[] in = reimbursementModelServiceHelper.ReimbursementModelsToExcelForIcash(reimbursementModels, localDate);
+        return in;
+    }
     public List<ReimbursementModel> insertReimbursementData(LocalDate localDate){
         List<ReportModel> reports  = findAllAccountPayeeAndCocPaidDataForReimbursement(localDate);
         List<ReimbursementModel> allReimbursements = reports.stream()
@@ -41,7 +46,8 @@ public class ReimbursementModelService {
                             report.getRemitterName(),
                             report.getBranchCode(),
                             report.getBranchName(),
-                            report.getAmount()
+                            report.getAmount(),
+                            report.getType()
                     );
                     // Calculate and set incentive amounts
                     reimbursement.setGovtIncentiveAmount(
@@ -66,6 +72,9 @@ public class ReimbursementModelService {
     }
     public List<ReimbursementModel> findAllReimbursementByDate(LocalDate reimbursementDate){
         return reimbursementModelRepository.findAllReimbursementByDate(reimbursementDate);
+    }
+    public List<ReimbursementModel> findAllCocReimbursementByDate(LocalDate reimbursementDate){
+        return reimbursementModelRepository.findAllCocReimbursementByDate(reimbursementDate);
     }
     public List<ReportModel> findAllAccountPayeeAndCocPaidDataForReimbursement(LocalDate reimbursementDate){
         return reimbursementModelRepository.findAllAccountPayeeAndCocPaidDataForReimbursement(reimbursementDate);

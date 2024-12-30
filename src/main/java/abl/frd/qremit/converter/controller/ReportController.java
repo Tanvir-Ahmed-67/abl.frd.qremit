@@ -361,7 +361,7 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
     @GetMapping("/showIcashEntryForm")
-    public String showIcashEntryForm(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+    public String showIcashEntryForm(Model model){
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         model.addAttribute("currentDate", currentDate);
         model.addAttribute("mo", new MoModel());
@@ -369,7 +369,8 @@ public class ReportController {
     }
 
     @RequestMapping(value="/generateMo", method= RequestMethod.POST)
-    public String generateMo(MoModel mo, RedirectAttributes ra, @RequestParam(defaultValue = "html") String format, Model model, @RequestParam(defaultValue = "") String date) {
+    public String generateMo(MoModel mo, Model model, @RequestParam(defaultValue = "") String date) {
+        System.out.println("DATE FROM /GENERATE mo url "+date);
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         mo.setMoDate(LocalDate.parse(date));
         MoModel moModel = moModelService.findIfAlreadyGenerated(mo);
@@ -381,7 +382,8 @@ public class ReportController {
         return "report/mo";
     }
     @PostMapping("/downloadMoInPdfFormat")
-    public ResponseEntity<byte[]> downloadMoInPdfFormat(@RequestParam String date, @ModelAttribute MoModel moModel) throws Exception {
+    public ResponseEntity<byte[]> downloadMoInPdfFormat(@RequestParam(defaultValue = "") String date, @ModelAttribute MoModel moModel) throws Exception {
+        System.out.println("DATE from downloadMoInPdfFormat ----- "+date);
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         MoModel moModelForPdf = moModelService.generateMoDTOForPreparingPdfFile(moModel, date);
         if(moModelForPdf == null){
@@ -415,6 +417,21 @@ public class ReportController {
         try {
             byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDate(LocalDate.parse(date));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_", ".csv");
+            MediaType mediaType = MediaType.TEXT_PLAIN;
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(mediaType)
+                    .body(contentStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+    @RequestMapping(value = "/downloadDailyReimbursementForIcash", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDailyReimbursementForIcash(@RequestParam String date, @ModelAttribute MoModel moModel){
+        try {
+            byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(date));
+            String fileName = CommonService.generateDynamicFileName("Reimbursement_ICash_", ".csv");
             MediaType mediaType = MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
