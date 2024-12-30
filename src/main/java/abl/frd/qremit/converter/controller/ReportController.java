@@ -399,11 +399,10 @@ public class ReportController {
                 .body(pdfReport);
     }
     @RequestMapping(value="/showDailyReimbursement", method= RequestMethod.GET)
-    public String showDailyReimbursement(Model model, ReimbursementModel reimbursementModel, @RequestParam(defaultValue = "") String date) {
+    public String showDailyReimbursement(Model model, @RequestParam(defaultValue = "") String date) {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        reimbursementModel.setReimbursementDate(LocalDate.parse(date));
         List<ReimbursementModel> rmModel = reimbursementModelService.insertReimbursementData(LocalDate.parse(date));
-        if (reimbursementModel == null) {
+        if (rmModel == null) {
             model.addAttribute("message", "Reimbursement Is Not Generated Yet. Please check settlement File Uploaded or Not");
             return "report/reimbursement";
         }
