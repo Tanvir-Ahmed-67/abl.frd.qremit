@@ -1183,10 +1183,10 @@ public class CommonService {
         return resp;
     }
 
-    public static Map<String, Object> getSerachType(){
+    public static Map<String, Object> getSerachType(String type){
         Map<String, Object> resp = new HashMap<>();
         resp.put("1", "Transaction No");
-        resp.put("2", "Beneficiary Account No");
+        if(!type.equals("2"))    resp.put("2", "Beneficiary Account No");
         return resp;
     }
 

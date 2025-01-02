@@ -729,6 +729,12 @@ public class ReportService {
         FileInfoModel fileInfoModel = fileInfoModelService.findFileInfoModelById(id);
         if(fileInfoModel == null)   return CommonService.getResp(1, "No data found following this fileInfoModel Id", null);
         int cnt = 0;
+        if(CommonService.convertStringToInt(fileInfoModel.getTotalCount()) == 0 && fileInfoModel.getErrorCount() == 0){
+            //for not file uploaded
+            resp = fileInfoModelService.deleteFileInfoModelById(id);
+            resp = addDataLogModel(resp, fileInfoModel, userId, id, request);
+            return resp;
+        }
         if(CommonService.convertStringToInt(fileInfoModel.getOnlineCount()) >= 1){
             List<OnlineModel> onlineModels = onlineModelService.findOnlineModelByFileInfoModelIdAndIsDownloaded(id, fileInfoModel.getIsSettlement());
             cnt += onlineModels.size();
@@ -758,6 +764,20 @@ public class ReportService {
 
         if(cnt > 0) return CommonService.getResp(1, pmsg, null);
         resp = fileInfoModelService.deleteFileInfoModel(fileInfoModel);
+        resp = addDataLogModel(resp, fileInfoModel, userId, id, request);
+        /*
+        if((Integer) resp.get("err") == 0){
+            Map<String, Object> info = new HashMap<>();
+            info.put("fileInfoModel", fileInfoModel);
+            String exchangeCode = fileInfoModel.getExchangeCode();
+            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, "", "3", info, request);
+            if((Integer) logResp.get("err") == 1)   return logResp;
+        }
+        */
+        return resp;
+    }
+
+    public Map<String, Object> addDataLogModel(Map<String, Object> resp, FileInfoModel fileInfoModel, int userId, int id, HttpServletRequest request){
         if((Integer) resp.get("err") == 0){
             Map<String, Object> info = new HashMap<>();
             info.put("fileInfoModel", fileInfoModel);
