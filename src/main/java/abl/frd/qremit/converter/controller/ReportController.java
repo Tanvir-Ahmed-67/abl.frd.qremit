@@ -21,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import abl.frd.qremit.converter.helper.MyUserDetails;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @SuppressWarnings("unchecked")
 @Controller
@@ -399,16 +398,36 @@ public class ReportController {
                 .body(pdfReport);
     }
     @RequestMapping(value="/showDailyReimbursement", method= RequestMethod.GET)
-    public String showDailyReimbursement(Model model, @RequestParam(defaultValue = "") String date) {
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        List<ReimbursementModel> rmModel = reimbursementModelService.insertReimbursementData(LocalDate.parse(date));
-        if (rmModel == null) {
-            model.addAttribute("message", "Reimbursement Is Not Generated Yet. Please check settlement File Uploaded or Not");
-            return "report/reimbursement";
+    public String showDailyReimbursement(Model model, @RequestParam(defaultValue = "") String startDate, @RequestParam(defaultValue = "") String endDate) {
+        if(startDate.isEmpty()){
+            startDate = CommonService.getCurrentDate("yyyy-MM-dd");
         }
-        model.addAttribute("rmModel", rmModel);
-        model.addAttribute("date", date);
-        return "report/reimbursement";
+        if(endDate.isEmpty()){
+            endDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        return "/report/reimbursement";
+    }
+    @RequestMapping(value = "/getReimbursementData", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getReimbursementData(@RequestParam(defaultValue = "") String fromDate, @RequestParam(defaultValue = "") String toDate) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            resp = reimbursementModelService.insertReimbursementData(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            if((Integer) resp.get("err") == 1){
+                resp = CommonService.getResp(1,"No data found for the selected dates.", null);
+            }
+        } catch (Exception e) {
+            resp = CommonService.getResp(1,"An error occurred while fetching reimbursement data: " + e.getMessage(), null);
+        }
+        return ResponseEntity.ok(resp);
     }
 
     @RequestMapping(value = "/downloadDailyReimbursement", method= RequestMethod.GET)
