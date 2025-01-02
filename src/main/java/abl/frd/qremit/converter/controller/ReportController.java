@@ -560,18 +560,23 @@ public class ReportController {
     }
 
     @GetMapping("/search")
-    public String search(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+    public String search(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @RequestParam(defaultValue = "") String type){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         //if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return HttpStatus.UNAUTHORIZED.build();
         int userId = (int) userData.get("userid");
+        Map<String, Object> searchType = CommonService.getSerachType(type);
         Map<String, String> exchangeMap = new HashMap<>();
         if(userData.containsKey("exchangeMap")) exchangeMap = (Map<String, String>) userData.get("exchangeMap");
         model.addAttribute("exchangeMap", exchangeMap);
         String sidebar = (userId == 0) ? "sidebarAdmin":"sidebarUser";
         model.addAttribute("sidebar", sidebar);
-        model.addAttribute("searchType", CommonService.getSerachType());
+        model.addAttribute("searchType", searchType);
+        if(type.equals("2") && userId != 0){
+            model.addAttribute("errorMessage", "Invalid Attempt. You are not allowed to perform this operation");
+            return "fragments/error";
+        }
         return "pages/user/search";
     }
 

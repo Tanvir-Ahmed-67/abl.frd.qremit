@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head-css"></head>
+<body th:fragment="fileUploadForm">
+    <div id="app"><!--main content-->
+        <div th:if="${sidebar == 'sidebarAdmin'}">
+            <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
+        </div>
+        <div th:if="${sidebar == 'sidebarUser'}">
+            <span th:replace="fragments/sidebarUser :: sidebarUser"></span>
+        </div>
+        <div id="main"><!--content Id-->
+            <span th:replace="fragments/header :: header"></span>
+            <div class="main-content container-fluid">
+                <script th:inline="javascript" th:if="${errorMessage != null}">
+                    alert(/*[[${errorMessage}]]*/);
+                </script>
+            </div>
+            <span th:replace="fragments/footer :: footer"></span>
+        </div>
+    </div>
+</body>
+</html>

@@ -4,12 +4,17 @@ $(document).ready(function(){
     var display = "#display";
     var sbtn = "#searchBtn";
     var tbl = "#search_tbl";
+    var type = getParameterByName("type");
+    if(type == 2){
+        $('#searchType').val("1");
+    }
     
     $('#searchForm').on('submit', function(e){
         e.preventDefault();
         var data = $(this).serialize();
         var url = "/getSearch";
-        var params = {};
+        if(type == "2") url = "";
+        var params = {"type": type};
         get_ajax(url,data, view_search,fail_func,"get","json",params);
     });
 
