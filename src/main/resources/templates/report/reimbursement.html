@@ -1,74 +1,105 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: head-css"></head>
-<body>
+<body th:fragment="fileUploadForm">
 <div id="app"><!--main content-->
     <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
     <div id="main"><!--content Id-->
         <span th:replace="fragments/header :: header"></span>
-        <div class="main-content container-fluid"><!--dynamic content-->
+        <div class="main-content container-fluid">
             <div class="page-title">
-                <h3>Daily Reimbursement Data</h3>
-            </div>
-            <div class="row" id="table-hover-row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Daily Reimbursement Data for Date: <span th:text="${date}"></span></h4>
-                        </div>
-                        <div class="card-content">
-                            <div class="row">
-                                <div class="col-2 form-group" id="row_report_date">
-                                    <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" th:placeholder="${date}" readonly="true">
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th>Serial</th>
-                                        <th>Ex Code</th>
-                                        <th>Tran. No</th>
-                                        <th>Ben A/C No</th>
-                                        <th>Branch Code</th>
-                                        <th>Branch Name</th>
-                                        <th>Main Amount</th>
-                                        <th>Govt. Inc. Amount</th>
-                                        <th>Agrani Inc. Amount</th>
-                                        <th>Type</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="rmModel, iterStat : ${rmModel}">
-                                        <td class="text-bold-500" th:text="${iterStat.index + 1}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getExchangeCode()}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getTransactionNo()}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getBeneficiaryAccount()}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getBranchCode()}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getBranchName()}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getMainAmount()}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getGovtIncentiveAmount()}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getAgraniIncentiveAmount()}"></td>
-                                        <td class="text-bold-500" th:text="${rmModel.getType() == '4' ? 'COC' : (rmModel.getType() == '2' ? 'A/C Payee' : '')}"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 order-md-1 order-last">
+                        <h3>Daily Reimbursement</h3>
                     </div>
-                    <div class="d-flex justify-content-center mt-3">
-                        <a th:href="@{/downloadDailyReimbursement(date=${date})}" class="btn btn-primary">Download Reimbursement File</a>
-                    </div>
-                    <div class="d-flex justify-content-center mt-3">
-                        <a th:href="@{/downloadDailyReimbursementForIcash(date=${date})}" class="btn btn-primary">Download Reimbursement File For ICash</a>
+                    <div class="col-12 col-md-6 order-md-2 order-first">
+                        <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#">Main Menu</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Report Management</li>
+                                <li class="breadcrumb-item active" aria-current="page">Daily Reimbursement</li>
+                            </ol>
+                        </nav>
                     </div>
                 </div>
             </div>
+            <section id="input-style">
+                <div class="row" style="min-height: 58vh">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-2">
+                                        <label class="col-form-label">From Date:</label>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" th:placeholder="${startDate}" readonly="true">
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label class="col-form-label">To Date:</label>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <input class="form-control dpicker report_date" type="text" name="report_date" id="report_end_date" th:placeholder="${endDate}" readonly="true">
+                                    </div>
+                                    <div class="col-md-2 text-center" id="moBtn">
+                                        <button id="showDataButton" class="btn btn-sm btn-danger">Show Data</button>
+                                    </div>
+                                </div>
+                                <div id="dataSection" class="mt-4" style="display: none">
+                                    <div class="table-responsive">
+                                        <table id="remimbursement_tbl" class="table table-hover" width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>Serial</th>
+                                                <th>Ex Code</th>
+                                                <th>Tran. No</th>
+                                                <th>Ben A/C No</th>
+                                                <th>Branch Code</th>
+                                                <th>Branch Name</th>
+                                                <th>Main Amount</th>
+                                                <th>Govt. Inc. Amount</th>
+                                                <th>Agrani Inc. Amount</th>
+                                                <th>Type</th>
+                                            </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-12 text-center">
+                                        <div class="btn-group">
+                                            <a id="downloadBtn1" th:href="@{/downloadDailyReimbursement(date=${endDate})}" class="btn btn-info">Download Reimbursement File</a>
+                                            <a id="downloadBtn2" th:href="@{/downloadDailyReimbursementForIcash(date=${endDate})}" class="btn btn-danger">Download Reimbursement File For ICash</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div id="modal_wrap"></div><div class="lmodal"></div>
         </div>
         <span th:replace="fragments/footer :: footer"></span>
-        <script src="/js/reimbursement.js"></script>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        var tbl = "#remimbursement_tbl";
+        $('#showDataButton').on('click', function (e){
+            e.preventDefault();
+            var fromDate = $("#report_date").val();
+            var toDate = $("#report_end_date").val();
+            get_remimbursement(fromDate, toDate);
 
+        });
+        function get_remimbursement(fromDate, toDate){
+            var url = "/getReimbursementData?fromDate=" + fromDate + "&toDate=" + toDate;
+            var column = ['sl','exchangeCode','transactionNo','beneficiaryAccount','branchCode','branchName',
+                'mainAmount','govtIncentiveAmount','agraniIncentiveAmount','type'];
+            var cols = DataTableColumns(column);
+            $("#dataSection").show();
+            get_dynamic_dataTable(tbl, url, cols);
+        }
+    });
+</script>
 </body>
 </html>
