@@ -21,34 +21,34 @@ public class CustomQueryRepository {
     public Map<String,Object> getData(String sql, Map<String, Object> params){
         Map<String, Object> resp = new HashMap<>();
         List<Map<String, Object>> rows = new ArrayList<>();
-        try{
-            Connection con = dataSource.getConnection();         
-            PreparedStatement pstmt = con.prepareStatement(sql);
+        try(Connection con = dataSource.getConnection();         
+            PreparedStatement pstmt = con.prepareStatement(sql)){
             int j = 1;
             for (Object value : params.values()) {
                 pstmt.setObject(j++, value);
             }
             
-            ResultSet rs = pstmt.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-            if(!rs.next()){
-                return CommonService.getResp(1,"No data found",rows);
-            }else{
-                do{
-                    Map<String,Object> row = new HashMap<>();
-                    for(int i = 1; i<= columnsNumber; i++) {
-                        String columnName = rsmd.getColumnName(i);
-                        Object columnValue = rs.getObject(i);
-                        row.put(columnName, columnValue);
-                    }
-                    rows.add(row);
-                }while(rs.next());
-                con.close();
-                return CommonService.getResp(0, "Data Found", rows);
+            try(ResultSet rs = pstmt.executeQuery()){
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int columnsNumber = rsmd.getColumnCount();
+                if(!rs.next()){
+                    return CommonService.getResp(1,"No data found",rows);
+                }else{
+                    do{
+                        Map<String,Object> row = new HashMap<>();
+                        for(int i = 1; i<= columnsNumber; i++) {
+                            String columnName = rsmd.getColumnName(i);
+                            Object columnValue = rs.getObject(i);
+                            row.put(columnName, columnValue);
+                        }
+                        rows.add(row);
+                    }while(rs.next());
+                    return CommonService.getResp(0, "Data Found", rows);
+                }
             }
         }catch(Exception e){
             e.printStackTrace();
+            resp = CommonService.getResp(1, "An error occurred: " + e.getMessage(), rows);
         }
         return resp;
     }
