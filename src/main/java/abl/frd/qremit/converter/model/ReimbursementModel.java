@@ -19,6 +19,8 @@ public class ReimbursementModel {
     private String exchangeCode;
     @Column(name = "transaction_no", length = 30)
     private String transactionNo;
+    @Column(name = "report_date", length=30, nullable = false)
+    private LocalDate reportDate;
     @Column(name = "reimbursement_date", length=30, nullable = false)
     private LocalDate reimbursementDate;
     @Column(name = "beneficiary_name", length = 128)
@@ -39,6 +41,24 @@ public class ReimbursementModel {
     private Double agraniIncentiveAmount = 0.0;
     @Column(name = "type", length = 10)
     private String type;
+    @Transient
+    private int sl;
+
+    public int getSl() {
+        return sl;
+    }
+
+    public void setSl(int sl) {
+        this.sl = sl;
+    }
+
+    public LocalDate getReportDate() {
+        return reportDate;
+    }
+
+    public void setReportDate(LocalDate reportDate) {
+        this.reportDate = reportDate;
+    }
 
     public String getType() {
         return type;
@@ -50,10 +70,11 @@ public class ReimbursementModel {
 
     public ReimbursementModel() {
     }
-    public ReimbursementModel(String exchangeCode, String transactionNo, LocalDate reimbursementDate, String beneficiaryName, String beneficiaryAccount, String remitterName, String branchCode, String branchName, Double mainAmount, String type) {
+    public ReimbursementModel(int sl, String exchangeCode, String transactionNo, LocalDate reportDate, String beneficiaryName, String beneficiaryAccount, String remitterName, String branchCode, String branchName, Double mainAmount, String type, LocalDate reimbursementDate) {
+        this.sl = sl;
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
-        this.reimbursementDate = reimbursementDate;
+        this.reportDate = reportDate;
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryAccount = beneficiaryAccount;
         this.remitterName = remitterName;
@@ -61,6 +82,7 @@ public class ReimbursementModel {
         this.branchName = branchName;
         this.mainAmount = mainAmount;
         this.type = type;
+        this.reimbursementDate = reimbursementDate;
     }
 
     public LocalDate getReimbursementDate() {
