@@ -7,9 +7,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
-
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
 import net.sf.jasperreports.engine.*;
@@ -22,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.core.io.Resource;
-
 @SuppressWarnings("unchecked")
 @Service
 public class ReportService {
@@ -703,9 +700,6 @@ public class ReportService {
                     String bankDetails = "Bank Name:" + (String) CommonService.getPropertyValue(model, "getBankName") + "<br>Branch Code/ Routing No: " 
                     + (String) CommonService.getPropertyValue(model, branchCode) + "<br> Branch Name: " + (String) CommonService.getPropertyValue(model, "getBranchName"); 
                     data.put("bankDetails", bankDetails);
-                    //data.put("bankName", (String) CommonService.getPropertyValue(model, "getBankName"));
-                    //data.put("branchCode", (String) CommonService.getPropertyValue(model, branchCode));
-                    //data.put("branchName", (String) CommonService.getPropertyValue(model, "getBranchName"));
                     data.put("amount", (Double) CommonService.getPropertyValue(model, "getAmount"));
                     LocalDateTime downloaDateTime = (LocalDateTime) CommonService.getPropertyValue(model, "getDownloadDateTime");
                     String downloadDate = CommonService.convertDateToString(downloaDateTime);
@@ -715,7 +709,7 @@ public class ReportService {
                     dataList.add(data);
                 }catch(Exception e){
                     e.printStackTrace();
-                    //CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
+                    CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }  
             }
         }
