@@ -922,7 +922,7 @@ public class CommonService {
         }
         if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
             //only processed for a/c payee
-        }else   return "No Legacy Account will not be processed";
+        }else   return "Legacy A/C won't be processed. Online A/C needed";
         return errorMessage;
     }
     //error message
