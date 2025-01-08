@@ -40,8 +40,9 @@
                         </a>
                         <ul class="submenu">
                             <li th:each="entry : ${exchangeMap.entrySet()}">
-                                <a th:href="@{'/utils/index?id=' + ${entry.value}}"
-                                   th:text="${entry.key}" class="exCode">
+                                <a th:href="@{'/utils/index?id=' + ${entry.value}}"  class="exCode">
+                                    <i class="fa-regular fa-circle sub-icon"></i>
+                                    <span th:text="${entry.key}"></span>
                                 </a>
                             </li>
                         </ul>
