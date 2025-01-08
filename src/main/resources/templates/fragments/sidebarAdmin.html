@@ -12,95 +12,30 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
-                <li class='sidebar-title'>Main Menu</li>
                 <!--..........................Admin Section......................-->
                 <div sec:authorize="hasRole('ROLE_ADMIN')">
-                    <li class="sidebar-item active ">
-                        <a th:href="@{/home}" class='sidebar-link'>
-                            <i data-feather="home" width="20"></i>
-                            <span>Dashboard</span>
+                    <li class="sidebar-item">
+                        <a th:href="@{/search}" class='sidebar-link'>
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Search</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
+                        <a th:href="@{/home}" class='sidebar-link'>
+                            <i class="fa-solid fa-house"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="sidebar-item">
                         <a th:href="@{/adminReport}" class='sidebar-link'>
-                            <i data-feather="user" width="20"></i>
+                            <i class="fa-solid fa-upload"></i>
                             <span>Uploaded File Details</span>
                         </a>
                     </li>
-                    <!--
-                    <li class='sidebar-title'>Management</li>
                     <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
-                            <i data-feather="file-plus" width="20"></i>
-                            <span>Data Management</span>
-                        </a>
-                        <ul class="submenu ">
-                            <li>
-                                <a href="component-buttons.html">View Data</a>
-                            </li>
-                            <li>
-                                <a href="component-alert.html">Insert Data</a>
-                            </li>
-
-                            <li>
-                                <a href="component-badge.html">Update Data</a>
-                            </li>
-
-                            <li>
-                                <a href="component-breadcrumb.html">Delete Data</a>
-                            </li>
-                        </ul>
-                    </li>
-                -->
-                    <li class="sidebar-item has-sub">
-                        <a href="#" class='sidebar-link'>
-                            <i data-feather="user" width="20"></i>
-                            <span>User Management</span>
-                        </a>
-                        <ul class="submenu ">
-                            <li>
-                                <a th:href="@{/allUsers}">View User</a>
-                            </li>
-                            <li>
-                                <a th:href="@{/newUserCreationForm}">Insert User</a>
-                            </li>
-                            <!--
-                            <li>
-                                <a href="component-badge.html">Update User</a>
-                            </li>
-
-                            <li>
-                                <a href="component-breadcrumb.html">Delete User</a>
-                            </li>
-                        -->
-                        </ul>
-                    </li>
-                    <li class="sidebar-item has-sub">
-                        <a href="#" class='sidebar-link'>
-                            <i data-feather="user" width="20"></i>
-                            <span>Exchange House Management</span>
-                        </a>
-                        <ul class="submenu ">
-                            <li>
-                                <a th:href="@{/viewAllExchangeHouse}">View All Exch. House</a>
-                            </li>
-                            <li>
-                                <a th:href="@{/newExchangeHouseCreationForm}">Insert New Exch. House</a>
-                            </li>
-                            <!--
-                            <li>
-                                <a href="component-badge.html">Update Exch. House</a>
-                            </li>
-
-                            <li>
-                                <a href="component-breadcrumb.html">Delete Exch. House</a>
-                            </li>
-                        -->
-                        </ul>
-                    </li>
-                    <li class="sidebar-item has-sub">
-                        <a href="#" class='sidebar-link'>
-                            <i data-feather="user" width="20"></i>
+                            <i class="fa-solid fa-signal"></i>
                             <span>Report Management</span>
                         </a>
                         <ul class="submenu ">
@@ -116,22 +51,48 @@
                     </li>
                     <li class="sidebar-item">
                         <a th:href="@{/adminReport?type=4}" class='sidebar-link'>
-                            <i data-feather="user" width="20"></i>
+                            <i class="fa-solid fa-exclamation exclamation_padding"></i>
                             <span>Error Data Report</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a th:href="@{/search}" class='sidebar-link'>
-                            <i data-feather="search" width="20"></i>
-                            <span>Search</span>
-                        </a>
-                    </li>
+                    
                     <li class="sidebar-item">
                         <a th:href="@{/adminReport?type=5}" class='sidebar-link'>
-                            <i data-feather="user" width="20"></i>
+                            <!--<i class="fa-regular fa-trash-can"></i>-->
+                            <i class="far fa-trash-alt"></i>
                             <span>Delete Uploaded File</span>
                         </a>
                     </li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="fa-regular fa-user"></i>
+                            <span>User Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/allUsers}">View User</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/newUserCreationForm}">Insert User</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="fa-solid fa-table-cells-large"></i>
+                            <span>Exchange House Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/viewAllExchangeHouse}">View All Exch. House</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/newExchangeHouseCreationForm}">Insert New Exch. House</a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    
                 </div>
             </ul>
         </div>

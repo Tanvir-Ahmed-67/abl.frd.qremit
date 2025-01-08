@@ -12,43 +12,17 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
-                <li class='sidebar-title'>Main Menu</li>
                 <!--..........................Super Admin Section......................-->
                 <div sec:authorize="hasRole('ROLE_SUPERADMIN')">
                     <li class="sidebar-item active ">
                         <a th:href="@{/home}" class='sidebar-link'>
-                            <i data-feather="home" width="20"></i>
+                            <i class="fa-solid fa-house"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <!--
-                    <li class='sidebar-title'>Management</li>
                     <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
-                            <i data-feather="file-plus" width="20"></i>
-                            <span>Data Statistics</span>
-                        </a>
-                        <ul class="submenu ">
-                            <li>
-                                <a href="component-buttons.html">View Onlie Data</a>
-                            </li>
-                            <li>
-                                <a href="component-alert.html">View COC Data</a>
-                            </li>
-
-                            <li>
-                                <a href="component-badge.html">View A/C Payee Data</a>
-                            </li>
-
-                            <li>
-                                <a href="component-breadcrumb.html">View BEFTN Data</a>
-                            </li>
-                        </ul>
-                    </li>
-                -->
-                    <li class="sidebar-item has-sub">
-                        <a href="#" class='sidebar-link'>
-                            <i data-feather="user" width="20"></i>
+                            <i class="fa-regular fa-user"></i>
                             <span>User Management</span>
                         </a>
                         <ul class="submenu ">
@@ -58,16 +32,11 @@
                             <li>
                                 <a th:href="@{/showInactiveUsers}" href="component-alert.html">Activate User</a>
                             </li>
-                            <!--
-                            <li>
-                                <a href="component-badge.html">Delete User</a>
-                            </li>
-                        -->
                         </ul>
                     </li>
                     <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
-                            <i data-feather="user" width="20"></i>
+                            <i class="fa-solid fa-table-cells-large"></i>
                             <span>Exchange House Management</span>
                         </a>
                         <ul class="submenu ">
@@ -77,11 +46,6 @@
                             <li>
                                 <a th:href="@{/showInactiveExchangeHouse}">Activate Exch. House</a>
                             </li>
-                            <!--
-                            <li>
-                                <a href="component-breadcrumb.html">Delete Exch. House</a>
-                            </li>
-                        -->
                         </ul>
                     </li>
                 </div>
