@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -176,7 +177,6 @@ public class ReportService {
     public List<ExchangeReportDTO> getAllDailyReportData(String date){
         List<ExchangeReportDTO> report = new ArrayList<>();
         LocalDate reportDate = LocalDate.parse(date);
-        //List<ReportModel> reportModelsList = reportModelRepository.findAll(); // Have to apply logic to fetch specefic data based on date and processed flag
         List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDate(reportDate);
         Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
         if(isListValid(reportModelsList)){
@@ -194,6 +194,48 @@ public class ReportService {
         }
         return report;
     }
+    public List<ExchangeReportDTO> generateDetailsOfDailyRemittances(String fromDate, String toDate) {
+        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportDataByDateRange(fromDate, toDate);
+        return exchangeReportDTOSList;
+    }
+
+    public Map<String, Object> generateDetailsOfDailyStatement(String fromDate, String toDate) {
+        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportDataByDateRange(fromDate, toDate);
+        Map<String, Object> resp;
+        resp = CommonService.getResp(0,"", null);
+        resp.put("data", exchangeReportDTOSList);
+        return resp;
+    }
+    public List<ExchangeReportDTO> getAllDailyReportDataByDateRange(String fromDate, String toDate){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate fDate = LocalDate.parse(fromDate);
+        LocalDate tDate = LocalDate.parse(toDate);
+        List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDateRange(fDate, tDate);
+        Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
+        if(isListValid(reportModelsList)){
+            int counter = 1;
+            for(ReportModel reportModel:reportModelsList){
+                ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
+                exchangeReportDTO.setTotalRowCount(counter);
+                exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
+                exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
+                exchangeReportDTO.setAmount(reportModel.getAmount());
+                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
+                exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
+                exchangeReportDTO.setBankCode(reportModel.getBankCode());
+                exchangeReportDTO.setBankName(reportModel.getBankName());
+                exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
+                exchangeReportDTO.setBranchName(reportModel.getBranchName());
+                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime());
+                exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
+                report.add(exchangeReportDTO);
+                counter++;
+            }
+        }
+        return report;
+    }
+
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement(String date) {
         List<ExchangeReportDTO> report = getAllDailyReportData(date);
         report = aggregateExchangeReports(report, date);

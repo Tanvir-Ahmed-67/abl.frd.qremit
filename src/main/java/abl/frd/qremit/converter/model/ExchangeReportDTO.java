@@ -17,6 +17,11 @@ public class ExchangeReportDTO {
     private String beneficiaryName;
     private String beneficiaryAccount;
     private String beneficiaryMobile;
+
+    private String branchCode;
+    private String branchName;
+    private String bankCode;
+    private String bankName;
     private String nrtAccountNo;
     private Double sumOfAmount = 0.00;
     private int totalRowCount = 0;
@@ -172,5 +177,37 @@ public class ExchangeReportDTO {
 
     public void setVoucherDate(LocalDate voucherDate) {
         this.voucherDate = voucherDate;
+    }
+
+    public String getBranchCode() {
+        return branchCode;
+    }
+
+    public void setBranchCode(String branchCode) {
+        this.branchCode = branchCode;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 }

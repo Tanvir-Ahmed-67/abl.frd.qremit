@@ -11,10 +11,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ReimbursementModelRepository extends JpaRepository<ReimbursementModel, Integer> {
-    @Query("SELECT n FROM ReimbursementModel n WHERE n.reimbursementDate = :reimbursementDate")
-    List<ReimbursementModel> findAllReimbursementByDate(@Param("reimbursementDate") LocalDate reimbursementDate);
-    @Query("SELECT n FROM ReimbursementModel n WHERE n.reimbursementDate = :reimbursementDate AND n.type='4'")
-    List<ReimbursementModel> findAllCocReimbursementByDate(@Param("reimbursementDate") LocalDate reimbursementDate);
+    @Query("SELECT n FROM ReimbursementModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate")
+    List<ReimbursementModel> findAllReimbursementByDate(@Param("fromDate") LocalDate fromDate, @Param("toDate") LocalDate toDate);
+    @Query("SELECT n FROM ReimbursementModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate AND n.type='4'")
+    List<ReimbursementModel> findAllCocReimbursementByDate(@Param("fromDate") LocalDate fromDate, @Param("toDate") LocalDate toDate);
 
     boolean existsByExchangeCodeAndTransactionNoAndMainAmountAndBeneficiaryAccount(String exchangeCode, String transactionNo, Double mainAmount, String beneficiaryAccount);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate BETWEEN :reimbursementStartDate AND :reimbursementEndDate AND n.isApi = 0 AND n.type IN ('2', '4')")
