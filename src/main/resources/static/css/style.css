@@ -75,3 +75,11 @@ body.loading .lmodal {
     padding-right: 5px;
 }
 
+.submenu li a{
+    padding: 0.7rem 1px !important;
+}
+
+.sub-icon{
+    margin-right: 0.3rem;
+}
+
