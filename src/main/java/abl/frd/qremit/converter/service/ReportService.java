@@ -130,13 +130,11 @@ public class ReportService {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("REPORT_DATA_SOURCE", dataSource);
         parameters.put("TO_DATE", LocalDate.parse(date));
-        Path reportPath = commonService.getReportFile(commonService.generateFileName("details_report_", date, "." + format.toLowerCase()));
+        Path reportPath = commonService.getReportFile(commonService.generateFileName("search_of_", date, "." + format.toLowerCase()));
         String outputFile = reportPath.toString();
         if (format.equalsIgnoreCase("pdf")) {
             // Load the JRXML file for PDF format
-            //file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf_tabular.jrxml");
-            //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-            jasperReport = loadJasperReport("dailyStatementDetails_pdf_tabular.jrxml");
+            jasperReport = loadJasperReport("search_pdf_tabular.jrxml");
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
             // Export to PDF
             if(!Files.exists(reportPath)){
@@ -146,9 +144,7 @@ public class ReportService {
             return JasperExportManager.exportReportToPdf(jasperPrint);
         } else if (format.equalsIgnoreCase("txt")) {
             // Load the JRXML file for CSV format
-            //file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
-            //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-            jasperReport = loadJasperReport("dailyStatementDetails_csv.jrxml");
+            jasperReport = loadJasperReport("search_csv.jrxml");
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
             // CSV Exporter Setup for File Generation

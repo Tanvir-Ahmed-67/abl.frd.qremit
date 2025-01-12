@@ -22,6 +22,8 @@ public class ExchangeReportDTO {
     private String branchName;
     private String bankCode;
     private String bankName;
+    private String zoneCode;
+    private String zoneName;
     private String nrtAccountNo;
     private Double sumOfAmount = 0.00;
     private int totalRowCount = 0;
@@ -62,6 +64,23 @@ public class ExchangeReportDTO {
         this.beneficiaryAccount = beneficiaryAccount;
         this.enteredDate = enteredDate;
     }
+
+    public String getZoneCode() {
+        return zoneCode;
+    }
+
+    public void setZoneCode(String zoneCode) {
+        this.zoneCode = zoneCode;
+    }
+
+    public String getZoneName() {
+        return zoneName;
+    }
+
+    public void setZoneName(String zoneName) {
+        this.zoneName = zoneName;
+    }
+
     public void doSum(Double amount){
         this.sumOfAmount = this.sumOfAmount+amount;
     }
