@@ -144,7 +144,7 @@ public class ReportService {
             }
             //JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
             return JasperExportManager.exportReportToPdf(jasperPrint);
-        } else if (format.equalsIgnoreCase("csv")) {
+        } else if (format.equalsIgnoreCase("txt")) {
             // Load the JRXML file for CSV format
             //file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
             //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
@@ -154,11 +154,13 @@ public class ReportService {
             // CSV Exporter Setup for File Generation
             JRCsvExporter fileExporter = new JRCsvExporter();
             fileExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            fileExporter.setExporterOutput(new SimpleWriterExporterOutput(outputFile));
+            fileExporter.setExporterOutput(new SimpleWriterExporterOutput(outputFile, "UTF-8"));
 
             // Optional: Set CSV configuration (e.g., delimiter)
             SimpleCsvExporterConfiguration fileConfiguration = new SimpleCsvExporterConfiguration();
             fileConfiguration.setFieldDelimiter(",");
+            fileConfiguration.setForceFieldEnclosure(true);
+            fileConfiguration.setRecordDelimiter("\n");
             fileExporter.setConfiguration(fileConfiguration);
             fileExporter.exportReport();
 

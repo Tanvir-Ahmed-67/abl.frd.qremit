@@ -18,7 +18,7 @@ $(document).ready(function () {
 
     function download_btn(from_date, to_date){
         var url = "/downloadDetailsOfDailyStatement?type=pdf&fromDate="+from_date + "&toDate=" + to_date;
-        var url2 = "/downloadDetailsOfDailyStatement?type=csv&fromDate="+from_date + "&toDate=" + to_date;
+        var url2 = "/downloadDetailsOfDailyStatement?type=txt&fromDate="+from_date + "&toDate=" + to_date;
         var ret = '<a id="downloadBtn1" href="' + url + '" class="btn btn-info">Download as PDF File</a>';
         ret += '<a id="downloadBtn2" href="' + url2 + '" class="btn btn-danger">Download as Search File</a>';
         $("#download_btn").html(ret);
