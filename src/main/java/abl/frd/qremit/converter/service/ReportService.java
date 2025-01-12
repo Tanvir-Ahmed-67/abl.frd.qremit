@@ -124,11 +124,12 @@ public class ReportService {
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
         }
         // Convert data into a JasperReports data source
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList, false);
 
         // Parameters map if needed
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("REPORT_DATA_SOURCE", dataSource);
+        parameters.put("TO_DATE", LocalDate.parse(date));
         Path reportPath = commonService.getReportFile(commonService.generateFileName("details_report_", date, "." + format.toLowerCase()));
         String outputFile = reportPath.toString();
         if (format.equalsIgnoreCase("pdf")) {

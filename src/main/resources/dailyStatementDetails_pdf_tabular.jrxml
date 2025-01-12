@@ -70,6 +70,11 @@
 		<field name="remitterName" class="java.lang.String">
 		</field>
 	</dataset>
+	<parameter name="TO_DATE" class="java.time.LocalDate"/>
+	<variable name="serialNumber" class="java.lang.Integer" resetType="Report" calculation="Nothing">
+		<initialValueExpression><![CDATA[1]]></initialValueExpression>
+		<expression><![CDATA[$V{REPORT_COUNT}]]></expression>
+	</variable>
 	<background splitType="Stretch"/>
 	<title height="72" splitType="Stretch">
 		<element kind="textField"  x="0" y="0" width="555" height="30" fontSize="18.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
@@ -79,7 +84,7 @@
 			<expression><![CDATA["Daily Remittance Details"]]></expression>
 		</element>
 		<element kind="textField"  x="0" y="41" width="555" height="30" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<expression><![CDATA["Date - 03-09-2024"]]></expression>
+			<expression><![CDATA["Date : "+$P{TO_DATE}.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))]]></expression>
 		</element>
 	</title>
 	<pageHeader height="8" splitType="Stretch"/>
@@ -91,6 +96,19 @@
 					<datasetRun  subDataset="Dataset1">
 						<dataSourceExpression><![CDATA[$P{REPORT_DATA_SOURCE}]]></dataSourceExpression>
 					</datasetRun>
+					<column kind="single" width="30">
+						<tableHeader height="30" rowSpan="1" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="30" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Serial"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" rowSpan="1" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="30" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$V{REPORT_COUNT}]]></expression>
+							</element>
+						</detailCell>
+					</column>
 					<column kind="single"  width="80">
 						<tableHeader height="30" style="Table 1_TH">
 							<element kind="textField"  x="0" y="0" width="80" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
@@ -117,15 +135,15 @@
 							</element>
 						</detailCell>
 					</column>
-					<column kind="single"  width="70">
+					<column kind="single"  width="60">
 						<tableHeader height="30" style="Table 1_TH">
-							<element kind="textField"  x="0" y="0" width="70" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+							<element kind="textField"  x="0" y="0" width="60" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
 								<expression><![CDATA["Date"]]></expression>
 							</element>
 						</tableHeader>
 						<tableFooter height="30" style="Table 1_TH"/>
 						<detailCell height="30" style="Table 1_TD">
-							<element kind="textField"  x="0" y="0" width="70" height="30" hTextAlign="Center" vTextAlign="Middle">
+							<element kind="textField"  x="0" y="0" width="60" height="30" hTextAlign="Center" vTextAlign="Middle">
 								<expression><![CDATA[$F{enteredDate}.toLocalDate()]]></expression>
 							</element>
 						</detailCell>
@@ -143,41 +161,41 @@
 							</element>
 						</detailCell>
 					</column>
-					<column kind="single"  width="100">
+					<column kind="single"  width="90">
 						<tableHeader height="30" style="Table 1_TH">
-							<element kind="textField"  x="0" y="0" width="100" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+							<element kind="textField"  x="0" y="0" width="90" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
 								<expression><![CDATA["Beneficiary Name"]]></expression>
 							</element>
 						</tableHeader>
 						<tableFooter height="30" style="Table 1_TH"/>
 						<detailCell height="30" style="Table 1_TD">
-							<element kind="textField"  x="0" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+							<element kind="textField"  x="0" y="0" width="90" height="30" hTextAlign="Center" vTextAlign="Middle">
 								<expression><![CDATA[$F{beneficiaryName}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single"  width="90">
+						<tableHeader height="30" style="Table 1_TH">
+							<element kind="textField"  x="0" y="0" width="90" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA["Beneficiary A/C No"]]></expression>
+							</element>
+						</tableHeader>
+						<tableFooter height="30" style="Table 1_TH"/>
+						<detailCell height="30" style="Table 1_TD">
+							<element kind="textField"  x="0" y="0" width="90" height="30" hTextAlign="Center" vTextAlign="Middle">
+								<expression><![CDATA[$F{beneficiaryAccount}]]></expression>
 							</element>
 						</detailCell>
 					</column>
 					<column kind="single"  width="93">
 						<tableHeader height="30" style="Table 1_TH">
 							<element kind="textField"  x="0" y="0" width="93" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
-								<expression><![CDATA["Beneficiary A/C No"]]></expression>
-							</element>
-						</tableHeader>
-						<tableFooter height="30" style="Table 1_TH"/>
-						<detailCell height="30" style="Table 1_TD">
-							<element kind="textField"  x="0" y="0" width="93" height="30" hTextAlign="Center" vTextAlign="Middle">
-								<expression><![CDATA[$F{beneficiaryAccount}]]></expression>
-							</element>
-						</detailCell>
-					</column>
-					<column kind="single"  width="100">
-						<tableHeader height="30" style="Table 1_TH">
-							<element kind="textField"  x="0" y="0" width="100" height="30" fontSize="10.0" blankWhenNull="true" bold="true" hTextAlign="Center" vTextAlign="Middle">
 								<expression><![CDATA["Remitter Name"]]></expression>
 							</element>
 						</tableHeader>
 						<tableFooter height="30" style="Table 1_TH"/>
 						<detailCell height="30" style="Table 1_TD">
-							<element kind="textField"  x="0" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+							<element kind="textField"  x="0" y="0" width="93" height="30" hTextAlign="Center" vTextAlign="Middle">
 								<expression><![CDATA[$F{remitterName}]]></expression>
 							</element>
 						</detailCell>
