@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -114,66 +113,6 @@ public class ReportService {
         }
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
-    }
-
-    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format, String date) throws Exception {
-        JasperReport jasperReport;
-        JasperPrint jasperPrint;
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            // Batch fetch exchange names
-            Map<String, String> exchangeNames = exchangeHouseModelService.getExchangeNamesByCodes(
-                    dataList.stream().map(ExchangeReportDTO::getExchangeCode).collect(Collectors.toList())
-            );
-            for (ExchangeReportDTO exchangeReportDTO : dataList) {
-                exchangeReportDTO.setExchangeName(exchangeNames.get(exchangeReportDTO.getExchangeCode()));
-            }
-
-            // Convert data into a JasperReports data source
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList, false);
-
-            // Parameters map
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("REPORT_DATA_SOURCE", dataSource);
-            parameters.put("TO_DATE", LocalDate.parse(date));
-
-            // Dynamic file name and path
-            String outputFileName = commonService.generateFileName("search_of_", date, "." + format.toLowerCase());
-            Path reportPath = commonService.getReportFile(outputFileName);
-            String outputFile = reportPath.toString();
-
-            if ("pdf".equalsIgnoreCase(format)) {
-                jasperReport = loadJasperReport("search_pdf_tabular.jrxml");
-                jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-                if (!Files.exists(reportPath)) {
-                    JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
-                }
-                return JasperExportManager.exportReportToPdf(jasperPrint);
-            } else if ("txt".equalsIgnoreCase(format)) {
-                jasperReport = loadJasperReport("search_csv.jrxml");
-                jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
-                JRCsvExporter exporter = new JRCsvExporter();
-                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-                exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
-
-                SimpleCsvExporterConfiguration configuration = new SimpleCsvExporterConfiguration();
-                configuration.setFieldDelimiter(",");
-                configuration.setForceFieldEnclosure(true);
-                configuration.setRecordDelimiter("\n");
-                exporter.setConfiguration(configuration);
-                exporter.exportReport();
-
-                // Write to file only if needed
-                if (!Files.exists(reportPath)) {
-                    try (Writer fileWriter = Files.newBufferedWriter(reportPath)) {
-                        fileWriter.write(outputStream.toString("UTF-8"));
-                    }
-                }
-                return outputStream.toByteArray();
-            } else {
-                throw new IllegalArgumentException("Unsupported format: " + format);
-            }
-        }
     }
     public List<ExchangeReportDTO> getAllDailyReportData(String date){
         List<ExchangeReportDTO> report = new ArrayList<>();
@@ -864,6 +803,76 @@ public class ReportService {
         }
         return summary;
     }
-    // ---------------------------- End of Methods Block for getting data from Report Table for generating MO -------------------------------
+    public byte[] generateJasperSearchFileInPdfAndTxtFormat(List<ExchangeReportDTO> dataList, String format, String date) throws Exception {
+        validateInputs(dataList, format, date);
 
+        // Batch fetch exchange names
+        enrichExchangeNames(dataList);
+
+        // Generate report based on format
+        switch (format.toLowerCase()) {
+            case "pdf":
+                return generateSearchInPdfFile(dataList, date);
+            case "txt":
+                return generateSearchInTxtFile(dataList, date);
+            default:
+                throw new IllegalArgumentException("Unsupported format: " + format);
+        }
+    }
+
+    private void validateInputs(List<ExchangeReportDTO> dataList, String format, String date) {
+        if (dataList == null || dataList.isEmpty()) {
+            throw new IllegalArgumentException("Data list cannot be null or empty.");
+        }
+        if (!"pdf".equalsIgnoreCase(format) && !"txt".equalsIgnoreCase(format)) {
+            throw new IllegalArgumentException("Invalid format: " + format);
+        }
+        LocalDate.parse(date); // Validates date format
+    }
+
+    private void enrichExchangeNames(List<ExchangeReportDTO> dataList) {
+        Map<String, String> exchangeNames = exchangeHouseModelService.getExchangeNamesByCodes(
+                dataList.stream().map(ExchangeReportDTO::getExchangeCode).collect(Collectors.toList())
+        );
+        dataList.forEach(dto -> dto.setExchangeName(exchangeNames.getOrDefault(dto.getExchangeCode(), "Unknown")));
+    }
+
+    private byte[] generateSearchInPdfFile(List<ExchangeReportDTO> dataList, String date) throws Exception {
+        List<ExchangeReportDTO> modifiedList = new ArrayList<>(dataList);
+        modifiedList.add(0, new ExchangeReportDTO()); // Avoid mutating original list
+        Map<String, Object> parameters = prepareReportParameters(modifiedList, date);
+        JasperReport jasperReport = loadJasperReport("search_pdf_tabular.jrxml");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(modifiedList, false));
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
+    private byte[] generateSearchInTxtFile(List<ExchangeReportDTO> dataList, String date) throws Exception {
+        Map<String, Object> parameters = prepareReportParameters(dataList, date);
+        JasperReport jasperReport = loadJasperReport("search_csv.jrxml");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(dataList, false));
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JRCsvExporter exporter = new JRCsvExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+            configureCsvExporter(exporter);
+            exporter.exportReport();
+            return outputStream.toByteArray();
+        }
+    }
+
+    private Map<String, Object> prepareReportParameters(List<ExchangeReportDTO> dataList, String date) {
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList, false);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("REPORT_DATA_SOURCE", dataSource);
+        parameters.put("TO_DATE", LocalDate.parse(date));
+        return parameters;
+    }
+
+    private void configureCsvExporter(JRCsvExporter exporter) {
+        SimpleCsvExporterConfiguration configuration = new SimpleCsvExporterConfiguration();
+        configuration.setFieldDelimiter(",");
+        configuration.setForceFieldEnclosure(true);
+        configuration.setRecordDelimiter("\n");
+        exporter.setConfiguration(configuration);
+    }
 }

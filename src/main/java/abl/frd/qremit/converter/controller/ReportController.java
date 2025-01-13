@@ -303,7 +303,7 @@ public class ReportController {
                 .headers(headers)
                 .body(pdfReport);
     }
-    @RequestMapping(value = "/downloadDetailsOfDailyStatement", method= RequestMethod.GET)
+    @RequestMapping(value = "/downloadSearchFile", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format, @RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate){
         if(fromDate.isEmpty()){
             fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
@@ -313,7 +313,7 @@ public class ReportController {
         }
         try {
             List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyRemittances(fromDate, toDate);
-            byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format, toDate);
+            byte[] reportBytes = reportService.generateJasperSearchFileInPdfAndTxtFormat(dataList, format, toDate);
             String fileName = commonService.generateFileName("search_of_", toDate, "." + format.toLowerCase());
             MediaType mediaType = format.equalsIgnoreCase("pdf") ? MediaType.APPLICATION_PDF : MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
