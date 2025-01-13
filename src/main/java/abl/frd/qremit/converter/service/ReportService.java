@@ -119,59 +119,61 @@ public class ReportService {
     public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format, String date) throws Exception {
         JasperReport jasperReport;
         JasperPrint jasperPrint;
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        for(ExchangeReportDTO exchangeReportDTO: dataList){
-            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
-        }
-        // Convert data into a JasperReports data source
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList, false);
-
-        // Parameters map if needed
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("REPORT_DATA_SOURCE", dataSource);
-        parameters.put("TO_DATE", LocalDate.parse(date));
-        Path reportPath = commonService.getReportFile(commonService.generateFileName("search_of_", date, "." + format.toLowerCase()));
-        String outputFile = reportPath.toString();
-        if (format.equalsIgnoreCase("pdf")) {
-            // Load the JRXML file for PDF format
-            jasperReport = loadJasperReport("search_pdf_tabular.jrxml");
-            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-            // Export to PDF
-            if(!Files.exists(reportPath)){
-                JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            // Batch fetch exchange names
+            Map<String, String> exchangeNames = exchangeHouseModelService.getExchangeNamesByCodes(
+                    dataList.stream().map(ExchangeReportDTO::getExchangeCode).collect(Collectors.toList())
+            );
+            for (ExchangeReportDTO exchangeReportDTO : dataList) {
+                exchangeReportDTO.setExchangeName(exchangeNames.get(exchangeReportDTO.getExchangeCode()));
             }
-            //JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
-            return JasperExportManager.exportReportToPdf(jasperPrint);
-        } else if (format.equalsIgnoreCase("txt")) {
-            // Load the JRXML file for CSV format
-            jasperReport = loadJasperReport("search_csv.jrxml");
-            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
-            // CSV Exporter Setup for File Generation
-            JRCsvExporter fileExporter = new JRCsvExporter();
-            fileExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            fileExporter.setExporterOutput(new SimpleWriterExporterOutput(outputFile, "UTF-8"));
+            // Convert data into a JasperReports data source
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList, false);
 
-            // Optional: Set CSV configuration (e.g., delimiter)
-            SimpleCsvExporterConfiguration fileConfiguration = new SimpleCsvExporterConfiguration();
-            fileConfiguration.setFieldDelimiter(",");
-            fileConfiguration.setForceFieldEnclosure(true);
-            fileConfiguration.setRecordDelimiter("\n");
-            fileExporter.setConfiguration(fileConfiguration);
-            fileExporter.exportReport();
+            // Parameters map
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("REPORT_DATA_SOURCE", dataSource);
+            parameters.put("TO_DATE", LocalDate.parse(date));
 
-            // CSV Exporter Setup for Download
-            JRCsvExporter downloadExporter = new JRCsvExporter();
-            downloadExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            downloadExporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+            // Dynamic file name and path
+            String outputFileName = commonService.generateFileName("search_of_", date, "." + format.toLowerCase());
+            Path reportPath = commonService.getReportFile(outputFileName);
+            String outputFile = reportPath.toString();
 
-            // Reuse the same configuration for the download
-            downloadExporter.setConfiguration(fileConfiguration);
-            downloadExporter.exportReport();
-        } else {
-            throw new IllegalArgumentException("Unsupported format: " + format);
+            if ("pdf".equalsIgnoreCase(format)) {
+                jasperReport = loadJasperReport("search_pdf_tabular.jrxml");
+                jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+                if (!Files.exists(reportPath)) {
+                    JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
+                }
+                return JasperExportManager.exportReportToPdf(jasperPrint);
+            } else if ("txt".equalsIgnoreCase(format)) {
+                jasperReport = loadJasperReport("search_csv.jrxml");
+                jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+                JRCsvExporter exporter = new JRCsvExporter();
+                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+
+                SimpleCsvExporterConfiguration configuration = new SimpleCsvExporterConfiguration();
+                configuration.setFieldDelimiter(",");
+                configuration.setForceFieldEnclosure(true);
+                configuration.setRecordDelimiter("\n");
+                exporter.setConfiguration(configuration);
+                exporter.exportReport();
+
+                // Write to file only if needed
+                if (!Files.exists(reportPath)) {
+                    try (Writer fileWriter = Files.newBufferedWriter(reportPath)) {
+                        fileWriter.write(outputStream.toString("UTF-8"));
+                    }
+                }
+                return outputStream.toByteArray();
+            } else {
+                throw new IllegalArgumentException("Unsupported format: " + format);
+            }
         }
-        return outputStream.toByteArray();
     }
     public List<ExchangeReportDTO> getAllDailyReportData(String date){
         List<ExchangeReportDTO> report = new ArrayList<>();

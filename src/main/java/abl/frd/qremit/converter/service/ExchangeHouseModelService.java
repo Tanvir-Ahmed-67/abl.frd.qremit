@@ -5,6 +5,7 @@ import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -85,5 +86,15 @@ public class ExchangeHouseModelService {
             }
         }
         return resp;
+    }
+    public Map<String, String> getExchangeNamesByCodes(List<String> exchangeCodes) {
+        if (exchangeCodes == null || exchangeCodes.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        // Fetch all exchange house models matching the provided codes
+        List<ExchangeHouseModel> exchangeHouseModels = exchangeHouseModelRepository.findByExchangeCodeIn(exchangeCodes);
+        // Convert the list into a map of exchangeCode to exchangeName
+        return exchangeHouseModels.stream()
+                .collect(Collectors.toMap(ExchangeHouseModel::getExchangeCode, ExchangeHouseModel::getExchangeName));
     }
 }
