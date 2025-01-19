@@ -38,7 +38,7 @@ public class RiaModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -51,7 +51,9 @@ public class RiaModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> riaData = csvToRiaModels(file.getInputStream(), exchangeCode, user, fileInfoModel, nrtaCode, currentDateTime);
+            int type = 0;
+            if(fileType.equalsIgnoreCase("API")) type = 1;
+            Map<String, Object> riaData = csvToRiaModels(file.getInputStream(), type, exchangeCode, user, fileInfoModel, nrtaCode, currentDateTime, tbl);
             List<RiaModel> riaModelList = (List<RiaModel>) riaData.get("riaModelList");
             if(riaData.containsKey("errorMessage")){
                 resp.put("errorMessage", riaData.get("errorMessage"));
@@ -68,7 +70,7 @@ public class RiaModelService {
                     riaModel.setUserModel(user);
                 }
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(riaModelList, fileInfoModel, user, currentDateTime, 1);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(riaModelList, fileInfoModel, user, currentDateTime, type);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(riaModelList.size()));
                 fileInfoModel.setIsSettlement(1);
@@ -88,7 +90,8 @@ public class RiaModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToRiaModels(InputStream is, String exchangeCode, User user, FileInfoModel fileInfoModel, String nrtaCode, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToRiaModels(InputStream is, int type, String exchangeCode, User user, FileInfoModel fileInfoModel, String nrtaCode, 
+        LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         Optional<RiaModel> duplicateData;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -102,13 +105,24 @@ public class RiaModelService {
             int duplicateCount = 0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
+                /*
                 String transactionNo = csvRecord.get(0).trim();
                 String amount = csvRecord.get(1).trim();
                 duplicateData = riaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = "Agrani Bank";
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = "";
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                */
+
+                String bankName = (type == 1) ? "Agrani Bank": csvRecord.get(9).trim();
+                String branchCode = (type == 1) ? "": csvRecord.get(11).trim();
+                branchCode = CommonService.fixRoutingNo(branchCode);
+                String transactionNo = (type == 1) ? csvRecord.get(0).trim(): csvRecord.get(1).trim();
+                String beneficiaryAccount = csvRecord.get(7).trim();
+                String amount = (type == 1) ? csvRecord.get(1) : csvRecord.get(3);
+
+                duplicateData = riaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
+                Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, nrtaCode, duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
@@ -129,7 +143,8 @@ public class RiaModelService {
                 }
                 if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
                 String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
-                if(!CommonService.convertStringToInt(typeFlag).equals(1)){
+                int allowedType = (type == 1) ? 1:3; 
+                if(!CommonService.convertStringToInt(typeFlag).equals(allowedType)){
                     String msg = "Invalid Remittence Type for API";
                     CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
@@ -163,21 +178,30 @@ public class RiaModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, int type, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount){
         Map<String, Object> data = new HashMap<>();
+        //data.put("enteredDate", csvRecord.get(10));
+        //data.put("remitterName", csvRecord.get(3));
+        //data.put("bankCode", "11");
+        //data.put("branchName", "");
+        String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
+        String branchName = (type == 1) ? "": csvRecord.get(10).trim();
+        String currrency = (type == 1) ? "BDT": csvRecord.get(2);
+        String enteredDate = (type == 1) ? csvRecord.get(10) : csvRecord.get(4);
+        String remiterName = (type == 1) ? csvRecord.get(3) : csvRecord.get(5);
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
-        data.put("currency", "BDT");
+        data.put("currency", currrency);
         data.put("amount", amount);
-        data.put("enteredDate", csvRecord.get(10));
-        data.put("remitterName", csvRecord.get(3));
+        data.put("enteredDate", enteredDate);
+        data.put("remitterName", remiterName);
         data.put("remitterMobile", "");
         data.put("beneficiaryName", csvRecord.get(6));
         data.put("beneficiaryAccount", beneficiaryAccount);
         data.put("beneficiaryMobile", "");
         data.put("bankName", bankName);
-        data.put("bankCode", "11");
-        data.put("branchName", "");
+        data.put("bankCode", bankCode);
+        data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         data.put("draweeBranchName", "");
         data.put("draweeBranchCode", "");
