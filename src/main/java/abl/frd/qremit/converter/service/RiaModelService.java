@@ -103,8 +103,17 @@ public class RiaModelService {
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
+            int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
+                if(i == 1){
+                    Map<String, Object> apiCheckResp = checkRiaApiOrBeftnData(csvRecord.get(0), type);
+                    if((Integer) apiCheckResp.get("err") == 1){
+                        resp.put("errorMessage", apiCheckResp.get("msg"));
+                        isValidFile = 0;
+                        break;
+                    }
+                }
                 /*
                 String transactionNo = csvRecord.get(0).trim();
                 String amount = csvRecord.get(1).trim();
@@ -120,6 +129,7 @@ public class RiaModelService {
                 String transactionNo = (type == 1) ? csvRecord.get(0).trim(): csvRecord.get(1).trim();
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(1) : csvRecord.get(3);
+                
 
                 duplicateData = riaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
@@ -211,5 +221,13 @@ public class RiaModelService {
         data.put("processedBy", "");
         data.put("processedDate", "");
         return data;
+    }
+    
+    public Map<String, Object> checkRiaApiOrBeftnData(String firstColumn, int type){
+        Map<String, Object> resp = CommonService.getResp(0, "", null);
+        String msg = "You selected wrong file. Please select the correct file.";
+        if(type == 0 && !firstColumn.equals("7081")) resp = CommonService.getResp(1, msg, null);
+        else if(type == 1 && firstColumn.equals("7081"))   resp = CommonService.getResp(1, msg, null);
+        return resp;
     }
 }
