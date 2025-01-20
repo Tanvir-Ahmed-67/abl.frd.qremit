@@ -122,17 +122,24 @@ public class RiaModelService {
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = "";
                 */
-
                 String bankName = (type == 1) ? "Agrani Bank": csvRecord.get(9).trim();
                 String branchCode = (type == 1) ? "": csvRecord.get(11).trim();
                 branchCode = CommonService.fixRoutingNo(branchCode);
                 String transactionNo = (type == 1) ? csvRecord.get(0).trim(): csvRecord.get(1).trim();
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(1) : csvRecord.get(3);
-                
-
                 duplicateData = riaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                //check api error for ria special case
+                if(type == 1){
+                    String errorStatus = csvRecord.get(8).toLowerCase();
+                    if(errorStatus.startsWith("error") || errorStatus.startsWith("cancel")){
+                        String errorMessage = "Canceled From API";
+                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }
+                
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, nrtaCode, duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
                     errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
