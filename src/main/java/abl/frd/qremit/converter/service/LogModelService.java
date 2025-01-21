@@ -14,9 +14,9 @@ public class LogModelService {
     @Autowired
     LogModelRepository logModelRepository;
 
-    public List<Map<String, Object>> findLogModelByErrorDataId(String errorDataId){
+    public List<Map<String, Object>> findLogModelByDataId(String dataId){
         List<Map<String, Object>> logInfo = new ArrayList<>();
-        LogModel logModel = logModelRepository.findByErrorDataId(errorDataId);
+        LogModel logModel = logModelRepository.findByDataId(dataId);
         logInfo = processLogData(logModel);
         return logInfo;
     }
@@ -35,7 +35,7 @@ public class LogModelService {
             Map<String, Object> updatedDataMap = new HashMap<>();
             Map<String, Object> exchangeCodeMap = new HashMap<>();
             Map<String, Object> userIdMap = new HashMap<>();
-            Map<String, Object> errorDataIdMap = new HashMap<>();
+            Map<String, Object> dataIdMap = new HashMap<>();
             
             if(infoMap.containsKey("oldData"))  oldData = (Map<String, Object>) infoMap.get("oldData");
             if(infoMap.containsKey("updatedData"))  updatedData = (Map<String, Object>) infoMap.get("updatedData");
@@ -44,13 +44,13 @@ public class LogModelService {
             updatedDataMap.put("updatedData", updatedData);
             exchangeCodeMap.put("exchangeCode", logModel.getExchangeCode());
             userIdMap.put("userId", logModel.getUserId());
-            errorDataIdMap.put("errorDataId", logModel.getErrorDataId());
+            dataIdMap.put("dataId", logModel.getDataId());
             errorDataModelMap.put("errorDataModel", errorDataModel);
             
             dataList.add(oldDataMap);
             dataList.add(updatedDataMap);
             dataList.add(exchangeCodeMap);
-            dataList.add(errorDataIdMap);
+            dataList.add(dataIdMap);
             dataList.add(userIdMap);
             dataList.add(errorDataModelMap);
 

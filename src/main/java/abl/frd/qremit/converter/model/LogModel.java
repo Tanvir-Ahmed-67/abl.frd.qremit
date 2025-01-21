@@ -14,8 +14,8 @@ public class LogModel {
     private String exchangeCode;
     @Column(name = "user_id", length = 10)
     private String userId;
-    @Column(name = "error_data_id", length = 10)
-    private String errorDataId;
+    @Column(name = "data_id", length = 10)
+    private String dataId;
     @Column(name = "ip_address", length = 30)
     private String ipAddress;
     @Column(name = "info", columnDefinition = "TEXT")
@@ -53,12 +53,12 @@ public class LogModel {
         this.userId = userId;
     }
 
-    public String getErrorDataId() {
-        return this.errorDataId;
+    public String getDataId() {
+        return this.dataId;
     }
 
-    public void setErrorDataId(String errorDataId) {
-        this.errorDataId = errorDataId;
+    public void setDataId(String dataId) {
+        this.dataId = dataId;
     }
 
     public String getIpAddress() {
@@ -107,11 +107,11 @@ public class LogModel {
         
     }
     /*
-     *action: 1- error data update, 2 - error data delete, 3 - file delete
+     *action: 1- error data update, 2 - error data delete, 3 - file delete, 4- individual data update
      */
-    public LogModel(String userId, String errorDataId, int fileInfoModelId, String exchangeCode, String action, String info, String ipAddress){
+    public LogModel(String userId, String dataId, int fileInfoModelId, String exchangeCode, String action, String info, String ipAddress){
         this.userId = userId;
-        this.errorDataId = errorDataId;
+        this.dataId = dataId;
         this.exchangeCode = exchangeCode;
         this.action = action;
         this.info = info;
@@ -122,7 +122,7 @@ public class LogModel {
     public String toString(){
         return "LogModel{" +
                 "userId='" + userId + '\'' +
-                ", errorDataId='" + errorDataId + '\'' +
+                ", dataId='" + dataId + '\'' +
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", action='" + action + '\'' +
                 ", info='" + info + '\'' +

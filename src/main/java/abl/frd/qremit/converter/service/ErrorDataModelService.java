@@ -250,7 +250,7 @@ public class ErrorDataModelService {
         String action = "";
         for(ErrorDataModel emodel: errorDataModel){
             String errorDataId = String.valueOf(emodel.getId());
-            List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(errorDataId);
+            List<Map<String, Object>> logData =  logModelService.findLogModelByDataId(errorDataId);
             Map<String, Object> dataMap = new HashMap<>();
             Map<String, Object> updatedDataMap = logModelService.fetchLogDataByKey(logData, "updatedData");
             action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm round view_error", errorDataId,"View");
