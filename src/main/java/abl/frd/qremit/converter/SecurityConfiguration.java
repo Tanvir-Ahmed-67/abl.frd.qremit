@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter;
 
+import abl.frd.qremit.converter.service.CustomLoginRestrictionsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 
@@ -23,9 +25,14 @@ public class SecurityConfiguration {
     private final UserDetailsService userDetailsService;
     private final LoginSuccessHandler loginSuccessHandler;
 
-    public SecurityConfiguration(UserDetailsService userDetailsService, LoginSuccessHandler loginSuccessHandler) {
+    private final LoginFailureHandler loginFailureHandler;
+    private final CustomLoginRestrictionsService customLoginRestrictionsService;
+
+    public SecurityConfiguration(UserDetailsService userDetailsService, LoginSuccessHandler loginSuccessHandler, LoginFailureHandler loginFailureHandler, CustomLoginRestrictionsService customLoginRestrictionsService) {
         this.userDetailsService = userDetailsService;
         this.loginSuccessHandler = loginSuccessHandler;
+        this.loginFailureHandler = loginFailureHandler;
+        this.customLoginRestrictionsService = customLoginRestrictionsService;
     }
 
     @Bean
@@ -43,7 +50,8 @@ public class SecurityConfiguration {
                         .loginPage("/login")
                         .usernameParameter("userEmail")
                         .passwordParameter("password")
-                        .successHandler(loginSuccessHandler)
+                        .successHandler(loginSuccessHandler)  // Use the custom login success handler
+                        .failureHandler(authenticationFailureHandler())  // Add custom failure handler
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
@@ -78,5 +86,9 @@ public class SecurityConfiguration {
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new LoginFailureHandler(customLoginRestrictionsService);
     }
 }

@@ -49,7 +49,7 @@
                                 </div>
                             </div>
                             <div class="form-group position-relative alert alert-light-danger text-center" th:if="${param.error}">
-                                Invalid username or password.
+                                <span th:text="${param.error}"></span>
                             </div>
                             <div class="form-group position-relative alert alert-info text-center" th:if="${param.logout}">
                                 Logged Out!
