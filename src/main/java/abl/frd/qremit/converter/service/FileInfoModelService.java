@@ -55,6 +55,22 @@ public class FileInfoModelService {
         return resp;
     }
     @Transactional
+    public Map<String, Object> deleteFileInfoModelHavingOnlyErrors(FileInfoModel fileInfoModel){
+        int id = fileInfoModel.getId();
+        Map<String, Object> resp = CommonService.getResp(1,"Data not deleted", null);
+        try{
+            if(fileInfoModelRepository.existsById(id)){
+                errorDataModelRepository.deleteByFileInfoModelId(id);
+                fileInfoModelRepository.deleteFileInfoModelById(id);
+                resp = CommonService.getResp(0, "Data deleted successful", null);
+            }else resp = CommonService.getResp(1, "Data not exists", null);
+        }catch(Exception e){
+            e.printStackTrace();
+            resp = CommonService.getResp(1, "Error Occured during update", null);
+        }
+        return resp;
+    }
+    @Transactional
     public Map<String, Object> deleteFileInfoModel(FileInfoModel fileInfoModel){
         int id = fileInfoModel.getId();
         String exchangeCode = fileInfoModel.getExchangeCode();

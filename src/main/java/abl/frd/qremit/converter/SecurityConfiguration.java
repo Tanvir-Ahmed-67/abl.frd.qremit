@@ -39,6 +39,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
+                        .antMatchers("/getExchangeHouse").permitAll()
                         .antMatchers("/css/**", "/js/**", "/images/**", "/login", "/change-password", "/change-password-for-first-time-login").permitAll()
                         .antMatchers("**/upload", "**/allUsers", "**/downloadaccountpayee/**", "**/downloadbeftn/**", "**/downloadcoc/**", "**/downloadonline/**", "**/apibeftntransfer/**").hasAnyRole("ADMIN", "USER", "SUPERADMIN")
                         .antMatchers("**/newUserCreationForm/**", "**/createNewUser/**", "**/showInactiveUsers/**").hasRole("SUPERADMIN")

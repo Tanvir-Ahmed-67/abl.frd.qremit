@@ -147,6 +147,14 @@ public class BeftnModelService {
         return beftnModelList;
     }
 
+    public List<BeftnModel> getBeftnModelByTransactionNoAndIsDownloaded(String transactionNo, int isDownloaded){
+        return beftnModelRepository.findBeftnModelByTransactionNoAndIsDownloaded(transactionNo, isDownloaded);
+    }
+
+    public BeftnModel findBeftnModelByIdAndIsDownloaded(int id, int isDownloaded){
+        return beftnModelRepository.findByIdAndIsDownloaded(id, isDownloaded);
+    }
+
     public List<BeftnModel> findBeftnModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
         return beftnModelRepository.findBeftnModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
     }

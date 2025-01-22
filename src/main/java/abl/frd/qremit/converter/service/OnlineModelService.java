@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.*;
 import javax.transaction.Transactional;
 
 @Service
@@ -110,6 +108,17 @@ public class OnlineModelService {
                 break;
         }
         return onlineModelList;
+    }
+
+    public List<OnlineModel> getOnlineModelByTransactionNoAndIsDownloaded(String transactionNo, int isDownloaded){
+        return onlineModelRepository.findOnlineModelByTransactionNoAndIsDownloaded(transactionNo, isDownloaded);
+    }
+
+    public Optional<OnlineModel> getOnlineModelById(int id){
+        return onlineModelRepository.findById(id);
+    }
+    public OnlineModel findOnlineModelByIdAndIsDownloaded(int id, int isDownloaded){
+        return onlineModelRepository.findByIdAndIsDownloaded(id, isDownloaded);
     }
 
     public List<OnlineModel> findOnlineModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId, int isSettlement){

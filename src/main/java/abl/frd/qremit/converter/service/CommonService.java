@@ -615,14 +615,76 @@ public class CommonService {
                     } 
                     field.set(model, doubleField);
                 }
-                if(field.getType().equals(Integer.class)){
-                    field.set(model, CommonService.convertStringToInt((String) fieldValue));
+                if(field.getType().equals(Integer.class) || field.getType().equals(int.class)){
+                    field.set(model, convertStringToInt((String) fieldValue));
+                }
+                if(field.getType().equals(LocalDateTime.class)){
+                    LocalDateTime dateField = convertStringToDate(fieldValue.toString());
+                    field.set(model, dateField);
                 }
             }catch(NoSuchFieldException | IllegalAccessException e){
                 e.printStackTrace();
             }
         }
         return model;
+    }
+
+    public static Object addFileInfoModelAndUserInModelInstance(Object modelInstance, FileInfoModel fileInfoModel, User user) throws Exception{
+        Field field = modelInstance.getClass().getDeclaredField("fileInfoModel");
+        field.setAccessible(true);
+        field.set(modelInstance, fileInfoModel);
+        Field ufield = modelInstance.getClass().getDeclaredField("userModel");
+        ufield.setAccessible(true);
+        ufield.set(modelInstance, user);
+        return modelInstance;
+    }
+
+    public static Map<String, Object> convertModelToObject(Object model){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            for (Field field : model.getClass().getDeclaredFields()) {
+                field.setAccessible(true); // Allow access to private fields
+                map.put(field.getName(), field.get(model)); // Add field name and value
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    public static <T> Map<String, Object> convertDataModelToObject(T model, String userKey) throws Exception{
+        if(model == null) return getResp(1, "No data found following transaction id", null);
+        FileInfoModel fileInfoModel = (FileInfoModel) getPropertyValue(model, "getFileInfoModel");
+        User user = (User) getPropertyValue(model, "getUserModel");
+        int fileInfoModelId = fileInfoModel.getId();
+        int userId = user.getId();
+        Map<String, Object> obj = convertModelToObject(model);
+        obj.put("fileInfoModelId", fileInfoModelId);
+        obj.put(userKey, userId);
+        obj.remove("userModel");
+        obj.remove("fileInfoModel");
+        return obj;
+    }
+
+    public static List<Map<String, Object>> convertDynamicListToMap(List<?> dataList, Class<?> modelClass){
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        for(Object data: dataList){
+            if(modelClass.isInstance(data)){
+                Map<String, Object> fieldMap = new HashMap<>();
+                Field[] fields = modelClass.getDeclaredFields();
+                for(Field field: fields){
+                    try{
+                        field.setAccessible(true);
+                        Object value = field.get(data); 
+                        fieldMap.put(field.getName(), value);
+                    }catch(IllegalAccessException e){
+                        e.printStackTrace();
+                    }
+                }
+                resultList.add(fieldMap);
+            }
+        }
+        return resultList;
     }
 
     public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
@@ -1214,6 +1276,20 @@ public class CommonService {
             "PURBACHAL ","PROBASHI", " PALLI", " GLOBAL", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION"
         };
         return keywords;
+    }
+
+    public static Map<String, Object> checkBeftnEditForSpecialExchange(String exchangeCode, String type){
+        Map<String,Object> resp = CommonService.getResp(0, "", null);
+        String[] exchangeCodeList = {"7010226","7010228","7010290","7010299","111111"};
+        if(exchangeCode.equals("444444")){
+            if(("3").equals(type))  return CommonService.getResp(1, "BEFTN not allowed in swift", null);
+        }
+        for(String exCode: exchangeCodeList){
+            if(exCode.equals(exchangeCode)){
+                if(!("3").equals(type)) resp = CommonService.getResp(1, "You are not allowed to change beftn to any other type for specific exchange code", null);
+            }
+        }
+        return resp;
     }
 
 }

@@ -120,7 +120,6 @@ function checkDataTable(tbl){
   function loadScript(url,id){
     document.addEventListener('DOMContentLoaded', function() {
       var id = document.getElementById(id);
-      //var file = "/js/fileUpload.js";
       var scriptElement = document.createElement('script');
       scriptElement.type = 'text/javascript';
       scriptElement.src = url;

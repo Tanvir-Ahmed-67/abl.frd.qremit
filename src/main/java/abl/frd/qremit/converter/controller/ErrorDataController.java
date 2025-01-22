@@ -120,7 +120,7 @@ public class ErrorDataController {
         ErrorDataModel errorDataModel = errorDataModelService.findErrorModelById(errorDataId);
         if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
         if(errorDataModel.getUpdateStatus() != 1)   return CommonService.getResp(1, "Invalid Type for approve data", null);  //for approve status must be 1
-        List<Map<String, Object>> logData =  logModelService.findLogModelByErrorDataId(id);
+        List<Map<String, Object>> logData =  logModelService.findLogModelByDataId(id);
         return CommonService.getResp(0, "", logData);
     }
 

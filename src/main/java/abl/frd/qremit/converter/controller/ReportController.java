@@ -617,7 +617,7 @@ public class ReportController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
-        //if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return HttpStatus.UNAUTHORIZED.build();
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return HttpStatus.UNAUTHORIZED.getReasonPhrase();
         int userId = (int) userData.get("userid");
         Map<String, Object> searchType = CommonService.getSerachType(type);
         Map<String, String> exchangeMap = new HashMap<>();
@@ -626,6 +626,7 @@ public class ReportController {
         String sidebar = (userId == 0) ? "sidebarAdmin":"sidebarUser";
         model.addAttribute("sidebar", sidebar);
         model.addAttribute("searchType", searchType);
+        model.addAttribute("type", type);
         if(type.equals("2") && userId != 0){
             model.addAttribute("errorMessage", "Invalid Attempt. You are not allowed to perform this operation");
             return "fragments/error";
@@ -635,8 +636,12 @@ public class ReportController {
 
     @GetMapping(value="/getSearch", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getSearch(@RequestParam("searchType") String searchType, @RequestParam("searchValue") String searchValue){
-        Map<String, Object> resp = reportService.getSearch(searchType, searchValue);
+    public ResponseEntity<Map<String, Object>> getSearch(@RequestParam("searchType") String searchType, @RequestParam("searchValue") String searchValue, 
+        @RequestParam(defaultValue = "") String type){
+        Map<String, Object> resp = new HashMap<>();
+        if(("2").equals(type)){
+            resp = reportService.getCorrectionSearch(searchType, searchValue);
+        }else resp = reportService.getSearch(searchType, searchValue);;
         return ResponseEntity.ok(resp);
     }
 
@@ -653,6 +658,42 @@ public class ReportController {
             userId = (int) userData.get("adminUserId");
         }
         Map<String, Object> resp = reportService.deleteByFileInfoModelById(id, userId, request);
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/editForm/{id}")
+    public String editForm(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @PathVariable("id") String id, @RequestParam("type") String type){
+        return "pages/admin/editForm";
+    }
+
+    @GetMapping(value = "/getEditData/{id}", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getEditData(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @PathVariable("id") String id, @RequestParam("type") String type){
+        Map<String, Object> resp = reportService.getEditData(CommonService.convertStringToInt(id), type, 0);
+        return ResponseEntity.ok(resp);
+    }
+
+    @PostMapping(value ="/update", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> updateIndividualDataById(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam Map<String, String> formData, Model model, 
+        HttpServletRequest request){
+        Map<String, Object> resp = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        int userId = (int) userData.get("userid");
+        if(userId != 0) return ResponseEntity.ok(CommonService.getResp(1, "You are not allowed to perform this operation", null));
+        Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
+        if(role.get("isAdmin") == 1){
+            userId = (int) userData.get("adminUserId");
+        }
+        formData.remove("_csrf");
+        formData.remove("_csrf_header");
+        try{
+            resp = reportService.updateIndividualDataById(formData, userId, request);
+        }catch(Exception e){
+            return ResponseEntity.ok(CommonService.getResp(1, e.getMessage(), null));
+        }
+        
         return ResponseEntity.ok(resp);
     }
 

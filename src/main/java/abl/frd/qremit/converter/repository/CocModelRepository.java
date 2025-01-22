@@ -25,8 +25,11 @@ public interface CocModelRepository extends JpaRepository<CocModel, Integer> {
     List<CocModel> findCocModelByBeneficiaryAccount(String beneficiaryAccount);
     @Query("SELECT n FROM CocModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isDownloaded= :isDownloaded")
     List<CocModel> findCocModelByFileInfoModelIdAndIsDownloaded(@Param("fileInfoModelId") int fileInfoModelId, @Param("isDownloaded") int isDownloaded);
+    @Query("SELECT n FROM CocModel n WHERE n.transactionNo = :transactionNo AND n.isDownloaded= :isDownloaded")
+    List<CocModel> findCocModelByTransactionNoAndIsDownloaded(@Param("transactionNo") String transactionNo, @Param("isDownloaded") int isDownloaded);
     @Transactional
     @Modifying
     @Query("DELETE FROM CocModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
+    CocModel findByIdAndIsDownloaded(int id, int isDownloaded);
 }
