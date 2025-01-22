@@ -1,54 +1,84 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: head-css"></head>
-<script src="/js/script.js?v=1" ></script>
-<body>
+<body th:fragment="fileUploadForm">
 <div id="app"><!--main content-->
   <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
   <div id="main"><!--content Id-->
     <span th:replace="fragments/header :: header"></span>
-    <div class="main-content container-fluid"><!--dynamic content-->
+    <div class="main-content container-fluid">
       <div class="page-title">
-        <h3>Details Of Daily Remittances</h3>
+        <div class="row">
+          <div class="col-12 col-md-6 order-md-1 order-last">
+            <h3>Details Of Daily Remittances</h3>
+          </div>
+          <div class="col-12 col-md-6 order-md-2 order-first">
+            <nav aria-label="breadcrumb" class='breadcrumb-header'>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">Report Management</li>
+                <li class="breadcrumb-item active" aria-current="page">Details Of Daily Remittances</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
       </div>
-      <div class="row" id="table-hover-row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-content">
-              <div class="btn-group mb-6 btn-group-sm" role="group">
-                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('pdf', '${date}')|">PDF</button>
-                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('csv', '${date}')|">CSV</button>
-                <button type="button" class="btn btn-secondary" th:attr="onclick=|GenerateDetailsReport('excel', '${date}')|">EXCEL</button>
-              </div>
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead>
-                  <tr>
-                    <th>Transaction No</th>
-                    <th>Exchange Name</th>
-                    <th>Exchange Code</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr th:each="detailsReportContent : ${detailsReportContent}">
-                    <td class="text-bold-500" th:text="${detailsReportContent.getTransactionNo()}"></td>
-                    <td class="text-bold-500" th:text="${detailsReportContent.getExchangeName()}"></td>
-                    <td class="text-bold-500" th:text="${detailsReportContent.getExchangeCode()}"></td>
-                    <td class="text-bold-500" th:text="${detailsReportContent.getEnteredDate()}"></td>
-                    <td class="text-bold-500" th:text="${detailsReportContent.doFormatAmount(detailsReportContent.getAmount())}"></td>
-                  </tr>
-                  </tbody>
-                </table>
+      <section id="input-style">
+        <div class="row" style="min-height: 58vh">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="form-group col-md-2">
+                    <label class="col-form-label">From Date:</label>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" th:value="${startDate}" readonly="true">
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label class="col-form-label">To Date:</label>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <input class="form-control dpicker report_date" type="text" name="report_end_date" id="report_end_date" th:value="${endDate}" readonly="true">
+                  </div>
+                  <div class="col-md-2 text-center" id="moBtn">
+                    <button id="showDataButton" class="btn btn-sm btn-danger">Show Data</button>
+                  </div>
+                </div>
+                <div id="dataSection" class="mt-4" style="display: none">
+                  <div class="table-responsive">
+                    <table id="details_of_daily_remittances_tbl" class="table table-hover" width="100%">
+                      <thead>
+                      <tr>
+                        <th>Serial</th>
+                        <th>Transaction No</th>
+                        <th>Exchange Code</th>
+                        <th>Bene Name</th>
+                        <th>Bene A/C</th>
+                        <th>Bank Name</th>
+                        <th>Bank Code</th>
+                        <th>Branch Name</th>
+                        <th>Branch Code</th>
+                        <th>Remitter Name</th>
+                        <th>Voucher Date</th>
+                        <th>Amount</th>
+                      </tr>
+                      </thead>
+                    </table>
+                  </div>
+                  <div class="col-md-12 text-center">
+                    <div class="btn-group" id="download_btn"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+      <div id="modal_wrap"></div><div class="lmodal"></div>
     </div>
     <span th:replace="fragments/footer :: footer"></span>
   </div>
 </div>
+<script src="/js/detailsOfDailyRemittances.js"></script>
 </body>
 </html>

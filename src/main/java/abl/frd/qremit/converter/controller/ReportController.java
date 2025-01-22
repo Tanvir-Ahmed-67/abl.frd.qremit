@@ -255,18 +255,38 @@ public class ReportController {
         return "report/summaryOfDailyRemittance";
     }
 
-    @RequestMapping(value="/detailsOfDailyStatement", method= RequestMethod.GET)
-    public String generateDetailsOfDailyStatement(@RequestParam(defaultValue = "html") String format, Model model, @RequestParam(defaultValue = "") String date) throws FileNotFoundException {
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        List<ExchangeReportDTO> exchangeReport = reportService.generateDetailsOfDailyStatement(date);
-        for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
-            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+    @RequestMapping(value="/showDetailsOfDailyStatement", method= RequestMethod.GET)
+    public String showDetailsOfDailyStatement(Model model, @RequestParam(defaultValue = "") String startDate, @RequestParam(defaultValue = "") String endDate) {
+        if(startDate.isEmpty()){
+            startDate = CommonService.getCurrentDate("yyyy-MM-dd");
         }
-        model.addAttribute("detailsReportContent", exchangeReport);
-        model.addAttribute("date", date);
-        return "report/detailsOfDailyRemittance";
+        if(endDate.isEmpty()){
+            endDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        return "/report/detailsOfDailyRemittance";
     }
-
+    @RequestMapping(value="/detailsOfDailyStatement", method= RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> generateDetailsOfDailyStatement(@RequestParam(defaultValue = "") String fromDate, @RequestParam(defaultValue = "") String toDate) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            resp = reportService.generateDetailsOfDailyStatement(fromDate, toDate);
+            if((Integer) resp.get("err") == 1){
+                resp = CommonService.getResp(1,"No data found for the selected dates.", null);
+            }
+        } catch (Exception e) {
+            resp = CommonService.getResp(1,"An error occurred while fetching reimbursement data: " + e.getMessage(), null);
+        }
+        return ResponseEntity.ok(resp);
+    }
     @RequestMapping(value="/downloadSummaryOfDailyStatementInPdfFormat", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
@@ -283,13 +303,18 @@ public class ReportController {
                 .headers(headers)
                 .body(pdfReport);
     }
-    @RequestMapping(value = "/downloadDetailsOfDailyStatement", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format, @RequestParam(defaultValue = "") String date){
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+    @RequestMapping(value = "/downloadSearchFile", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format, @RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate){
+        if(fromDate.isEmpty()){
+            fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        if(toDate.isEmpty()){
+            toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
         try {
-            List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyStatement(date);
-            byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format, date);
-            String fileName = commonService.generateFileName("details_report_", date, "." + format.toLowerCase());
+            List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyRemittances(fromDate, toDate);
+            byte[] reportBytes = reportService.generateJasperSearchFileInPdfAndTxtFormat(dataList, format, toDate);
+            String fileName = commonService.generateFileName("search_of_", toDate, "." + format.toLowerCase());
             MediaType mediaType = format.equalsIgnoreCase("pdf") ? MediaType.APPLICATION_PDF : MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
@@ -421,6 +446,22 @@ public class ReportController {
                 toDate = CommonService.getCurrentDate("yyyy-MM-dd");
             }
             resp = reimbursementModelService.insertReimbursementData(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            Object dataObject = resp.get("data");
+            if (dataObject instanceof ArrayList<?>) {
+                List<?> dataList = (ArrayList<?>) dataObject;
+                String valueOfType;
+                for (Object obj : dataList) {
+                    if (obj instanceof ReimbursementModel) {
+                        ReimbursementModel reimbursementData = (ReimbursementModel) obj;
+                        valueOfType = reimbursementData.getType();
+                        if (valueOfType.equals("4")) {
+                            reimbursementData.setType("COC");
+                        } else if (valueOfType.equals("2")) {
+                            reimbursementData.setType("A/C Payee");
+                        }
+                    }
+                }
+            }
             if((Integer) resp.get("err") == 1){
                 resp = CommonService.getResp(1,"No data found for the selected dates.", null);
             }
@@ -431,9 +472,15 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/downloadDailyReimbursement", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyReimbursement(@RequestParam String date, @ModelAttribute MoModel moModel){
+    public ResponseEntity<byte[]> downloadDailyReimbursement(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
         try {
-            byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDate(LocalDate.parse(date));
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_", ".csv");
             MediaType mediaType = MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
@@ -446,9 +493,15 @@ public class ReportController {
         }
     }
     @RequestMapping(value = "/downloadDailyReimbursementForIcash", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyReimbursementForIcash(@RequestParam String date, @ModelAttribute MoModel moModel){
+    public ResponseEntity<byte[]> downloadDailyReimbursementForIcash(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
         try {
-            byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(date));
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_ICash_", ".csv");
             MediaType mediaType = MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()

@@ -37,4 +37,5 @@ public interface ExchangeHouseModelRepository extends JpaRepository<ExchangeHous
     List<ExchangeHouseModel> findAllExchangeHouseByIsSettlement(int isSettlement);
     ExchangeHouseModel findExchangeHouseByIsSettlement(int isSettlement);
     ExchangeHouseModel findExchangeHouseModelByNrtaCode(String nrtaCode);
+    List<ExchangeHouseModel> findByExchangeCodeIn(List<String> exchangeCodes);
 }

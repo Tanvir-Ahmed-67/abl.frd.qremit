@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 @Repository
@@ -29,13 +31,13 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<User> loadAdminsOnly();
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.exchangeCode = :exchangeCode, n.activeStatus = false where n.id = :userId")
-    void updateUser(int userId, String userName, String userEmail, String exchangeCode);
+    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.exchangeCode = :exchangeCode, n.allowedIps = :allowedIps, n.startTime = :startTime, n.endTime = :endTime, n.activeStatus = false where n.id = :userId")
+    void updateUser(int userId, String userName, String userEmail, String exchangeCode, String allowedIps, String startTime, String endTime);
     @Query("SELECT u FROM User u WHERE u.activeStatus = false")
     public List<User> loadAllInactiveUsers();
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.activeStatus = true where n.id = :userId")
+    @Query("UPDATE User n SET n.activeStatus = true, n.failedAttempt = 0 where n.id = :userId")
     void updateInactiveUser(int userId);
     @Transactional
     @Modifying
@@ -44,4 +46,20 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     User getUserById(int id);
     @Query("SELECT e from ExchangeHouseModel e INNER JOIN UserExchangeMap u ON e.exchangeCode=u.exchangeCode where u.userId= :userId")
     List<ExchangeHouseModel> findExchangeHouseByUserId(@Param("userId") int userId);
+    @Query("SELECT u.allowedIps FROM User u WHERE u.id = :userId")
+    String getAllowedIpsForUser(@Param("userId") int userId);
+    @Query("SELECT u.startTime FROM User u WHERE u.id = :userId")
+    String getAllowedStartTime(@Param("userId") int userId);
+    @Query("SELECT u.endTime FROM User u WHERE u.id = :userId")
+    String getAllowedEndTime(@Param("userId") int userId);
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u " +
+            "SET u.startTime = :startTime, u.endTime = :endTime " +
+            "WHERE u.id NOT IN (" +
+            "  SELECT u2.id FROM User u2 " +
+            "  JOIN u2.roles r " +
+            "  WHERE r.roleName IN ('ROLE_ADMIN', 'ROLE_SUPERADMIN')" +
+            ")")
+    int setLoginTimeRestrictionsForAllUsers(@Param("startTime") String startTime, @Param("endTime") String endTime);
 }

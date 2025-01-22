@@ -10,6 +10,7 @@ import abl.frd.qremit.converter.service.RoleModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.EntityManager;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
@@ -45,6 +49,10 @@ public class UserController {
         this.roleModelService = roleModelService;
         this.passwordEncoder = passwordEncoder;
         this.commonService = commonService;
+    }
+    @GetMapping("/")
+    public String redirectToLogin() {
+        return "redirect:/login";
     }
     @RequestMapping("/login")
     public String loginPage(){
@@ -427,11 +435,27 @@ public List<Map<String, Object>> getBankRemittanceDataForTable() {
     @RequestMapping(value="/editUser/{id}", method= RequestMethod.POST)
     public String editExchangeHouse(Model model, @PathVariable(required = true, name= "id") String id, @Valid User user, BindingResult result, RedirectAttributes ra){
         int idInIntegerFormat = CommonService.convertStringToInt(id);
+        if (user.getAllowedIps() != null) {
+            String formattedIps = user.getAllowedIps().replace("\n", ",").trim();
+            formattedIps = formattedIps.replaceAll(",+", ","); // Replace multiple commas with a single comma
+            user.setAllowedIps(formattedIps);
+        }
         if (result.hasErrors()) {
             user.setId(idInIntegerFormat);
-            return "editUser";
+            ra.addFlashAttribute("message","Error Occurred: User Update Failed !!");
+            return "redirect:/allUsers";
         }
         try {
+            String startTime = user.getStartTime();
+            if (startTime != null && startTime.matches("^\\d{2}:\\d{2}$")) {
+                startTime = startTime + ":00";
+            }
+            String endTime = user.getEndTime();
+            if (endTime != null && endTime.matches("^\\d{2}:\\d{2}$")) {
+                endTime = endTime + ":00";
+            }
+            user.setStartTime(startTime);
+            user.setEndTime(endTime);
             myUserDetailsService.editUser(user);
             ra.addFlashAttribute("message","User Updated successfully");
             model.addAttribute("user",user);
@@ -482,5 +506,44 @@ public List<Map<String, Object>> getBankRemittanceDataForTable() {
         return "pages/user/viewExchangeData";
     }
 
-
+    @GetMapping("/showTimePickerForm")
+    public String showTimePickerForm(Model model){
+        return "pages/admin/showTimePickerForm";
+    }
+    @PostMapping("/setLoginTimeRestrictionsForAllUsers")
+    public String setLoginTimeRestrictionsForAllUsers(@RequestParam("startTime") String startTime, @RequestParam("endTime") String endTime, RedirectAttributes redirectAttributes){
+        String errorMessage = "You must be logged in to access this page.";
+        // Check if the user is loggedIn or authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            // Redirect to the login page with an error message
+            try {
+                errorMessage = URLEncoder.encode(errorMessage, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            return "redirect:/login?error=" + errorMessage;
+        }
+        // After confirming successful authentication, start the time setting process
+        try {
+            if (startTime != null && startTime.matches("^\\d{2}:\\d{2}$")) {
+                startTime = startTime + ":00";
+            }
+            if (endTime != null && endTime.matches("^\\d{2}:\\d{2}$")) {
+                endTime = endTime + ":00";
+            }
+            boolean success = myUserDetailsService.setLoginTimeRestrictionsForAllUsers(startTime, endTime);
+            if (success) {
+                redirectAttributes.addFlashAttribute("message", "Login time restrictions updated successfully!");
+                redirectAttributes.addFlashAttribute("messageType", "success");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "Failed to update login time restrictions.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "An error occurred: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("messageType", "error");
+        }
+        return "redirect:/showTimePickerForm";
+    }
 }
