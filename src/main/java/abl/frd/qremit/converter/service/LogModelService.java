@@ -68,13 +68,13 @@ public class LogModelService {
         return resp;
     }
 
-    public Map<String, Object> addLogModel(int userId, int fileInfoModelId, String exchangeCode, String errorDataModelId, String action, Map<String, Object> info, HttpServletRequest request){
+    public Map<String, Object> addLogModel(int userId, int fileInfoModelId, String exchangeCode, String dataId, String action, Map<String, Object> info, HttpServletRequest request){
         Map<String, Object> resp = CommonService.getResp(1, "Error Updating Information", null);
         String ipAddress = request.getRemoteAddr();
         String infoStr = CommonService.serializeInfoToJson(info);
         if(infoStr == null) return CommonService.getResp(1, "Failed to parse JSON data", null);
         try{
-            LogModel logModel = new LogModel(String.valueOf(userId), errorDataModelId, fileInfoModelId, exchangeCode, action, infoStr, ipAddress);
+            LogModel logModel = new LogModel(String.valueOf(userId), dataId, fileInfoModelId, exchangeCode, action, infoStr, ipAddress);
             logModelRepository.save(logModel);
             resp = CommonService.getResp(0, "Data inserted to LogModel successful", null);
         }catch(Exception e){
