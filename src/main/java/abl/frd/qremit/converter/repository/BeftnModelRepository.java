@@ -56,6 +56,8 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     List<BeftnModel> findBeftnModelByBeneficiaryAccount(String beneficiaryAccount);
     @Query("SELECT n FROM BeftnModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isDownloaded= :isDownloaded")
     List<BeftnModel> findBeftnModelByFileInfoModelIdAndIsDownloaded(@Param("fileInfoModelId") int fileInfoModelId, @Param("isDownloaded") int isDownloaded);
+    @Query("SELECT n FROM BeftnModel n WHERE n.transactionNo = :transactionNo AND n.isDownloaded= :isDownloaded")
+    List<BeftnModel> findBeftnModelByTransactionNoAndIsDownloaded(@Param("transactionNo") String transactionNo, @Param("isDownloaded") int isDownloaded);
     @Transactional
     @Modifying
     @Query("DELETE FROM BeftnModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
@@ -64,6 +66,7 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     @Modifying
     @Query("UPDATE BeftnModel n SET n.incentive=:incentive WHERE n.id in :ids")
     int updateNotProcessingIncentive(@Param("ids") List<Integer> ids, @Param("incentive") Double incentive);
+    BeftnModel findByIdAndIsDownloaded(int id, int isDownloaded);
 
 }
 /*

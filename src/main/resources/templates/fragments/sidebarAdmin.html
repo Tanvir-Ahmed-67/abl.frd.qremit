@@ -55,13 +55,27 @@
                             <span>Error Data Report</span>
                         </a>
                     </li>
-                    
+                    <!--
                     <li class="sidebar-item">
                         <a th:href="@{/adminReport?type=5}" class='sidebar-link'>
-                            <!--<i class="fa-regular fa-trash-can"></i>-->
                             <i class="far fa-trash-alt"></i>
                             <span>Delete Uploaded File</span>
                         </a>
+                    </li>
+                    -->
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="far fa-trash-alt"></i>
+                            <span>Admin Operation</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/search?type=2}"><i class="fa-regular fa-circle sub-icon"></i>Data Correction</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/adminReport?type=5}"><i class="fa-regular fa-circle sub-icon"></i>Delete Uploaded File</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>

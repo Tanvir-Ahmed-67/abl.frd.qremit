@@ -48,8 +48,11 @@ public interface OnlineModelRepository extends JpaRepository<OnlineModel, Intege
     List<OnlineModel> findOnlineModelByFileInfoModelIdAndIsDownloaded(@Param("fileInfoModelId") int fileInfoModelId, @Param("isDownloaded") int isDownloaded);
     @Query("SELECT n FROM OnlineModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isVoucherGenerated= :isVoucherGenerated AND n.isApi = 1")
     List<OnlineModel> findOnlineModelByApiAndFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId, @Param("isVoucherGenerated") int isVoucherGenerated);
+    @Query("SELECT n FROM OnlineModel n WHERE n.transactionNo = :transactionNo AND n.isDownloaded= :isDownloaded")
+    List<OnlineModel> findOnlineModelByTransactionNoAndIsDownloaded(@Param("transactionNo") String transactionNo, @Param("isDownloaded") int isDownloaded);
     @Transactional
     @Modifying
     @Query("DELETE FROM OnlineModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
+    OnlineModel findByIdAndIsDownloaded(int id, int isDownloaded);
 }

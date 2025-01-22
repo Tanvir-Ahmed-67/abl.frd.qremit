@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.repository;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.sql.DataSource;
@@ -164,6 +165,18 @@ public class CustomQueryRepository {
         params.put("1", 0);
         params.put("2", 0);
         return getData(sql,params);
+    }
+
+    public Object getBaseTableDataByTransactionNoAndFileInfoModelId(String entityName, int fileInfoModelId, String transactionNo){
+        String sql = "SELECT n FROM " + entityName + " n WHERE n.transactionNo=:transactionNo and n.fileInfoModel.id=:fileInfoModelId";
+        Query query = entityManager.createQuery(sql);
+        query.setParameter("transactionNo", transactionNo);
+        query.setParameter("fileInfoModelId", fileInfoModelId);
+        try{
+            return query.getSingleResult();
+        }catch(NoResultException e){
+            return null;
+        }
     }
         
 

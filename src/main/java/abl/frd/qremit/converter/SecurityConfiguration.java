@@ -28,6 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/images/**").permitAll()
+                .antMatchers("/getExchangeHouse").permitAll()
                 .antMatchers("/login", "/change-password", "/change-password-for-first-time-login").permitAll()
                 .antMatchers("**/upload","**/allUsers","**/downloadaccountpayee/**","**/downloadbeftn/**","**/downloadcoc/**","**/downloadonline/**","**/apibeftntransfer/**").hasAnyRole("ADMIN","USER","SUPERADMIN")
                 .antMatchers("**/newUserCreationForm/**","**/createNewUser/**","**/showInactiveUsers/**").hasRole("SUPERADMIN")

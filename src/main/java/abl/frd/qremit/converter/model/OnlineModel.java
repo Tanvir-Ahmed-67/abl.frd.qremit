@@ -73,7 +73,7 @@ public class OnlineModel {
         this.userModel = userModel;
     }
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     //@ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="file_info_model_id")
     @JsonIgnore
