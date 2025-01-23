@@ -38,25 +38,29 @@ public class BeftnModelServiceHelper {
         Cell cell_0 = row.createCell(0);
         cell_0.setCellValue("REFERENCE_NO");
         Cell cell_1 = row.createCell(1);
-        cell_1.setCellValue("ORG_CUSTOMER_NO");
+        cell_1.setCellValue("COMPANY_ID");
         Cell cell_2 = row.createCell(2);
-        cell_2.setCellValue("ORG_NAME");
+        cell_2.setCellValue("COMPANY_NAME");
         Cell cell_3 = row.createCell(3);
-        cell_3.setCellValue("ORG_ACCOUNT_NO");
+        cell_3.setCellValue("ORG_CUSTOMER_NO");
         Cell cell_4 = row.createCell(4);
-        cell_4.setCellValue("ORG_ACCOUNT_TYPE");
+        cell_4.setCellValue("ORG_NAME");
         Cell cell_5 = row.createCell(5);
-        cell_5.setCellValue("BEN_NAME");
+        cell_5.setCellValue("ORG_ACCOUNT_NO");
         Cell cell_6 = row.createCell(6);
-        cell_6.setCellValue("BEN_ACCOUNT_NO");
+        cell_6.setCellValue("ORG_ACCOUNT_TYPE");
         Cell cell_7 = row.createCell(7);
-        cell_7.setCellValue("BEN_ACCOUNT_TYPE");
+        cell_7.setCellValue("BEN_NAME");
         Cell cell_8 = row.createCell(8);
-        cell_8.setCellValue("BEN_ROUTING_NO");
+        cell_8.setCellValue("BEN_ACCOUNT_NO");
         Cell cell_9 = row.createCell(9);
-        cell_9.setCellValue("AMOUNT");
+        cell_9.setCellValue("BEN_ACCOUNT_TYPE");
         Cell cell_10 = row.createCell(10);
-        cell_10.setCellValue("PAYMENT_DESCRIPTION");
+        cell_10.setCellValue("BEN_ROUTING_NO");
+        Cell cell_11 = row.createCell(11);
+        cell_11.setCellValue("AMOUNT");
+        Cell cell_12 = row.createCell(12);
+        cell_12.setCellValue("PAYMENT_DESCRIPTION");
         while(iterator.hasNext()){
             BeftnModel beftnModel = iterator.next();
 
@@ -66,34 +70,40 @@ public class BeftnModelServiceHelper {
             cell0.setCellValue(count);
 
             Cell cell1 = row.createCell(1);
-            cell1.setCellValue(beftnModel.getOrgCustomerNo().trim());
+            cell1.setCellValue("Not Applicable");
 
             Cell cell2 = row.createCell(2);
-            cell2.setCellValue(beftnModel.getOrgName().trim());
+            cell2.setCellValue("Not Applicable");
 
             Cell cell3 = row.createCell(3);
-            cell3.setCellValue(beftnModel.getOrgAccountNo().trim());
+            cell3.setCellValue(beftnModel.getOrgCustomerNo().trim());
 
             Cell cell4 = row.createCell(4);
-            cell4.setCellValue(beftnModel.getOrgAccountType().trim());
+            cell4.setCellValue(beftnModel.getOrgName().trim());
 
             Cell cell5 = row.createCell(5);
-            cell5.setCellValue(beftnModel.getBeneficiaryName().trim());
+            cell5.setCellValue(beftnModel.getTransactionNo().replaceAll("[^a-zA-Z0-9]", "").trim());
 
             Cell cell6 = row.createCell(6);
-            cell6.setCellValue(beftnModel.getBeneficiaryAccount().trim());
+            cell6.setCellValue(beftnModel.getOrgAccountType().trim());
 
             Cell cell7 = row.createCell(7);
-            cell7.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
+            cell7.setCellValue(beftnModel.getBeneficiaryName().trim());
 
             Cell cell8 = row.createCell(8);
-            cell8.setCellValue(beftnModel.getRoutingNo().trim());
+            cell8.setCellValue(beftnModel.getBeneficiaryAccount().trim());
 
             Cell cell9 = row.createCell(9);
-            cell9.setCellValue(beftnModel.getAmount());
+            cell9.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
 
             Cell cell10 = row.createCell(10);
-            cell10.setCellValue(beftnModel.getTransactionNo());
+            cell10.setCellValue(beftnModel.getRoutingNo().trim());
+
+            Cell cell11 = row.createCell(11);
+            cell11.setCellValue(beftnModel.getAmount());
+
+            Cell cell12 = row.createCell(12);
+            cell12.setCellValue(beftnModel.getTransactionNo().trim());
 
             count++;
         }
@@ -128,25 +138,29 @@ public class BeftnModelServiceHelper {
         Cell cell_0 = row.createCell(0);
         cell_0.setCellValue("REFERENCE_NO");
         Cell cell_1 = row.createCell(1);
-        cell_1.setCellValue("ORG_CUSTOMER_NO");
+        cell_1.setCellValue("COMPANY_ID");
         Cell cell_2 = row.createCell(2);
-        cell_2.setCellValue("ORG_NAME");
+        cell_2.setCellValue("COMPANY_NAME");
         Cell cell_3 = row.createCell(3);
-        cell_3.setCellValue("ORG_ACCOUNT_NO");
+        cell_3.setCellValue("ORG_CUSTOMER_NO");
         Cell cell_4 = row.createCell(4);
-        cell_4.setCellValue("ORG_ACCOUNT_TYPE");
+        cell_4.setCellValue("ORG_NAME");
         Cell cell_5 = row.createCell(5);
-        cell_5.setCellValue("BEN_NAME");
+        cell_5.setCellValue("ORG_ACCOUNT_NO");
         Cell cell_6 = row.createCell(6);
-        cell_6.setCellValue("BEN_ACCOUNT_NO");
+        cell_6.setCellValue("ORG_ACCOUNT_TYPE");
         Cell cell_7 = row.createCell(7);
-        cell_7.setCellValue("BEN_ACCOUNT_TYPE");
+        cell_7.setCellValue("BEN_NAME");
         Cell cell_8 = row.createCell(8);
-        cell_8.setCellValue("BEN_ROUTING_NO");
+        cell_8.setCellValue("BEN_ACCOUNT_NO");
         Cell cell_9 = row.createCell(9);
-        cell_9.setCellValue("AMOUNT");
+        cell_9.setCellValue("BEN_ACCOUNT_TYPE");
         Cell cell_10 = row.createCell(10);
-        cell_10.setCellValue("PAYMENT_DESCRIPTION");
+        cell_10.setCellValue("BEN_ROUTING_NO");
+        Cell cell_11 = row.createCell(11);
+        cell_11.setCellValue("AMOUNT");
+        Cell cell_12 = row.createCell(12);
+        cell_12.setCellValue("PAYMENT_DESCRIPTION");
         while(iterator.hasNext()){
             BeftnModel beftnModel = iterator.next();
 
@@ -156,34 +170,40 @@ public class BeftnModelServiceHelper {
             cell0.setCellValue(count);
 
             Cell cell1 = row.createCell(1);
-            cell1.setCellValue(beftnModel.getOrgCustomerNo().trim());
+            cell1.setCellValue("Not Applicable");
 
             Cell cell2 = row.createCell(2);
-            cell2.setCellValue(beftnModel.getOrgName().trim());
+            cell2.setCellValue("Not Applicable");
 
             Cell cell3 = row.createCell(3);
-            cell3.setCellValue(beftnModel.getOrgAccountNo().trim());
+            cell3.setCellValue(beftnModel.getOrgCustomerNo().trim());
 
             Cell cell4 = row.createCell(4);
-            cell4.setCellValue(beftnModel.getOrgAccountType().trim());
+            cell4.setCellValue(beftnModel.getOrgName().trim());
 
             Cell cell5 = row.createCell(5);
-            cell5.setCellValue(beftnModel.getBeneficiaryName().trim());
+            cell5.setCellValue(beftnModel.getTransactionNo().replaceAll("[^a-zA-Z0-9]", "").trim());
 
             Cell cell6 = row.createCell(6);
-            cell6.setCellValue(beftnModel.getBeneficiaryAccount().trim());
+            cell6.setCellValue(beftnModel.getOrgAccountType().trim());
 
             Cell cell7 = row.createCell(7);
-            cell7.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
+            cell7.setCellValue(beftnModel.getBeneficiaryName().trim());
 
             Cell cell8 = row.createCell(8);
-            cell8.setCellValue(beftnModel.getRoutingNo().trim());
+            cell8.setCellValue(beftnModel.getBeneficiaryAccount().trim());
 
             Cell cell9 = row.createCell(9);
-            cell9.setCellValue(beftnModel.getIncentive());
+            cell9.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
 
             Cell cell10 = row.createCell(10);
-            cell10.setCellValue(beftnModel.getTransactionNo());
+            cell10.setCellValue(beftnModel.getRoutingNo().trim());
+
+            Cell cell11 = row.createCell(11);
+            cell11.setCellValue(beftnModel.getIncentive());
+
+            Cell cell12 = row.createCell(12);
+            cell12.setCellValue(beftnModel.getTransactionNo().trim());
 
             count++;
         }
