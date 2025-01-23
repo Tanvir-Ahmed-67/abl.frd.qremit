@@ -179,7 +179,7 @@ public class BeftnModelServiceHelper {
             cell3.setCellValue(beftnModel.getOrgCustomerNo().trim());
 
             Cell cell4 = row.createCell(4);
-            cell4.setCellValue(beftnModel.getOrgName().trim());
+            cell4.setCellValue("FRD Incentive");
 
             Cell cell5 = row.createCell(5);
             cell5.setCellValue(beftnModel.getTransactionNo().replaceAll("[^a-zA-Z0-9]", "").trim());
