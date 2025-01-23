@@ -3,6 +3,7 @@ package abl.frd.qremit.converter;
 import abl.frd.qremit.converter.helper.MyUserDetails;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.UserModelRepository;
+import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.CustomLoginRestrictionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,8 @@ import java.util.*;
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final CustomLoginRestrictionsService customLoginRestrictionsService;
     private final UserModelRepository userModelRepository;
+    @Autowired
+    CommonService commonService;
 
     @Autowired
     public LoginSuccessHandler(CustomLoginRestrictionsService customLoginRestrictionsService,
@@ -56,7 +59,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         customLoginRestrictionsService.resetAttempts(user.getUserEmail());
 
         // Validate IP restriction
-        String clientIP = request.getRemoteAddr();
+        /*
+        String clientIP = commonService.getClientIpAddress(request);
+        System.out.println(clientIP);
         String allowedIps = customLoginRestrictionsService.getAllowedIpsForUser(user.getId());
         Set<String> allowedIpSet = new HashSet<>(
                 Arrays.asList(allowedIps.split(","))
@@ -65,6 +70,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             response.sendRedirect("/login?error=Access Denied: Invalid IP Address");
             return;
         }
+        */
         // Check login time restriction for non-admin users
         if (!customLoginRestrictionsService.isLoginAllowed(user.getId(), authorities)) {
             response.sendRedirect("/login?error=Access denied: Outside allowed login hours");

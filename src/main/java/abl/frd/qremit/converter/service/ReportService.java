@@ -731,14 +731,14 @@ public class ReportService {
         if(CommonService.convertStringToInt(fileInfoModel.getTotalCount()) == 0 && fileInfoModel.getErrorCount() == 0){
             //for not file uploaded
             resp = fileInfoModelService.deleteFileInfoModelById(id);
-            resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", info);
+            resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", "3", info);
             return resp;
         }
         if(CommonService.convertStringToInt(fileInfoModel.getTotalCount()) == 0 && fileInfoModel.getErrorCount() > 0){
             //file only has error but no data
             resp = fileInfoModelService.deleteFileInfoModelHavingOnlyErrors(fileInfoModel);
             
-            resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", info);
+            resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", "3", info);
             return resp;
         }
         if(CommonService.convertStringToInt(fileInfoModel.getOnlineCount()) >= 1){
@@ -770,23 +770,14 @@ public class ReportService {
 
         if(cnt > 0) return CommonService.getResp(1, pmsg, null);
         resp = fileInfoModelService.deleteFileInfoModel(fileInfoModel);
-        resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", info);
-        /*
-        if((Integer) resp.get("err") == 0){
-            Map<String, Object> info = new HashMap<>();
-            info.put("fileInfoModel", fileInfoModel);
-            String exchangeCode = fileInfoModel.getExchangeCode();
-            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, "", "3", info, request);
-            if((Integer) logResp.get("err") == 1)   return logResp;
-        }
-        */
+        resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", "3", info);
         return resp;
     }
 
-    public Map<String, Object> addDataLogModel(Map<String, Object> resp, FileInfoModel fileInfoModel, int userId, int id, HttpServletRequest request, String dataId, Map<String, Object> info){
+    public Map<String, Object> addDataLogModel(Map<String, Object> resp, FileInfoModel fileInfoModel, int userId, int id, HttpServletRequest request, String dataId, String action, Map<String, Object> info){
         if((Integer) resp.get("err") == 0){
             String exchangeCode = fileInfoModel.getExchangeCode();
-            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, dataId, "3", info, request);
+            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, dataId, action, info, request);
             if((Integer) logResp.get("err") == 1)   return logResp;
         }
         return resp;
@@ -889,7 +880,7 @@ public class ReportService {
         resp = dynamicOperationService.updateIndividualDataById(exchangeCode, fileInfoModel, user, transactionNo, formData, type, obj, typeFlag);
         if((Integer) resp.get("err") == 0){
             Map<String, Object> info = (Map<String, Object>) resp.get("data");
-            resp = addDataLogModel(resp, fileInfoModel, userId, fileInfoModel.getId(), request, String.valueOf(id), info);
+            resp = addDataLogModel(resp, fileInfoModel, userId, fileInfoModel.getId(), request, String.valueOf(id), "4", info);
         }
         return resp;
     }

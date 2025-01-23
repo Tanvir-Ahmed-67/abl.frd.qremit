@@ -62,7 +62,11 @@ public class BeftnModelService {
                     existingEntity.setIsProcessedMain(processed);
                     existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
-                    if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
+                    if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIncentive() == 0){
+                        existingEntity.setIsDownloaded(1);
+                        existingEntity.setIsProcessed(1);
+                    }
+                    else if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
                         existingEntity.setIsDownloaded(1);
                         existingEntity.setIsProcessed(1);
                     }
