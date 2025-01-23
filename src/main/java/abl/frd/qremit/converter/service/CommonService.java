@@ -799,9 +799,13 @@ public class CommonService {
 
     public static String checkBEFTNRouting(String routingNo){
         String errorMessage = "";
+        String msg = "Invalid Routing Number for BEFTN";
         if(routingNo.length() != 9 || checkAgraniRoutingNo(routingNo)){
-            errorMessage = "Invalid Routing Number for BEFTN";
+            return msg;
         }
+        String regex = "^[0-9]+$";
+        if(routingNo.startsWith("00"))  return msg;
+        if(!routingNo.matches(regex))    return msg;
         return errorMessage;
     }
 
