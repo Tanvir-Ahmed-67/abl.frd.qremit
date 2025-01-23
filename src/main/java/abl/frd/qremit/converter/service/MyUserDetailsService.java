@@ -88,6 +88,8 @@ public class MyUserDetailsService implements UserDetailsService {
                 if(myUserDetails != null) resp.put("exchangeMap",getLoggedInUserMenu(myUserDetails));
             }else if(role.get("isAdmin") == 1){
                 resp.put("adminUserId", user.getId());
+            }else if(role.get("isSuperAdmin") == 1){
+                userId = 8888; //for SuperAdmin
             }
             resp.put("status", HttpStatus.OK);
         }else{
