@@ -10,6 +10,8 @@
         <span th:replace="fragments/header :: header"></span>
         <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_ADMIN')" th:replace="pages/user/userFileUploadReport :: userFileUploadReport"><!--dynamic content-->
         </div>
+        <div class="main-content container-fluid" sec:authorize="hasRole('ROLE_SUPERADMIN')" th:replace="pages/user/userFileUploadReport :: userFileUploadReport"><!--dynamic content-->
+        </div>
         <span th:replace="fragments/footer :: footer"></span>
     </div>
 </div>

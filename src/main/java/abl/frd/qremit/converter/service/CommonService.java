@@ -1296,4 +1296,20 @@ public class CommonService {
         return resp;
     }
 
+    public static String getSidebarNameByUserid(int userId){
+        String sidebar = "";
+        switch(userId){
+            case 0:
+                sidebar = "sidebarAdmin";
+                break;
+            case 8888:
+                sidebar = "sidebarSuperAdmin";
+                break;
+            default:
+                sidebar = "sidebarUser";
+                break;
+        }
+        return sidebar;
+    }
+
 }

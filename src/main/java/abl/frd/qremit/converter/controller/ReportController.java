@@ -59,13 +59,12 @@ public class ReportController {
         return resp;
     }
 
-
-
     public static List<Map<String, String>> getReportColumn(String type){
         String[] columnData = null;
         String[] columnTitles = null;
         switch(type){
             case "1":
+            case "5":
             default:
                 columnData = new String[] {"sl", "exchangeCode", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount", "errorCount", "totalAmount", "uploadDateTime", "action"};
                 columnTitles = new String[] {"SL", "Exchange Code", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Total Amount", "Upload Date", "Action"};
@@ -78,6 +77,10 @@ public class ReportController {
             case "4":
                 columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","amount","uploadDateTime","errorMessage","action"};
                 columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Amount","Upload Date","Error Mesage","Action"};
+                break;
+            case "6":
+                columnData = new String[] {"sl", "email", "userName", "role", "exchangeCode", "status", "action"};
+                columnTitles = new String[] {"SL", "Email", "User Name", "Role", "Exchange Code","Status","Action"};
                 break;
         }
         return CommonService.createColumns(columnData, columnTitles);
@@ -623,7 +626,7 @@ public class ReportController {
         Map<String, String> exchangeMap = new HashMap<>();
         if(userData.containsKey("exchangeMap")) exchangeMap = (Map<String, String>) userData.get("exchangeMap");
         model.addAttribute("exchangeMap", exchangeMap);
-        String sidebar = (userId == 0) ? "sidebarAdmin":"sidebarUser";
+        String sidebar = CommonService.getSidebarNameByUserid(userId);
         model.addAttribute("sidebar", sidebar);
         model.addAttribute("searchType", searchType);
         model.addAttribute("type", type);

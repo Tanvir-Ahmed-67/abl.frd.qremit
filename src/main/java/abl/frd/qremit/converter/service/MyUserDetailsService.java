@@ -70,8 +70,10 @@ public class MyUserDetailsService implements UserDetailsService {
         Map<String, Integer> resp = new HashMap<>();
         int isAdmin = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN")) ? 1:0;
         int isUser = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_USER")) ? 1:0;
+        int isSuperAdmin = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_SUPERADMIN")) ? 1:0;
         resp.put("isAdmin", isAdmin);
         resp.put("isUser", isUser);
+        resp.put("isSuperAdmin", isSuperAdmin);
         return resp;
     }
 
@@ -88,6 +90,8 @@ public class MyUserDetailsService implements UserDetailsService {
                 if(myUserDetails != null) resp.put("exchangeMap",getLoggedInUserMenu(myUserDetails));
             }else if(role.get("isAdmin") == 1){
                 resp.put("adminUserId", user.getId());
+            }else if(role.get("isSuperAdmin") == 1){
+                userId = 8888; //for SuperAdmin
             }
             resp.put("status", HttpStatus.OK);
         }else{
@@ -141,6 +145,9 @@ public class MyUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Could not find Admin");
         }
         return admins;
+    }
+    public List<Object[]> loadAllUsersAndRoles(){
+        return userModelRepository.loadAllUsersAndRoles();
     }
     public void insertUser(User user) throws UsernameNotFoundException {
         userModelRepository.save(user);
