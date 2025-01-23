@@ -30,7 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-
+@SuppressWarnings("unchecked")
 @Controller
 public class UserController {
     private final MyUserDetailsService myUserDetailsService;
@@ -112,105 +112,152 @@ public class UserController {
         return "allUsers";
     }
 
+    @GetMapping(value ="/getAllUsers", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAllUsers(Model model){
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        for (final GrantedAuthority grantedAuthority : authorities) {
+            String authorityName = grantedAuthority.getAuthority();
+            if (authorityName.equals("ROLE_SUPERADMIN") || authorityName.equals("ROLE_ADMIN")){
+                List<Object[]> resultList = myUserDetailsService.loadAllUsersAndRoles();
+                int i = 1;
+                for(Object[] result: resultList){
+                    Map<String, Object> dataMap = new HashMap<>();
+                    User user = (User) result[0];
+                    Role role = (Role) result[1];
+                    String roleName = role.getRoleName();
+                    int userId = user.getId();
+                    if(authorityName.equals("ROLE_SUPERADMIN")){
+                        if(roleName.equals("ROLE_SUPERADMIN"))  continue;
+                    }
+                    if (authorityName.equals("ROLE_ADMIN")){
+                        if(roleName.equals("ROLE_SUPERADMIN"))  continue;
+                        if(roleName.equals("ROLE_ADMIN"))  continue;
+                    }
+                    String exchangeCode = user.getExchangeCode();
+                    
+                    if(!CommonService.checkEmptyString(exchangeCode)) exchangeCode = exchangeCode.replace(",", ", ");
+                    String status = (user.getActiveStatus() == true) ? "Active": CommonService.generateClassForText("Inactive","text-danger fw-bold");
+                    String btn = CommonService.generateTemplateBtn("template-editBtn.txt","/userEditForm/" + userId,"btn-info btn-sm edit_user text-white",String.valueOf(userId),"Edit");
+                    btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm reset_pass",String.valueOf(userId),"Reset Password");
+                    String action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
+                    
+                    dataMap.put("sl", i++);
+                    dataMap.put("email", user.getUserEmail());
+                    dataMap.put("userName", user.getUserName());
+                    dataMap.put("exchangeCode", exchangeCode);
+                    dataMap.put("status", status);
+                    dataMap.put("role", roleName.replace("ROLE_", ""));
+                    dataMap.put("action", action);
+                    dataList.add(dataMap);
+                }
+                resp.put("data",dataList);
+            }else resp = CommonService.getResp(1, "You are not allowed to access this page", null);
+        }
+        return ResponseEntity.ok(resp);
+    }
     
-@GetMapping(value = "/getChartData", produces = "application/json")
-@ResponseBody
-public Map<String, Object> getChartData() {
-    // SQL query to fetch data for all years
-    // String query = "SELECT year, month_name, CAST(abl_amount AS DOUBLE) AS abl_amount " +
-    //                "FROM analytics_abl_growth " +
-    //                "ORDER BY year, id";
+    @GetMapping(value = "/getChartData", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> getChartData() {
+        // SQL query to fetch data for all years
+        // String query = "SELECT year, month_name, CAST(abl_amount AS DOUBLE) AS abl_amount " +
+        //                "FROM analytics_abl_growth " +
+        //                "ORDER BY year, id";
 
-                   String query = "SELECT year, month_name, CAST(abl_amount AS DOUBLE) AS abl_amount FROM analytics_abl_growth WHERE year > 2013 ORDER BY year, id";
-    // Execute query
-    List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+                    String query = "SELECT year, month_name, CAST(abl_amount AS DOUBLE) AS abl_amount FROM analytics_abl_growth WHERE year > 2013 ORDER BY year, id";
+        // Execute query
+        List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
 
-    // Transform results
-    Map<String, Map<String, Double>> yearDataMap = new HashMap<>();
-    List<String> labels = new ArrayList<>();
-    for (Object[] row : resultList) {
-        String year = String.valueOf(row[0]); // Year
-        String month = (String) row[1];      // Month Name
-        Double amount = (Double) row[2];     // National Amount
+        // Transform results
+        Map<String, Map<String, Double>> yearDataMap = new HashMap<>();
+        List<String> labels = new ArrayList<>();
+        for (Object[] row : resultList) {
+            String year = String.valueOf(row[0]); // Year
+            String month = (String) row[1];      // Month Name
+            Double amount = (Double) row[2];     // National Amount
 
-        // Add unique months to labels
-        if (!labels.contains(month)) {
-            labels.add(month);
+            // Add unique months to labels
+            if (!labels.contains(month)) {
+                labels.add(month);
+            }
+
+            // Organize data by year
+            yearDataMap.putIfAbsent(year, new HashMap<>());
+            yearDataMap.get(year).put(month, amount);
         }
 
-        // Organize data by year
-        yearDataMap.putIfAbsent(year, new HashMap<>());
-        yearDataMap.get(year).put(month, amount);
-    }
+        // Prepare datasets for Chart.js
+        List<Map<String, Object>> datasets = new ArrayList<>();
+        String[] colors = {"#54a0ff", "#ff6b6b", "#1dd1a1", "#feca57", "#5f27cd", "#c8d6e5"};
+        int colorIndex = 0;
+        for (String year : yearDataMap.keySet()) {
+            Map<String, Double> monthData = yearDataMap.get(year);
 
-    // Prepare datasets for Chart.js
-    List<Map<String, Object>> datasets = new ArrayList<>();
-    String[] colors = {"#54a0ff", "#ff6b6b", "#1dd1a1", "#feca57", "#5f27cd", "#c8d6e5"};
-    int colorIndex = 0;
-    for (String year : yearDataMap.keySet()) {
-        Map<String, Double> monthData = yearDataMap.get(year);
+            List<Double> data = new ArrayList<>();
+            for (String month : labels) {
+                data.add(monthData.getOrDefault(month, 0.0));
+            }
 
-        List<Double> data = new ArrayList<>();
-        for (String month : labels) {
-            data.add(monthData.getOrDefault(month, 0.0));
+            Map<String, Object> dataset = new HashMap<>();
+            dataset.put("year", year);
+            dataset.put("data", data);
+            dataset.put("backgroundColor", colors[colorIndex % colors.length] + "80"); // Transparent color
+            dataset.put("borderColor", colors[colorIndex % colors.length]); // Solid color
+            datasets.add(dataset);
+            colorIndex++;
         }
 
-        Map<String, Object> dataset = new HashMap<>();
-        dataset.put("year", year);
-        dataset.put("data", data);
-        dataset.put("backgroundColor", colors[colorIndex % colors.length] + "80"); // Transparent color
-        dataset.put("borderColor", colors[colorIndex % colors.length]); // Solid color
-        datasets.add(dataset);
-        colorIndex++;
+        // Prepare response
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", labels);
+        response.put("datasets", datasets);
+
+        return response;
     }
 
-    // Prepare response
-    Map<String, Object> response = new HashMap<>();
-    response.put("labels", labels);
-    response.put("datasets", datasets);
-
-    return response;
-}
 
 
+    @GetMapping(value = "/getTargetAchievementData", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> getTargetAchievementData() {
+        // SQL query with CAST to convert VARCHAR fields to DOUBLE
+        String query = "SELECT year, CAST(target AS DOUBLE) AS target, " +
+                    "CAST(achievement AS DOUBLE) AS achievement, " +
+                    "CAST(percentage AS DOUBLE) AS percentage " +
+                    "FROM analytics_abl_target_achievement ORDER BY year";
 
-@GetMapping(value = "/getTargetAchievementData", produces = "application/json")
-@ResponseBody
-public Map<String, Object> getTargetAchievementData() {
-    // SQL query with CAST to convert VARCHAR fields to DOUBLE
-    String query = "SELECT year, CAST(target AS DOUBLE) AS target, " +
-                   "CAST(achievement AS DOUBLE) AS achievement, " +
-                   "CAST(percentage AS DOUBLE) AS percentage " +
-                   "FROM analytics_abl_target_achievement ORDER BY year";
+        // Execute the query
+        List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
 
-    // Execute the query
-    List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+        // Prepare response data
+        List<String> labels = new ArrayList<>();
+        List<Double> targets = new ArrayList<>();
+        List<Double> achievements = new ArrayList<>();
+        List<Double> percentages = new ArrayList<>();
 
-    // Prepare response data
-    List<String> labels = new ArrayList<>();
-    List<Double> targets = new ArrayList<>();
-    List<Double> achievements = new ArrayList<>();
-    List<Double> percentages = new ArrayList<>();
+        for (Object[] row : resultList) {
+            labels.add(String.valueOf(row[0])); // year
+            targets.add((Double) row[1]);      // target
+            achievements.add((Double) row[2]); // achievement
+            percentages.add((Double) row[3]);  // percentage
+        }
 
-    for (Object[] row : resultList) {
-        labels.add(String.valueOf(row[0])); // year
-        targets.add((Double) row[1]);      // target
-        achievements.add((Double) row[2]); // achievement
-        percentages.add((Double) row[3]);  // percentage
+        // Prepare response
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", labels);
+        response.put("targets", targets);
+        response.put("achievements", achievements);
+        response.put("percentages", percentages);
+
+        return response;
     }
 
-    // Prepare response
-    Map<String, Object> response = new HashMap<>();
-    response.put("labels", labels);
-    response.put("targets", targets);
-    response.put("achievements", achievements);
-    response.put("percentages", percentages);
 
-    return response;
-}
-
-
-@GetMapping(value = "/getBankRemittanceData", produces = "application/json")
+    @GetMapping(value = "/getBankRemittanceData", produces = "application/json")
     @ResponseBody
     public Map<String, Object> getBankRemittanceData() {
         // SQL Query
@@ -420,7 +467,7 @@ public List<Map<String, Object>> getBankRemittanceDataForTable() {
         List<Integer> count = commonService.CountAllFourTypesOfData();
         return count;
     }
-    @RequestMapping(value="/userEditForm/{id}", method = RequestMethod.POST)
+    @RequestMapping(value="/userEditForm/{id}", method = RequestMethod.GET)
     public String showUserEditForm(Model model, @PathVariable(required = true, name= "id") int id){
         User userSelected = myUserDetailsService.loadUserByUserId(id);
         List<ExchangeHouseModel> exchangeHouseList;
@@ -462,7 +509,7 @@ public List<Map<String, Object>> getBankRemittanceDataForTable() {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/allUsers";
+        return "redirect:/adminReport?type=6";
     }
 
     @RequestMapping("/showInactiveUsers")
@@ -491,7 +538,17 @@ public List<Map<String, Object>> getBankRemittanceDataForTable() {
 
     @GetMapping("/adminReport")
     public String adminFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String type){
-        return "pages/admin/adminErrorUpdateReport";
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return HttpStatus.UNAUTHORIZED.getReasonPhrase();
+        int userId = (int) userData.get("userid");
+        Map<String, String> exchangeMap = new HashMap<>();
+        if(userData.containsKey("exchangeMap")) exchangeMap = (Map<String, String>) userData.get("exchangeMap");
+        model.addAttribute("exchangeMap", exchangeMap);
+        String sidebar = CommonService.getSidebarNameByUserid(userId);
+        model.addAttribute("sidebar", sidebar);
+        return "pages/admin/adminReport";
     }
     @GetMapping("/viewData")
     public String viewData(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("id") String id,

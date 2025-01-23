@@ -29,6 +29,8 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<User> loadUsersOnly();
     @Query("SELECT user FROM User user LEFT JOIN user.roles role WHERE role.id = 2")
     public List<User> loadAdminsOnly();
+    @Query("SELECT u, r FROM User u INNER JOIN u.roles r ORDER BY u.id")
+    public List<Object[]> loadAllUsersAndRoles(); 
     @Transactional
     @Modifying
     @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.exchangeCode = :exchangeCode, n.allowedIps = :allowedIps, n.startTime = :startTime, n.endTime = :endTime, n.activeStatus = false where n.id = :userId")
