@@ -212,5 +212,9 @@ public class MyUserDetailsService implements UserDetailsService {
         int rowsUpdated = userModelRepository.setLoginTimeRestrictionsForAllUsers(startTime, endTime);
         return rowsUpdated > 0;
     }
+    @Transactional
+    public int resetPassword(int userId, String password){
+        return userModelRepository.updatePasswordForFirstTimeUserLogging(userId, password, true);
+    }
 
 }

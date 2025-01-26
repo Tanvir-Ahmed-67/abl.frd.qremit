@@ -28,7 +28,6 @@ import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 @SuppressWarnings("unchecked")
 @Controller
@@ -379,31 +378,31 @@ public class UserController {
     }
 
     @GetMapping(value = "/getBankRemittanceDataForTable", produces = "application/json")
-@ResponseBody
-public List<Map<String, Object>> getBankRemittanceDataForTable() {
-    // SQL Query
-    String query = "SELECT bank_name, year, SUM(amount) AS total_amount " +
-                   "FROM analytics_all_bank_remittance " +
-                   "GROUP BY bank_name, year " +
-                   "ORDER BY bank_name, year";
+    @ResponseBody
+    public List<Map<String, Object>> getBankRemittanceDataForTable() {
+        // SQL Query
+        String query = "SELECT bank_name, year, SUM(amount) AS total_amount " +
+                    "FROM analytics_all_bank_remittance " +
+                    "GROUP BY bank_name, year " +
+                    "ORDER BY bank_name, year";
 
-    // Execute query
-    List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+        // Execute query
+        List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
 
-    // Transform results
-    List<Map<String, Object>> response = new ArrayList<>();
-    for (Object[] row : resultList) {
-        Map<String, Object> record = new HashMap<>();
-        record.put("bankName", row[0]); // Bank name
-        record.put("year", row[1]);    // Year
-        record.put("amount", ((Number) row[2]).doubleValue()); // Total amount
-        response.add(record);
+        // Transform results
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (Object[] row : resultList) {
+            Map<String, Object> record = new HashMap<>();
+            record.put("bankName", row[0]); // Bank name
+            record.put("year", row[1]);    // Year
+            record.put("amount", ((Number) row[2]).doubleValue()); // Total amount
+            response.add(record);
+        }
+
+        return response;
     }
 
-    return response;
-}
-
- @GetMapping(value = "/getMonthlyAnalytics", produces = "application/json")
+    @GetMapping(value = "/getMonthlyAnalytics", produces = "application/json")
     public ResponseEntity<?> getMonthlyAnalytics() {
         try {
             // SQL query
@@ -602,5 +601,24 @@ public List<Map<String, Object>> getBankRemittanceDataForTable() {
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
         return "redirect:/showTimePickerForm";
+    }
+
+    @RequestMapping(value="/resetPassword", produces="application/json", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> resetPassword(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("id") String id){
+        Map<String, Object> resp = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
+        if((Integer) role.get("isAdmin") != 1)  return ResponseEntity.ok(CommonService.getResp(0, "You are not allowed to perform this operation", null));
+        String password = passwordEncoder.encode("12345");
+        User user = myUserDetailsService.loadUserByUserId(CommonService.convertStringToInt(id));
+        if(user == null)    return ResponseEntity.ok(CommonService.getResp(1, "No user data found using following id", null));
+        int rowsUpdated = myUserDetailsService.resetPassword(user.getId(), password);
+        if(rowsUpdated > 0) resp = CommonService.getResp(0, "Password resetted successfully", null);
+        else resp = CommonService.getResp(1, "Error updating for password reset", null);
+        return ResponseEntity.ok(resp);
     }
 }
