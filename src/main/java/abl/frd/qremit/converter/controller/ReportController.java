@@ -82,6 +82,10 @@ public class ReportController {
                 columnData = new String[] {"sl", "email", "userName", "role", "exchangeCode", "status", "action"};
                 columnTitles = new String[] {"SL", "Email", "User Name", "Role", "Exchange Code","Status","Action"};
                 break;
+            case "7":
+                columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};
+                columnTitles = new String[] {"SL", "Exchange Name", "Exchange Code", "NRTA Code", "Total Remittances","Total Amount"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
@@ -238,24 +242,61 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-    @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET)
-    public String generateSummaryOfDailyStatement(Model model, @RequestParam(defaultValue = "") String date) {
+    @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> generateSummaryOfDailyStatement(Model model, @RequestParam(defaultValue = "") String date) {
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyStatement(date);
         Double grandTotalAmount = 0.00;
         String commaFormattedGrandTotalAmount="";
         int grandTotalRemittances=0;
+        int i = 1;
         for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
+            Map<String, Object> dataMap = new HashMap<>();
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
             grandTotalAmount = grandTotalAmount+exchangeReportDTO.getTotalAmountCount();
             grandTotalRemittances = grandTotalRemittances+exchangeReportDTO.getTotalRowCount();
             commaFormattedGrandTotalAmount = exchangeReportDTO.formattedAmount.format(grandTotalAmount);
+            dataMap.put("sl", i++);
+            dataMap.put("exchangeCode", exchangeReportDTO.getExchangeCode());
+            dataMap.put("nrtaCode", exchangeReportDTO.getNrtAccountNo());
+            dataMap.put("exchangeName", exchangeReportDTO.getExchangeName());
+            dataMap.put("totalRemittance", exchangeReportDTO.getTotalRowCount());
+            dataMap.put("totalAmount", exchangeReportDTO.doFormatAmount(exchangeReportDTO.getTotalAmountCount()));
+            dataList.add(dataMap);
         }
+        if(!dataList.isEmpty()){
+            Map<String, Object> totalData = calculateTotalSummaryOfDailyStatemen(commaFormattedGrandTotalAmount, String.valueOf(grandTotalRemittances));
+            dataList.add(totalData);
+            resp.put("dailyStatementUrl","/downloadSummaryOfDailyStatementInPdfFormat?date=" + date);
+            resp.put("dailyStatementTitle","Download Summary in PDF");
+            resp.put("dailyVoucherUrl","/downloaDailyVoucherInPdfFormat?date=" + date);
+            resp.put("dailyVoucherTitle", "Download Voucher in PDF");
+        }
+        
+        resp.put("data", dataList);
+        return resp;
+        /*
         model.addAttribute("summaryReportContent", exchangeReport);
         model.addAttribute("grandTotalAmount", commaFormattedGrandTotalAmount);
         model.addAttribute("grandTotalRemittances", grandTotalRemittances);
         model.addAttribute("date", date);
+        System.out.println(model);
         return "report/summaryOfDailyRemittance";
+        */
+    }
+
+    public Map<String, Object> calculateTotalSummaryOfDailyStatemen(String totalAmount, String totalRemittance){
+        Map<String, Object> totalData = new HashMap<>();
+        totalData.put("sl", "");
+        totalData.put("exchangeCode", "");
+        totalData.put("nrtaCode", CommonService.generateClassForText("Grand Total", "fw-bold"));
+        totalData.put("exchangeName", "");
+        totalData.put("totalAmount", CommonService.generateClassForText(totalAmount, "fw-bold"));
+        totalData.put("totalRemittance", CommonService.generateClassForText(totalRemittance, "fw-bold"));
+        return totalData;
     }
 
     @RequestMapping(value="/showDetailsOfDailyStatement", method= RequestMethod.GET)

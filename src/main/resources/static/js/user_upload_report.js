@@ -36,6 +36,11 @@ $(document).ready(function(){
                 var url = "/getAllUsers";
                 page_header = "All User Details";
                 break;
+            case '7':
+                var url = "/summaryOfDailyStatement?date=" + date;
+                $('#row_report_date').show();
+                page_header = "Summary Of Daily Remittances";
+                break;
         }
         return {'url': url, 'page_header': page_header};
     }
@@ -66,6 +71,12 @@ $(document).ready(function(){
     function upload_report_ui(resp){
         edit_error_data(tbl);
         delete_error(tbl,csrf_token,csrf_header);
+        if(type == '7' ){
+            var btn = '<div class="btn-group">';
+            if(resp.dailyStatementUrl)  btn +='<a href="'+ resp.dailyStatementUrl + '" class="btn btn-info text-white">' + resp.dailyStatementTitle + '</a>';
+            if(resp.dailyVoucherUrl)  btn +='<a href="'+ resp.dailyVoucherUrl + '" class="btn btn-danger text-white">' + resp.dailyVoucherTitle + '</a>';
+            $('#download_btn').html(btn);
+        }
     }
 
     $(document).off('click',".view_exchange");
