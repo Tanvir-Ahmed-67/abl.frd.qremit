@@ -76,7 +76,6 @@ $(document).ready(function(){
         var val = $(exCode).val();
         var base_url = $("#base_url").val();
         var url = base_url + "?type=2&exchangeCode=" + exCode + "&id=" + id;
-        //var url = "/user-home-page?type=2&exchangeCode=" + exCode + "&id=" + id;
         window.location.href = url;
     });
 
@@ -101,6 +100,13 @@ $(document).ready(function(){
 
     $(document).off("click",".reset_pass")
     $(document).on("click",".reset_pass", function(e){
-        
+        e.preventDefault();
+        var url = "/resetPassword";
+        var id = $(this).attr("id");
+        var data = {'id':id, '_csrf': csrf_token, '_csrf_header': csrf_header};
+        var params = {'dataTable_reload': true, 'tbl': tbl,  };
+        if(confirm("Are you sure you want to reset password ?")){
+            get_ajax(url,data,success_alert,fail_func,"post","json",params);
+        }
     });
 });
