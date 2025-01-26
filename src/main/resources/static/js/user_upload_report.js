@@ -75,6 +75,7 @@ $(document).ready(function(){
             var btn = '<div class="btn-group">';
             if(resp.dailyStatementUrl)  btn +='<a href="'+ resp.dailyStatementUrl + '" class="btn btn-info text-white">' + resp.dailyStatementTitle + '</a>';
             if(resp.dailyVoucherUrl)  btn +='<a href="'+ resp.dailyVoucherUrl + '" class="btn btn-danger text-white">' + resp.dailyVoucherTitle + '</a>';
+            btn += '</div>';
             $('#download_btn').html(btn);
         }
     }
