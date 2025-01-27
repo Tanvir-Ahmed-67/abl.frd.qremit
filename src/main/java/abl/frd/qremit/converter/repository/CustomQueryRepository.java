@@ -160,7 +160,6 @@ public class CustomQueryRepository {
         whereClause.append(specialCase);
         
         String sql = "SELECT * FROM converted_data_beftn WHERE is_downloaded= ? and incentive != ? AND (" + whereClause.toString() + ")";
-        //System.out.println(sql);
         Map<String, Object> params = new HashMap<>();
         params.put("1", 0);
         params.put("2", 0);

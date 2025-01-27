@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.controller;
 import abl.frd.qremit.converter.helper.MyUserDetails;
-import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.service.CocPaidModelService;
 import abl.frd.qremit.converter.service.CommonService;

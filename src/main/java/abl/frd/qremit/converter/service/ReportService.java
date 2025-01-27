@@ -1,8 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
-import java.lang.reflect.Constructor;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -122,7 +120,6 @@ public class ReportService {
         List<ExchangeReportDTO> report = new ArrayList<>();
         LocalDate reportDate = LocalDate.parse(date);
         List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDate(reportDate);
-        Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
         if(isListValid(reportModelsList)){
             for(ReportModel reportModel:reportModelsList){
                 ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
@@ -155,7 +152,6 @@ public class ReportService {
         LocalDate fDate = LocalDate.parse(fromDate);
         LocalDate tDate = LocalDate.parse(toDate);
         List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDateRange(fDate, tDate);
-        Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
         if(isListValid(reportModelsList)){
             int counter = 1;
             for(ReportModel reportModel:reportModelsList){
@@ -784,7 +780,6 @@ public class ReportService {
     }
     
     public Map<String, Object> getCorrectionSearch(String searchType, String searchValue){
-        Map<String, Object> resp = new HashMap<>();
         if(searchType.isEmpty() || searchValue.isEmpty())     return CommonService.getResp(1, "Please Select Search Type or Value", null);
         List<OnlineModel> onlineModelList = onlineModelService.getOnlineModelByTransactionNoAndIsDownloaded(searchValue, 0);
         if(!onlineModelList.isEmpty()){
