@@ -780,7 +780,6 @@ public class ReportService {
     }
     
     public Map<String, Object> getCorrectionSearch(String searchType, String searchValue){
-        Map<String, Object> resp = new HashMap<>();
         if(searchType.isEmpty() || searchValue.isEmpty())     return CommonService.getResp(1, "Please Select Search Type or Value", null);
         List<OnlineModel> onlineModelList = onlineModelService.getOnlineModelByTransactionNoAndIsDownloaded(searchValue, 0);
         if(!onlineModelList.isEmpty()){
