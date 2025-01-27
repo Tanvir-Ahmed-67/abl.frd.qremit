@@ -740,5 +740,11 @@ public class ReportController {
         
         return ResponseEntity.ok(resp);
     }
+    @GetMapping(value="/getRouting", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getRoutingDetails(@RequestParam(defaultValue = "") String routingNo, @RequestParam(defaultValue = "") String bankCode){
+        Map<String, Object> resp = customQueryService.getRoutingDetails(routingNo, bankCode);
+        return ResponseEntity.ok(resp);
+    }
 
 }
