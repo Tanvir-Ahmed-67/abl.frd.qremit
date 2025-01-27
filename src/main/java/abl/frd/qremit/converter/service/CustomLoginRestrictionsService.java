@@ -5,10 +5,8 @@ import abl.frd.qremit.converter.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalTime;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CustomLoginRestrictionsService {

@@ -20,17 +20,15 @@ public class ReimbursementModelService {
     ReportService reportService;
     @Autowired
     CommonService commonService;
-    @Autowired
-    ReimbursementModelServiceHelper reimbursementModelServiceHelper;
 
     public byte[] loadAllReimbursementByDate(LocalDate fromDate, LocalDate toDate) {
         List<ReimbursementModel> reimbursementModels = findAllReimbursementByDate(fromDate, toDate);
-        byte[] in = reimbursementModelServiceHelper.ReimbursementModelsToExcel(reimbursementModels, toDate);
+        byte[] in = ReimbursementModelServiceHelper.ReimbursementModelsToExcel(reimbursementModels, toDate);
         return in;
     }
     public byte[] loadAllReimbursementForIcashByDate(LocalDate fromDate, LocalDate toDate) {
         List<ReimbursementModel> reimbursementModels = findAllCocReimbursementByDate(fromDate, toDate);
-        byte[] in = reimbursementModelServiceHelper.ReimbursementModelsToExcelForIcash(reimbursementModels, toDate);
+        byte[] in = ReimbursementModelServiceHelper.ReimbursementModelsToExcelForIcash(reimbursementModels, toDate);
         return in;
     }
     public Map<String, Object> insertReimbursementData(LocalDate startDate, LocalDate endDate){
@@ -56,11 +54,11 @@ public class ReimbursementModelService {
                     );
                     // Calculate and set Govt incentive amounts
                     reimbursement.setGovtIncentiveAmount(
-                            reimbursementModelServiceHelper.calculateGovtIncentivePercentage(report.getAmount())
+                            ReimbursementModelServiceHelper.calculateGovtIncentivePercentage(report.getAmount())
                     );
                     // Calculate and set Agrani incentive amounts
                     reimbursement.setAgraniIncentiveAmount(
-                            reimbursementModelServiceHelper.calculateAgraniIncentivePercentage(report.getAmount())
+                            ReimbursementModelServiceHelper.calculateAgraniIncentivePercentage(report.getAmount())
                     );
                     return reimbursement;
                 })
