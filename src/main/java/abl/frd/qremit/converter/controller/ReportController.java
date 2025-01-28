@@ -744,7 +744,9 @@ public class ReportController {
     @GetMapping(value="/getRouting", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getRoutingDetails(@RequestParam(defaultValue = "") String routingNo, @RequestParam(defaultValue = "") String bankCode){
-        Map<String, Object> resp = customQueryService.getRoutingDetails(routingNo, bankCode);
+        Map<String, Object> resp = new HashMap<>();
+        if(routingNo.isEmpty() && bankCode.isEmpty())   return ResponseEntity.ok(CommonService.getResp(1, "Please select routing No or Bank code", null));
+        resp = customQueryService.getRoutingDetails(routingNo, bankCode);
         return ResponseEntity.ok(resp);
     }
 
