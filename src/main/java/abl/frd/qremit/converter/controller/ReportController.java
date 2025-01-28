@@ -578,6 +578,7 @@ public class ReportController {
         }
     }
 
+    //for getting live data exchange wise
     @GetMapping(value="/getExchangeData", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
