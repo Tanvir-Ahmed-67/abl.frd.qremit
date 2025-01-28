@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter;
 
+import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.service.CustomLoginRestrictionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,16 +25,18 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
     }
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        String errorMessage = "Invalid username or password";
-
+        String errorMessage = "Incorrect password!";
         if (exception instanceof UsernameNotFoundException) {
             errorMessage = "User not found!";
         } else if (exception instanceof BadCredentialsException) {
             String userEmail = request.getParameter("userEmail");
             if (userEmail != null && !userEmail.isEmpty()) {
-                customLoginRestrictionsService.loginFailed(userEmail);
+                try {
+                    customLoginRestrictionsService.loginFailed(userEmail);
+                } catch (UsernameNotFoundException e) {
+                    errorMessage = "User not found!";
+                }
             }
-            errorMessage = "Invalid username or password";
         } else if (exception instanceof LockedException) {
             errorMessage = "User Locked. Please Contact With Authorities";
         } else if (exception.getMessage().contains("Outside allowed login hours")) {

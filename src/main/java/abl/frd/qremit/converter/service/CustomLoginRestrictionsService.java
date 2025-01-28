@@ -4,6 +4,7 @@ import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.*;
@@ -59,5 +60,13 @@ public class CustomLoginRestrictionsService {
         LocalTime endTime = LocalTime.parse(userModelRepository.getAllowedEndTime(userId));
         LocalTime now = LocalTime.now();
         return !now.isBefore(startTime) && !now.isAfter(endTime);
+    }
+    public User getUserDetailsByEmail(String userEmail) throws UsernameNotFoundException {
+        User user = userModelRepository.findByUserEmail(userEmail);
+        if (user == null) {
+            throw new UsernameNotFoundException("Could not find user");
+        }else{
+            return user;
+        }
     }
 }
