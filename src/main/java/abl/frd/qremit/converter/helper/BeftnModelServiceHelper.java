@@ -38,9 +38,9 @@ public class BeftnModelServiceHelper {
         Cell cell_0 = row.createCell(0);
         cell_0.setCellValue("REFERENCE_NO");
         Cell cell_1 = row.createCell(1);
-        cell_1.setCellValue("COMPANY_ID");
+        cell_1.setCellValue("ORG_COMPANY_ID");
         Cell cell_2 = row.createCell(2);
-        cell_2.setCellValue("COMPANY_NAME");
+        cell_2.setCellValue("ORG_COMPANY_NAME");
         Cell cell_3 = row.createCell(3);
         cell_3.setCellValue("ORG_CUSTOMER_NO");
         Cell cell_4 = row.createCell(4);
@@ -138,9 +138,9 @@ public class BeftnModelServiceHelper {
         Cell cell_0 = row.createCell(0);
         cell_0.setCellValue("REFERENCE_NO");
         Cell cell_1 = row.createCell(1);
-        cell_1.setCellValue("COMPANY_ID");
+        cell_1.setCellValue("ORG_COMPANY_ID");
         Cell cell_2 = row.createCell(2);
-        cell_2.setCellValue("COMPANY_NAME");
+        cell_2.setCellValue("ORG_COMPANY_NAME");
         Cell cell_3 = row.createCell(3);
         cell_3.setCellValue("ORG_CUSTOMER_NO");
         Cell cell_4 = row.createCell(4);
