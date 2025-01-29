@@ -8,6 +8,9 @@ $(document).ready(function(){
     var pid = getParameterByName("id");
     var date = getParameterByName("date");
     $('#row_report_date').hide();
+    setTimeout(function(){
+        $('#message').hide();
+    }, 3000);
     
     function get_report_url(type,date){
         switch(type){
@@ -41,6 +44,10 @@ $(document).ready(function(){
                 $('#row_report_date').show();
                 page_header = "Summary Of Daily Remittances";
                 break;
+            case '8':
+                    var url = "/getAllExchangeHouse";
+                    page_header = "All Exchange House Details";
+                    break;
         }
         return {'url': url, 'page_header': page_header};
     }

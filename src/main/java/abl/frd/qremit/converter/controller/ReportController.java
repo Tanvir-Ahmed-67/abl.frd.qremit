@@ -86,6 +86,10 @@ public class ReportController {
                 columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};
                 columnTitles = new String[] {"SL", "Exchange Name", "Exchange Code", "NRTA Code", "Total Remittances","Total Amount"};
                 break;
+            case "8":
+                columnData = new String[] {"sl", "exchangeCode", "exchangeName", "exchangeShortName", "nrtaCode", "status", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Exchange Name", "Exchange Short Name", "NRTA Code", "Status","Action"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
