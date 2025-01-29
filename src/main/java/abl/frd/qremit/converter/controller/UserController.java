@@ -21,9 +21,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
@@ -548,18 +545,6 @@ public class UserController {
         String sidebar = CommonService.getSidebarNameByUserid(userId);
         model.addAttribute("sidebar", sidebar);
         return "pages/admin/adminReport";
-    }
-    @GetMapping("/viewData")
-    public String viewData(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam("id") String id,
-        @RequestParam("exchangeCode") String exchangeCode, @RequestParam(defaultValue = "") String type) throws JsonProcessingException{
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        List<Map<String, String>> columns = ReportController.getReportColumn(type);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String reportColumn = objectMapper.writeValueAsString(columns);
-        model.addAttribute("exchangeCode", exchangeCode);
-        model.addAttribute("id", id);
-        model.addAttribute("reportColumn", reportColumn);
-        return "pages/user/viewExchangeData";
     }
 
     @GetMapping("/showTimePickerForm")

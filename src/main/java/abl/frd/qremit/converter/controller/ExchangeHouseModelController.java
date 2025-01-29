@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.controller;
 
 import abl.frd.qremit.converter.model.ExchangeHouseModel;
+import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.ExchangeHouseModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,37 @@ public class ExchangeHouseModelController {
         }
         return "viewAllExchangeHouse";
     }
+    @GetMapping(value ="/getAllExchangeHouse", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAllExchangeHouse(Model model){
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        for (final GrantedAuthority grantedAuthority : authorities) {
+            String authorityName = grantedAuthority.getAuthority();
+            if (authorityName.equals("ROLE_SUPERADMIN") || authorityName.equals("ROLE_ADMIN")){
+                List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllExchangeHouse();
+                int i = 1;
+                for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+                    Map<String, Object> dataMap = new HashMap<>();
+                    int id = exchangeHouseModel.getId();
+                    String status = (exchangeHouseModel.getActiveStatus() == 1) ? "Active" : CommonService.generateClassForText("Inactive","text-danger fw-bold");;
+                    String action = CommonService.generateTemplateBtn("template-editBtn.txt","/exchangeHouseEditForm/" + id,"btn-info btn-sm edit_exchange text-white",String.valueOf(id),"Edit");;
+                    dataMap.put("sl", i++);
+                    dataMap.put("exchangeCode", exchangeHouseModel.getExchangeCode());
+                    dataMap.put("exchangeName", exchangeHouseModel.getExchangeName());
+                    dataMap.put("exchangeShortName", exchangeHouseModel.getExchangeShortName());
+                    dataMap.put("nrtaCode", exchangeHouseModel.getNrtaCode());
+                    dataMap.put("status", status);
+                    dataMap.put("action", action);
+                    dataList.add(dataMap);
+                }
+                resp.put("data",dataList);
+            }else resp = CommonService.getResp(1, "You are not allowed to access this page", null);
+        }
+        return ResponseEntity.ok(resp);
+    }
     @RequestMapping("/newExchangeHouseCreationForm")
     public String showNewExchangeHouseCreateFromAdmin(Model model){
         model.addAttribute("exchangeHouse", new ExchangeHouseModel());
@@ -82,7 +114,7 @@ public class ExchangeHouseModelController {
         }
         return "redirect:/showInactiveExchangeHouse";
     }
-    @RequestMapping(value="/exchangeHouseEditForm/{id}", method= RequestMethod.POST)
+    @RequestMapping(value="/exchangeHouseEditForm/{id}", method= RequestMethod.GET)
     public String showExchangeHouseEditFormAdmin(Model model, @PathVariable(required = true, name= "id") String id){
         int idInIntegerFormat = Integer.parseInt(id);
         ExchangeHouseModel exchangeHouseModelSelected = exchangeHouseModelService.getExchangeHouseByExchangeId(idInIntegerFormat);
@@ -104,7 +136,7 @@ public class ExchangeHouseModelController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/viewAllExchangeHouse";
+        return "redirect:/adminReport?type=8";
     }
 
     @GetMapping(value="/getExchangeHouse", produces = "application/json")

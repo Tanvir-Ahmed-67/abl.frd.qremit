@@ -86,6 +86,10 @@ public class ReportController {
                 columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};
                 columnTitles = new String[] {"SL", "Exchange Name", "Exchange Code", "NRTA Code", "Total Remittances","Total Amount"};
                 break;
+            case "8":
+                columnData = new String[] {"sl", "exchangeCode", "exchangeName", "exchangeShortName", "nrtaCode", "status", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Exchange Name", "Exchange Short Name", "NRTA Code", "Status","Action"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
@@ -578,6 +582,7 @@ public class ReportController {
         }
     }
 
+    //for getting live data exchange wise
     @GetMapping(value="/getExchangeData", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
@@ -743,7 +748,9 @@ public class ReportController {
     @GetMapping(value="/getRouting", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getRoutingDetails(@RequestParam(defaultValue = "") String routingNo, @RequestParam(defaultValue = "") String bankCode){
-        Map<String, Object> resp = customQueryService.getRoutingDetails(routingNo, bankCode);
+        Map<String, Object> resp = new HashMap<>();
+        if(routingNo.isEmpty() && bankCode.isEmpty())   return ResponseEntity.ok(CommonService.getResp(1, "Please select routing No or Bank code", null));
+        resp = customQueryService.getRoutingDetails(routingNo, bankCode);
         return ResponseEntity.ok(resp);
     }
 
