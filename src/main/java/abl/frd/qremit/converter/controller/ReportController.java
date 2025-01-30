@@ -79,6 +79,7 @@ public class ReportController {
                 columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Amount","Upload Date","Error Mesage","Action"};
                 break;
             case "6":
+            case "10":
                 columnData = new String[] {"sl", "email", "userName", "role", "exchangeCode", "status", "action"};
                 columnTitles = new String[] {"SL", "Email", "User Name", "Role", "Exchange Code","Status","Action"};
                 break;
@@ -87,6 +88,7 @@ public class ReportController {
                 columnTitles = new String[] {"SL", "Exchange Name", "Exchange Code", "NRTA Code", "Total Remittances","Total Amount"};
                 break;
             case "8":
+            case "9":
                 columnData = new String[] {"sl", "exchangeCode", "exchangeName", "exchangeShortName", "nrtaCode", "status", "action"};
                 columnTitles = new String[] {"SL", "Exchange Code", "Exchange Name", "Exchange Short Name", "NRTA Code", "Status","Action"};
                 break;

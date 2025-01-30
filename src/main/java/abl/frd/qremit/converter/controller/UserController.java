@@ -84,33 +84,10 @@ public class UserController {
     public String logoutSuccessPage(){
         return "auth-login";
     }
-    @RequestMapping("/allUsers")
-    public String loadAllUser(Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        List<User> userList;
-        List<User> adminList;
-        for (final GrantedAuthority grantedAuthority : authorities) {
-            String authorityName = grantedAuthority.getAuthority();
-            if (authorityName.equals("ROLE_SUPERADMIN")) {
-                userList = myUserDetailsService.loadUsersOnly();
-                adminList = myUserDetailsService.loadAdminsOnly();
-                model.addAttribute("UserList", userList);
-                model.addAttribute("adminList", adminList);
-                return "pages/superAdmin/superAdminUserListPage";
-            }
-            if (authorityName.equals("ROLE_ADMIN")) {
-                userList = myUserDetailsService.loadUsersOnly();
-                model.addAttribute("UserList", userList);
-                return "pages/admin/adminUserListPage";
-            }
-        }
-        return "allUsers";
-    }
 
     @GetMapping(value ="/getAllUsers", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getAllUsers(Model model){
+    public ResponseEntity<Map<String, Object>> getAllUsers(Model model, @RequestParam(defaultValue = "") String activeStatus){
         Map<String, Object> resp = new HashMap<>();
         List<Map<String, Object>> dataList = new ArrayList<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -118,6 +95,7 @@ public class UserController {
         for (final GrantedAuthority grantedAuthority : authorities) {
             String authorityName = grantedAuthority.getAuthority();
             if (authorityName.equals("ROLE_SUPERADMIN") || authorityName.equals("ROLE_ADMIN")){
+                int checkInactive = (activeStatus.equals("2") && authorityName.equals("ROLE_SUPERADMIN")) ? 1:0;
                 List<Object[]> resultList = myUserDetailsService.loadAllUsersAndRoles();
                 int i = 1;
                 for(Object[] result: resultList){
@@ -133,13 +111,19 @@ public class UserController {
                         if(roleName.equals("ROLE_SUPERADMIN"))  continue;
                         if(roleName.equals("ROLE_ADMIN"))  continue;
                     }
+                    if(checkInactive == 1 && user.getActiveStatus() == true)    continue; //load only inactive users
                     String exchangeCode = user.getExchangeCode();
                     
                     if(!CommonService.checkEmptyString(exchangeCode)) exchangeCode = exchangeCode.replace(",", ", ");
                     String status = (user.getActiveStatus() == true) ? "Active": CommonService.generateClassForText("Inactive","text-danger fw-bold");
-                    String btn = CommonService.generateTemplateBtn("template-editBtn.txt","/userEditForm/" + userId,"btn-info btn-sm edit_user text-white",String.valueOf(userId),"Edit");
-                    btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm reset_pass",String.valueOf(userId),"Reset Password");
-                    String action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
+                    String action = "";
+                    if(checkInactive == 1){
+                        action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm activate_user",String.valueOf(userId),"Activate");
+                    }else{
+                        String btn = CommonService.generateTemplateBtn("template-editBtn.txt","/userEditForm/" + userId,"btn-info btn-sm edit_user text-white",String.valueOf(userId),"Edit");
+                        btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm reset_pass",String.valueOf(userId),"Reset Password");
+                        action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
+                    }
                     
                     dataMap.put("sl", i++);
                     dataMap.put("email", user.getUserEmail());
@@ -516,13 +500,16 @@ public class UserController {
         return "pages/superAdmin/superAdminInactiveUserListPage";
     }
 
-    @RequestMapping(value="/activateUser/{id}", method = RequestMethod.POST)
-    public String activateInactiveUser(Model model, @PathVariable(required = true, name = "id") String id, RedirectAttributes ra) {
+    @RequestMapping(value="/activateUser/{id}", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> activateInactiveUser(Model model, @PathVariable(required = true, name = "id") String id) {
+        Map<String, Object> resp = new HashMap<>();
         int idInIntegerFormat = CommonService.convertStringToInt(id);
         if(myUserDetailsService.updateInactiveUser(idInIntegerFormat)){
-            ra.addFlashAttribute("message","User has been activated successfully");
-        }
-        return "redirect:/showInactiveUsers";
+            //ra.addFlashAttribute("message","User has been activated successfully");
+            resp = CommonService.getResp(0, "User has been activated successfully", null);
+        }else resp = CommonService.getResp(1, "User has not activated", null);
+        return resp;
     }
     
     @GetMapping("/userFileUploadReport")

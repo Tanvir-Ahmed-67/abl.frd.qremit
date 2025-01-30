@@ -45,9 +45,17 @@ $(document).ready(function(){
                 page_header = "Summary Of Daily Remittances";
                 break;
             case '8':
-                    var url = "/getAllExchangeHouse";
-                    page_header = "All Exchange House Details";
-                    break;
+                var url = "/getAllExchangeHouse";   
+                page_header = "All Exchange House Details";
+                break;
+            case '9':
+                var url = "/getAllExchangeHouse?activeStatus=2";
+                page_header = "All Inactive Exchange House";
+                break;
+            case '10':
+                var url = "/getAllUsers?activeStatus=2";
+                page_header = "All Inactive Users";
+                break;
         }
         return {'url': url, 'page_header': page_header};
     }
@@ -123,8 +131,30 @@ $(document).ready(function(){
         var url = "/resetPassword";
         var id = $(this).attr("id");
         var data = {'id':id, '_csrf': csrf_token, '_csrf_header': csrf_header};
-        var params = {'dataTable_reload': true, 'tbl': tbl,  };
+        var params = {'dataTable_reload': 'true', 'tbl': tbl,  };
         if(confirm("Are you sure you want to reset password ?")){
+            get_ajax(url,data,success_alert,fail_func,"post","json",params);
+        }
+    });
+    $(document).off("click",".activate_exchange")
+    $(document).on("click",".activate_exchange", function(e){
+        e.preventDefault();
+        var id = $(this).attr("id");
+        var url = "/activateExchangeHouse/" + id;
+        var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
+        var params = {'dataTable_reload': 'true', 'tbl': tbl};
+        if(confirm("Are you sure you want to activate exchange ?")){
+            get_ajax(url,data,success_alert,fail_func,"post","json",params);
+        }
+    });
+    $(document).off("click",".activate_user")
+    $(document).on("click",".activate_user", function(e){
+        e.preventDefault();
+        var id = $(this).attr("id");
+        var url = "/activateUser/" + id;
+        var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
+        var params = {'dataTable_reload': 'true', 'tbl': tbl};
+        if(confirm("Are you sure you want to activate exchange ?")){
             get_ajax(url,data,success_alert,fail_func,"post","json",params);
         }
     });
