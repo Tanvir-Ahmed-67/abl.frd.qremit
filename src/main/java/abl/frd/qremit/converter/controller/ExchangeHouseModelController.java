@@ -30,29 +30,10 @@ public class ExchangeHouseModelController {
     public ExchangeHouseModelController(ExchangeHouseModelService exchangeHouseModelService){
         this.exchangeHouseModelService = exchangeHouseModelService;
     }
-    @RequestMapping("/viewAllExchangeHouse")
-    public String loadAllExchangeHouse(Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        List<ExchangeHouseModel> exchangeHouseModelList;
-        for (final GrantedAuthority grantedAuthority : authorities) {
-            String authorityName = grantedAuthority.getAuthority();
-            if (authorityName.equals("ROLE_SUPERADMIN")) {
-                exchangeHouseModelList = exchangeHouseModelService.loadAllExchangeHouse();
-                model.addAttribute("exchangeHouseList", exchangeHouseModelList);
-                return "pages/superAdmin/superAdminExchangeHouseListPage";
-            }
-            if (authorityName.equals("ROLE_ADMIN")) {
-                exchangeHouseModelList = exchangeHouseModelService.loadAllExchangeHouse();
-                model.addAttribute("exchangeHouseList", exchangeHouseModelList);
-                return "pages/admin/adminExchangeHouseListPage";
-            }
-        }
-        return "viewAllExchangeHouse";
-    }
+
     @GetMapping(value ="/getAllExchangeHouse", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getAllExchangeHouse(Model model){
+    public ResponseEntity<Map<String, Object>> getAllExchangeHouse(Model model,@RequestParam(defaultValue = "") String activeStatus){
         Map<String, Object> resp = new HashMap<>();
         List<Map<String, Object>> dataList = new ArrayList<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -60,13 +41,20 @@ public class ExchangeHouseModelController {
         for (final GrantedAuthority grantedAuthority : authorities) {
             String authorityName = grantedAuthority.getAuthority();
             if (authorityName.equals("ROLE_SUPERADMIN") || authorityName.equals("ROLE_ADMIN")){
-                List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllExchangeHouse();
+                List<ExchangeHouseModel> exchangeHouseModelList;
+                int checkInactive = (activeStatus.equals("2") && authorityName.equals("ROLE_SUPERADMIN")) ? 1:0;
+                if(checkInactive == 1){
+                    exchangeHouseModelList = exchangeHouseModelService.loadAllInactiveExchangeHouse();
+                }else exchangeHouseModelList = exchangeHouseModelService.loadAllExchangeHouse();
                 int i = 1;
                 for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
                     Map<String, Object> dataMap = new HashMap<>();
                     int id = exchangeHouseModel.getId();
                     String status = (exchangeHouseModel.getActiveStatus() == 1) ? "Active" : CommonService.generateClassForText("Inactive","text-danger fw-bold");;
-                    String action = CommonService.generateTemplateBtn("template-editBtn.txt","/exchangeHouseEditForm/" + id,"btn-info btn-sm edit_exchange text-white",String.valueOf(id),"Edit");;
+                    String action = "";
+                    if(checkInactive == 1){
+                        action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm activate_exchange",String.valueOf(id),"Activate");
+                    }else action = CommonService.generateTemplateBtn("template-editBtn.txt","/exchangeHouseEditForm/" + id,"btn-info btn-sm edit_exchange text-white",String.valueOf(id),"Edit");
                     dataMap.put("sl", i++);
                     dataMap.put("exchangeCode", exchangeHouseModel.getExchangeCode());
                     dataMap.put("exchangeName", exchangeHouseModel.getExchangeName());
@@ -106,13 +94,16 @@ public class ExchangeHouseModelController {
         return "pages/superAdmin/superAdminInactiveExchangeHouseListPage";
     }
 
-    @RequestMapping(value="/activateExchangeHouse/{id}", method = RequestMethod.POST)
-    public String activateInactiveExchangeHouse(Model model, @PathVariable(required = true, name = "id") String id, RedirectAttributes ra) {
+    @RequestMapping(value="/activateExchangeHouse/{id}", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> activateInactiveExchangeHouse(Model model, @PathVariable(required = true, name = "id") String id) {
+        Map<String, Object> resp = new HashMap<>();
         int idInIntegerFormat = Integer.parseInt(id);
         if(exchangeHouseModelService.updateInactiveExchangeHouse(idInIntegerFormat)){
-            ra.addFlashAttribute("message","Exchange House has been activated successfully");
-        }
-        return "redirect:/showInactiveExchangeHouse";
+            //ra.addFlashAttribute("message","Exchange House has been activated successfully");
+            resp = CommonService.getResp(0, "Exchange House has been activated successfully", null);
+        }else resp = CommonService.getResp(1, "Exchange House has not activated", null);
+        return resp;
     }
     @RequestMapping(value="/exchangeHouseEditForm/{id}", method= RequestMethod.GET)
     public String showExchangeHouseEditFormAdmin(Model model, @PathVariable(required = true, name= "id") String id){
