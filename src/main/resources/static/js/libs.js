@@ -87,7 +87,7 @@ function checkDataTable(tbl){
     type = (type) ? type:"get";
     data = (data) ? data : "";
     dataType = (dataType) ? dataType : "";
-    timeout = (timeout) ? timeout:10000;
+    timeout = (timeout) ? timeout:100000;
     params = (params) ? params:'';
     
 
@@ -120,7 +120,6 @@ function checkDataTable(tbl){
   function loadScript(url,id){
     document.addEventListener('DOMContentLoaded', function() {
       var id = document.getElementById(id);
-      //var file = "/js/fileUpload.js";
       var scriptElement = document.createElement('script');
       scriptElement.type = 'text/javascript';
       scriptElement.src = url;

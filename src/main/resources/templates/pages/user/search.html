@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head-css"></head>
+<body th:fragment="fileUploadForm">
+    <div id="app"><!--main content-->
+        <div th:if="${sidebar == 'sidebarAdmin'}">
+            <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
+        </div>
+        <div th:if="${sidebar == 'sidebarUser'}">
+            <span th:replace="fragments/sidebarUser :: sidebarUser"></span>
+        </div>
+        <div id="main"><!--content Id-->
+            <span th:replace="fragments/header :: header"></span>
+            <div class="main-content container-fluid">
+                <div class="page-title">
+                    <div class="row">
+                        <div class="col-12 col-md-6 order-md-1 order-last">
+                            <h3 id="page-header">Search</h3>
+                        </div>
+                        <div class="col-12 col-md-6 order-md-2 order-first">
+                            <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#">Main Menu</a></li>
+                                    <li class="breadcrumb-item afctive" aria-current="page">File Upload</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>        
+    
+                <section id="input-style">
+                    <div class="row" style="min-height: 58vh">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                </div>
+                                <div class="card-body">
+                                    <div id="sdiv">
+                                        <form id="searchForm" method="POST" th:action="@{#}" enctype="multipart/form-data">
+                                            <div class="row">
+                                                <div class="col-sm-2 fw-bold"><label>Search Type</label></div>
+                                                <div class="col-sm-2 form-group">
+                                                    <select id="searchType" name="searchType" class="form-select" required>
+                                                        <option value="">Choose One</option>
+                                                        <option th:each="entry : ${searchType}" th:value="${entry.key}" th:text="${entry.value}"></option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2 fw-bold"><label>Search</label></div>
+                                                <div class="col-sm-2 form-group">
+                                                    <input class="form-control" type="text" name="searchValue" id="searchValue">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="submit" id="submit" name="submit" class="btn btn-info" value="Submit">
+                                                </div>
+                                            </div>
+                                            
+                                        </form>
+                                    </div>
+                                    <div id="display" class="hdiv">
+                                        <div class="table-responsive">
+                                            <table class='table table-striped' id="search_tbl" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SL</th>
+                                                        <th>Transaction No</th>
+                                                        <th>Exchange Code</th>
+                                                        <th>Beneficiary Name</th>
+                                                        <th>Account No</th>
+                                                        <th>Bank Name<br>Routing No/ Branch Code<br>Branch Name</th>
+                                                        <th>Amount</th>
+                                                        <th>Processed Date</th>
+                                                        <th>Report Date</th>
+                                                        <th>Type</th>
+                                                        <th th:if="${type == '2'}">Action</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div id="searchBtn" class="hdiv">
+                                        <div class="col-sm d-flex justify-content-center">
+                                            <div class="btn-group">
+                                                <button type="button" id="search" class="btn btn-info">Search Again</button>
+                                                <!--<input id="printbtn" type="button" class="btn btn-success" value="Print" onclick="document.title='';window.print();">-->
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div id="modal_wrap"></div><div class="lmodal"></div>
+            </div>
+            <span th:replace="fragments/footer :: footer"></span>
+        </div>
+    </div>
+    <script src="/js/search.js"></script>
+</body>
+</html>

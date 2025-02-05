@@ -13,8 +13,14 @@
         <div class="sidebar-menu">
             <ul class="menu">
                 <li class="sidebar-item">
+                    <a th:href="@{/search}" class='sidebar-link'>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Search</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <a th:href="@{/user-home-page}" class='sidebar-link'>
-                        <i data-feather="file-plus" width="20"></i>
+                        <i class="fa-solid fa-house"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
@@ -25,61 +31,29 @@
                         <span>Generate Report </span> 
                     </a>
                 </li> -->
-                <li class='sidebar-title'>File Upload</li>
                 <!--..........................User Section......................-->
                 <div>
-                    <li class="sidebar-item active has-sub">
+                    <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
-                            <i data-feather="file-plus" width="20"></i>
+                            <i class="fa-solid fa-upload"></i>
                             <span>Upload File</span>
                         </a>
                         <ul class="submenu">
                             <li th:each="entry : ${exchangeMap.entrySet()}">
-                                <a th:href="@{'/utils/index?id=' + ${entry.value}}"
-                                   th:text="${entry.key}" class="exCode">
+                                <a th:href="@{'/utils/index?id=' + ${entry.value}}"  class="exCode">
+                                    <i class="fa-regular fa-circle sub-icon"></i>
+                                    <span th:text="${entry.key}"></span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     <li class="sidebar-item">
                         <a th:href="@{/user-home-page?type=3}" class='sidebar-link'>
-                            <i data-feather="file-plus" width="20"></i>
+                            <i class="fa-solid fa-exclamation exclamation_padding" width="20"></i>
                             <span>Error Data List</span>
                         </a>
                     </li>
-                    <!-- 
-                    <li class='sidebar-title'>Data Statistics</li>
-                    <li class="sidebar-item  has-sub">
-                        <a href="#" class='sidebar-link'>
-                            <i data-feather="triangle" width="20"></i>
-                            <span>Components</span>
-                        </a>
-                        <ul class="submenu">
-                            <li>
-                                <a href="component-alert.html">Alert</a>
-                            </li>
-
-                            <li>
-                                <a href="component-badge.html">Badge</a>
-                            </li>
-
-                            <li>
-                                <a href="component-breadcrumb.html">Breadcrumb</a>
-                            </li>
-
-                            <li>
-                                <a href="component-buttons.html">Buttons</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class='sidebar-title'>Other</li>
-                    <li class="sidebar-item">
-                        <a th:href="@{/home}" class='sidebar-link'>
-                            <i data-feather="file-plus" width="20"></i>
-                            <span>Upload File</span>
-                        </a>
-                    </li>
-                -->
+                    
                 </div>
             </ul>
         </div>

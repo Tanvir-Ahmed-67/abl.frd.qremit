@@ -1,0 +1,334 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="MO_NEW" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<dataset name="Dataset1">
+		<field name="moDate" class="java.time.LocalDate"></field>
+		<field name="totalNumberBeftn" class="java.lang.Long"></field>
+		<field name="totalAmountBeftn" class="java.math.BigDecimal"></field>
+		<field name="totalNumberAllOtherBranch" class="java.lang.Long"></field>
+		<field name="totalAmountAllOtherBranch" class="java.math.BigDecimal"></field>
+		<field name="totalNumberIcash" class="java.lang.Long"></field>
+		<field name="totalAmountIcash" class="java.math.BigDecimal"></field>
+		<field name="totalNumberOnline" class="java.lang.Long"></field>
+		<field name="totalAmountOnline" class="java.math.BigDecimal"></field>
+		<field name="totalNumberApi" class="java.lang.Long"></field>
+		<field name="totalAmountApi" class="java.math.BigDecimal"></field>
+		<field name="grandTotalNumber" class="java.lang.Long"></field>
+		<field name="grandTotalAmount" class="java.math.BigDecimal"></field>
+		<field name="totalAmountInWords" class="java.lang.String"></field>
+		<field name="id" class="java.lang.Integer"></field>
+	</dataset>
+	<field name="moDate" class="java.time.LocalDate"></field>
+	<field name="totalNumberBeftn" class="java.lang.Long"></field>
+	<field name="totalAmountBeftn" class="java.math.BigDecimal"></field>
+	<field name="totalNumberAllOtherBranch" class="java.lang.Long"></field>
+	<field name="totalAmountAllOtherBranch" class="java.math.BigDecimal"></field>
+	<field name="totalNumberIcash" class="java.lang.Long"></field>
+	<field name="totalAmountIcash" class="java.math.BigDecimal"></field>
+	<field name="totalNumberOnline" class="java.lang.Long"></field>
+	<field name="totalAmountOnline" class="java.math.BigDecimal"></field>
+	<field name="totalNumberApi" class="java.lang.Long"></field>
+	<field name="totalAmountApi" class="java.math.BigDecimal"></field>
+	<field name="grandTotalNumber" class="java.lang.Long"></field>
+	<field name="grandTotalAmount" class="java.math.BigDecimal"></field>
+	<field name="totalAmountInWords" class="java.lang.String"></field>
+	<field name="id" class="java.lang.Integer"></field>
+	<variable name="IncrementedPageNumber" class="java.lang.String" calculation="Nothing">
+		<expression><![CDATA[String.format("%06d", $F{id})]]></expression>
+	</variable>
+	<background splitType="Stretch"/>
+	<title splitType="Stretch"/>
+	<detail>
+		<band height="759" splitType="Stretch">
+			<element kind="staticText" x="0" y="34" width="279" height="18" fontSize="11.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Main Office A/C Credit Advice]]></text>
+			</element>
+			<element kind="staticText" x="0" y="53" width="118" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[FROM BRANCH]]></text>
+			</element>
+			<element kind="staticText" x="0" y="73" width="279" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[NAME: FOREIGN REMITTANCE DIVISION, HO.]]></text>
+			</element>
+			<element kind="staticText" x="0" y="95" width="118" height="17" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[CODE: 11-104]]></text>
+			</element>
+			<element kind="staticText" x="0" y="123" width="159" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[ADVICE NO:ARB-MO-1-Txn24-]]></text>
+			</element>
+			<element kind="textField" x="160" y="123" width="106" height="20" fontSize="11.0" hTextAlign="Left" vTextAlign="Middle">
+				<expression><![CDATA[$V{IncrementedPageNumber}]]></expression>
+			</element>
+			<element kind="staticText" x="322" y="52" width="118" height="21" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[TO BRANCH]]></text>
+			</element>
+			<element kind="staticText" x="322" y="73" width="174" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[NAME: PRINCIPAL BRANCH]]></text>
+			</element>
+			<element kind="staticText" x="322" y="95" width="118" height="18" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[CODE: 4006]]></text>
+			</element>
+			<element kind="staticText" x="322" y="122" width="29" height="21" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Date:]]></text>
+			</element>
+			<element kind="textField" x="352" y="122" width="92" height="21" pattern="MMMMM dd, yyyy" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{moDate}]]></expression>
+			</element>
+			<element kind="textField" x="443" y="122" width="51" height="20" pattern="HH:mm" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+			<element kind="staticText" x="1" y="157" width="552" height="19" fontSize="11.0">
+				<text><![CDATA[We advise that your M.O. account has been credited with the following item for crediting the beneficiaries' A/C.]]></text>
+			</element>
+			<element kind="textField" x="0" y="331" width="552" height="25" textAdjust="StretchHeight" hTextAlign="Left" vTextAlign="Middle">
+				<expression><![CDATA["IN WORDS: "+$F{totalAmountInWords}]]></expression>
+			</element>
+			<element kind="staticText" x="1" y="435" width="170" height="24" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Prepared by: Computer generated.]]></text>
+			</element>
+			<element kind="line" x="266" y="440" width="121" height="1"/>
+			<element kind="staticText" x="258" y="435" width="140" height="24" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Officer]]></text>
+			</element>
+			<element kind="line" x="429" y="440" width="121" height="1"/>
+			<element kind="staticText" x="420" y="435" width="132" height="24" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Manager]]></text>
+			</element>
+			<element kind="staticText" x="0" y="463" width="555" height="20" bold="true">
+				<text><![CDATA[......................................................................................................................................................................................................]]></text>
+			</element>
+			<element kind="staticText" x="5" y="493" width="118" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Responding Branch]]></text>
+			</element>
+			<element kind="staticText" x="322" y="492" width="118" height="21" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Orginating Branch]]></text>
+			</element>
+			<element kind="staticText" x="5" y="513" width="279" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[NAME: PRINCIPAL BRANCH]]></text>
+			</element>
+			<element kind="staticText" x="322" y="513" width="246" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[NAME: FOREIGN REMITTANCE DIVISION, HO.]]></text>
+			</element>
+			<element kind="staticText" x="5" y="535" width="118" height="17" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[CODE: 4006]]></text>
+			</element>
+			<element kind="staticText" x="322" y="535" width="118" height="18" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[CODE: 11-104]]></text>
+			</element>
+			<element kind="staticText" x="322" y="554" width="29" height="21" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Date:]]></text>
+			</element>
+			<element kind="textField" x="352" y="554" width="92" height="21" pattern="MMMMM dd, yyyy" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{moDate}]]></expression>
+			</element>
+			<element kind="staticText" x="5" y="553" width="224" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<text><![CDATA[Debit M . O . A/C, Head Office, Dhaka.]]></text>
+			</element>
+			<element kind="staticText" x="1" y="642" width="178" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[AUTH. COUNTER SIGNATURE]]></text>
+			</element>
+			<element kind="staticText" x="412" y="642" width="130" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[AUTH. SIGNATURE]]></text>
+			</element>
+			<element kind="staticText" x="10" y="735" width="140" height="24" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Officer]]></text>
+			</element>
+			<element kind="staticText" x="416" y="734" width="132" height="24" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Manager]]></text>
+			</element>
+			<element kind="line" x="421" y="739" width="121" height="1"/>
+			<element kind="line" x="18" y="740" width="121" height="1"/>
+			<element kind="textField" x="178" y="3" width="204" height="27" fontSize="16.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA["Agrani Bank PLC"]]></expression>
+			</element>
+			<element kind="staticText" x="0" y="180" width="179" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Exchange House Name]]></text>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="staticText" x="179" y="180" width="179" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[No. Of Remittances]]></text>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="staticText" x="358" y="180" width="179" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Amount]]></text>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="staticText" x="0" y="200" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[For BEFTN]]></text>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="179" y="200" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalNumberBeftn}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="358" y="200" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalAmountBeftn}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="staticText" x="0" y="220" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[For All Other Branch]]></text>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="staticText" x="0" y="240" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[For Instant Cash]]></text>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="179" y="240" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalNumberIcash}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="179" y="220" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalNumberAllOtherBranch}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="358" y="220" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalAmountAllOtherBranch}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="358" y="240" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalAmountIcash}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="staticText" x="0" y="260" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Online A/C Transfer]]></text>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="staticText" x="0" y="280" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[For API]]></text>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="staticText" x="0" y="301" width="179" height="20" bold="true" hTextAlign="Right" vTextAlign="Middle">
+				<text><![CDATA[Total]]></text>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="180" y="301" width="179" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{grandTotalNumber}]]></expression>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="179" y="280" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalNumberApi}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="179" y="260" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalNumberOnline}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="358" y="260" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalAmountOnline}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="358" y="280" width="179" height="20" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{totalAmountApi}]]></expression>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" x="360" y="301" width="179" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{grandTotalAmount}]]></expression>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="38" splitType="Stretch"/>
+</jasperReport>

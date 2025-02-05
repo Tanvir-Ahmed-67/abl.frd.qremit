@@ -22,7 +22,7 @@ Step two - Add the changes and commit with message
     git add .
     git commit -m "git commands added"
 Step three - Push to developers own local branch to remote repository whre developer forked the project
-git push git@github.com:bhaktear/dev-bhaktear.git dev-bhaktear
+git push git@github.com:bhaktear/frd-rms.git dev-bhaktear
 
 Step Four - Create a Pull request fromthe github websie to the main owners repository development branch
 

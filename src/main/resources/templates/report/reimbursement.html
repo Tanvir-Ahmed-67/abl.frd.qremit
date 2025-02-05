@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head-css"></head>
+<body th:fragment="fileUploadForm">
+<div id="app"><!--main content-->
+    <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
+    <div id="main"><!--content Id-->
+        <span th:replace="fragments/header :: header"></span>
+        <div class="main-content container-fluid">
+            <div class="page-title">
+                <div class="row">
+                    <div class="col-12 col-md-6 order-md-1 order-last">
+                        <h3>Daily Reimbursement</h3>
+                    </div>
+                    <div class="col-12 col-md-6 order-md-2 order-first">
+                        <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item" aria-current="page">Report Management</li>
+                                <li class="breadcrumb-item active" aria-current="page">Daily Reimbursement</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <section id="input-style">
+                <div class="row" style="min-height: 58vh">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-2">
+                                        <label class="col-form-label">From Date:</label>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" th:value="${startDate}" readonly="true">
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label class="col-form-label">To Date:</label>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <input class="form-control dpicker report_date" type="text" name="report_date" id="report_end_date" th:value="${endDate}" readonly="true">
+                                    </div>
+                                    <div class="col-md-2 text-center" id="moBtn">
+                                        <button id="showDataButton" class="btn btn-sm btn-danger">Show Data</button>
+                                    </div>
+                                </div>
+                                <div id="dataSection" class="mt-4" style="display: none">
+                                    <div class="table-responsive">
+                                        <table id="remimbursement_tbl" class="table table-hover" width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>Serial</th>
+                                                <th>Ex Code</th>
+                                                <th>Tran. No</th>
+                                                <th>Ben A/C No</th>
+                                                <th>Br. Code</th>
+                                                <th>Br. Name</th>
+                                                <th>Main Amount</th>
+                                                <th>Govt. Inc.</th>
+                                                <th>Agrani Inc.</th>
+                                                <th>Type</th>
+                                            </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-12 text-center">
+                                        <div class="btn-group" id="download_btn"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div id="modal_wrap"></div><div class="lmodal"></div>
+        </div>
+        <span th:replace="fragments/footer :: footer"></span>
+    </div>
+</div>
+<script src="/js/reimbursement.js"></script>
+</body>
+</html>
