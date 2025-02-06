@@ -111,7 +111,6 @@ public class InstantCashModelService {
         Optional<InstantCashModel> duplicateData = Optional.empty();
         CSVFormat csvFormat = (type == 1) ? CSVFormat.DEFAULT.withDelimiter('|'): CSVFormat.DEFAULT;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            //CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             CSVParser csvParser = new CSVParser(fileReader, csvFormat.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())){
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<InstantCashModel> instantCashDataModelList = new ArrayList<>();
