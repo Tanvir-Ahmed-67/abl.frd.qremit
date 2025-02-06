@@ -128,15 +128,12 @@ public class InstantCashModelService {
                 i++;
                 String bankCode = (type == 1) ? csvRecord.get(9).trim(): csvRecord.get(8).trim();
                 if(i == 1){
-                    
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
                         break;
                     }
-                
-                    
                 }
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
@@ -145,17 +142,6 @@ public class InstantCashModelService {
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-                
-
-                /*
-                String transactionNo = csvRecord.get(1).trim();
-                String amount = csvRecord.get(3).trim();
-                duplicateData = instantCashModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                String beneficiaryAccount = csvRecord.get(7).trim();
-                String bankName = csvRecord.get(8).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
-                */
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 for(Map<String, Object> data: dataList){
@@ -169,7 +155,6 @@ public class InstantCashModelService {
                         duplicateCount++;
                         continue;
                     }
-                
                     Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
                     if((Integer) errResp.get("err") == 1){
                         errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
