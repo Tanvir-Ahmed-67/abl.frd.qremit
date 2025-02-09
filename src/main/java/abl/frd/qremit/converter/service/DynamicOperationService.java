@@ -567,13 +567,14 @@ public class DynamicOperationService {
 
     public Map<String, Object> updateApiBeftnOrSwiftData(String fileExchangeCode, String transactionNo, Map<String, Object> updatedData, String typeFlag){
         Map<String, Object> resp = new HashMap<>();
+        String msg = "Data updated in individual model";
         if(fileExchangeCode.equals("111111")){
             ApiBeftnModel apiBeftnModel = apiBeftnModelRepository.findByTransactionNo(transactionNo);
             if(apiBeftnModel == null)   return CommonService.getResp(1, "No data found in ApiBeftnModel", null);
             updatedData.put("id", CommonService.convertIntToString(apiBeftnModel.getId()));
             apiBeftnModel = CommonService.createDataModel(apiBeftnModel, updatedData);
             apiBeftnModelRepository.save(apiBeftnModel);
-            return CommonService.getResp(0, typeFlag, null);
+            return CommonService.getResp(0, msg, null);
         }
         if(fileExchangeCode.equals("444444")){
             SwiftModel swiftModel = swiftModelRepository.findByTransactionNo(transactionNo);
@@ -581,7 +582,7 @@ public class DynamicOperationService {
             updatedData.put("id", CommonService.convertIntToString(swiftModel.getId()));
             swiftModel =CommonService.createDataModel(swiftModel, updatedData);
             swiftModelRepository.save(swiftModel);
-            return CommonService.getResp(0, typeFlag, null);
+            return CommonService.getResp(0, msg, null);
         }
         return resp;
     }
