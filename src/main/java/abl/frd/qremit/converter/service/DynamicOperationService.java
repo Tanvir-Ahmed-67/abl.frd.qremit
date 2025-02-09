@@ -279,26 +279,15 @@ public class DynamicOperationService {
                 int checkBeftn = (("3").equals(typeFlag))  ? 1:0;
                 int checkCoc = (("4").equals(typeFlag))  ? 1:0;
                 FileInfoModel fileInfoModel = fileInfoModelRepository.findById(fileInfoId);
-                Integer accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount()) + checkAccPayee;
-                Integer beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount()) + checkBeftn;
-                Integer cocCount = CommonService.convertStringToInt(fileInfoModel.getCocCount()) + checkCoc;
-                Integer t24Count = CommonService.convertStringToInt(fileInfoModel.getOnlineCount()) + checkT24;
-                Integer totalCount = accPayeeCount + beftnCount + cocCount + t24Count;
-                fileInfoModel.setAccountPayeeCount(String.valueOf(accPayeeCount));
-                fileInfoModel.setBeftnCount(String.valueOf(beftnCount));
-                fileInfoModel.setCocCount(String.valueOf(cocCount));
-                fileInfoModel.setOnlineCount(String.valueOf(t24Count));
-                fileInfoModel.setTotalCount(String.valueOf(totalCount));
-                int erroCount = fileInfoModel.getErrorCount() - 1;
-                fileInfoModel.setErrorCount(erroCount);
-                User user = userModelRepository.findByUserId(userId);
-
+                fileInfoModel = updateFileInfoCount(fileInfoModel, checkT24, checkAccPayee, checkBeftn, checkCoc, 1);
+                User user = userModelRepository.findByUserId(userId);      
                 Object modelInstance = constructor.newInstance(exchangeCode, updatedData.get("transactionNo"), updatedData.get("currency"), amount, 
                     updatedData.get("enteredDate"), updatedData.get("remitterName"), updatedData.get("remitterMobile"), updatedData.get("beneficiaryName"), 
                     beneficiaryAccount, updatedData.get("beneficiaryMobile"), bankName, updatedData.get("bankCode"), 
                     updatedData.get("branchName"), branchCode, updatedData.get("draweeBranchName"), updatedData.get("draweeBranchCode"), 
                     updatedData.get("purposeOfRemittance"), updatedData.get("sourceOfIncome"), updatedData.get("processFlag"), typeFlag, 
                     updatedData.get("processedBy"), updatedData.get("processedDate"), currentDateTime, fileInfoModel, user);
+                
                 List<Object> modelInstanceList = new ArrayList<>();
                 modelInstanceList.add(modelInstance);
                 Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
@@ -578,13 +567,14 @@ public class DynamicOperationService {
 
     public Map<String, Object> updateApiBeftnOrSwiftData(String fileExchangeCode, String transactionNo, Map<String, Object> updatedData, String typeFlag){
         Map<String, Object> resp = new HashMap<>();
+        String msg = "Data updated in individual model";
         if(fileExchangeCode.equals("111111")){
             ApiBeftnModel apiBeftnModel = apiBeftnModelRepository.findByTransactionNo(transactionNo);
             if(apiBeftnModel == null)   return CommonService.getResp(1, "No data found in ApiBeftnModel", null);
             updatedData.put("id", CommonService.convertIntToString(apiBeftnModel.getId()));
             apiBeftnModel = CommonService.createDataModel(apiBeftnModel, updatedData);
             apiBeftnModelRepository.save(apiBeftnModel);
-            return CommonService.getResp(0, typeFlag, null);
+            return CommonService.getResp(0, msg, null);
         }
         if(fileExchangeCode.equals("444444")){
             SwiftModel swiftModel = swiftModelRepository.findByTransactionNo(transactionNo);
@@ -592,7 +582,7 @@ public class DynamicOperationService {
             updatedData.put("id", CommonService.convertIntToString(swiftModel.getId()));
             swiftModel =CommonService.createDataModel(swiftModel, updatedData);
             swiftModelRepository.save(swiftModel);
-            return CommonService.getResp(0, typeFlag, null);
+            return CommonService.getResp(0, msg, null);
         }
         return resp;
     }

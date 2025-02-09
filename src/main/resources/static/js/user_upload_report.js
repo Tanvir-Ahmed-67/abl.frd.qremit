@@ -143,7 +143,7 @@ $(document).ready(function(){
         var url = "/resetPassword";
         var id = $(this).attr("id");
         var data = {'id':id, '_csrf': csrf_token, '_csrf_header': csrf_header};
-        var params = {'dataTable_reload': 'true', 'tbl': tbl,  };
+        var params = {'dataTable_reload': 'true', 'tbl': tbl, 'pagination': false };
         if(confirm("Are you sure you want to reset password ?")){
             get_ajax(url,data,success_alert,fail_func,"post","json",params);
         }
@@ -154,7 +154,7 @@ $(document).ready(function(){
         var id = $(this).attr("id");
         var url = "/activateExchangeHouse/" + id;
         var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
-        var params = {'dataTable_reload': 'true', 'tbl': tbl};
+        var params = {'dataTable_reload': 'true', 'tbl': tbl, 'pagination': false};
         if(confirm("Are you sure you want to activate exchange ?")){
             get_ajax(url,data,success_alert,fail_func,"post","json",params);
         }
@@ -165,7 +165,7 @@ $(document).ready(function(){
         var id = $(this).attr("id");
         var url = "/activateUser/" + id;
         var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
-        var params = {'dataTable_reload': 'true', 'tbl': tbl};
+        var params = {'dataTable_reload': 'true', 'tbl': tbl, 'pagination': false};
         if(confirm("Are you sure you want to activate exchange ?")){
             get_ajax(url,data,success_alert,fail_func,"post","json",params);
         }
