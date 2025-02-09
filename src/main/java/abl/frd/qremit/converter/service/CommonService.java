@@ -1312,4 +1312,8 @@ public class CommonService {
         return sidebar;
     }
 
+    public static String removeAllSpecialCharacterFromString(String str){
+        return str.replaceAll("[^a-zA-Z0-9]", "");
+    }
+
 }
