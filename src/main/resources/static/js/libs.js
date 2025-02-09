@@ -156,7 +156,8 @@ function checkDataTable(tbl){
     alert(resp.msg);
     if(resp.err == 0)   $('#' + params.modalID).modal('hide');
     if(params.failModalhide)  $('#' + params.modalID).modal('hide');
-    if(params.reload) dataTable_reload(params.tbl);
+    var pagination = (params.pagination !== undefined) ? params.pagination: true;
+    if(params.reload) dataTable_reload(params.tbl, pagination);
   }
 
   function fail_func(data){
@@ -180,7 +181,8 @@ function checkDataTable(tbl){
         $(params.modalID).modal('hide');
       }
       if(params.dataTable_reload === 'true'){
-        dataTable_reload(params.tbl);
+        var pagination = (params.pagination !== undefined) ? params.pagination: true;
+        dataTable_reload(params.tbl, pagination);
       }
       if(params.form_reset === 'true'){
         $('form')[0].reset();
