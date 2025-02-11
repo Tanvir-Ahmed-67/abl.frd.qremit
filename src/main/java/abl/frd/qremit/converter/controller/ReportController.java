@@ -315,7 +315,7 @@ public class ReportController {
         }
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-        return "/report/detailsOfDailyRemittance";
+        return "report/detailsOfDailyRemittance";
     }
     @RequestMapping(value="/detailsOfDailyStatement", method= RequestMethod.GET)
     @ResponseBody
@@ -482,7 +482,7 @@ public class ReportController {
         }
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-        return "/report/reimbursement";
+        return "report/reimbursement";
     }
     @RequestMapping(value = "/getReimbursementData", method = RequestMethod.GET)
     @ResponseBody
