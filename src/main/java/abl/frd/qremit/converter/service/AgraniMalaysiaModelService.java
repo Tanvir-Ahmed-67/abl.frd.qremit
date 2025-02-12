@@ -295,6 +295,35 @@ public class AgraniMalaysiaModelService {
         String bankName = "";
         String bankCode = "";
         String branchName = "";
+
+        String amount = CommonService.getCellValueAsString(row.getCell(11));
+
+        if(!routingDetails.isEmpty()){
+            bankName = routingDetails.get("bank_name").toString();
+            bankCode = routingDetails.get("bank_code").toString();
+            branchName = routingDetails.get("branch_name").toString();
+        }
+        
+        data.put("exchangeCode", exchangeCode);
+        data.put("transactionNo", CommonService.getCellValueAsString(row.getCell(12)));
+        data.put("currency", "BDT");
+        data.put("amount", amount);
+        data.put("enteredDate", CommonService.getCurrentDate("MM/dd/yyyy"));
+        data.put("remitterName", CommonService.getCellValueAsString(row.getCell(2)));
+        data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(7)));
+        data.put("beneficiaryAccount", CommonService.getCellValueAsString(row.getCell(8)));
+        data.put("bankName", bankName);
+        data.put("bankCode", bankCode);
+        data.put("branchName", branchName);
+        data.put("branchCode", branchCode);
+        for(String field: fields)   data.put(field, "");
+
+        /*
+        String branchCode = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(8)));
+        Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode);
+        String bankName = "";
+        String bankCode = "";
+        String branchName = "";
         String amount = CommonService.getCellValueAsString(row.getCell(10));
 
         if(!routingDetails.isEmpty()){
@@ -316,7 +345,7 @@ public class AgraniMalaysiaModelService {
         data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         for(String field: fields)   data.put(field, "");
-
+        */
         return data;
     }
 }
