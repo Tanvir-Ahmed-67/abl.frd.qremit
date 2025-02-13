@@ -1,6 +1,8 @@
 package abl.frd.qremit.converter.helper;
 
 import abl.frd.qremit.converter.model.BeftnModel;
+import abl.frd.qremit.converter.service.CommonService;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -91,7 +93,7 @@ public class BeftnModelServiceHelper {
             cell7.setCellValue(beftnModel.getBeneficiaryName().trim());
 
             Cell cell8 = row.createCell(8);
-            cell8.setCellValue(beftnModel.getBeneficiaryAccount().trim());
+            cell8.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getBeneficiaryAccount().trim()));
 
             Cell cell9 = row.createCell(9);
             cell9.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
@@ -103,7 +105,7 @@ public class BeftnModelServiceHelper {
             cell11.setCellValue(beftnModel.getAmount());
 
             Cell cell12 = row.createCell(12);
-            cell12.setCellValue(beftnModel.getTransactionNo().trim());
+            cell12.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getTransactionNo().trim()));
 
             count++;
         }
@@ -191,7 +193,7 @@ public class BeftnModelServiceHelper {
             cell7.setCellValue(beftnModel.getBeneficiaryName().trim());
 
             Cell cell8 = row.createCell(8);
-            cell8.setCellValue(beftnModel.getBeneficiaryAccount().trim());
+            cell8.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getBeneficiaryAccount().trim()));
 
             Cell cell9 = row.createCell(9);
             cell9.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
@@ -203,7 +205,7 @@ public class BeftnModelServiceHelper {
             cell11.setCellValue(beftnModel.getIncentive());
 
             Cell cell12 = row.createCell(12);
-            cell12.setCellValue(beftnModel.getTransactionNo().trim());
+            cell12.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getTransactionNo().trim()));
 
             count++;
         }
