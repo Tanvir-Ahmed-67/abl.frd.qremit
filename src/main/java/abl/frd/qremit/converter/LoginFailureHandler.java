@@ -46,6 +46,6 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         }
 
         // Redirect to the login page with the error message as a query parameter
-        response.sendRedirect("login?error=" + errorMessage);
+        response.sendRedirect("/login?error=" + errorMessage);
     }
 }
