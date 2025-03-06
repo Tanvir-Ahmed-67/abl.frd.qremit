@@ -284,15 +284,13 @@ public class ErrorDataModelService {
             for(ErrorDataModel data: existingDataList){
                 existingTransactionNos.add(data.getTransactionNo());
             }
-            List<ErrorDataModel> newRecords = new ArrayList<>();
-            for(ErrorDataModel model: errorDataModelList){
-                if(!existingTransactionNos.contains(model.getTransactionNo()))  newRecords.add(model);
-            }
+            errorDataModelList.removeIf(model -> existingTransactionNos.contains(model.getTransactionNo()));
+            if(errorDataModelList.isEmpty())    return resp;
             try{
-                //List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
-                List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(newRecords);
+                List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
                 int errorCount = errorDataModels.size();
                 resp.put("errorCount", errorCount);
+                resp.put("errorDataModelList", errorDataModelList);
             }catch(Exception e){
                 resp.put("errorMessage", e.getMessage());
             }
