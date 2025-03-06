@@ -24,6 +24,9 @@ public class ExchangeReportDTO {
     private String bankName;
     private String zoneCode;
     private String zoneName;
+    private String districtCode;
+    private String districtName;
+    private String purposeOfRemittance;
     private String nrtAccountNo;
     private Double sumOfAmount = 0.00;
     private int totalRowCount = 0;
@@ -228,5 +231,29 @@ public class ExchangeReportDTO {
 
     public void setBankName(String bankName) {
         this.bankName = bankName;
+    }
+
+    public String getDistrictCode() {
+        return districtCode;
+    }
+
+    public void setDistrictCode(String districtCode) {
+        this.districtCode = districtCode;
+    }
+
+    public String getDistrictName() {
+        return districtName;
+    }
+
+    public void setDistrictName(String districtName) {
+        this.districtName = districtName;
+    }
+
+    public String getPurposeOfRemittance() {
+        return purposeOfRemittance;
+    }
+
+    public void setPurposeOfRemittance(String purposeOfRemittance) {
+        this.purposeOfRemittance = purposeOfRemittance;
     }
 }
