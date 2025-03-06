@@ -36,4 +36,5 @@ public interface ErrorDataModelRepository extends JpaRepository<ErrorDataModel, 
     @Modifying
     @Query("DELETE FROM ErrorDataModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
+    List<ErrorDataModel> findByTransactionNoIn(List<String> transactionList);
 }

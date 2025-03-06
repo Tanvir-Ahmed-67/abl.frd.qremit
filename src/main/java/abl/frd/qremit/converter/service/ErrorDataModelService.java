@@ -275,8 +275,22 @@ public class ErrorDataModelService {
     public Map<String, Object> saveErrorModelList(List<ErrorDataModel> errorDataModelList){
         Map<String, Object> resp = new HashMap<>();
         if (!errorDataModelList.isEmpty()) {
+            List<String> transactionList = new ArrayList<>();
+            for(ErrorDataModel model: errorDataModelList){
+                transactionList.add(model.getTransactionNo());
+            }
+            List<ErrorDataModel> existingDataList = errorDataModelRepository.findByTransactionNoIn(transactionList);
+            Set<String> existingTransactionNos = new HashSet<>();
+            for(ErrorDataModel data: existingDataList){
+                existingTransactionNos.add(data.getTransactionNo());
+            }
+            List<ErrorDataModel> newRecords = new ArrayList<>();
+            for(ErrorDataModel model: errorDataModelList){
+                if(!existingTransactionNos.contains(model.getTransactionNo()))  newRecords.add(model);
+            }
             try{
-                List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
+                //List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
+                List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(newRecords);
                 int errorCount = errorDataModels.size();
                 resp.put("errorCount", errorCount);
             }catch(Exception e){
