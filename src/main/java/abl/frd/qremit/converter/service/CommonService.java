@@ -869,74 +869,6 @@ public class CommonService {
             resp.put("errorDataModelList", errorDataModelList);
             return resp;
         }
-        /*
-        //a/c no, benficiary name, amount empty or null check
-        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
-        if(!errorMessage.isEmpty()){
-            addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-            resp = getResp(1, errorMessage, null);
-            resp.put("errorDataModelList", errorDataModelList);
-            return resp;
-        }
-        if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
-            if(checkEmptyString(bankName)){
-                errorMessage = "Bank Name is empty. Please correct it";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            errorMessage = checkBEFTNRouting(branchCode);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isCocFound(beneficiaryAccount)){
-            errorMessage = checkCOCBankName(bankName);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
-            errorMessage = checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            errorMessage = checkCOString(beneficiaryAccount);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            if(checkEmptyString(branchCode)){
-                errorMessage = "Branch Code can not be empty for A/C payee";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
-                //only processed for a/c payee
-            }
-            else{
-                errorMessage = "No Legacy Account will not be processed";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
-            
-        }
-        */
         //check duplicate data exists in csv data
         if(transactionList.contains(transactionNo)){
             return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
@@ -1316,4 +1248,80 @@ public class CommonService {
         return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 
+    public static <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
+        Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, int checkType, int type){
+        Map<String, Object> modelResp = new HashMap<>();
+        List<ErrorDataModel> errorDataModelList = new ArrayList<>();
+        List<String> transactionList = new ArrayList<>();
+        String duplicateMessage = "";
+        int duplicateCount = 0;
+        List<T> modelList = new ArrayList<>();
+        for(Map<String, Object> data: dataList){
+            String transactionNo = data.get("transactionNo").toString();
+            String exchangeCode = data.get("exchangeCode").toString();
+            String nrtaCode = data.get("nrtaCode").toString();
+            String bankName = data.get("bankName").toString();
+            String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+            String branchCode = data.get("branchCode").toString();
+            data.remove("nrtaCode");
+            Map<String, Object> dupResp = getDuplicateTransactionNo(transactionNo, uniqueDataList);
+            if((Integer) dupResp.get("isDuplicate") == 1){
+                duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                duplicateCount++;
+                continue;
+            }
+            Map<String, Object> archiveResp = getDuplicateTransactionNo(transactionNo, archiveDataList);
+            if((Integer) archiveResp.get("isDuplicate") == 1){
+                duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                duplicateCount++;
+                continue;
+            }
+        
+            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, exchangeCode, duplicateData, transactionList);
+            if((Integer) errResp.get("err") == 1){
+                errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
+                continue;
+            }
+            if((Integer) errResp.get("err") == 2){
+                resp.put("errorMessage", errResp.get("msg"));
+                break;
+            }
+            if((Integer) errResp.get("err") == 4){
+                duplicateMessage += errResp.get("msg");
+                continue;
+            }
+            if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
+            String typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
+            /*
+             * need to modify
+             */
+            if(checkType == 1){
+                int allowedType = (type == 1) ? 1:3;  //for betn 3
+                if(!convertStringToInt(typeFlag).equals(allowedType)){
+                    String msg = "Invalid Remittence Type for ";
+                    msg += (type == 1) ? "API": "BEFTN";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                }
+            }
+            try{
+                T modelInstance = modelClass.getDeclaredConstructor().newInstance();
+                modelInstance = CommonService.createDataModel(modelInstance, data);
+                Method setTypeFlagMethod = modelClass.getMethod("setTypeFlag", String.class);
+                setTypeFlagMethod.invoke(modelInstance, typeFlag);
+                Method setUploadDateTimeMethod = modelClass.getMethod("setUploadDateTime", LocalDateTime.class);
+                setUploadDateTimeMethod.invoke(modelInstance, currentDateTime);
+                modelList.add(modelInstance);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        modelResp.put("errorDataModelList", errorDataModelList);
+        modelResp.put("modelList",modelList);
+        modelResp.put("resp",resp);
+        modelResp.put("duplicateMessage", duplicateMessage);
+        modelResp.put("duplicateCount", duplicateCount);
+        modelResp.put("transactionList", transactionList);
+        return modelResp;
+    }
+    
 }
