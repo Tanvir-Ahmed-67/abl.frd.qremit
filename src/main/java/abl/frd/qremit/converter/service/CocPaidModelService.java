@@ -164,7 +164,10 @@ public class CocPaidModelService {
 
     public Map<String, Object> getCsvData(CSVRecord csvRecord){
         String routingNo = CommonService.fixRoutingNo(csvRecord.get(8));
-        Map<String, Object> routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo);
+        Map<String, Object> routingMap = new HashMap<>();
+        if(!routingNo.isEmpty())    routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo);
+        String branchName = (routingMap.containsKey("branch_name")) ? routingMap.get("branch_name").toString(): "";
+        String branchCode = (routingMap.containsKey("abl_branch_code")) ? routingMap.get("abl_branch_code").toString(): "";
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", csvRecord.get(0));
         data.put("transactionNo", csvRecord.get(1));
@@ -178,8 +181,8 @@ public class CocPaidModelService {
         data.put("beneficiaryMobile", csvRecord.get(10));
         data.put("bankName", "Agrani Bank");
         data.put("bankCode", "11");
-        data.put("branchName", routingMap.get("branch_name").toString());
-        data.put("branchCode", routingMap.get("abl_branch_code").toString());
+        data.put("branchName", branchName);
+        data.put("branchCode", branchCode);
         data.put("trMode", csvRecord.get(12));
         return data;
     }
