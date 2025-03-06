@@ -274,6 +274,7 @@ public class ErrorDataModelService {
 
     public Map<String, Object> saveErrorModelList(List<ErrorDataModel> errorDataModelList){
         Map<String, Object> resp = new HashMap<>();
+        int errorCount = 0;
         if (!errorDataModelList.isEmpty()) {
             List<String> transactionList = new ArrayList<>();
             for(ErrorDataModel model: errorDataModelList){
@@ -285,12 +286,14 @@ public class ErrorDataModelService {
                 existingTransactionNos.add(data.getTransactionNo());
             }
             errorDataModelList.removeIf(model -> existingTransactionNos.contains(model.getTransactionNo()));
-            if(errorDataModelList.isEmpty())    return resp;
+            if(errorDataModelList.isEmpty()){
+                resp.put("errorCount", errorCount);
+                return resp;
+            }    
             try{
                 List<ErrorDataModel> errorDataModels = errorDataModelRepository.saveAll(errorDataModelList);
-                int errorCount = errorDataModels.size();
+                errorCount = errorDataModels.size();
                 resp.put("errorCount", errorCount);
-                resp.put("errorDataModelList", errorDataModelList);
             }catch(Exception e){
                 resp.put("errorMessage", e.getMessage());
             }
