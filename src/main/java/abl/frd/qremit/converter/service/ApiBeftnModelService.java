@@ -56,12 +56,12 @@ public class ApiBeftnModelService {
                 fileInfoModelRepository.save(fileInfoModel);
             }
             if(apiBeftnModels.size()!=0) {
-                /*
+                
                 for(ApiBeftnModel apiBeftnModel : apiBeftnModels){
                     apiBeftnModel.setFileInfoModel(fileInfoModel);
                     apiBeftnModel.setUserModel(user);
                 }
-                */
+                
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
                 Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(apiBeftnModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
