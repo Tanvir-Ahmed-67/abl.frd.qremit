@@ -128,7 +128,7 @@ public class ApiT24ModelService {
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ApiT24Model.class, resp, 1, 1);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ApiT24Model.class, resp, "", 1, 1);
                 /*
                 for(Map<String, Object> data: dataList){
                     String transactionNo = data.get("transactionNo").toString();

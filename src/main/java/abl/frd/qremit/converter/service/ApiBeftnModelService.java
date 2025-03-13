@@ -128,7 +128,7 @@ public class ApiBeftnModelService {
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ApiBeftnModel.class, resp, 1, 3);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ApiBeftnModel.class, resp, "", 1, 3);
                 /*
                 for(Map<String, Object> data: dataList){
                     String transactionNo = data.get("transactionNo").toString();
