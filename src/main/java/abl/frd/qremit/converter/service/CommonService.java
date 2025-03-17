@@ -857,11 +857,13 @@ public class CommonService {
         if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
             return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }
+        /*
         //check exchange code
         String exchangeMessage = CommonService.checkExchangeCode(userExCode, exchangeCode, nrtaCode);
         if(!exchangeMessage.isEmpty()){
             return getResp(2, exchangeMessage, null);
         }
+        */
         errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
         if(!errorMessage.isEmpty()){
             addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
@@ -1256,12 +1258,22 @@ public class CommonService {
         String duplicateMessage = "";
         int duplicateCount = 0;
         List<T> modelList = new ArrayList<>();
+        int isValidFile = 0;
         for(Map<String, Object> data: dataList){
             String transactionNo = data.get("transactionNo").toString();
             String exchangeCode = data.get("exchangeCode").toString();
             String nrtaCode = data.get("nrtaCode").toString();
             String bankName = data.get("bankName").toString();
-            if(fileExchangeCode.equals("modelList"))    fileExchangeCode = exchangeCode;
+            if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
+            //check exchange code
+            if(isValidFile == 0){
+                String exchangeMessage = CommonService.checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
+                if(!exchangeMessage.isEmpty()){
+                    resp.put("errorMessage", exchangeMessage);
+                    break;
+                }else isValidFile = 1;
+            }
+            
             String beneficiaryAccount = data.get("beneficiaryAccount").toString();
             String branchCode = data.get("branchCode").toString();
             data.remove("nrtaCode");
@@ -1282,10 +1294,6 @@ public class CommonService {
             if((Integer) errResp.get("err") == 1){
                 errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
                 continue;
-            }
-            if((Integer) errResp.get("err") == 2){
-                resp.put("errorMessage", errResp.get("msg"));
-                break;
             }
             if((Integer) errResp.get("err") == 4){
                 duplicateMessage += errResp.get("msg");
