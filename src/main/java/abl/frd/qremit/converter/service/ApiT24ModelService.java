@@ -91,12 +91,11 @@ public class ApiT24ModelService {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
             Map<String, String> nrtaCodeVsExchangeCodeMap = CommonService.getNrtaCodeVsExchangeCodeMap(exchangeHouseModelList);
-            //List<ApiT24Model> apiT24ModelList = new ArrayList<>();
-            //List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            //List<String> transactionList = new ArrayList<>();
-            //String duplicateMessage = "";
+            List<ApiT24Model> apiT24ModelList = new ArrayList<>();
+            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
+            String duplicateMessage = "";
             int i = 0;
-            //int duplicateCount = 0;
+            int duplicateCount = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
             Map<String, Object> modelResp = new HashMap<>();
@@ -129,6 +128,10 @@ public class ApiT24ModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ApiT24Model.class, resp, "", 1, 1);
+                apiT24ModelList = (List<ApiT24Model>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
                 /*
                 for(Map<String, Object> data: dataList){
                     String transactionNo = data.get("transactionNo").toString();
@@ -180,11 +183,6 @@ public class ApiT24ModelService {
                 }
                     */
             }
-            
-            List<ApiT24Model> apiT24ModelList = (List<ApiT24Model>) modelResp.get("modelList");
-            List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
-            String duplicateMessage = modelResp.get("duplicateMessage").toString();
-            int duplicateCount = (int) modelResp.get("duplicateCount");
             
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
