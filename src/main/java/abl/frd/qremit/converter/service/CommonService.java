@@ -857,13 +857,6 @@ public class CommonService {
         if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
             return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }
-        /*
-        //check exchange code
-        String exchangeMessage = CommonService.checkExchangeCode(userExCode, exchangeCode, nrtaCode);
-        if(!exchangeMessage.isEmpty()){
-            return getResp(2, exchangeMessage, null);
-        }
-        */
         errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
         if(!errorMessage.isEmpty()){
             addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
@@ -1267,7 +1260,7 @@ public class CommonService {
             if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
             //check exchange code
             if(isValidFile == 0){
-                String exchangeMessage = CommonService.checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
+                String exchangeMessage = checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
                 if(!exchangeMessage.isEmpty()){
                     resp.put("errorMessage", exchangeMessage);
                     break;

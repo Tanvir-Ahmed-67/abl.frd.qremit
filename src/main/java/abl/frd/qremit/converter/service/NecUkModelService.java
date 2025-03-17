@@ -1,6 +1,8 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
 import java.time.LocalDateTime;
+
+import abl.frd.qremit.converter.model.AgexSingaporeModel;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
@@ -105,14 +107,10 @@ public class NecUkModelService {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<NecUkModel> necUkDataModelList = new ArrayList<>();
-            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
@@ -122,45 +120,18 @@ public class NecUkModelService {
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+                data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = csvRecord.get(0).trim();   
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
-            for(Map<String, Object> data: dataList){
-                String transactionNo = data.get("transactionNo").toString();
-                String bankName = data.get("bankName").toString();
-                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                String branchCode = data.get("branchCode").toString();
-                Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
-                if((Integer) dupResp.get("isDuplicate") == 1){
-                    duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
-                    duplicateCount++;
-                    continue;
-                }
-
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
-                NecUkModel necUkDataModel = new NecUkModel();
-                necUkDataModel = CommonService.createDataModel(necUkDataModel, data);
-                necUkDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                necUkDataModel.setUploadDateTime(currentDateTime);
-                necUkDataModelList.add(necUkDataModel);
-            }
-
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, NecUkModel.class, resp, fileExchangeCode, 0, 0);
+            List<NecUkModel> necUkDataModelList = (List<NecUkModel>) modelResp.get("modelList");
+            List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
