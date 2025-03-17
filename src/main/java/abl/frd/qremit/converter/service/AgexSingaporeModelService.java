@@ -133,7 +133,7 @@ public class AgexSingaporeModelService {
                 }
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode);
                 data.put("nrtaCode", nrtaCode);
-                fileExchangeCode = csvRecord.get(0).trim();   
+                fileExchangeCode = nrtaCode;   
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
