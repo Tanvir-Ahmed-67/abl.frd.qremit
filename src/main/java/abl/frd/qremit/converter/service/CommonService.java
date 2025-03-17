@@ -979,8 +979,8 @@ public class CommonService {
         Map<String, LocalDateTime> dateTimeRange = new HashMap<>();
         String startDate = date + " 00:00:00";
         String endDate = date + " 23:59:59";
-        LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
-        LocalDateTime endDateTime = CommonService.convertStringToDate(endDate);
+        LocalDateTime startDateTime = convertStringToDate(startDate);
+        LocalDateTime endDateTime = convertStringToDate(endDate);
         dateTimeRange.put("startDateTime", startDateTime);
         dateTimeRange.put("endDateTime", endDateTime);
         return dateTimeRange;
@@ -1011,7 +1011,7 @@ public class CommonService {
             model.addAttribute("fileInfo", fileInfoModelObject);
             model.addAttribute("beftnIncentive", 0);
             int errorCount = fileInfoModelObject.getErrorCount();
-            int beftnCount = CommonService.convertStringToInt(fileInfoModelObject.getBeftnCount());
+            int beftnCount = convertStringToInt(fileInfoModelObject.getBeftnCount());
             if(beftnCount > 0){
                 model.addAttribute("beftnIncentive", 1);
             }
@@ -1066,7 +1066,7 @@ public class CommonService {
     }
 
     public static String generateDynamicFileName(String text, String ext){
-        String formattedDate = CommonService.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
+        String formattedDate = getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
         String fileName = text + formattedDate + ext;
         return fileName;
     }
@@ -1210,14 +1210,14 @@ public class CommonService {
     }
 
     public static Map<String, Object> checkBeftnEditForSpecialExchange(String exchangeCode, String type){
-        Map<String,Object> resp = CommonService.getResp(0, "", null);
+        Map<String,Object> resp = getResp(0, "", null);
         String[] exchangeCodeList = {"7010226","7010228","7010290","7010299","111111"};
         if(exchangeCode.equals("444444")){
-            if(("3").equals(type))  return CommonService.getResp(1, "BEFTN not allowed in swift", null);
+            if(("3").equals(type))  return getResp(1, "BEFTN not allowed in swift", null);
         }
         for(String exCode: exchangeCodeList){
             if(exCode.equals(exchangeCode)){
-                if(!("3").equals(type)) resp = CommonService.getResp(1, "You are not allowed to change beftn to any other type for specific exchange code", null);
+                if(!("3").equals(type)) resp = getResp(1, "You are not allowed to change beftn to any other type for specific exchange code", null);
             }
         }
         return resp;
@@ -1307,7 +1307,7 @@ public class CommonService {
             }
             try{
                 T modelInstance = modelClass.getDeclaredConstructor().newInstance();
-                modelInstance = CommonService.createDataModel(modelInstance, data);
+                modelInstance = createDataModel(modelInstance, data);
                 Method setTypeFlagMethod = modelClass.getMethod("setTypeFlag", String.class);
                 setTypeFlagMethod.invoke(modelInstance, typeFlag);
                 Method setUploadDateTimeMethod = modelClass.getMethod("setUploadDateTime", LocalDateTime.class);
