@@ -857,11 +857,13 @@ public class CommonService {
         if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
             return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }
+        /*
         //check exchange code
         String exchangeMessage = CommonService.checkExchangeCode(userExCode, exchangeCode, nrtaCode);
         if(!exchangeMessage.isEmpty()){
             return getResp(2, exchangeMessage, null);
         }
+        */
         errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
         if(!errorMessage.isEmpty()){
             addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
@@ -1249,18 +1251,29 @@ public class CommonService {
     }
 
     public static <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
-        Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, int checkType, int type){
+        Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, String fileExchangeCode, int checkType, int type){
         Map<String, Object> modelResp = new HashMap<>();
         List<ErrorDataModel> errorDataModelList = new ArrayList<>();
         List<String> transactionList = new ArrayList<>();
         String duplicateMessage = "";
         int duplicateCount = 0;
         List<T> modelList = new ArrayList<>();
+        int isValidFile = 0;
         for(Map<String, Object> data: dataList){
             String transactionNo = data.get("transactionNo").toString();
             String exchangeCode = data.get("exchangeCode").toString();
             String nrtaCode = data.get("nrtaCode").toString();
             String bankName = data.get("bankName").toString();
+            if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
+            //check exchange code
+            if(isValidFile == 0){
+                String exchangeMessage = CommonService.checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
+                if(!exchangeMessage.isEmpty()){
+                    resp.put("errorMessage", exchangeMessage);
+                    break;
+                }else isValidFile = 1;
+            }
+            
             String beneficiaryAccount = data.get("beneficiaryAccount").toString();
             String branchCode = data.get("branchCode").toString();
             data.remove("nrtaCode");
@@ -1277,14 +1290,10 @@ public class CommonService {
                 continue;
             }
         
-            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, exchangeCode, duplicateData, transactionList);
+            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
             if((Integer) errResp.get("err") == 1){
                 errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
                 continue;
-            }
-            if((Integer) errResp.get("err") == 2){
-                resp.put("errorMessage", errResp.get("msg"));
-                break;
             }
             if((Integer) errResp.get("err") == 4){
                 duplicateMessage += errResp.get("msg");

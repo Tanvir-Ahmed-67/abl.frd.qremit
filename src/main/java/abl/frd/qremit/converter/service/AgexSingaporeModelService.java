@@ -103,14 +103,15 @@ public class AgexSingaporeModelService {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<AgexSingaporeModel> agexSingaporeModelList = new ArrayList<>();
-            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
+            //List<AgexSingaporeModel> agexSingaporeModelList = new ArrayList<>();
+            //List<ErrorDataModel> errorDataModelList = new ArrayList<>();
+            //List<String> transactionList = new ArrayList<>();
+            //String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            //int duplicateCount = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
@@ -131,12 +132,16 @@ public class AgexSingaporeModelService {
                     }
                 }
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode);
-                fileExchangeCode = csvRecord.get(0).trim();   
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;   
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgexSingaporeModel.class, resp, fileExchangeCode, 1, type);
+                /*
                 for(Map<String, Object> data: dataList){
                     String transactionNo = data.get("transactionNo").toString();
                     String bankName = data.get("bankName").toString();
@@ -177,7 +182,13 @@ public class AgexSingaporeModelService {
                     agexSingaporeModel.setUploadDateTime(currentDateTime);
                     agexSingaporeModelList.add(agexSingaporeModel);
                 }
+                */
             }
+
+            List<AgexSingaporeModel> agexSingaporeModelList = (List<AgexSingaporeModel>) modelResp.get("modelList");
+            List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
             
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
