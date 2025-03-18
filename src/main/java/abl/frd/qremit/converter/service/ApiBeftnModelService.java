@@ -56,12 +56,12 @@ public class ApiBeftnModelService {
                 fileInfoModelRepository.save(fileInfoModel);
             }
             if(apiBeftnModels.size()!=0) {
-                /*
+                
                 for(ApiBeftnModel apiBeftnModel : apiBeftnModels){
                     apiBeftnModel.setFileInfoModel(fileInfoModel);
                     apiBeftnModel.setUserModel(user);
                 }
-                */
+                
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
                 Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(apiBeftnModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
@@ -93,12 +93,12 @@ public class ApiBeftnModelService {
             Map<String, String> nrtaCodeVsExchangeCodeMap = CommonService.getNrtaCodeVsExchangeCodeMap(exchangeHouseModelList);
             List<ApiBeftnModel> apiBeftnModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
             int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
@@ -126,6 +126,13 @@ public class ApiBeftnModelService {
             }
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ApiBeftnModel.class, resp, "", 1, 3);
+                apiBeftnModelList = (List<ApiBeftnModel>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
+                /*
                 for(Map<String, Object> data: dataList){
                     String transactionNo = data.get("transactionNo").toString();
                     String exchangeCode = data.get("exchangeCode").toString();
@@ -170,8 +177,9 @@ public class ApiBeftnModelService {
                     apiBeftnModelList.add(apiBeftnModel);
 
                 }
+                */
             }
-            
+
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
