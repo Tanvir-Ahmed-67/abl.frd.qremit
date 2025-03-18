@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.controller;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -442,23 +443,38 @@ public class ReportController {
         return "pages/admin/adminIcashUpload";
     }
 
+    @GetMapping(value="/getMo",produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> getMo(@RequestParam(defaultValue = "") String date){
+        Map<String, Object> resp = new HashMap<>();
+        MoModel model = moModelService.findMoByDate(date);
+        if(model == null)   return CommonService.getResp(1,"No data found", null);
+        Map<String, Object> data = new HashMap<>();
+        data.put("totalIcashNumber", model.getTotalNumberIcash());
+        data.put("totalIcashAmount", model.getTotalAmountIcash());
+        resp = CommonService.getResp(0,"", null);
+        resp.put("data", data);
+        return resp;
+    }
     @RequestMapping(value="/generateMo", method= RequestMethod.POST)
-    public String generateMo(MoModel mo, Model model, @RequestParam(defaultValue = "") String date) {
-        System.out.println("DATE FROM /GENERATE mo url "+date);
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+    public String generateMo(@RequestParam Map<String, String> formData, Model model) {
+        String date = formData.get("reportDate");
+        MoModel mo = new MoModel();
         mo.setMoDate(LocalDate.parse(date));
-        MoModel moModel = moModelService.findIfAlreadyGenerated(mo);
-        if (moModel == null) {
-            moModel = moModelService.processAndGenerateMoData(mo);
-        }
+        mo.setTotalNumberIcash(Long.valueOf(formData.get("totalNumberIcash")));
+        mo.setTotalAmountIcash(new BigDecimal(formData.get("totalAmountIcash")));
+        MoModel moModel = moModelService.findMoByDate(date);
+        if(moModel == null) moModel = moModelService.processAndGenerateMoData(mo);
+        else    moModel = moModelService.updateMo(moModel, formData);
         model.addAttribute("moModel", moModel);
         model.addAttribute("date", date);
         return "report/mo";
     }
-    @PostMapping("/downloadMoInPdfFormat")
-    public ResponseEntity<byte[]> downloadMoInPdfFormat(@RequestParam(defaultValue = "") String date, @ModelAttribute MoModel moModel) throws Exception {
-        System.out.println("DATE from downloadMoInPdfFormat ----- "+date);
+
+    @GetMapping("/downloadMoInPdfFormat")
+    public ResponseEntity<byte[]> downloadMoInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        MoModel moModel = moModelService.findMoByDate(date);
         MoModel moModelForPdf = moModelService.generateMoDTOForPreparingPdfFile(moModel, date);
         if(moModelForPdf == null){
             return ResponseEntity.noContent().build();
