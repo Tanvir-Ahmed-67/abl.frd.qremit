@@ -1,104 +1,46 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="fragments/header :: head-css"></head>
-<body>
-<div id="app"><!--main content-->
-  <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>
-  <div id="main"><!--content Id-->
-    <span th:replace="fragments/header :: header"></span>
-    <div class="main-content container-fluid"><!--dynamic content-->
-      <div class="page-title">
-        <h3>MO for Daily Remittances</h3>
-      </div>
-      <div class="row" id="table-hover-row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header">
-              <h4 class="card-title">MO for Daily Remittances. Date: <span th:text="${moModel.getMoDate()}"></span></h4>
-            </div>
-            <div class="card-content">
-              <div class="row">
-                <div class="col-2 form-group" id="row_report_date">
-                  <input class="form-control" type="text" th:placeholder="${moModel.getMoDate()}" readonly="true">
-                </div>
-              </div>
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead>
-                  <tr>
-                    <th>Remittance Type</th>
-                    <th>Total Numbers</th>
-                    <th>Total Amount</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td>For Beftn</td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalNumberBeftn()}"></td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalAmountBeftn()}"></td>
-                  </tr>
-                  <tr>
-                    <td>For All Other Branche</td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalNumberAllOtherBranch()}"></td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalAmountAllOtherBranch()}"></td>
-                  </tr>
-                  <tr>
-                    <td>For Instant Cash</td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalNumberIcash()}"></td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalAmountIcash()}"></td>
-                  </tr>
-                  <tr>
-                    <td>Online A/C Transfer</td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalNumberOnline()}"></td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalAmountOnline()}"></td>
-                  </tr>
-                  <tr>
-                    <td>For API</td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalNumberApi()}"></td>
-                    <td class="text-bold-500" th:text="${moModel.getTotalAmountApi()}"></td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Grand Total</td>
-                    <td class="fw-bold" th:text="${moModel.getGrandTotalNumber()}"></td>
-                    <td class="fw-bold" th:text="${moModel.getGrandTotalAmount()}"></td>
-                  </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center mt-3">
-            <form th:action="@{/downloadMoInPdfFormat(date=${date})}" th:object="${moModel}" method="post">
-              <input type="hidden" th:field="*{id}" />
-              <input type="hidden" th:field="*{totalNumberBeftn}" />
-              <input type="hidden" th:field="*{totalAmountBeftn}" />
-              <input type="hidden" th:field="*{totalNumberAllOtherBranch}" />
-              <input type="hidden" th:field="*{totalAmountAllOtherBranch}" />
-              <input type="hidden" th:field="*{totalNumberIcash}" />
-              <input type="hidden" th:field="*{totalAmountIcash}" />
-              <input type="hidden" th:field="*{totalNumberOnline}" />
-              <input type="hidden" th:field="*{totalAmountOnline}" />
-              <input type="hidden" th:field="*{totalNumberApi}" />
-              <input type="hidden" th:field="*{totalAmountApi}" />
-              <button type="submit" class="btn btn-primary">Download MO in PDF</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <span th:replace="fragments/footer :: footer"></span>
-  </div>
+<div class="table-responsive">
+    <table class='table table-striped' id="mo_tbl" width="100%">
+        <thead>
+            <tr>
+                <th>Remittance Type</th>
+                <th>Total Numbers</th>
+                <th>Total Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>For Beftn</td>
+                <td class="text-bold-500" th:text="${moModel.getTotalNumberBeftn()}"></td>
+                <td class="text-bold-500" th:text="${moModel.getTotalAmountBeftn()}"></td>
+            </tr>
+            <tr>
+                <td>For All Other Branche</td>
+                <td class="text-bold-500" th:text="${moModel.getTotalNumberAllOtherBranch()}"></td>
+                <td class="text-bold-500" th:text="${moModel.getTotalAmountAllOtherBranch()}"></td>
+            </tr>
+            <tr>
+                <td>For Instant Cash</td>
+                <td class="text-bold-500" th:text="${moModel.getTotalNumberIcash()}"></td>
+                <td class="text-bold-500" th:text="${moModel.getTotalAmountIcash()}"></td>
+            </tr>
+            <tr>
+                <td>Online A/C Transfer</td>
+                <td class="text-bold-500" th:text="${moModel.getTotalNumberOnline()}"></td>
+                <td class="text-bold-500" th:text="${moModel.getTotalAmountOnline()}"></td>
+            </tr>
+            <tr>
+                <td>For API</td>
+                <td class="text-bold-500" th:text="${moModel.getTotalNumberApi()}"></td>
+                <td class="text-bold-500" th:text="${moModel.getTotalAmountApi()}"></td>
+            </tr>
+            <tr>
+                <td class="fw-bold">Grand Total</td>
+                <td class="fw-bold" th:text="${moModel.getGrandTotalNumber()}"></td>
+                <td class="fw-bold" th:text="${moModel.getGrandTotalAmount()}"></td>
+            </tr>
+        </tbody>
+    </table>
 </div>
-</body>
-<script type="text/javascript">
-  $(document).ready(function(){
-    $(document).off('change','#report_date');
-    $(document).on('change','#report_date', function(e){
-        e.preventDefault();
-        var val = $(this).val();
-        var url = "summaryOfDailyStatement?date=" + val;
-        
-    });
-  });
-</script>
-</html>
+<div class="d-flex justify-content-center mt-3">
+    <a th:href="@{/downloadMoInPdfFormat(date=${date})}" class="btn btn-primary">Download MO in PDF</a>
+</div>
