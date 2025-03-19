@@ -1303,6 +1303,7 @@ public class CommonService {
                     String msg = "Invalid Remittence Type for ";
                     msg += (type == 1) ? "API": "BEFTN";
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
                 }
             }
             try{
