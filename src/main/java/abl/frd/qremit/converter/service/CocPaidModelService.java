@@ -172,7 +172,7 @@ public class CocPaidModelService {
         data.put("exchangeCode", csvRecord.get(0));
         data.put("transactionNo", csvRecord.get(1));
         data.put("amount", csvRecord.get(4));
-        data.put("enteredDate", CommonService.convertStringToDate(csvRecord.get(3)));
+        data.put("enteredDate", csvRecord.get(3));
         data.put("paidDate", CommonService.convertStringToDate(csvRecord.get(11)));
         data.put("remitterName", csvRecord.get(5));
         data.put("beneficiaryName", csvRecord.get(6));

@@ -164,6 +164,7 @@ public class CommonService {
             onlineModel.setBankName((String) getPropertyValue(model, "getBankName"));
             onlineModel.setBranchCode((String) getPropertyValue(model, "getBranchCode"));
             onlineModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
+            onlineModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             onlineModel.setIsProcessed(flag);
             onlineModel.setIsDownloaded(flag);
             if(flag == 1){
@@ -304,6 +305,7 @@ public class CommonService {
             beftnModel.setBankName((String) getPropertyValue(model, "getBankName"));
             beftnModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             beftnModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
+            beftnModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -1303,6 +1305,7 @@ public class CommonService {
                     String msg = "Invalid Remittence Type for ";
                     msg += (type == 1) ? "API": "BEFTN";
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
                 }
             }
             try{

@@ -404,6 +404,7 @@ public class ReportService {
                     reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
+                    reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
                     if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":

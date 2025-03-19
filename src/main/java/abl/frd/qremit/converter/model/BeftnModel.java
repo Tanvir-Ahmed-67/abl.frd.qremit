@@ -72,6 +72,8 @@ public class BeftnModel {
     private int isProcessed = 0;
     @Column(name = "is_downloaded", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isDownloaded = 0;
+    @Column(name = "entered_date", length=30)
+    private String enteredDate;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
@@ -131,6 +133,14 @@ public class BeftnModel {
 
     public String getOrgName() {
         return orgName;
+    }
+
+    public String getEnteredDate() {
+        return this.enteredDate;
+    }
+
+    public void setEnteredDate(String enteredDate) {
+        this.enteredDate = enteredDate;
     }
 
     public void setOrgName(String orgName) {

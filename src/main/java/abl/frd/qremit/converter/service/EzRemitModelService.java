@@ -100,12 +100,12 @@ public class EzRemitModelService {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<EzRemitModel> ezRemitModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
@@ -126,12 +126,20 @@ public class EzRemitModelService {
                 String beneficiaryAccount = (type == 1) ? csvRecord.get(4).trim(): csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
-                fileExchangeCode = csvRecord.get(0).trim();   
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;   
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, EzRemitModel.class, resp, fileExchangeCode, 1, type);
+                ezRemitModelList = (List<EzRemitModel>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
+                /*
                 for(Map<String, Object> data: dataList){
                     String transactionNo = data.get("transactionNo").toString();
                     String bankName = data.get("bankName").toString();
@@ -171,6 +179,7 @@ public class EzRemitModelService {
                     ezRemitModel.setUploadDateTime(currentDateTime);
                     ezRemitModelList.add(ezRemitModel);
                 }
+                */
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
