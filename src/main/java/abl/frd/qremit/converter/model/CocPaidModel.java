@@ -18,8 +18,8 @@ public class CocPaidModel {
     private String transactionNo;
     @Column(name = "amount", length = 20, nullable = false)
     private Double amount;
-    @Column(name = "entered_date", columnDefinition = "DATETIME")
-    private LocalDateTime enteredDate;
+    @Column(name = "entered_date", length=30)
+    private String enteredDate;
     @Column(name = "paid_date", columnDefinition = "DATETIME")
     private LocalDateTime paidDate;
     @Column(name = "remitter_name", length = 128)
@@ -99,11 +99,11 @@ public class CocPaidModel {
         this.amount = amount;
     }
 
-    public LocalDateTime getEnteredDate() {
+    public String getEnteredDate() {
         return this.enteredDate;
     }
 
-    public void setEnteredDate(LocalDateTime enteredDate) {
+    public void setEnteredDate(String enteredDate) {
         this.enteredDate = enteredDate;
     }
 
@@ -267,7 +267,7 @@ public class CocPaidModel {
         this.tempStatus = tempStatus;
     }
 
-    public CocPaidModel(String exchangeCode, String transactionNo, Double amount, LocalDateTime enteredDate, LocalDateTime paidDate, String remitterName, 
+    public CocPaidModel(String exchangeCode, String transactionNo, Double amount, String enteredDate, LocalDateTime paidDate, String remitterName, 
         String beneficiaryName, String beneficiaryAccount, String routingNo, String beneficiaryMobile, String bankName, String bankCode, String branchName, 
         String branchCode, String trMode, LocalDateTime uploadDateTime, String typeFlag) {
         this.exchangeCode = exchangeCode;
