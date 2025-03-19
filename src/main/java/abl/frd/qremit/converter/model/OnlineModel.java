@@ -52,6 +52,8 @@ public class OnlineModel {
     private LocalDateTime uploadDateTime;
     @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isVoucherGenerated = 0;
+    @Column(name = "entered_date", length=30)
+    private String enteredDate;
     @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int tempStatus = 0;
     @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
@@ -89,6 +91,14 @@ public class OnlineModel {
 
     public OnlineModel() {
 
+    }
+
+    public String getEnteredDate() {
+        return this.enteredDate;
+    }
+
+    public void setEnteredDate(String enteredDate) {
+        this.enteredDate = enteredDate;
     }
 
     public int getId() {
