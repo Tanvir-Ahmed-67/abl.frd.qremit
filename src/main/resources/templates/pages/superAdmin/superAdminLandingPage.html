@@ -6,75 +6,83 @@
     <h3>Super Admin Dashboard</h3>
     <p class="text-subtitle text-muted">Super Admin Dashboard</p>
   </div>
-  <section class="section">
-  <div class="row mb-2">
-    <div class="col-12 col-md-3">  
 
-      <div class="card card-statistic">
+  <section class="section">
+    <div class="container mt-5">
+      <div class="row" id="remittanceCards">
+        <!-- Cards will be dynamically inserted here -->
+      </div>
+    </div>
+    
+
+    <!-- <div class="container mt-5">
+      <h2>Country-wise Amount Visualization (Bubble Map)</h2>
+      <canvas id="countryBubbleMap" style="width: 800px; height: 500px;"></canvas>
+    </div> -->
+  <div class="row mb-2">
+    <!-- <div class="container mt-5">
+      <h2>Country-wise Amount Visualization</h2>
+      <canvas id="countryMapChart" style="width: 100%; height: 500px;"></canvas>
+    </div> -->
+    
+    <div class="col-12 col-md-6">
+      
+      
+
+      <div class="card ">
         <div class="card-body p-0">
-          <div class="d-flex flex-column">
+
+          <div class="container mt-5">
+            <h2>Yearly Comparison of Transaction Types</h2>
+            <canvas id="yearlyComparisonChart" width="400" height="400"></canvas>
+          </div>
+
+          <!-- <div class="d-flex flex-column">
             <div class='px-3 py-3 d-flex justify-content-between'>
               <h3 class='card-title'>Online</h3>
               <div class="card-right d-flex align-items-center">
                 <p class="onlineCount" th:text="${onlineCount}"></p>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
     </div>
-    <div class="col-12 col-md-3">
 
-      <div class="card card-statistic">
+
+    <div class="col-12 col-md-6">
+
+      <div class="card">
         <div class="card-body p-0">
-          <div class="d-flex flex-column">
-            <div class='px-3 py-3 d-flex justify-content-between'>
-              <h3 class='card-title'>COC</h3>
-              <div class="card-right d-flex align-items-center">
-                <p class="cocCount" th:text="${cocCount}"></p>
-              </div>
-            </div>
+
+          <div class="container mt-5">
+            <h2>Top 10 Countries by Remittance (In Million USD)</h2>
+            <canvas id="countryPieChart" style="width: 100%; height: 500px;"></canvas>
           </div>
+
+         
+          <!-- <canvas id="canvas"></canvas> -->
+
         </div>
       </div>
 
     </div>
-    <div class="col-12 col-md-3"> 
 
-      <div class="card card-statistic">
-        <div class="card-body p-0">
-          <div class="d-flex flex-column">
-            <div class='px-3 py-3 d-flex justify-content-between'>
-              <h3 class='card-title'>A/C Payee</h3>
-              <div class="card-right d-flex align-items-center">
-                <p class="accountPayeeCount" th:text="${accountPayeeCount}"></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    
 
+   
 
-    </div>
-    <div class="col-12 col-md-3">
-
-      <div class="card card-statistic">
-        <div class="card-body p-0">
-          <div class="d-flex flex-column">
-            <div class='px-3 py-3 d-flex justify-content-between'>
-              <h3 class='card-title'>BEFTN</h3>
-              <div class="card-right d-flex align-items-center">
-                <p class="beftnIncentiveCount" th:text="${beftnIncentiveCount}"></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
   </div>
 
+  <div class="row mb-4">
+    <div class=" row col-md-12">
+      <div class="col-md-12"> 
+    <h2>Exchange-Wise Remittance Data (2024)</h2>
+    <canvas id="exchangeChart" style="width: 100%; height: 600px;"></canvas>
+  </div>
+</div>
+</div>
 
   <div class="row mb-4">
     <div class=" row col-md-12">
@@ -125,7 +133,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h3 class='card-heading p-1 pl-3'>Remittance inflow from 2014 to 2024</h3>
+          <h3 class='card-heading p-1 pl-3'>Agrani Bank PLC Remittance inflow from 2014 to 2024</h3>
         </div>
         <div class="card-body">
           <div class="row">
@@ -139,7 +147,7 @@
      
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h3 class="card-heading">Bankwise Yearly Report 2020-2023</h3>
+          <h3 class="card-heading">Bankwise Yearly Report 2020-2024</h3>
           <div class="d-flex ">
             <i data-feather="download"></i>
           </div>
@@ -154,7 +162,7 @@
 
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h3 class="card-heading">Bankwise Yearly Report 2020-2023</h3>
+          <h3 class="card-heading">Bankwise Yearly Report 2020-2024</h3>
           <div class="d-flex ">
             <i data-feather="download"></i>
           </div>
@@ -169,7 +177,7 @@
 
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h3 class="card-heading">Bankwise Yearly Report 2020-2023</h3>
+          <h3 class="card-heading">Bankwise Yearly Report 2020-2024</h3>
           <div class="d-flex ">
             <i data-feather="download"></i>
           </div>
@@ -208,6 +216,7 @@
 </div>
   <script type="text/javascript">
     var url = "/js/analytics_script.js";
+    
     document.addEventListener('DOMContentLoaded', function(){
         var id = document.getElementById(id);
         var scriptElement = document.createElement('script');
@@ -216,5 +225,8 @@
         document.querySelector('footer').appendChild(scriptElement);
     });
   </script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@3.9.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson@3"></script> -->
 </body>
 </html>
