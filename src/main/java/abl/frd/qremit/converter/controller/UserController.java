@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.persistence.EntityManager;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -358,6 +359,36 @@ public class UserController {
             response.put("datasets", datasets);
 
             return response;
+    }
+
+
+    @GetMapping(value = "/getAgraniBankRemittance", produces = "application/json")
+    public ResponseEntity<?> getAgraniBankRemittance() {
+        try {
+            // SQL query
+            String query = "SELECT year, SUM(amount) AS total_remittance " +
+                           "FROM analytics_all_bank_remittance  " +
+                           "WHERE bank_name = 'Agrani Bank' " +
+                           "GROUP BY year " +
+                           "ORDER BY year";
+
+            // Execute query
+            List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+            // Transform results
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (Object[] row : resultList) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("year", row[0]);
+                data.put("totalRemittance", ((Number) row[1]).doubleValue());
+                response.add(data);
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching remittance data.");
+        }
     }
 
     @GetMapping(value = "/getBankRemittanceDataForTable", produces = "application/json")
