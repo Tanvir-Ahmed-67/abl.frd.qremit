@@ -62,7 +62,11 @@ public class BeftnModelService {
                     existingEntity.setIsProcessedMain(processed);
                     existingEntity.setDownloadDateTime(CommonService.getCurrentDateTime());
                     existingEntity.setDownloadUserId(myUserDetailsService.getCurrentUser());
-                    if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
+                    if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIncentive() == 0){
+                        existingEntity.setIsDownloaded(1);
+                        existingEntity.setIsProcessed(1);
+                    }
+                    else if(existingEntity.getIsProcessedMain() == 1 && existingEntity.getIsProcessedIncentive() == 1){
                         existingEntity.setIsDownloaded(1);
                         existingEntity.setIsProcessed(1);
                     }
@@ -145,6 +149,14 @@ public class BeftnModelService {
                 break;
         }
         return beftnModelList;
+    }
+
+    public List<BeftnModel> getBeftnModelByTransactionNoAndIsDownloaded(String transactionNo, int isDownloaded){
+        return beftnModelRepository.findBeftnModelByTransactionNoAndIsDownloaded(transactionNo, isDownloaded);
+    }
+
+    public BeftnModel findBeftnModelByIdAndIsDownloaded(int id, int isDownloaded){
+        return beftnModelRepository.findByIdAndIsDownloaded(id, isDownloaded);
     }
 
     public List<BeftnModel> findBeftnModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){

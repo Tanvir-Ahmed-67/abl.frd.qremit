@@ -48,6 +48,53 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
+                                                <label>Allowed Ips</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input  name="allowedIps" th:field="*{allowedIps}" th:value="${user.allowedIps}" class="form-control" minlength="7"
+                                                                   pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(,((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$"
+                                                                   title="Enter valid IPv4 addresses separated by commas (e.g., 192.168.1.1,10.0.0.1)"
+                                                                   required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Allowed Start Time</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="time"
+                                                               name="startTime"
+                                                               th:field="*{startTime}"
+                                                               th:value="${user.startTime}"
+                                                               class="form-control" required>
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="clock"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Allowed End Time</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="time"
+                                                               name="endTime"
+                                                               th:field="*{endTime}"
+                                                               th:value="${user.endTime}"
+                                                               class="form-control" required>
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="clock"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
                                                 <label>Nrta Code</label>
                                             </div>
                                             <div class="col-md-8">

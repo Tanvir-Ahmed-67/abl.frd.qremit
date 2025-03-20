@@ -164,6 +164,7 @@ public class CommonService {
             onlineModel.setBankName((String) getPropertyValue(model, "getBankName"));
             onlineModel.setBranchCode((String) getPropertyValue(model, "getBranchCode"));
             onlineModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
+            onlineModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             onlineModel.setIsProcessed(flag);
             onlineModel.setIsDownloaded(flag);
             if(flag == 1){
@@ -304,6 +305,7 @@ public class CommonService {
             beftnModel.setBankName((String) getPropertyValue(model, "getBankName"));
             beftnModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             beftnModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
+            beftnModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -615,14 +617,76 @@ public class CommonService {
                     } 
                     field.set(model, doubleField);
                 }
-                if(field.getType().equals(Integer.class)){
-                    field.set(model, CommonService.convertStringToInt((String) fieldValue));
+                if(field.getType().equals(Integer.class) || field.getType().equals(int.class)){
+                    field.set(model, convertStringToInt((String) fieldValue));
+                }
+                if(field.getType().equals(LocalDateTime.class)){
+                    LocalDateTime dateField = convertStringToDate(fieldValue.toString());
+                    field.set(model, dateField);
                 }
             }catch(NoSuchFieldException | IllegalAccessException e){
                 e.printStackTrace();
             }
         }
         return model;
+    }
+
+    public static Object addFileInfoModelAndUserInModelInstance(Object modelInstance, FileInfoModel fileInfoModel, User user) throws Exception{
+        Field field = modelInstance.getClass().getDeclaredField("fileInfoModel");
+        field.setAccessible(true);
+        field.set(modelInstance, fileInfoModel);
+        Field ufield = modelInstance.getClass().getDeclaredField("userModel");
+        ufield.setAccessible(true);
+        ufield.set(modelInstance, user);
+        return modelInstance;
+    }
+
+    public static Map<String, Object> convertModelToObject(Object model){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            for (Field field : model.getClass().getDeclaredFields()) {
+                field.setAccessible(true); // Allow access to private fields
+                map.put(field.getName(), field.get(model)); // Add field name and value
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    public static <T> Map<String, Object> convertDataModelToObject(T model, String userKey) throws Exception{
+        if(model == null) return getResp(1, "No data found following transaction id", null);
+        FileInfoModel fileInfoModel = (FileInfoModel) getPropertyValue(model, "getFileInfoModel");
+        User user = (User) getPropertyValue(model, "getUserModel");
+        int fileInfoModelId = fileInfoModel.getId();
+        int userId = user.getId();
+        Map<String, Object> obj = convertModelToObject(model);
+        obj.put("fileInfoModelId", fileInfoModelId);
+        obj.put(userKey, userId);
+        obj.remove("userModel");
+        obj.remove("fileInfoModel");
+        return obj;
+    }
+
+    public static List<Map<String, Object>> convertDynamicListToMap(List<?> dataList, Class<?> modelClass){
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        for(Object data: dataList){
+            if(modelClass.isInstance(data)){
+                Map<String, Object> fieldMap = new HashMap<>();
+                Field[] fields = modelClass.getDeclaredFields();
+                for(Field field: fields){
+                    try{
+                        field.setAccessible(true);
+                        Object value = field.get(data); 
+                        fieldMap.put(field.getName(), value);
+                    }catch(IllegalAccessException e){
+                        e.printStackTrace();
+                    }
+                }
+                resultList.add(fieldMap);
+            }
+        }
+        return resultList;
     }
 
     public static void addErrorDataModelList(List<ErrorDataModel> errorDataModelList, Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
@@ -737,9 +801,13 @@ public class CommonService {
 
     public static String checkBEFTNRouting(String routingNo){
         String errorMessage = "";
+        String msg = "Invalid Routing Number for BEFTN";
         if(routingNo.length() != 9 || checkAgraniRoutingNo(routingNo)){
-            errorMessage = "Invalid Routing Number for BEFTN";
+            return msg;
         }
+        String regex = "^[0-9]+$";
+        if(routingNo.startsWith("00"))  return msg;
+        if(!routingNo.matches(regex))    return msg;
         return errorMessage;
     }
 
@@ -791,11 +859,6 @@ public class CommonService {
         if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
             return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }
-        //check exchange code
-        String exchangeMessage = CommonService.checkExchangeCode(userExCode, exchangeCode, nrtaCode);
-        if(!exchangeMessage.isEmpty()){
-            return getResp(2, exchangeMessage, null);
-        }
         errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
         if(!errorMessage.isEmpty()){
             addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
@@ -803,74 +866,6 @@ public class CommonService {
             resp.put("errorDataModelList", errorDataModelList);
             return resp;
         }
-        /*
-        //a/c no, benficiary name, amount empty or null check
-        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
-        if(!errorMessage.isEmpty()){
-            addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-            resp = getResp(1, errorMessage, null);
-            resp.put("errorDataModelList", errorDataModelList);
-            return resp;
-        }
-        if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
-            if(checkEmptyString(bankName)){
-                errorMessage = "Bank Name is empty. Please correct it";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            errorMessage = checkBEFTNRouting(branchCode);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isCocFound(beneficiaryAccount)){
-            errorMessage = checkCOCBankName(bankName);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
-            errorMessage = checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            errorMessage = checkCOString(beneficiaryAccount);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            if(checkEmptyString(branchCode)){
-                errorMessage = "Branch Code can not be empty for A/C payee";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
-                //only processed for a/c payee
-            }
-            else{
-                errorMessage = "No Legacy Account will not be processed";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
-            
-        }
-        */
         //check duplicate data exists in csv data
         if(transactionList.contains(transactionNo)){
             return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
@@ -986,8 +981,8 @@ public class CommonService {
         Map<String, LocalDateTime> dateTimeRange = new HashMap<>();
         String startDate = date + " 00:00:00";
         String endDate = date + " 23:59:59";
-        LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
-        LocalDateTime endDateTime = CommonService.convertStringToDate(endDate);
+        LocalDateTime startDateTime = convertStringToDate(startDate);
+        LocalDateTime endDateTime = convertStringToDate(endDate);
         dateTimeRange.put("startDateTime", startDateTime);
         dateTimeRange.put("endDateTime", endDateTime);
         return dateTimeRange;
@@ -1018,7 +1013,7 @@ public class CommonService {
             model.addAttribute("fileInfo", fileInfoModelObject);
             model.addAttribute("beftnIncentive", 0);
             int errorCount = fileInfoModelObject.getErrorCount();
-            int beftnCount = CommonService.convertStringToInt(fileInfoModelObject.getBeftnCount());
+            int beftnCount = convertStringToInt(fileInfoModelObject.getBeftnCount());
             if(beftnCount > 0){
                 model.addAttribute("beftnIncentive", 1);
             }
@@ -1073,7 +1068,7 @@ public class CommonService {
     }
 
     public static String generateDynamicFileName(String text, String ext){
-        String formattedDate = CommonService.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
+        String formattedDate = getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
         String fileName = text + formattedDate + ext;
         return fileName;
     }
@@ -1216,4 +1211,122 @@ public class CommonService {
         return keywords;
     }
 
+    public static Map<String, Object> checkBeftnEditForSpecialExchange(String exchangeCode, String type){
+        Map<String,Object> resp = getResp(0, "", null);
+        String[] exchangeCodeList = {"7010226","7010228","7010290","7010299","111111"};
+        if(exchangeCode.equals("444444")){
+            if(("3").equals(type))  return getResp(1, "BEFTN not allowed in swift", null);
+        }
+        for(String exCode: exchangeCodeList){
+            if(exCode.equals(exchangeCode)){
+                if(!("3").equals(type)) resp = getResp(1, "You are not allowed to change beftn to any other type for specific exchange code", null);
+            }
+        }
+        return resp;
+    }
+
+    public static String getSidebarNameByUserid(int userId){
+        String sidebar = "";
+        switch(userId){
+            case 0:
+                sidebar = "sidebarAdmin";
+                break;
+            case 8888:
+                sidebar = "sidebarSuperAdmin";
+                break;
+            default:
+                sidebar = "sidebarUser";
+                break;
+        }
+        return sidebar;
+    }
+
+    public static String removeAllSpecialCharacterFromString(String str){
+        return str.replaceAll("[^a-zA-Z0-9]", "");
+    }
+
+    public static <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
+        Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, String fileExchangeCode, int checkType, int type){
+        Map<String, Object> modelResp = new HashMap<>();
+        List<ErrorDataModel> errorDataModelList = new ArrayList<>();
+        List<String> transactionList = new ArrayList<>();
+        String duplicateMessage = "";
+        int duplicateCount = 0;
+        List<T> modelList = new ArrayList<>();
+        int isValidFile = 0;
+        for(Map<String, Object> data: dataList){
+            String transactionNo = data.get("transactionNo").toString();
+            String exchangeCode = data.get("exchangeCode").toString();
+            String nrtaCode = data.get("nrtaCode").toString();
+            String bankName = data.get("bankName").toString();
+            if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
+            //check exchange code
+            if(isValidFile == 0){
+                String exchangeMessage = checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
+                if(!exchangeMessage.isEmpty()){
+                    resp.put("errorMessage", exchangeMessage);
+                    break;
+                }else isValidFile = 1;
+            }
+            
+            String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+            String branchCode = data.get("branchCode").toString();
+            data.remove("nrtaCode");
+            Map<String, Object> dupResp = getDuplicateTransactionNo(transactionNo, uniqueDataList);
+            if((Integer) dupResp.get("isDuplicate") == 1){
+                duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                duplicateCount++;
+                continue;
+            }
+            Map<String, Object> archiveResp = getDuplicateTransactionNo(transactionNo, archiveDataList);
+            if((Integer) archiveResp.get("isDuplicate") == 1){
+                duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                duplicateCount++;
+                continue;
+            }
+        
+            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
+            if((Integer) errResp.get("err") == 1){
+                errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
+                continue;
+            }
+            if((Integer) errResp.get("err") == 4){
+                duplicateMessage += errResp.get("msg");
+                continue;
+            }
+            if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
+            String typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
+            /*
+             * need to modify
+             */
+            if(checkType == 1){
+                int allowedType = (type == 1) ? 1:3;  //for betn 3
+                if(!convertStringToInt(typeFlag).equals(allowedType)){
+                    String msg = "Invalid Remittence Type for ";
+                    msg += (type == 1) ? "API": "BEFTN";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+            }
+            try{
+                T modelInstance = modelClass.getDeclaredConstructor().newInstance();
+                modelInstance = createDataModel(modelInstance, data);
+                Method setTypeFlagMethod = modelClass.getMethod("setTypeFlag", String.class);
+                setTypeFlagMethod.invoke(modelInstance, typeFlag);
+                Method setUploadDateTimeMethod = modelClass.getMethod("setUploadDateTime", LocalDateTime.class);
+                setUploadDateTimeMethod.invoke(modelInstance, currentDateTime);
+                modelList.add(modelInstance);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        modelResp.put("errorDataModelList", errorDataModelList);
+        modelResp.put("modelList",modelList);
+        modelResp.put("resp",resp);
+        modelResp.put("duplicateMessage", duplicateMessage);
+        modelResp.put("duplicateCount", duplicateCount);
+        modelResp.put("transactionList", transactionList);
+        return modelResp;
+    }
+    
 }

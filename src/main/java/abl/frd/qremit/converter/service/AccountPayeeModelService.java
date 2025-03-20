@@ -99,6 +99,14 @@ public class AccountPayeeModelService {
         return accountPayeeModelList;
     }
 
+    public List<AccountPayeeModel> getAccountPayeeModelByTransactionNoAndIsDownloaded(String transactionNo, int isDownloaded){
+        return accountPayeeModelRepository.finAccountPayeeModelByTransactionNoAndIsDownloaded(transactionNo,isDownloaded);
+    }
+
+    public AccountPayeeModel findAccountPayeeModelIdAndIsDownloaded(int id, int isDownloaded){
+        return accountPayeeModelRepository.findByIdAndIsDownloaded(id, isDownloaded);
+    }
+
     public List<AccountPayeeModel> findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
         return accountPayeeModelRepository.findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
     }

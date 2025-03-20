@@ -86,6 +86,8 @@ public class UtilsController {
             case "7010226":
             case "7010299":
             case "7010228":
+            case "7010290":
+            case "7010260":
                 showDropDown = 1;
                 break;
             default:
@@ -97,7 +99,7 @@ public class UtilsController {
     public Map<String, Object> getDropdown(String exCode){
         Map<String, Object> resp = new HashMap<>();
         String api = "API";
-        if(exCode.equals("7010228"))    api = "Account Payee";
+        if(exCode.equals("7010228") || exCode.equals("7010260"))    api = "Account Payee";
         resp.put("API",api);
         resp.put("BEFTN", "BEFTN");
         return resp;

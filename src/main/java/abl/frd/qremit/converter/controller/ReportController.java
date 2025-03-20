@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.controller;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -59,13 +60,12 @@ public class ReportController {
         return resp;
     }
 
-
-
     public static List<Map<String, String>> getReportColumn(String type){
         String[] columnData = null;
         String[] columnTitles = null;
         switch(type){
             case "1":
+            case "5":
             default:
                 columnData = new String[] {"sl", "exchangeCode", "fileName", "cocCount", "beftnCount", "onlineCount", "accountPayeeCount", "totalCount", "errorCount", "totalAmount", "uploadDateTime", "action"};
                 columnTitles = new String[] {"SL", "Exchange Code", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Total Amount", "Upload Date", "Action"};
@@ -78,6 +78,20 @@ public class ReportController {
             case "4":
                 columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","amount","uploadDateTime","errorMessage","action"};
                 columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Amount","Upload Date","Error Mesage","Action"};
+                break;
+            case "6":
+            case "10":
+                columnData = new String[] {"sl", "email", "userName", "role", "exchangeCode", "status", "action"};
+                columnTitles = new String[] {"SL", "Email", "User Name", "Role", "Exchange Code","Status","Action"};
+                break;
+            case "7":
+                columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};
+                columnTitles = new String[] {"SL", "Exchange Name", "Exchange Code", "NRTA Code", "Total Remittances","Total Amount"};
+                break;
+            case "8":
+            case "9":
+                columnData = new String[] {"sl", "exchangeCode", "exchangeName", "exchangeShortName", "nrtaCode", "status", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Exchange Name", "Exchange Short Name", "NRTA Code", "Status","Action"};
                 break;
         }
         return CommonService.createColumns(columnData, columnTitles);
@@ -235,38 +249,95 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-    @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET)
-    public String generateSummaryOfDailyStatement(Model model, @RequestParam(defaultValue = "") String date) {
+    @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> generateSummaryOfDailyStatement(Model model, @RequestParam(defaultValue = "") String date) {
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyStatement(date);
         Double grandTotalAmount = 0.00;
         String commaFormattedGrandTotalAmount="";
         int grandTotalRemittances=0;
+        int i = 1;
         for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
+            Map<String, Object> dataMap = new HashMap<>();
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
             grandTotalAmount = grandTotalAmount+exchangeReportDTO.getTotalAmountCount();
             grandTotalRemittances = grandTotalRemittances+exchangeReportDTO.getTotalRowCount();
             commaFormattedGrandTotalAmount = exchangeReportDTO.formattedAmount.format(grandTotalAmount);
+            dataMap.put("sl", i++);
+            dataMap.put("exchangeCode", exchangeReportDTO.getExchangeCode());
+            dataMap.put("nrtaCode", exchangeReportDTO.getNrtAccountNo());
+            dataMap.put("exchangeName", exchangeReportDTO.getExchangeName());
+            dataMap.put("totalRemittance", exchangeReportDTO.getTotalRowCount());
+            dataMap.put("totalAmount", exchangeReportDTO.doFormatAmount(exchangeReportDTO.getTotalAmountCount()));
+            dataList.add(dataMap);
         }
+        if(!dataList.isEmpty()){
+            Map<String, Object> totalData = calculateTotalSummaryOfDailyStatemen(commaFormattedGrandTotalAmount, String.valueOf(grandTotalRemittances));
+            dataList.add(totalData);
+            resp.put("dailyStatementUrl","/downloadSummaryOfDailyStatementInPdfFormat?date=" + date);
+            resp.put("dailyStatementTitle","Download Summary in PDF");
+            resp.put("dailyVoucherUrl","/downloaDailyVoucherInPdfFormat?date=" + date);
+            resp.put("dailyVoucherTitle", "Download Voucher in PDF");
+        }
+        
+        resp.put("data", dataList);
+        return resp;
+        /*
         model.addAttribute("summaryReportContent", exchangeReport);
         model.addAttribute("grandTotalAmount", commaFormattedGrandTotalAmount);
         model.addAttribute("grandTotalRemittances", grandTotalRemittances);
         model.addAttribute("date", date);
+        System.out.println(model);
         return "report/summaryOfDailyRemittance";
+        */
     }
 
-    @RequestMapping(value="/detailsOfDailyStatement", method= RequestMethod.GET)
-    public String generateDetailsOfDailyStatement(@RequestParam(defaultValue = "html") String format, Model model, @RequestParam(defaultValue = "") String date) throws FileNotFoundException {
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
-        List<ExchangeReportDTO> exchangeReport = reportService.generateDetailsOfDailyStatement(date);
-        for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
-            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+    public Map<String, Object> calculateTotalSummaryOfDailyStatemen(String totalAmount, String totalRemittance){
+        Map<String, Object> totalData = new HashMap<>();
+        totalData.put("sl", "");
+        totalData.put("exchangeCode", "");
+        totalData.put("nrtaCode", CommonService.generateClassForText("Grand Total", "fw-bold"));
+        totalData.put("exchangeName", "");
+        totalData.put("totalAmount", CommonService.generateClassForText(totalAmount, "fw-bold"));
+        totalData.put("totalRemittance", CommonService.generateClassForText(totalRemittance, "fw-bold"));
+        return totalData;
+    }
+
+    @RequestMapping(value="/showDetailsOfDailyStatement", method= RequestMethod.GET)
+    public String showDetailsOfDailyStatement(Model model, @RequestParam(defaultValue = "") String startDate, @RequestParam(defaultValue = "") String endDate) {
+        if(startDate.isEmpty()){
+            startDate = CommonService.getCurrentDate("yyyy-MM-dd");
         }
-        model.addAttribute("detailsReportContent", exchangeReport);
-        model.addAttribute("date", date);
+        if(endDate.isEmpty()){
+            endDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
         return "report/detailsOfDailyRemittance";
     }
-
+    @RequestMapping(value="/detailsOfDailyStatement", method= RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> generateDetailsOfDailyStatement(@RequestParam(defaultValue = "") String fromDate, @RequestParam(defaultValue = "") String toDate) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            resp = reportService.generateDetailsOfDailyStatement(fromDate, toDate);
+            if((Integer) resp.get("err") == 1){
+                resp = CommonService.getResp(1,"No data found for the selected dates.", null);
+            }
+        } catch (Exception e) {
+            resp = CommonService.getResp(1,"An error occurred while fetching reimbursement data: " + e.getMessage(), null);
+        }
+        return ResponseEntity.ok(resp);
+    }
     @RequestMapping(value="/downloadSummaryOfDailyStatementInPdfFormat", method= RequestMethod.GET)
     public ResponseEntity<byte[]> downloadDailyStatementInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
@@ -283,13 +354,18 @@ public class ReportController {
                 .headers(headers)
                 .body(pdfReport);
     }
-    @RequestMapping(value = "/downloadDetailsOfDailyStatement", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format, @RequestParam(defaultValue = "") String date){
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+    @RequestMapping(value = "/downloadSearchFile", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDetailsReportInPdf(@RequestParam("type") String format, @RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate){
+        if(fromDate.isEmpty()){
+            fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        if(toDate.isEmpty()){
+            toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
         try {
-            List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyStatement(date);
-            byte[] reportBytes = reportService.generateDetailsJasperReport(dataList, format, date);
-            String fileName = commonService.generateFileName("details_report_", date, "." + format.toLowerCase());
+            List<ExchangeReportDTO> dataList = reportService.generateDetailsOfDailyRemittances(fromDate, toDate);
+            byte[] reportBytes = reportService.generateJasperSearchFileInPdfAndTxtFormat(dataList, format, toDate);
+            String fileName = commonService.generateFileName("search_of_", toDate, "." + format.toLowerCase());
             MediaType mediaType = format.equalsIgnoreCase("pdf") ? MediaType.APPLICATION_PDF : MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
@@ -367,23 +443,38 @@ public class ReportController {
         return "pages/admin/adminIcashUpload";
     }
 
+    @GetMapping(value="/getMo",produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> getMo(@RequestParam(defaultValue = "") String date){
+        Map<String, Object> resp = new HashMap<>();
+        MoModel model = moModelService.findMoByDate(date);
+        if(model == null)   return CommonService.getResp(1,"No data found", null);
+        Map<String, Object> data = new HashMap<>();
+        data.put("totalIcashNumber", model.getTotalNumberIcash());
+        data.put("totalIcashAmount", model.getTotalAmountIcash());
+        resp = CommonService.getResp(0,"", null);
+        resp.put("data", data);
+        return resp;
+    }
     @RequestMapping(value="/generateMo", method= RequestMethod.POST)
-    public String generateMo(MoModel mo, Model model, @RequestParam(defaultValue = "") String date) {
-        System.out.println("DATE FROM /GENERATE mo url "+date);
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+    public String generateMo(@RequestParam Map<String, String> formData, Model model) {
+        String date = formData.get("reportDate");
+        MoModel mo = new MoModel();
         mo.setMoDate(LocalDate.parse(date));
-        MoModel moModel = moModelService.findIfAlreadyGenerated(mo);
-        if (moModel == null) {
-            moModel = moModelService.processAndGenerateMoData(mo);
-        }
+        mo.setTotalNumberIcash(Long.valueOf(formData.get("totalNumberIcash")));
+        mo.setTotalAmountIcash(new BigDecimal(formData.get("totalAmountIcash")));
+        MoModel moModel = moModelService.findMoByDate(date);
+        if(moModel == null) moModel = moModelService.processAndGenerateMoData(mo);
+        else    moModel = moModelService.updateMo(moModel, formData);
         model.addAttribute("moModel", moModel);
         model.addAttribute("date", date);
         return "report/mo";
     }
-    @PostMapping("/downloadMoInPdfFormat")
-    public ResponseEntity<byte[]> downloadMoInPdfFormat(@RequestParam(defaultValue = "") String date, @ModelAttribute MoModel moModel) throws Exception {
-        System.out.println("DATE from downloadMoInPdfFormat ----- "+date);
+
+    @GetMapping("/downloadMoInPdfFormat")
+    public ResponseEntity<byte[]> downloadMoInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
         if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
+        MoModel moModel = moModelService.findMoByDate(date);
         MoModel moModelForPdf = moModelService.generateMoDTOForPreparingPdfFile(moModel, date);
         if(moModelForPdf == null){
             return ResponseEntity.noContent().build();
@@ -407,7 +498,7 @@ public class ReportController {
         }
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-        return "/report/reimbursement";
+        return "report/reimbursement";
     }
     @RequestMapping(value = "/getReimbursementData", method = RequestMethod.GET)
     @ResponseBody
@@ -421,6 +512,22 @@ public class ReportController {
                 toDate = CommonService.getCurrentDate("yyyy-MM-dd");
             }
             resp = reimbursementModelService.insertReimbursementData(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            Object dataObject = resp.get("data");
+            if (dataObject instanceof ArrayList<?>) {
+                List<?> dataList = (ArrayList<?>) dataObject;
+                String valueOfType;
+                for (Object obj : dataList) {
+                    if (obj instanceof ReimbursementModel) {
+                        ReimbursementModel reimbursementData = (ReimbursementModel) obj;
+                        valueOfType = reimbursementData.getType();
+                        if (valueOfType.equals("4")) {
+                            reimbursementData.setType("COC");
+                        } else if (valueOfType.equals("2")) {
+                            reimbursementData.setType("A/C Payee");
+                        }
+                    }
+                }
+            }
             if((Integer) resp.get("err") == 1){
                 resp = CommonService.getResp(1,"No data found for the selected dates.", null);
             }
@@ -431,9 +538,15 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/downloadDailyReimbursement", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyReimbursement(@RequestParam String date, @ModelAttribute MoModel moModel){
+    public ResponseEntity<byte[]> downloadDailyReimbursement(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
         try {
-            byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDate(LocalDate.parse(date));
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_", ".csv");
             MediaType mediaType = MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
@@ -446,9 +559,15 @@ public class ReportController {
         }
     }
     @RequestMapping(value = "/downloadDailyReimbursementForIcash", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyReimbursementForIcash(@RequestParam String date, @ModelAttribute MoModel moModel){
+    public ResponseEntity<byte[]> downloadDailyReimbursementForIcash(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
         try {
-            byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(date));
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_ICash_", ".csv");
             MediaType mediaType = MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
@@ -481,6 +600,7 @@ public class ReportController {
         }
     }
 
+    //for getting live data exchange wise
     @GetMapping(value="/getExchangeData", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
@@ -564,15 +684,16 @@ public class ReportController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
-        //if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return HttpStatus.UNAUTHORIZED.build();
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return HttpStatus.UNAUTHORIZED.getReasonPhrase();
         int userId = (int) userData.get("userid");
         Map<String, Object> searchType = CommonService.getSerachType(type);
         Map<String, String> exchangeMap = new HashMap<>();
         if(userData.containsKey("exchangeMap")) exchangeMap = (Map<String, String>) userData.get("exchangeMap");
         model.addAttribute("exchangeMap", exchangeMap);
-        String sidebar = (userId == 0) ? "sidebarAdmin":"sidebarUser";
+        String sidebar = CommonService.getSidebarNameByUserid(userId);
         model.addAttribute("sidebar", sidebar);
         model.addAttribute("searchType", searchType);
+        model.addAttribute("type", type);
         if(type.equals("2") && userId != 0){
             model.addAttribute("errorMessage", "Invalid Attempt. You are not allowed to perform this operation");
             return "fragments/error";
@@ -582,8 +703,12 @@ public class ReportController {
 
     @GetMapping(value="/getSearch", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getSearch(@RequestParam("searchType") String searchType, @RequestParam("searchValue") String searchValue){
-        Map<String, Object> resp = reportService.getSearch(searchType, searchValue);
+    public ResponseEntity<Map<String, Object>> getSearch(@RequestParam("searchType") String searchType, @RequestParam("searchValue") String searchValue, 
+        @RequestParam(defaultValue = "") String type){
+        Map<String, Object> resp = new HashMap<>();
+        if(("2").equals(type)){
+            resp = reportService.getCorrectionSearch(searchType, searchValue);
+        }else resp = reportService.getSearch(searchType, searchValue);;
         return ResponseEntity.ok(resp);
     }
 
@@ -600,6 +725,50 @@ public class ReportController {
             userId = (int) userData.get("adminUserId");
         }
         Map<String, Object> resp = reportService.deleteByFileInfoModelById(id, userId, request);
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/editForm/{id}")
+    public String editForm(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @PathVariable("id") String id, @RequestParam("type") String type){
+        return "pages/admin/editForm";
+    }
+
+    @GetMapping(value = "/getEditData/{id}", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getEditData(@AuthenticationPrincipal MyUserDetails userDetails, Model model, @PathVariable("id") String id, @RequestParam("type") String type){
+        Map<String, Object> resp = reportService.getEditData(CommonService.convertStringToInt(id), type, 0);
+        return ResponseEntity.ok(resp);
+    }
+
+    @PostMapping(value ="/update", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> updateIndividualDataById(@AuthenticationPrincipal MyUserDetails userDetails, @RequestParam Map<String, String> formData, Model model, 
+        HttpServletRequest request){
+        Map<String, Object> resp = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        int userId = (int) userData.get("userid");
+        if(userId != 0) return ResponseEntity.ok(CommonService.getResp(1, "You are not allowed to perform this operation", null));
+        Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
+        if(role.get("isAdmin") == 1){
+            userId = (int) userData.get("adminUserId");
+        }
+        formData.remove("_csrf");
+        formData.remove("_csrf_header");
+        try{
+            resp = reportService.updateIndividualDataById(formData, userId, request);
+        }catch(Exception e){
+            return ResponseEntity.ok(CommonService.getResp(1, e.getMessage(), null));
+        }
+        
+        return ResponseEntity.ok(resp);
+    }
+    @GetMapping(value="/getRouting", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getRoutingDetails(@RequestParam(defaultValue = "") String routingNo, @RequestParam(defaultValue = "") String bankCode){
+        Map<String, Object> resp = new HashMap<>();
+        if(routingNo.isEmpty() && bankCode.isEmpty())   return ResponseEntity.ok(CommonService.getResp(1, "Please select routing No or Bank code", null));
+        resp = customQueryService.getRoutingDetails(routingNo, bankCode);
         return ResponseEntity.ok(resp);
     }
 

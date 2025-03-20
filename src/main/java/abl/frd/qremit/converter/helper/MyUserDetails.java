@@ -86,4 +86,11 @@ public class MyUserDetails implements UserDetails {
     public boolean isPasswordChangeRequired() {
         return user.isPasswordChangeRequired();
     }
+
+    public int getFailedAttempt(){
+        return user.getFailedAttempt();
+    }
+    public void setFailedAttempt(int failedAttempt) {
+        this.user.setFailedAttempt(failedAttempt);
+    }
 }

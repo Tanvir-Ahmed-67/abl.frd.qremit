@@ -14,9 +14,9 @@ public class LogModelService {
     @Autowired
     LogModelRepository logModelRepository;
 
-    public List<Map<String, Object>> findLogModelByErrorDataId(String errorDataId){
+    public List<Map<String, Object>> findLogModelByDataId(String dataId){
         List<Map<String, Object>> logInfo = new ArrayList<>();
-        LogModel logModel = logModelRepository.findByErrorDataId(errorDataId);
+        LogModel logModel = logModelRepository.findByDataId(dataId);
         logInfo = processLogData(logModel);
         return logInfo;
     }
@@ -35,7 +35,7 @@ public class LogModelService {
             Map<String, Object> updatedDataMap = new HashMap<>();
             Map<String, Object> exchangeCodeMap = new HashMap<>();
             Map<String, Object> userIdMap = new HashMap<>();
-            Map<String, Object> errorDataIdMap = new HashMap<>();
+            Map<String, Object> dataIdMap = new HashMap<>();
             
             if(infoMap.containsKey("oldData"))  oldData = (Map<String, Object>) infoMap.get("oldData");
             if(infoMap.containsKey("updatedData"))  updatedData = (Map<String, Object>) infoMap.get("updatedData");
@@ -44,13 +44,13 @@ public class LogModelService {
             updatedDataMap.put("updatedData", updatedData);
             exchangeCodeMap.put("exchangeCode", logModel.getExchangeCode());
             userIdMap.put("userId", logModel.getUserId());
-            errorDataIdMap.put("errorDataId", logModel.getErrorDataId());
+            dataIdMap.put("dataId", logModel.getDataId());
             errorDataModelMap.put("errorDataModel", errorDataModel);
             
             dataList.add(oldDataMap);
             dataList.add(updatedDataMap);
             dataList.add(exchangeCodeMap);
-            dataList.add(errorDataIdMap);
+            dataList.add(dataIdMap);
             dataList.add(userIdMap);
             dataList.add(errorDataModelMap);
 
@@ -68,13 +68,13 @@ public class LogModelService {
         return resp;
     }
 
-    public Map<String, Object> addLogModel(int userId, int fileInfoModelId, String exchangeCode, String errorDataModelId, String action, Map<String, Object> info, HttpServletRequest request){
+    public Map<String, Object> addLogModel(int userId, int fileInfoModelId, String exchangeCode, String dataId, String action, Map<String, Object> info, HttpServletRequest request){
         Map<String, Object> resp = CommonService.getResp(1, "Error Updating Information", null);
         String ipAddress = request.getRemoteAddr();
         String infoStr = CommonService.serializeInfoToJson(info);
         if(infoStr == null) return CommonService.getResp(1, "Failed to parse JSON data", null);
         try{
-            LogModel logModel = new LogModel(String.valueOf(userId), errorDataModelId, fileInfoModelId, exchangeCode, action, infoStr, ipAddress);
+            LogModel logModel = new LogModel(String.valueOf(userId), dataId, fileInfoModelId, exchangeCode, action, infoStr, ipAddress);
             logModelRepository.save(logModel);
             resp = CommonService.getResp(0, "Data inserted to LogModel successful", null);
         }catch(Exception e){

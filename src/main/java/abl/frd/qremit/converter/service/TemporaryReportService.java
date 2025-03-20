@@ -87,6 +87,7 @@ public class TemporaryReportService {
                     temporaryReportModel.setFileInfoModelId((int) fileInfoModel.getId());
                     temporaryReportModel.setType(type);
                     temporaryReportModel.setDataModelId(id);
+                    temporaryReportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
                     //added api for online model
                     if(("1").equals(type))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     tempInsertList.add(temporaryReportModel);

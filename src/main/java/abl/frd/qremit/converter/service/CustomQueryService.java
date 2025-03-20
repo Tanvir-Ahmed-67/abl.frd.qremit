@@ -27,6 +27,7 @@ public class CustomQueryService {
 
     public Map<String, Object> getRoutingDetailsByRoutingNo(String routingNo){
         Map<String, Object> resp = new HashMap<>();
+        if(routingNo.isEmpty()) return CommonService.getResp(1, "Routing No is Empty", null);
         Map<String, Object> routingDetails = getRoutingDetails(routingNo, "");
         if((Integer) routingDetails.get("err") == 0){
             for(Map<String,Object> rdata: (List<Map<String, Object>>) routingDetails.get("data")){
@@ -93,4 +94,21 @@ public class CustomQueryService {
     public Map<String, Object> getUniqueList(List<String[]> data, String tbl){
         return customQueryRepository.getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(data, tbl);
     }
+
+    public Map<String, Object> getArchiveUniqueList(List<String[]> data, String year){
+        return customQueryRepository.getArchiveUniqueList(data, year);
+    }
+
+    public Map<String, Object> processArchiveUniqueList(List<String[]> data){
+        Map<String, Object> archive_23 = getArchiveUniqueList(data, "2023");
+        if((Integer) archive_23.get("err") == 0)    return archive_23;
+        if (archive_23.containsKey("data") && archive_23.get("data") instanceof List){
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) archive_23.get("data");
+            if (dataList == null || dataList.isEmpty()){
+                return getArchiveUniqueList(data, "2024");
+            }
+        }
+        return archive_23;
+    }
+
 }

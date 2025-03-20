@@ -44,8 +44,11 @@ public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeM
     List<AccountPayeeModel> findAccountPayeeModelByBeneficiaryAccount(String beneficiaryAccount);
     @Query("SELECT n FROM AccountPayeeModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isDownloaded= :isDownloaded")
     List<AccountPayeeModel> findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(@Param("fileInfoModelId") int fileInfoModelId, @Param("isDownloaded") int isDownloaded);
+    @Query("SELECT n FROM AccountPayeeModel n WHERE n.transactionNo = :transactionNo AND n.isDownloaded= :isDownloaded")
+    List<AccountPayeeModel> finAccountPayeeModelByTransactionNoAndIsDownloaded(@Param("transactionNo") String transactionNo, @Param("isDownloaded") int isDownloaded);
     @Transactional
     @Modifying
     @Query("DELETE FROM AccountPayeeModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
+    AccountPayeeModel findByIdAndIsDownloaded(int id, int isDownloaded);
 }

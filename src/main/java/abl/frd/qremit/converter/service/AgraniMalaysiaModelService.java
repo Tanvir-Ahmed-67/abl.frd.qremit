@@ -290,6 +290,34 @@ public class AgraniMalaysiaModelService {
     public Map<String, Object> getBeftnData(Row row, String exchangeCode){
         Map<String, Object> data = new HashMap<>();
         String[] fields = {"beneficiaryMobile","draweeBranchName","draweeBranchCode","purposeOfRemittance","sourceOfIncome","processFlag","processedBy","processedDate","remitterMobile"};
+        String branchCode = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(10)));
+        String amount = CommonService.getCellValueAsString(row.getCell(11));
+        String bankName = "";
+        String bankCode = "";
+        String branchName = "";
+        if(!branchCode.isEmpty()){
+            Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode);
+            if(!routingDetails.isEmpty()){
+                bankName = routingDetails.get("bank_name").toString();
+                bankCode = routingDetails.get("bank_code").toString();
+                branchName = routingDetails.get("branch_name").toString();
+            }
+        }
+        data.put("exchangeCode", exchangeCode);
+        data.put("transactionNo", CommonService.getCellValueAsString(row.getCell(5)));
+        data.put("currency", "BDT");
+        data.put("amount", amount);
+        data.put("enteredDate", CommonService.getCurrentDate("MM/dd/yyyy"));
+        data.put("remitterName", "");
+        data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(7)));
+        data.put("beneficiaryAccount", CommonService.getCellValueAsString(row.getCell(8)));
+        data.put("bankName", bankName);
+        data.put("bankCode", bankCode);
+        data.put("branchName", branchName);
+        data.put("branchCode", branchCode);
+        for(String field: fields)   data.put(field, "");
+
+        /*
         String branchCode = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(8)));
         Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode);
         String bankName = "";
@@ -316,7 +344,7 @@ public class AgraniMalaysiaModelService {
         data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         for(String field: fields)   data.put(field, "");
-
+        */
         return data;
     }
 }

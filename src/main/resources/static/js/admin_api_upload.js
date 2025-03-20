@@ -13,6 +13,8 @@ $(document).ready(function(){
         }
     }
 
+    $()
+
     $(document).off('click',".process_report");
     $(document).on('click',".process_report", function(e){
         e.preventDefault();

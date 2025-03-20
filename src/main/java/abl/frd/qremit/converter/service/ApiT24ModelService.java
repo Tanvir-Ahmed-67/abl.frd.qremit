@@ -93,12 +93,12 @@ public class ApiT24ModelService {
             Map<String, String> nrtaCodeVsExchangeCodeMap = CommonService.getNrtaCodeVsExchangeCodeMap(exchangeHouseModelList);
             List<ApiT24Model> apiT24ModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
             int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
@@ -126,6 +126,13 @@ public class ApiT24ModelService {
             }
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ApiT24Model.class, resp, "", 1, 1);
+                apiT24ModelList = (List<ApiT24Model>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
+                /*
                 for(Map<String, Object> data: dataList){
                     String transactionNo = data.get("transactionNo").toString();
                     String exchangeCode = data.get("exchangeCode").toString();
@@ -136,6 +143,12 @@ public class ApiT24ModelService {
                     data.remove("nrtaCode");
                     Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
                     if((Integer) dupResp.get("isDuplicate") == 1){
+                        duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                        duplicateCount++;
+                        continue;
+                    }
+                    Map<String, Object> archiveResp = CommonService.getDuplicateTransactionNo(transactionNo, archiveDataList);
+                    if((Integer) archiveResp.get("isDuplicate") == 1){
                         duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
                         duplicateCount++;
                         continue;
@@ -168,6 +181,7 @@ public class ApiT24ModelService {
                     apiT24ModelList.add(apiT24Model);
                     
                 }
+                    */
             }
             
             //save error data
@@ -185,7 +199,6 @@ public class ApiT24ModelService {
             if(!resp.containsKey("errorMessage")){
                 resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
             }
-                
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);
