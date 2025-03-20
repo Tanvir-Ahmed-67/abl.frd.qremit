@@ -3,6 +3,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -153,8 +154,11 @@ public class ReportService {
         LocalDate tDate = LocalDate.parse(toDate);
         List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDateRange(fDate, tDate);
         if(isListValid(reportModelsList)){
+            List<ReportModel> sortedReportsList = reportModelsList.stream()
+                    .sorted(Comparator.comparing(ReportModel::getExchangeCode))
+                    .collect(Collectors.toList());
             int counter = 1;
-            for(ReportModel reportModel:reportModelsList){
+            for(ReportModel reportModel:sortedReportsList){
                 ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
                 exchangeReportDTO.setTotalRowCount(counter);
                 exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
