@@ -59,7 +59,7 @@
 		</field>
 		<field name="exchangeCode" class="java.lang.String">
 		</field>
-		<field name="enteredDate" class="java.time.LocalDateTime">
+		<field name="enteredDate" class="java.time.LocalDate">
 		</field>
 		<field name="amount" class="java.lang.Double">
 		</field>
@@ -136,7 +136,7 @@
 						</tableHeader>
 						<detailCell height="30" style="Table 1_TD">
 							<element kind="textField"  x="0" y="0" width="60" height="30" hTextAlign="Center" vTextAlign="Middle">
-								<expression><![CDATA[$F{enteredDate}.toLocalDate()]]></expression>
+								<expression><![CDATA[$F{enteredDate}]]></expression>
 							</element>
 						</detailCell>
 					</column>

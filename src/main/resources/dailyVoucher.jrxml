@@ -2,7 +2,7 @@
 <jasperReport name="DailyVoucher" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
 	<field name="exchangeName" class="java.lang.String"></field>
-	<field name="enteredDate" class="java.time.LocalDateTime"></field>
+	<field name="voucherDate" class="java.time.LocalDate"></field>
 	<field name="sumOfAmount" class="java.lang.Double"></field>
 	<field name="nrtAccountNo" class="java.lang.String"></field>
 	<field name="totalRowCount" class="java.lang.Integer"></field>
@@ -399,10 +399,10 @@
 				<expression><![CDATA[$F{nrtAccountNo}]]></expression>
 			</element>
 			<element kind="textField"  x="462" y="68" width="92" height="21" bold="true" hTextAlign="Left" vTextAlign="Middle">
-				<expression><![CDATA[$F{enteredDate}.toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))]]></expression>
+				<expression><![CDATA[$F{voucherDate}.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))]]></expression>
 			</element>
 			<element kind="textField" x="460" y="378" width="94" height="21" bold="true" hTextAlign="Left" vTextAlign="Middle">
-				<expression><![CDATA[$F{enteredDate}.toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))]]></expression>
+				<expression><![CDATA[$F{voucherDate}.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))]]></expression>
 			</element>
 			<element kind="textField"  x="529" y="521" width="26" height="18" hTextAlign="Left" vTextAlign="Middle">
 				<expression><![CDATA[$F{nrtAccountNo}]]></expression>

@@ -2,7 +2,6 @@ package abl.frd.qremit.converter.model;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ExchangeReportDTO {
     private String exchangeCode;
@@ -10,7 +9,7 @@ public class ExchangeReportDTO {
     private String transactionNo;
     private String currency;
     private Double amount;
-    private LocalDateTime enteredDate;
+    private LocalDate enteredDate;
     private LocalDate voucherDate;
     private String remitterName;
     private String remitterMobile;
@@ -54,12 +53,14 @@ public class ExchangeReportDTO {
         this.totalRowCount = totalRowCount;
     }
 
-    public String doFormatAmount(Double amount){
+    public String doFormatAmount(Double amount) {
         return formattedAmount.format(amount);
     }
-    public ExchangeReportDTO(){}
 
-    public ExchangeReportDTO(String exchangeCode, String transactionNo, Double amount, String beneficiaryName, String beneficiaryAccount, LocalDateTime enteredDate) {
+    public ExchangeReportDTO() {
+    }
+
+    public ExchangeReportDTO(String exchangeCode, String transactionNo, Double amount, String beneficiaryName, String beneficiaryAccount, LocalDate enteredDate) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.amount = amount;
@@ -84,17 +85,19 @@ public class ExchangeReportDTO {
         this.zoneName = zoneName;
     }
 
-    public void doSum(Double amount){
-        this.sumOfAmount = this.sumOfAmount+amount;
-    }
-    public void doCount(){
-        this.totalRowCount = this.totalRowCount+1;
+    public void doSum(Double amount) {
+        this.sumOfAmount = this.sumOfAmount + amount;
     }
 
-    public double getTotalAmountCount(){
+    public void doCount() {
+        this.totalRowCount = this.totalRowCount + 1;
+    }
+
+    public double getTotalAmountCount() {
         return this.sumOfAmount;
     }
-    public int getTotalRowCount(){
+
+    public int getTotalRowCount() {
         return this.totalRowCount;
     }
 
@@ -138,11 +141,11 @@ public class ExchangeReportDTO {
         this.amount = amount;
     }
 
-    public LocalDateTime getEnteredDate() {
+    public LocalDate getEnteredDate() {
         return enteredDate;
     }
 
-    public void setEnteredDate(LocalDateTime enteredDate) {
+    public void setEnteredDate(LocalDate enteredDate) {
         this.enteredDate = enteredDate;
     }
 
@@ -185,6 +188,7 @@ public class ExchangeReportDTO {
     public void setBeneficiaryMobile(String beneficiaryMobile) {
         this.beneficiaryMobile = beneficiaryMobile;
     }
+
     public Double getSumOfAmount() {
         return sumOfAmount;
     }

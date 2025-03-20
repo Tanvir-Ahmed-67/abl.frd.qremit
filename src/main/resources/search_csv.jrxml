@@ -4,7 +4,7 @@
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
 	<field name="transactionNo" class="java.lang.String"></field>
 	<field name="exchangeCode" class="java.lang.String"></field>
-	<field name="enteredDate" class="java.time.LocalDateTime"></field>
+	<field name="enteredDate" class="java.time.LocalDate"></field>
 	<field name="currency" class="java.lang.String"></field>
 	<field name="bankCode" class="java.lang.String"></field>
 	<field name="bankName" class="java.lang.String"></field>
@@ -32,7 +32,7 @@
 				<text><![CDATA[CRED]]></text>
 			</element>
 			<element kind="textField" x="200" y="0" width="100" height="30" blankWhenNull="true">
-				<expression><![CDATA[$F{enteredDate}.toLocalDate()]]></expression>
+				<expression><![CDATA[$F{enteredDate}]]></expression>
 			</element>
 			<element kind="staticText" x="300" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
 				<text><![CDATA[BDT]]></text>
