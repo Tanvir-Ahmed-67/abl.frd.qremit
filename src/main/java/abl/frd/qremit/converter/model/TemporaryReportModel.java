@@ -62,6 +62,8 @@ public class TemporaryReportModel {
     private int dataModelId;
     @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isApi = 0;
+    @Column(name = "entered_date", length=30)
+    private String enteredDate;
 
     public int getId() {
         return this.id;
@@ -121,6 +123,14 @@ public class TemporaryReportModel {
 
     public Double getAmount() {
         return this.amount;
+    }
+
+    public String getEnteredDate() {
+        return this.enteredDate;
+    }
+
+    public void setEnteredDate(String enteredDate) {
+        this.enteredDate = enteredDate;
     }
 
     public void setAmount(Double amount) {

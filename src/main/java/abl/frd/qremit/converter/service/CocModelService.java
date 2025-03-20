@@ -70,6 +70,14 @@ public class CocModelService {
         return cocModelList;
     }
 
+    public List<CocModel> getCoCModelByTransactionNoAndIsDownloaded(String transactionNo, int isDownloaded){
+        return cocModelRepository.findCocModelByTransactionNoAndIsDownloaded(transactionNo, isDownloaded);
+    }
+
+    public CocModel findCocModelByIdAndIsDownloaded(int id, int isDownloaded){
+        return cocModelRepository.findByIdAndIsDownloaded(id, isDownloaded);
+    }
+
     public List<CocModel> findCocModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
         return cocModelRepository.findCocModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
     }

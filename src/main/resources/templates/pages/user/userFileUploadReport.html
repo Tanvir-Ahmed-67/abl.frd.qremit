@@ -22,6 +22,9 @@
                 </div>
             </div>
             <section class="section">
+                <div th:if="${message}" id="message" class="alert alert-info text-center">
+                    [[${message}]]
+                </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -32,6 +35,7 @@
                         <div class="table-responsive">
                             <table class='table table-striped' id="user_upload_tbl" width="100%"></table>
                         </div>
+                        <div id="download_btn" class="text-center"><div ></div></div>
                     </div>
                 </div>
             </section>

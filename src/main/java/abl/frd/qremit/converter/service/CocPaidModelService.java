@@ -77,34 +77,6 @@ public class CocPaidModelService {
                 resp.put("errorMessage", e.getMessage());
             }
 
-            /*
-            if(cocPaidModelList.size()!=0) {
-                int ind = 0;
-                for (CocPaidModel cocPaidModel : cocPaidModelList) {
-                    cocPaidModel.setFileInfoModel(fileInfoModel);
-                    cocPaidModel.setUserModel(user);
-                    if (ind == 0) {
-                        fileInfoModel.setExchangeCode(exchangeCode);
-                        ind++;
-                    }
-                }
-            }
-            else {
-                return null;
-            }
-            int totalCount = cocPaidModelList.size();
-            fileInfoModel.setCocPaidModelList(cocPaidModelList);
-            fileInfoModel.setFileName(file.getOriginalFilename());
-            fileInfoModel.setUploadDateTime(currentDateTime);
-            fileInfoModel.setIsSettlement(1);
-            fileInfoModel.setCocCount(String.valueOf(totalCount));
-            fileInfoModel.setAccountPayeeCount("0");
-            fileInfoModel.setOnlineCount("0");
-            fileInfoModel.setBeftnCount("0");
-            fileInfoModel.setTotalCount(String.valueOf(totalCount));
-            fileInfoModelRepository.save(fileInfoModel);
-            return fileInfoModel;
-            */
         }
         catch(Exception e){
             String message = "fail to store csv data: " + e.getMessage();
@@ -164,33 +136,6 @@ public class CocPaidModelService {
                 cocPaidModel.setUserModel(user);
                 cocPaidModelList.add(cocPaidModel);
                 totalAmount += amount;
-                /*
-                if (duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
-                    continue;
-                }
-                String routingNo = CommonService.fixRoutingNo(csvRecord.get(8));
-                Map<String, Object> routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo);
-                
-                CocPaidModel cocPaidModel = new CocPaidModel(
-                        csvRecord.get(0), //exCode
-                        csvRecord.get(1), //Tranno
-                        CommonService.convertStringToDouble(csvRecord.get(4)), //Amount
-                        CommonService.convertStringToDate(csvRecord.get(3)), //Entered Date
-                        CommonService.convertStringToDate(csvRecord.get(11)), //Paid Date
-                        csvRecord.get(5), //remitter Name
-                        csvRecord.get(6), // beneficiary Name
-                        csvRecord.get(7), //beneficiaryAccount
-                        routingNo, //routingNo
-                        csvRecord.get(10), //beneficiary Mobile
-                        "Agrani Bank",
-                        "11",
-                        routingMap.get("branch_name").toString(),
-                        routingMap.get("abl_branch_code").toString(),// branch code have to put here
-                        csvRecord.get(12), //tr mode
-                        currentDateTime,    //uploadDateTime
-                        "4");  
-                cocPaidModelList.add(cocPaidModel);
-                */
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -219,12 +164,15 @@ public class CocPaidModelService {
 
     public Map<String, Object> getCsvData(CSVRecord csvRecord){
         String routingNo = CommonService.fixRoutingNo(csvRecord.get(8));
-        Map<String, Object> routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo);
+        Map<String, Object> routingMap = new HashMap<>();
+        if(!routingNo.isEmpty())    routingMap = customQueryService.getRoutingDetailsByRoutingNo(routingNo);
+        String branchName = (routingMap.containsKey("branch_name")) ? routingMap.get("branch_name").toString(): "";
+        String branchCode = (routingMap.containsKey("abl_branch_code")) ? routingMap.get("abl_branch_code").toString(): "";
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", csvRecord.get(0));
         data.put("transactionNo", csvRecord.get(1));
         data.put("amount", csvRecord.get(4));
-        data.put("enteredDate", CommonService.convertStringToDate(csvRecord.get(3)));
+        data.put("enteredDate", csvRecord.get(3));
         data.put("paidDate", CommonService.convertStringToDate(csvRecord.get(11)));
         data.put("remitterName", csvRecord.get(5));
         data.put("beneficiaryName", csvRecord.get(6));
@@ -233,8 +181,8 @@ public class CocPaidModelService {
         data.put("beneficiaryMobile", csvRecord.get(10));
         data.put("bankName", "Agrani Bank");
         data.put("bankCode", "11");
-        data.put("branchName", routingMap.get("branch_name").toString());
-        data.put("branchCode", routingMap.get("abl_branch_code").toString());
+        data.put("branchName", branchName);
+        data.put("branchCode", branchCode);
         data.put("trMode", csvRecord.get(12));
         return data;
     }

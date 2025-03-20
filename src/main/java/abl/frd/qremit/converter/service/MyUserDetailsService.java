@@ -5,12 +5,15 @@ import abl.frd.qremit.converter.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 @Service
@@ -18,11 +21,14 @@ public class MyUserDetailsService implements UserDetailsService {
     private static final String other = null;
     @Autowired
     UserModelRepository userModelRepository;
-    public User loadUserByUserEmail(String userEmail)
-            throws UsernameNotFoundException {
+    public User loadUserByUserEmail(String userEmail) throws UsernameNotFoundException {
         User user = userModelRepository.findByUserEmail(userEmail);
         if (user == null) {
             throw new UsernameNotFoundException("Could not find user");
+        }
+        // Check if the user is locked
+        if (user.getFailedAttempt() >= 5) {
+            throw new LockedException("User Locked. Please Contact With Admin");
         }
         return user;
     }
@@ -64,8 +70,10 @@ public class MyUserDetailsService implements UserDetailsService {
         Map<String, Integer> resp = new HashMap<>();
         int isAdmin = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN")) ? 1:0;
         int isUser = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_USER")) ? 1:0;
+        int isSuperAdmin = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_SUPERADMIN")) ? 1:0;
         resp.put("isAdmin", isAdmin);
         resp.put("isUser", isUser);
+        resp.put("isSuperAdmin", isSuperAdmin);
         return resp;
     }
 
@@ -82,6 +90,8 @@ public class MyUserDetailsService implements UserDetailsService {
                 if(myUserDetails != null) resp.put("exchangeMap",getLoggedInUserMenu(myUserDetails));
             }else if(role.get("isAdmin") == 1){
                 resp.put("adminUserId", user.getId());
+            }else if(role.get("isSuperAdmin") == 1){
+                userId = 8888; //for SuperAdmin
             }
             resp.put("status", HttpStatus.OK);
         }else{
@@ -136,6 +146,9 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return admins;
     }
+    public List<Object[]> loadAllUsersAndRoles(){
+        return userModelRepository.loadAllUsersAndRoles();
+    }
     public void insertUser(User user) throws UsernameNotFoundException {
         userModelRepository.save(user);
     }
@@ -144,7 +157,10 @@ public class MyUserDetailsService implements UserDetailsService {
         String userName = user.getUserName();
         String userEmail = user.getUserEmail();
         String exchangeCode = user.getExchangeCode();
-        userModelRepository.updateUser(userId, userName, userEmail, exchangeCode);
+        String allowedIps = user.getAllowedIps();
+        String startTime = user.getStartTime();
+        String endTime = user.getEndTime();
+        userModelRepository.updateUser(userId, userName, userEmail, exchangeCode, allowedIps, startTime, endTime);
     }
     public void updatePasswordForFirstTimeUserLogging(User user){
         int userId = user.getId();
@@ -190,6 +206,15 @@ public class MyUserDetailsService implements UserDetailsService {
     public String getUserExchangeCode() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getUserExchangeCode'");
+    }
+    @Transactional
+    public boolean setLoginTimeRestrictionsForAllUsers(String startTime, String endTime){
+        int rowsUpdated = userModelRepository.setLoginTimeRestrictionsForAllUsers(startTime, endTime);
+        return rowsUpdated > 0;
+    }
+    @Transactional
+    public int resetPassword(int userId, String password){
+        return userModelRepository.updatePasswordForFirstTimeUserLogging(userId, password, true);
     }
 
 }

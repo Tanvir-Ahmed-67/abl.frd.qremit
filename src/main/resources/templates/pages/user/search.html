@@ -15,7 +15,7 @@
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>Search</h3>
+                            <h3 id="page-header">Search</h3>
                         </div>
                         <div class="col-12 col-md-6 order-md-2 order-first">
                             <nav aria-label="breadcrumb" class='breadcrumb-header'>
@@ -67,12 +67,11 @@
                                                         <th>Beneficiary Name</th>
                                                         <th>Account No</th>
                                                         <th>Bank Name<br>Routing No/ Branch Code<br>Branch Name</th>
-                                                        <!--<th>Routing No/ Branch Code</th>
-                                                        <th>Branch Name</th>-->
                                                         <th>Amount</th>
                                                         <th>Processed Date</th>
                                                         <th>Report Date</th>
                                                         <th>Type</th>
+                                                        <th th:if="${type == '2'}">Action</th>
                                                     </tr>
                                                 </thead>
                                             </table>

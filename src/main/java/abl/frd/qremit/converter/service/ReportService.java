@@ -1,9 +1,9 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -19,6 +19,7 @@ import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.core.io.Resource;
 @SuppressWarnings("unchecked")
 @Service
@@ -53,6 +54,8 @@ public class ReportService {
     CommonService commonService;
     @Autowired
     LogModelService logModelService;
+    @Autowired
+    DynamicOperationService dynamicOperationService;
     
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
@@ -114,71 +117,10 @@ public class ReportService {
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
-
-    public byte[] generateDetailsJasperReport(List<ExchangeReportDTO> dataList, String format, String date) throws Exception {
-        JasperReport jasperReport;
-        JasperPrint jasperPrint;
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        for(ExchangeReportDTO exchangeReportDTO: dataList){
-            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
-        }
-        // Convert data into a JasperReports data source
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
-
-        // Parameters map if needed
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("REPORT_DATA_SOURCE", dataSource);
-        Path reportPath = commonService.getReportFile(commonService.generateFileName("details_report_", date, "." + format.toLowerCase()));
-        String outputFile = reportPath.toString();
-        if (format.equalsIgnoreCase("pdf")) {
-            // Load the JRXML file for PDF format
-            //file = ResourceUtils.getFile("classpath:dailyStatementDetails_pdf_tabular.jrxml");
-            //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-            jasperReport = loadJasperReport("dailyStatementDetails_pdf_tabular.jrxml");
-            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-            // Export to PDF
-            if(!Files.exists(reportPath)){
-                JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
-            }
-            //JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
-            return JasperExportManager.exportReportToPdf(jasperPrint);
-        } else if (format.equalsIgnoreCase("csv")) {
-            // Load the JRXML file for CSV format
-            //file = ResourceUtils.getFile("classpath:dailyStatementDetails_csv.jrxml");
-            //jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-            jasperReport = loadJasperReport("dailyStatementDetails_csv.jrxml");
-            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
-            // CSV Exporter Setup for File Generation
-            JRCsvExporter fileExporter = new JRCsvExporter();
-            fileExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            fileExporter.setExporterOutput(new SimpleWriterExporterOutput(outputFile));
-
-            // Optional: Set CSV configuration (e.g., delimiter)
-            SimpleCsvExporterConfiguration fileConfiguration = new SimpleCsvExporterConfiguration();
-            fileConfiguration.setFieldDelimiter(",");
-            fileExporter.setConfiguration(fileConfiguration);
-            fileExporter.exportReport();
-
-            // CSV Exporter Setup for Download
-            JRCsvExporter downloadExporter = new JRCsvExporter();
-            downloadExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            downloadExporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
-
-            // Reuse the same configuration for the download
-            downloadExporter.setConfiguration(fileConfiguration);
-            downloadExporter.exportReport();
-        } else {
-            throw new IllegalArgumentException("Unsupported format: " + format);
-        }
-        return outputStream.toByteArray();
-    }
     public List<ExchangeReportDTO> getAllDailyReportData(String date){
         List<ExchangeReportDTO> report = new ArrayList<>();
         LocalDate reportDate = LocalDate.parse(date);
-        //List<ReportModel> reportModelsList = reportModelRepository.findAll(); // Have to apply logic to fetch specefic data based on date and processed flag
         List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDate(reportDate);
-        Map<String, ExchangeReportDTO> reportMap = new HashMap<>();
         if(isListValid(reportModelsList)){
             for(ReportModel reportModel:reportModelsList){
                 ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
@@ -194,6 +136,50 @@ public class ReportService {
         }
         return report;
     }
+    public List<ExchangeReportDTO> generateDetailsOfDailyRemittances(String fromDate, String toDate) {
+        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportDataByDateRange(fromDate, toDate);
+        return exchangeReportDTOSList;
+    }
+
+    public Map<String, Object> generateDetailsOfDailyStatement(String fromDate, String toDate) {
+        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportDataByDateRange(fromDate, toDate);
+        Map<String, Object> resp;
+        resp = CommonService.getResp(0,"", null);
+        resp.put("data", exchangeReportDTOSList);
+        return resp;
+    }
+    public List<ExchangeReportDTO> getAllDailyReportDataByDateRange(String fromDate, String toDate){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate fDate = LocalDate.parse(fromDate);
+        LocalDate tDate = LocalDate.parse(toDate);
+        List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDateRange(fDate, tDate);
+        if(isListValid(reportModelsList)){
+            List<ReportModel> sortedReportsList = reportModelsList.stream()
+                    .sorted(Comparator.comparing(ReportModel::getExchangeCode))
+                    .collect(Collectors.toList());
+            int counter = 1;
+            for(ReportModel reportModel:sortedReportsList){
+                ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
+                exchangeReportDTO.setTotalRowCount(counter);
+                exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
+                exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
+                exchangeReportDTO.setAmount(reportModel.getAmount());
+                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
+                exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
+                exchangeReportDTO.setBankCode(reportModel.getBankCode());
+                exchangeReportDTO.setBankName(reportModel.getBankName());
+                exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
+                exchangeReportDTO.setBranchName(reportModel.getBranchName());
+                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime());
+                exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
+                report.add(exchangeReportDTO);
+                counter++;
+            }
+        }
+        return report;
+    }
+
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement(String date) {
         List<ExchangeReportDTO> report = getAllDailyReportData(date);
         report = aggregateExchangeReports(report, date);
@@ -418,6 +404,7 @@ public class ReportService {
                     reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
+                    reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
                     if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":
@@ -680,6 +667,10 @@ public class ReportService {
     }
 
     public <T> List<Map<String, Object>> processSearchData(List<T> modelList, String type){
+        return processSearchData(modelList, type, 0);
+    }
+
+    public <T> List<Map<String, Object>> processSearchData(List<T> modelList, String type, int isEdit){
         List<Map<String, Object>> dataList = new ArrayList<>();
         if(modelList != null && !modelList.isEmpty()){
             int i = 1;
@@ -688,24 +679,37 @@ public class ReportService {
             for(T model: modelList){
                 try{
                     Map<String, Object> data = new HashMap<>();
+                    int id = (Integer) CommonService.getPropertyValue(model, "getId");
                     String action = "";
                     String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
+                    if(isEdit == 1){
+                        action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit",String.valueOf(id),"Edit");
+                        action += "<input type='hidden' id='type_" + id + "' value='" + typeFlag + "' />";
+                    }
+                    
                     data.put("sl", i++);
                     data.put("transactionNo", (String) CommonService.getPropertyValue(model, "getTransactionNo"));
                     data.put("exchangeCode", (String) CommonService.getPropertyValue(model, "getExchangeCode"));
                     data.put("beneficiaryName", (String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
                     data.put("beneficiaryAccount", (String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
                     
-                    String branchCode = (("3").equals(type)) ? "getRoutingNo": "getBranchCode";
-                    String bankDetails = "Bank Name:" + (String) CommonService.getPropertyValue(model, "getBankName") + "<br>Branch Code/ Routing No: " 
-                    + (String) CommonService.getPropertyValue(model, branchCode) + "<br> Branch Name: " + (String) CommonService.getPropertyValue(model, "getBranchName"); 
+                    String branchCodeMethod = (("3").equals(type)) ? "getRoutingNo": "getBranchCode";
+                    String bankName = (String) CommonService.getPropertyValue(model, "getBankName");
+                    String branchCode = (String) CommonService.getPropertyValue(model, branchCodeMethod);
+                    String branchName = (String) CommonService.getPropertyValue(model, "getBranchName");
+                    String bankDetails = "Bank Name:" + bankName + "<br>Branch Code/ Routing No: " + branchCode + "<br> Branch Name: " + branchName; 
                     data.put("bankDetails", bankDetails);
+                    data.put("bankName", bankName);
+                    data.put("branchCode", branchCode);
+                    data.put("branchName", branchName);
                     data.put("amount", (Double) CommonService.getPropertyValue(model, "getAmount"));
                     LocalDateTime downloaDateTime = (LocalDateTime) CommonService.getPropertyValue(model, "getDownloadDateTime");
                     String downloadDate = CommonService.convertDateToString(downloaDateTime);
                     data.put("downloadDateTime", downloadDate);
                     data.put("reportDate", (LocalDate) CommonService.getPropertyValue(model, "getReportDate"));
                     data.put("type", remType.get(typeFlag));
+                    data.put("typeFlag", typeFlag);
+                    data.put("action", action);
                     dataList.add(data);
                 }catch(Exception e){
                     e.printStackTrace();
@@ -723,10 +727,19 @@ public class ReportService {
         FileInfoModel fileInfoModel = fileInfoModelService.findFileInfoModelById(id);
         if(fileInfoModel == null)   return CommonService.getResp(1, "No data found following this fileInfoModel Id", null);
         int cnt = 0;
+        Map<String, Object> info = new HashMap<>();
+        info.put("fileInfoModel", fileInfoModel);
         if(CommonService.convertStringToInt(fileInfoModel.getTotalCount()) == 0 && fileInfoModel.getErrorCount() == 0){
             //for not file uploaded
             resp = fileInfoModelService.deleteFileInfoModelById(id);
-            resp = addDataLogModel(resp, fileInfoModel, userId, id, request);
+            resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", "3", info);
+            return resp;
+        }
+        if(CommonService.convertStringToInt(fileInfoModel.getTotalCount()) == 0 && fileInfoModel.getErrorCount() > 0){
+            //file only has error but no data
+            resp = fileInfoModelService.deleteFileInfoModelHavingOnlyErrors(fileInfoModel);
+            
+            resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", "3", info);
             return resp;
         }
         if(CommonService.convertStringToInt(fileInfoModel.getOnlineCount()) >= 1){
@@ -758,30 +771,119 @@ public class ReportService {
 
         if(cnt > 0) return CommonService.getResp(1, pmsg, null);
         resp = fileInfoModelService.deleteFileInfoModel(fileInfoModel);
-        resp = addDataLogModel(resp, fileInfoModel, userId, id, request);
-        /*
-        if((Integer) resp.get("err") == 0){
-            Map<String, Object> info = new HashMap<>();
-            info.put("fileInfoModel", fileInfoModel);
-            String exchangeCode = fileInfoModel.getExchangeCode();
-            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, "", "3", info, request);
-            if((Integer) logResp.get("err") == 1)   return logResp;
-        }
-        */
+        resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", "3", info);
         return resp;
     }
 
-    public Map<String, Object> addDataLogModel(Map<String, Object> resp, FileInfoModel fileInfoModel, int userId, int id, HttpServletRequest request){
+    public Map<String, Object> addDataLogModel(Map<String, Object> resp, FileInfoModel fileInfoModel, int userId, int id, HttpServletRequest request, String dataId, String action, Map<String, Object> info){
         if((Integer) resp.get("err") == 0){
-            Map<String, Object> info = new HashMap<>();
-            info.put("fileInfoModel", fileInfoModel);
             String exchangeCode = fileInfoModel.getExchangeCode();
-            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, "", "3", info, request);
+            Map<String, Object> logResp = logModelService.addLogModel(userId, id, exchangeCode, dataId, action, info, request);
             if((Integer) logResp.get("err") == 1)   return logResp;
         }
         return resp;
     }
     
+    public Map<String, Object> getCorrectionSearch(String searchType, String searchValue){
+        if(searchType.isEmpty() || searchValue.isEmpty())     return CommonService.getResp(1, "Please Select Search Type or Value", null);
+        List<OnlineModel> onlineModelList = onlineModelService.getOnlineModelByTransactionNoAndIsDownloaded(searchValue, 0);
+        if(!onlineModelList.isEmpty()){
+            return CommonService.getResp(0, "", processSearchData(onlineModelList, "1",1));
+        }
+        List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getAccountPayeeModelByTransactionNoAndIsDownloaded(searchValue, 0);
+        if(!accountPayeeModelList.isEmpty()){
+            return CommonService.getResp(0, "", processSearchData(accountPayeeModelList, "2", 1));
+        }
+        List<BeftnModel> beftnModelList = beftnModelService.getBeftnModelByTransactionNoAndIsDownloaded(searchValue, 0);
+        if(!beftnModelList.isEmpty()){
+            return CommonService.getResp(0, "", processSearchData(beftnModelList, "3", 1));
+        }
+        List<CocModel> cocModelList = cocModelService.getCoCModelByTransactionNoAndIsDownloaded(searchValue, 0);
+        if(!cocModelList.isEmpty()){
+            return CommonService.getResp(0, "", processSearchData(cocModelList, "4", 1));
+        }
+        return CommonService.getResp(1, "No data found for edit", null);
+    }
+
+    public Map<String, Object> getEditData(int id, String type, int convertObj){
+        Map<String, Object> resp = new HashMap<>();
+        if(id == 0 || ("").equals(type))    return CommonService.getResp(1, "Please select id or type", null);
+        String msg = "No data found using following Id for edit";
+        switch (type) {
+            case "1":
+                OnlineModel onlineModel = onlineModelService.findOnlineModelByIdAndIsDownloaded(id, 0);
+                if(onlineModel == null)   return CommonService.getResp(1, msg, null);
+                resp = CommonService.getResp(0, "", null);
+                if(convertObj == 1) resp.put("data", CommonService.convertModelToObject(onlineModel));
+                else resp.put("data", onlineModel);
+                return resp;
+            case "2":
+                AccountPayeeModel accountPayeeModel = accountPayeeModelService.findAccountPayeeModelIdAndIsDownloaded(id, 0);
+                if(accountPayeeModel == null)   return CommonService.getResp(1, msg, null);
+                resp = CommonService.getResp(0, "", null);
+                if(convertObj == 1) resp.put("data", CommonService.convertModelToObject(accountPayeeModel));
+                else resp.put("data", accountPayeeModel);
+                return resp;
+            case "3":
+                BeftnModel beftnModel = beftnModelService.findBeftnModelByIdAndIsDownloaded(id, 0);
+                if(beftnModel == null)   return CommonService.getResp(1, msg, null);
+                resp = CommonService.getResp(0, "", null);
+                Map<String, Object> data = CommonService.convertModelToObject(beftnModel);
+                data.put("branchCode", data.get("routingNo")); //for beftn branchCode will be routingNo
+                data.remove("routingNo");
+                if(convertObj == 0){
+                    data.remove("fileInfoModel");
+                    data.remove("userModel");
+                }
+                resp.put("data", data);
+                //if(convertObj == 1) resp.put("data", CommonService.convertModelToObject(beftnModel));
+                //resp.put("data", beftnModel);
+                return resp;
+            case "4":
+                CocModel cocModel = cocModelService.findCocModelByIdAndIsDownloaded(id, 0);
+                if(cocModel == null)    return CommonService.getResp(1, msg, null);
+                resp = CommonService.getResp(0, "", null);
+                if(convertObj == 1) resp.put("data", CommonService.convertModelToObject(cocModel));
+                else resp.put("data", cocModel);
+                return resp;
+            default:
+                return CommonService.getResp(1, "Invalid Type Selected", null);
+        }
+    }
+
+    public Map<String, Object> updateIndividualDataById(@RequestParam Map<String, String> formData, int userId, HttpServletRequest request) throws Exception{
+        Map<String, Object> resp = new HashMap<>();
+        String type = formData.get("type").toString();
+        int id = CommonService.convertStringToInt(formData.get("id").toString());
+        String bankName = formData.get("bankName").trim();
+        String beneficiaryAccount =formData.get("beneficiaryAccount").trim();
+        String beneficiaryName = formData.get("beneficiaryName").trim();
+        String branchCode = formData.get("branchCode").trim();
+        String amount = formData.get("amount").toString();
+        String exchangeCode = formData.get("exchangeCode").toString();
+        String transactionNo = formData.get("transactionNo").toString();
+        
+        String errorMessage = "";
+        errorMessage = CommonService.getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
+        if(!errorMessage.isEmpty())  return CommonService.getResp(1, errorMessage, null);
+        resp = getEditData(id, type, 1);
+        if((Integer) resp.get("err") == 1)  return resp;
+        Map<String, Object> obj = (Map<String, Object>) resp.get("data");
+        if(obj.containsKey("err") && ((Integer) obj.get("err") == 1))   return obj;
+        FileInfoModel fileInfoModel = (FileInfoModel) obj.get("fileInfoModel");
+        User user = (User) obj.get("userModel");
+        if(!obj.get("transactionNo").equals(transactionNo) || !CommonService.convertStringToDouble(obj.get("amount").toString()).equals(CommonService.convertStringToDouble(amount))){
+            errorMessage = "Amount or Transaction No mismatched";
+            return CommonService.getResp(1, errorMessage, null);
+        }
+        String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
+        resp = dynamicOperationService.updateIndividualDataById(exchangeCode, fileInfoModel, user, transactionNo, formData, type, obj, typeFlag);
+        if((Integer) resp.get("err") == 0){
+            Map<String, Object> info = (Map<String, Object>) resp.get("data");
+            resp = addDataLogModel(resp, fileInfoModel, userId, fileInfoModel.getId(), request, String.valueOf(id), "4", info);
+        }
+        return resp;
+    }
 
     public Map<String, Object> getExchangeWiseData(String date, int userId){
         Map<String, Object> resp = new HashMap<>();
@@ -821,6 +923,76 @@ public class ReportService {
         }
         return summary;
     }
-    // ---------------------------- End of Methods Block for getting data from Report Table for generating MO -------------------------------
+    public byte[] generateJasperSearchFileInPdfAndTxtFormat(List<ExchangeReportDTO> dataList, String format, String date) throws Exception {
+        validateInputs(dataList, format, date);
 
+        // Batch fetch exchange names
+        enrichExchangeNames(dataList);
+
+        // Generate report based on format
+        switch (format.toLowerCase()) {
+            case "pdf":
+                return generateSearchInPdfFile(dataList, date);
+            case "txt":
+                return generateSearchInTxtFile(dataList, date);
+            default:
+                throw new IllegalArgumentException("Unsupported format: " + format);
+        }
+    }
+
+    private void validateInputs(List<ExchangeReportDTO> dataList, String format, String date) {
+        if (dataList == null || dataList.isEmpty()) {
+            throw new IllegalArgumentException("Data list cannot be null or empty.");
+        }
+        if (!"pdf".equalsIgnoreCase(format) && !"txt".equalsIgnoreCase(format)) {
+            throw new IllegalArgumentException("Invalid format: " + format);
+        }
+        LocalDate.parse(date); // Validates date format
+    }
+
+    private void enrichExchangeNames(List<ExchangeReportDTO> dataList) {
+        Map<String, String> exchangeNames = exchangeHouseModelService.getExchangeNamesByCodes(
+                dataList.stream().map(ExchangeReportDTO::getExchangeCode).collect(Collectors.toList())
+        );
+        dataList.forEach(dto -> dto.setExchangeName(exchangeNames.getOrDefault(dto.getExchangeCode(), "Unknown")));
+    }
+
+    private byte[] generateSearchInPdfFile(List<ExchangeReportDTO> dataList, String date) throws Exception {
+        List<ExchangeReportDTO> modifiedList = new ArrayList<>(dataList);
+        modifiedList.add(0, new ExchangeReportDTO()); // Avoid mutating original list
+        Map<String, Object> parameters = prepareReportParameters(modifiedList, date);
+        JasperReport jasperReport = loadJasperReport("search_pdf_tabular.jrxml");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(modifiedList, false));
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
+    private byte[] generateSearchInTxtFile(List<ExchangeReportDTO> dataList, String date) throws Exception {
+        Map<String, Object> parameters = prepareReportParameters(dataList, date);
+        JasperReport jasperReport = loadJasperReport("search_csv.jrxml");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(dataList, false));
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JRCsvExporter exporter = new JRCsvExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+            configureCsvExporter(exporter);
+            exporter.exportReport();
+            return outputStream.toByteArray();
+        }
+    }
+
+    private Map<String, Object> prepareReportParameters(List<ExchangeReportDTO> dataList, String date) {
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList, false);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("REPORT_DATA_SOURCE", dataSource);
+        parameters.put("TO_DATE", LocalDate.parse(date));
+        return parameters;
+    }
+
+    private void configureCsvExporter(JRCsvExporter exporter) {
+        SimpleCsvExporterConfiguration configuration = new SimpleCsvExporterConfiguration();
+        configuration.setFieldDelimiter(",");
+        configuration.setForceFieldEnclosure(true);
+        configuration.setRecordDelimiter("\n");
+        exporter.setConfiguration(configuration);
+    }
 }

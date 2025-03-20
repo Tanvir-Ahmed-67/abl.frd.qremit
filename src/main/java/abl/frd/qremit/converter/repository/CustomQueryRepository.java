@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.repository;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.sql.DataSource;
@@ -117,6 +118,8 @@ public class CustomQueryRepository {
     
     public Map<String, Object> getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
         tbl = "base_data_table_" + tbl;
+        return generateUniqueTransactionSql(data, tbl, "CAST(amount AS CHAR)");
+        /*
         Map<String, Object> params = new HashMap<>();
         List<String> tuples = new ArrayList<>();
         for(String[] record: data){
@@ -127,7 +130,27 @@ public class CustomQueryRepository {
         String queryStr = String.format(sql, tbl);
         StringBuilder queryBuilder = new StringBuilder(queryStr);
         queryBuilder.append(String.join(", ", tuples)).append(")");
-        return getData(queryBuilder.toString(),params); 
+        return getData(queryBuilder.toString(),params);
+        */ 
+    }
+
+    public Map<String, Object> getArchiveUniqueList(List<String[]> data, String year){
+        String tbl = "qremit_archive_" + year;
+        return generateUniqueTransactionSql(data, tbl, "amount");
+    }
+
+    public Map<String, Object> generateUniqueTransactionSql(List<String[]> data, String tbl, String amountField){
+        Map<String, Object> params = new HashMap<>();
+        List<String> tuples = new ArrayList<>();
+        for(String[] record: data){
+            tuples.add(String.format("('%s', %s, '%s')", record[0], record[1], record[2]));
+        }
+        
+        String sql = "SELECT * FROM %s WHERE (transaction_no, " + amountField + " , exchange_code) IN ( ";
+        String queryStr = String.format(sql, tbl);
+        StringBuilder queryBuilder = new StringBuilder(queryStr);
+        queryBuilder.append(String.join(", ", tuples)).append(")");
+        return getData(queryBuilder.toString(),params);
     }
 
     @Transactional
@@ -159,11 +182,22 @@ public class CustomQueryRepository {
         whereClause.append(specialCase);
         
         String sql = "SELECT * FROM converted_data_beftn WHERE is_downloaded= ? and incentive != ? AND (" + whereClause.toString() + ")";
-        //System.out.println(sql);
         Map<String, Object> params = new HashMap<>();
         params.put("1", 0);
         params.put("2", 0);
         return getData(sql,params);
+    }
+
+    public Object getBaseTableDataByTransactionNoAndFileInfoModelId(String entityName, int fileInfoModelId, String transactionNo){
+        String sql = "SELECT n FROM " + entityName + " n WHERE n.transactionNo=:transactionNo and n.fileInfoModel.id=:fileInfoModelId";
+        Query query = entityManager.createQuery(sql);
+        query.setParameter("transactionNo", transactionNo);
+        query.setParameter("fileInfoModelId", fileInfoModelId);
+        try{
+            return query.getSingleResult();
+        }catch(NoResultException e){
+            return null;
+        }
     }
         
 

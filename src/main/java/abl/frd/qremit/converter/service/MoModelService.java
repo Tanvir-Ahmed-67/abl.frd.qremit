@@ -64,10 +64,19 @@ public class MoModelService {
 
         return moModelRepository.save(moModel);
     }
-    public MoModel findIfAlreadyGenerated(MoModel moModel){
-        LocalDate reportDate = moModel.getMoDate();
-        MoModel model = moModelRepository.findByMoGenerationDate(reportDate);
-        return model;
+    public MoModel updateMo(MoModel mo, Map<String, String> formData){
+        mo.setTotalNumberIcash(Long.valueOf(formData.get("totalNumberIcash")));
+        mo.setTotalAmountIcash(new BigDecimal(formData.get("totalAmountIcash")));
+        mo.setGrandTotalNumber(mo.getTotalNumberBeftn() + mo.getTotalNumberIcash() + mo.getTotalNumberApi() + mo.getTotalNumberOnline() + mo.getTotalNumberAllOtherBranch());
+        BigDecimal grandTotalAmount = mo.getTotalAmountBeftn().add(mo.getTotalAmountIcash())
+                .add(mo.getTotalAmountApi()).add(mo.getTotalAmountOnline()).add(mo.getTotalAmountAllOtherBranch());
+        mo.setGrandTotalAmount(grandTotalAmount);
+        return moModelRepository.save(mo);
+    }
+
+    public MoModel findMoByDate(String date){
+        LocalDate reportDate = LocalDate.parse(date);
+        return moModelRepository.findByMoGenerationDate(reportDate);
     }
 
     public MoModel generateMoDTOForPreparingPdfFile(MoModel moModel, String date){

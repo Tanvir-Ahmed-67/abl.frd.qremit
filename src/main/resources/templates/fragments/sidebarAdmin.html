@@ -42,8 +42,8 @@
                             <li>
                                 <a th:href="@{/generateTemporaryReport}" target="_blank"><i class="fa-regular fa-circle sub-icon"></i>Generate Temporary Report</a>
                                 <a th:href="@{/utils/uploadApi}"><i class="fa-regular fa-circle sub-icon"></i>API Settlement File Upload</a>
-                                <a th:href="@{/summaryOfDailyStatement}"><i class="fa-regular fa-circle sub-icon"></i>Summary of Daily Statement</a>
-                                <a th:href="@{/detailsOfDailyStatement}"><i class="fa-regular fa-circle sub-icon"></i>Details of Daily Statement</a>
+                                <a th:href="@{/adminReport?type=7}"><i class="fa-regular fa-circle sub-icon"></i>Summary of Daily Remittances</a>
+                                <a th:href="@{/showDetailsOfDailyStatement}"><i class="fa-regular fa-circle sub-icon"></i>Details of Daily Remittances</a>
                                 <a th:href="@{/showIcashEntryForm}"><i class="fa-regular fa-circle sub-icon"></i>Generate MO</a>
                                 <a th:href="@{/showDailyReimbursement}"><i class="fa-regular fa-circle sub-icon"></i>Daily Reimbursement</a>
                             </li>
@@ -55,13 +55,27 @@
                             <span>Error Data Report</span>
                         </a>
                     </li>
-                    
+                    <!--
                     <li class="sidebar-item">
                         <a th:href="@{/adminReport?type=5}" class='sidebar-link'>
-                            <!--<i class="fa-regular fa-trash-can"></i>-->
                             <i class="far fa-trash-alt"></i>
                             <span>Delete Uploaded File</span>
                         </a>
+                    </li>
+                    -->
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="far fa-trash-alt"></i>
+                            <span>Admin Operation</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/search?type=2}"><i class="fa-regular fa-circle sub-icon"></i>Data Correction</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/adminReport?type=5}"><i class="fa-regular fa-circle sub-icon"></i>Delete Uploaded File</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="sidebar-item has-sub">
                         <a href="#" class='sidebar-link'>
@@ -70,10 +84,13 @@
                         </a>
                         <ul class="submenu ">
                             <li>
-                                <a th:href="@{/allUsers}"><i class="fa-regular fa-circle sub-icon"></i>View User</a>
+                                <a th:href="@{/adminReport?type=6}"><i class="fa-regular fa-circle sub-icon"></i>View User</a>
                             </li>
                             <li>
                                 <a th:href="@{/newUserCreationForm}"><i class="fa-regular fa-circle sub-icon"></i>Insert User</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/showTimePickerForm}"><i class="fa-regular fa-circle sub-icon"></i>Set Allowed Login Time</a>
                             </li>
                         </ul>
                     </li>
@@ -84,7 +101,7 @@
                         </a>
                         <ul class="submenu ">
                             <li>
-                                <a th:href="@{/viewAllExchangeHouse}"><i class="fa-regular fa-circle sub-icon"></i>View All Exch. House</a>
+                                <a th:href="@{/adminReport?type=8}"><i class="fa-regular fa-circle sub-icon"></i>View All Exch. House</a>
                             </li>
                             <li>
                                 <a th:href="@{/newExchangeHouseCreationForm}"><i class="fa-regular fa-circle sub-icon"></i>Insert New Exch. House</a>

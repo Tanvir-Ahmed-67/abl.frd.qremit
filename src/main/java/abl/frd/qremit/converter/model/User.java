@@ -21,6 +21,49 @@ public class User {
     @Column(name="mobile_no")
     private String mobileNo;
 
+    @Column(name="allowed_ips")
+    private String allowedIps;
+
+    @Column(name="start_time")
+    private String startTime;
+
+    @Column(name="end_time")
+    private String endTime;
+
+    @Column(name="failed_attempt")
+    private int failedAttempt;
+
+    public int getFailedAttempt() {
+        return failedAttempt;
+    }
+    public void setFailedAttempt(int failedAttempt) {
+        this.failedAttempt = failedAttempt;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getAllowedIps() {
+        return allowedIps;
+    }
+
+    public void setAllowedIps(String allowedIps) {
+        this.allowedIps = allowedIps;
+    }
+
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")
     private List<AccountPayeeModel> accountPayeeModel;
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")

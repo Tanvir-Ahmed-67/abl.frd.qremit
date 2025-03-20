@@ -311,7 +311,7 @@ public class AlBiladModel {
 
     @Override
     public String toString() {
-        return "BecModel{" +
+        return "AlBiladModel{" +
                 "id=" + id +
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", transactionNo='" + transactionNo + '\'' +

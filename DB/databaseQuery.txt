@@ -80,3 +80,11 @@ DELETE FROM `upload_file_info` where id = 197;
 DELETE FROM error_data_table where file_info_model_id = 197;
 DELETE FROM base_data_table_singapore where file_info_model_id = 197;
 DELETE FROM converted_data_online where file_info_model_id = 197;
+
+//archive data 
+LOAD DATA INFILE 'D:/work/qremit data/Qremit data_2023.txt' INTO TABLE qremit_archive_2023 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\r\n' (transaction_no, status, entered_date, currency, amount, remitter_name,  exchnage_code, bank_name, branch_name, district_name, beneficiary_account,  benificiary_name, t1, purpose_of_remittance, branch_code, abl_branch_name,  zone_name, zone_code, t6, govt_incentive, type, processed_date);
+UPDATE `qremit_archive_2023` SET transaction_no = TRIM(transaction_no), amount = TRIM(amount), status = TRIM(status), entered_date = TRIM(entered_date), currency = TRIM(currency), remitter_name = TRIM(remitter_name), exchnage_code = TRIM(exchnage_code), bank_name = TRIM(bank_name), branch_name = TRIM(branch_name), district_name = TRIM(district_name), beneficiary_account = TRIM(beneficiary_account), benificiary_name = TRIM(benificiary_name), t1 = TRIM(t1), purpose_of_remittance = TRIM(purpose_of_remittance), branch_code = TRIM(branch_code), abl_branch_name = TRIM(abl_branch_name), zone_name = TRIM(zone_name), zone_code = TRIM(zone_code), t6 = TRIM(t6), govt_incentive = TRIM(govt_incentive), t7 = TRIM(t7), processed_date = TRIM(processed_date);
+UPDATE `qremit_archive_2023` set exchange_code = '7010226' where exchange_code = '7010273';
+UPDATE `qremit_archive_2023` set exchange_code = '7010237' where exchange_code = '701023724';
+UPDATE `qremit_archive_2023` set exchange_code = '7119' where exchange_code = '7009';
+SELECT DISTINCT exchange_code FROM `qremit_archive_2023` exchange_code where exchange_code not in (SELECT exchange_code FROM ex_house_list);

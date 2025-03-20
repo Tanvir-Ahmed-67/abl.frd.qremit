@@ -64,6 +64,8 @@ public class ReportModel {
     private int isApi = 0;
     @Column(name = "data_model_id")
     private int dataModelId = 0;
+    @Column(name = "entered_date", length=30)
+    private String enteredDate;
 
     public int getId() {
         return this.id;
@@ -153,6 +155,14 @@ public class ReportModel {
         this.beneficiaryAccount = beneficiaryAccount;
     }
 
+
+    public String getEnteredDate() {
+        return this.enteredDate;
+    }
+
+    public void setEnteredDate(String enteredDate) {
+        this.enteredDate = enteredDate;
+    }
 
     public Double getIncentive() {
         return this.incentive;

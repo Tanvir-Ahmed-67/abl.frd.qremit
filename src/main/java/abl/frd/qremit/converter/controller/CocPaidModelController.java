@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.controller;
 import abl.frd.qremit.converter.helper.MyUserDetails;
-import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.service.CocPaidModelService;
 import abl.frd.qremit.converter.service.CommonService;
@@ -41,24 +40,12 @@ public class CocPaidModelController {
             userId = user.getId();
         }
         String message = "";
-        FileInfoModel fileInfoModelObject;
         if (CommonService.hasCSVFormat(file)) {
             if (!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
                     Map<String, Object> resp = cocPaidModelService.save(file, userId, exchangeCode);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
-                    /*
-                    fileInfoModelObject = cocPaidModelService.save(file, userId, exchangeCode);
-                    if (fileInfoModelObject != null) {
-                        model.addAttribute("fileInfo", fileInfoModelObject);
-                        return CommonService.uploadSuccesPage;
-                    } else {
-                        message = "All Data From Your Selected File Already Exists!";
-                        model.addAttribute("message", message);
-                        return CommonService.uploadSuccesPage;
-                    }
-                        */
                 } catch (IllegalArgumentException e) {
                     message = e.getMessage();
                     model.addAttribute("message", message);
