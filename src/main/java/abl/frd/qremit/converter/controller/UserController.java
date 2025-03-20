@@ -391,28 +391,6 @@ public class UserController {
         }
     }
 
-@GetMapping(value = "/getBankRemittanceDataForTable", produces = "application/json")
-@ResponseBody
-public List<Map<String, Object>> getBankRemittanceDataForTable() {
-    // SQL Query
-    String query = "SELECT bank_name, year, SUM(amount) AS total_amount " +
-                   "FROM analytics_all_bank_remittance " +
-                   "WHERE amount != 0 " +
-                   "GROUP BY bank_name, year " +
-                   "ORDER BY bank_name, year";
-
-    // Execute query
-    List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
-
-    // Transform results
-    List<Map<String, Object>> response = new ArrayList<>();
-    for (Object[] row : resultList) {
-        Map<String, Object> record = new HashMap<>();
-        record.put("bankName", row[0]); // Bank name
-        record.put("year", row[1]);    // Year
-        record.put("amount", ((Number) row[2]).doubleValue()); // Total amount
-        response.add(record);
-    }
     @GetMapping(value = "/getBankRemittanceDataForTable", produces = "application/json")
     @ResponseBody
     public List<Map<String, Object>> getBankRemittanceDataForTable() {
