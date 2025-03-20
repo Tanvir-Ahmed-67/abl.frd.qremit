@@ -3,7 +3,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -88,7 +87,7 @@ public class ReportService {
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
     public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
-        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
+        LocalDate currentDate = LocalDate.now();
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
                 .map(ExchangeReportDTO::getExchangeCode)
@@ -98,7 +97,7 @@ public class ReportService {
         for(int i =0; i<dataList.size();i++){
             dataList.get(i).setExchangeName(exchangeHouseMap.get(dataList.get(i).getExchangeCode()).getExchangeName());
             dataList.get(i).setNrtAccountNo(exchangeHouseMap.get(dataList.get(i).getExchangeCode()).getNrtaCode());
-            dataList.get(i).setEnteredDate(currentDateTime);
+            dataList.get(i).setEnteredDate(currentDate);
         }
         // Load File And Compile It.
         JasperReport jasperReport = loadJasperReport("dailyVoucher.jrxml");
@@ -130,7 +129,7 @@ public class ReportService {
                 exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
                 exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
                 exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
-                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime());
+                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime().toLocalDate());
                 report.add(exchangeReportDTO);
             }
         }
@@ -158,6 +157,7 @@ public class ReportService {
                     .sorted(Comparator.comparing(ReportModel::getExchangeCode))
                     .collect(Collectors.toList());
             int counter = 1;
+            String formattedDate = null;
             for(ReportModel reportModel:sortedReportsList){
                 ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
                 exchangeReportDTO.setTotalRowCount(counter);
@@ -171,7 +171,7 @@ public class ReportService {
                 exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
                 exchangeReportDTO.setBranchName(reportModel.getBranchName());
                 exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
-                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime());
+                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime().toLocalDate());
                 exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
                 report.add(exchangeReportDTO);
                 counter++;
@@ -225,7 +225,7 @@ public class ReportService {
         dto.setTransactionNo(onlineModel.getTransactionNo());
         dto.setExchangeCode(onlineModel.getExchangeCode());
         dto.setAmount(onlineModel.getAmount());
-        dto.setEnteredDate(onlineModel.getFileInfoModel().getUploadDateTime());
+        dto.setEnteredDate(onlineModel.getFileInfoModel().getUploadDateTime().toLocalDate());
         dto.setBeneficiaryName(onlineModel.getBeneficiaryName());
         dto.setBeneficiaryAccount(onlineModel.getBeneficiaryAccount());
         dto.setRemitterName(onlineModel.getRemitterName());
@@ -238,7 +238,7 @@ public class ReportService {
         dto.setTransactionNo(beftnModel.getTransactionNo());
         dto.setExchangeCode(beftnModel.getExchangeCode());
         dto.setAmount(beftnModel.getAmount());
-        dto.setEnteredDate(beftnModel.getFileInfoModel().getUploadDateTime());
+        dto.setEnteredDate(beftnModel.getFileInfoModel().getUploadDateTime().toLocalDate());
         dto.setBeneficiaryName(beftnModel.getBeneficiaryName());
         dto.setBeneficiaryAccount(beftnModel.getBeneficiaryAccount());
         // Set other fields as needed
@@ -250,7 +250,7 @@ public class ReportService {
         dto.setTransactionNo(cocModel.getTransactionNo());
         dto.setExchangeCode(cocModel.getExchangeCode());
         dto.setAmount(cocModel.getAmount());
-        dto.setEnteredDate(cocModel.getFileInfoModel().getUploadDateTime());
+        dto.setEnteredDate(cocModel.getFileInfoModel().getUploadDateTime().toLocalDate());
         dto.setBeneficiaryName(cocModel.getBeneficiaryName());
         dto.setBeneficiaryAccount(cocModel.getBeneficiaryAccount());
         dto.setRemitterName(cocModel.getRemitterName());
@@ -263,7 +263,7 @@ public class ReportService {
         dto.setTransactionNo(accountPayeeModel.getTransactionNo());
         dto.setExchangeCode(accountPayeeModel.getExchangeCode());
         dto.setAmount(accountPayeeModel.getAmount());
-        dto.setEnteredDate(accountPayeeModel.getFileInfoModel().getUploadDateTime());
+        dto.setEnteredDate(accountPayeeModel.getFileInfoModel().getUploadDateTime().toLocalDate());
         dto.setBeneficiaryName(accountPayeeModel.getBeneficiaryName());
         dto.setBeneficiaryAccount(accountPayeeModel.getBeneficiaryAccount());
         dto.setRemitterName(accountPayeeModel.getRemitterName());
