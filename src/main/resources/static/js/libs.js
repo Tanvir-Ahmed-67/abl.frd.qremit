@@ -14,7 +14,7 @@ function checkDataTable(tbl){
     return data;
   }
 
-  function get_dataTable(url,tbl,cols,successfunc,drawfunc,PostParams = [], RequestType = 'get',exportTbl){
+  function get_dataTable(url,tbl,cols,successfunc,drawfunc,PostParams = [], RequestType = 'get',exportTbl,paging = true, searching = true, info = true, lengthChange = true){
     checkDataTable(tbl);
     if(!url) return false;
     var data = DataTableColumns(cols);
@@ -26,6 +26,10 @@ function checkDataTable(tbl){
       },
       "columns": data,
       "sort": false,
+      "paging": paging,
+      "searching": searching,
+      "info": info,
+      "lengthChange": lengthChange,
       "initComplete":function(settings,json){
         if(successfunc){
           for(var i in successfunc)  successfunc[i](json);
@@ -52,7 +56,7 @@ function checkDataTable(tbl){
  
   }
 
-  function get_dynamic_dataTable(tbl,url,columns,sfun,lazy, RequestType = 'get', PostParams = [],exportTbl){
+  function get_dynamic_dataTable(tbl,url,columns,sfun,lazy, RequestType = 'get', PostParams = [],exportTbl, paging = true, searching = true, info = true, lengthChange= true){
     checkDataTable(tbl);
     var data = [];
     var func = [];
@@ -62,7 +66,7 @@ function checkDataTable(tbl){
       data.push(keys);
     }
     $(tbl).DataTable({"columns": columns });
-    get_dataTable(url,tbl,data,sfun,'',PostParams,RequestType,exportTbl);
+    get_dataTable(url,tbl,data,sfun,'',PostParams,RequestType,exportTbl, paging, searching, info, lengthChange);
   }
 
   function dataTable_reload(tbl,pagination = true){

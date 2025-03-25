@@ -3,6 +3,8 @@ package abl.frd.qremit.converter.service;
 import abl.frd.qremit.converter.controller.ReportController;
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
+import groovyjarjarantlr4.v4.parse.ANTLRParser.notSet_return;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -956,6 +958,16 @@ public class CommonService {
         return formattedDateTime;
     }
 
+    public static String convertLocalDateToString(LocalDate date){
+        return convertLocalDateToString(date,"yyyy-MM-dd");
+    }
+    public static String convertLocalDateToString(LocalDate date, String format){
+        if(date == null)    return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        String formattedDateTime = date.format(formatter);
+        return formattedDateTime;
+    }
+
     public static LocalDateTime convertStringToDate(String date){
         return convertStringToDate(date,"yyyy-MM-dd HH:mm:ss");
     }
@@ -975,6 +987,16 @@ public class CommonService {
             
         }
         
+    }
+
+    public static LocalDate convertStringToLocalDate(String date, String format){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        try{
+            return LocalDate.parse(date, formatter);
+        }catch(DateTimeException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static Map<String, LocalDateTime> getStartAndEndDateTime(String date){

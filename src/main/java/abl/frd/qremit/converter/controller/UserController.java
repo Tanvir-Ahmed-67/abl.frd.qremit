@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.persistence.EntityManager;
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -469,10 +468,10 @@ public class UserController {
                            "    WHEN 'October' THEN 10 WHEN 'November' THEN 11 WHEN 'December' THEN 12 " +
                            "END";
 
-            System.out.println("Executing query: " + query);
+            //System.out.println("Executing query: " + query);
 
             List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
-            System.out.println("Query executed successfully. Result size: " + resultList.size());
+            //System.out.println("Query executed successfully. Result size: " + resultList.size());
 
             // Structure the response by year and month
             Map<Integer, Map<String, Map<String, Integer>>> response = new LinkedHashMap<>();
@@ -509,10 +508,10 @@ public class UserController {
         try {
             String query = "SELECT country_name, latitude, longitude, amount_usd FROM analytics_abl_country_wise";
 
-            System.out.println("Executing query: " + query);
+            //System.out.println("Executing query: " + query);
 
             List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
-            System.out.println("Query executed successfully. Result size: " + resultList.size());
+            //System.out.println("Query executed successfully. Result size: " + resultList.size());
 
             // Prepare response
             List<Map<String, Object>> response = new ArrayList<>();
