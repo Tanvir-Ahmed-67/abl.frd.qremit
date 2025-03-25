@@ -255,7 +255,7 @@ public class AgraniMalaysiaModelService {
             */
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, fileExchangeCode, 0, 0);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, fileExchangeCode, 1, 3);
             List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
             List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
