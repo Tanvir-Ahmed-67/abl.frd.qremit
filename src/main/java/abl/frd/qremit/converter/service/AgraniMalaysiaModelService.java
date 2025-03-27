@@ -303,7 +303,7 @@ public class AgraniMalaysiaModelService {
         data.put("transactionNo", CommonService.getCellValueAsString(row.getCell(5)));
         data.put("currency", "BDT");
         data.put("amount", amount);
-        data.put("enteredDate", CommonService.getCurrentDate("MM/dd/yyyy"));
+        data.put("enteredDate", CommonService.getCurrentDate("yyyy-MM-dd"));
         data.put("remitterName", "");
         data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(7)));
         data.put("beneficiaryAccount", CommonService.getCellValueAsString(row.getCell(8)));
