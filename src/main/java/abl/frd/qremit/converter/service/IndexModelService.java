@@ -129,34 +129,6 @@ public class IndexModelService {
             List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
             int duplicateCount = (int) modelResp.get("duplicateCount");
-                /*
-                duplicateData = indexModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                IndexModel indexModel = new IndexModel();
-                indexModel = CommonService.createDataModel(indexModel, data);
-                indexModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                indexModel.setUploadDateTime(currentDateTime);
-                indexModelList.add(indexModel);
-            }
-            */
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
