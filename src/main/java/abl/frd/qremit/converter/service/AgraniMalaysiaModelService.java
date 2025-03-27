@@ -195,17 +195,16 @@ public class AgraniMalaysiaModelService {
 
     public Map<String, Object> beftnToAgraniMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AgraniMalaysiaModel> duplicateData;
+        Optional<AgraniMalaysiaModel> duplicateData = Optional.empty();
         try{
             Workbook records = CommonService.getWorkbook(is);
             Row row;
             Sheet worksheet = records.getSheetAt(0);
-            List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = new ArrayList<>();
-            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
             for (int rowIndex = 2; rowIndex <= worksheet.getLastRowNum(); rowIndex++) {
                 row = worksheet.getRow(rowIndex);
                 if(row == null) continue;
@@ -214,9 +213,12 @@ public class AgraniMalaysiaModelService {
                 Map<String, Object> data = getBeftnData(row, exchangeCode);
                 String transactionNo = data.get("transactionNo").toString();
                 String amount = data.get("amount").toString();
-                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                String bankName = data.get("bankName").toString();
-                String branchCode = data.get("branchCode").toString();
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+            }
+                /*
                 duplicateData = agraniMalaysiaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, nrtaCode, duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
@@ -248,7 +250,16 @@ public class AgraniMalaysiaModelService {
                 agraniMalaysiaDataModel.setTypeFlag(typeFlag);
                 agraniMalaysiaDataModel.setUploadDateTime(currentDateTime);
                 agraniMalaysiaDataModelList.add(agraniMalaysiaDataModel);
+            
             }
+            */
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, fileExchangeCode, 1, 3);
+            List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
+            List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -292,7 +303,7 @@ public class AgraniMalaysiaModelService {
         data.put("transactionNo", CommonService.getCellValueAsString(row.getCell(5)));
         data.put("currency", "BDT");
         data.put("amount", amount);
-        data.put("enteredDate", CommonService.getCurrentDate("MM/dd/yyyy"));
+        data.put("enteredDate", CommonService.getCurrentDate("yyyy-MM-dd"));
         data.put("remitterName", "");
         data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(7)));
         data.put("beneficiaryAccount", CommonService.getCellValueAsString(row.getCell(8)));
