@@ -208,11 +208,12 @@ public class ApiT24ModelService {
     }
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
+        LocalDateTime enteredDate = CommonService.convertStringToDate(csvRecord.get(4));
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", enteredDate.toLocalDate().toString());
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", "");
         data.put("beneficiaryName", csvRecord.get(6));

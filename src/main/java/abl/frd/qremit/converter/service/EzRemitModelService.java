@@ -211,6 +211,8 @@ public class EzRemitModelService {
         //String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
         String enteredDate = (type == 1) ? csvRecord.get(7) : csvRecord.get(4);
         String remiterName = (type == 1) ? csvRecord.get(1) : csvRecord.get(5);
+        LocalDateTime date = CommonService.convertStringToDate(enteredDate);
+        enteredDate = date.toLocalDate().toString();
 
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);

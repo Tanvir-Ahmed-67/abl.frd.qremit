@@ -15,6 +15,7 @@ import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 @SuppressWarnings("unchecked")
@@ -42,7 +43,9 @@ public class AlBiladModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    @Autowired
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -55,7 +58,7 @@ public class AlBiladModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> alBiladData = csvToAlBiladModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            Map<String, Object> alBiladData = csvToAlBiladModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             List<AlBiladModel> alBiladModels = (List<AlBiladModel>) alBiladData.get("alBiladModelList");
 
             if(alBiladData.containsKey("errorMessage")){
@@ -95,54 +98,35 @@ public class AlBiladModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToAlBiladModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
+    public Map<String, Object> csvToAlBiladModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AlBiladModel> duplicateData;
+        Optional<AlBiladModel> duplicateData = Optional.empty();
         try(BufferedReader fileReader= new BufferedReader(new InputStreamReader(is, "UTF-8"))){
             String line;
-            List<AlBiladModel> alBiladModelList = new ArrayList<>();
-            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
             while ((line = fileReader.readLine()) != null) {
                 if(!line.startsWith("D"))   continue;
                 i++;
                 Map<String, Object> data = processData(line, exchangeCode);
-                //System.out.println(data);
                 String transactionNo = data.get("transactionNo").toString();
                 String amount = data.get("amount").toString();
-                duplicateData = alBiladModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                String bankName = data.get("bankName").toString();
-                String branchCode = CommonService.fixRoutingNo(data.get("branchCode").toString());
-                
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, nrtaCode, duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                AlBiladModel alBiladModel = new AlBiladModel();
-                alBiladModel = CommonService.createDataModel(alBiladModel, data);
-                alBiladModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                alBiladModel.setUploadDateTime(currentDateTime);
-                alBiladModelList.add(alBiladModel);
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;  
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AlBiladModel.class, resp, fileExchangeCode, 0, 0);
+            List<AlBiladModel> alBiladModelList = (List<AlBiladModel>) modelResp.get("modelList");
+            List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
+
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -176,6 +160,7 @@ public class AlBiladModelService {
         String remittanceType = line.substring(160, 195).trim();
         String branchName = line.substring(230, 265).trim();
         String branchCode = line.substring(265, 300).trim();
+        branchCode = CommonService.fixRoutingNo(branchCode);
         String bankStr = line.substring(300,335).trim();
         String branch2 = line.substring(580, 615).trim();
         Map<String, Object> bank = getBankDetails(bankStr,branchName, branchCode, branch2);
@@ -184,10 +169,11 @@ public class AlBiladModelService {
         String mobileNo = line.substring(685, 720).trim();
         String sourceOfIncome = line.substring(755, 790).trim();
         beneficiaryAccount = getBeneficiaryAccountNo(beneficiaryAccount, remittanceType, mobileNo);
+        LocalDate date = CommonService.convertStringToLocalDate(enteredDate, "yyyyMMdd");
 
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
-        data.put("enteredDate", enteredDate);
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("amount", String.valueOf(amount));
         data.put("currency", currency);
         data.put("remitterName", remitterName);

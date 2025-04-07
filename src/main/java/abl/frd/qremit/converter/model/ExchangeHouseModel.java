@@ -21,6 +21,10 @@ public class ExchangeHouseModel {
     private String exchangeCode;
     @Column(name = "exchange_short_name", nullable=false, length = 30)
     private String exchangeShortName;
+    @Column(name ="country_code", nullable=false, length = 10)
+    private String countryCode;
+    @Column(name ="country_name", nullable=false, length = 128)
+    private String countryName;
     @Column(name ="base_table_name", nullable=false, length = 20)
     private String baseTableName;
     @Column(name = "active_status", columnDefinition = "TINYINT(1) DEFAULT 0")
@@ -116,6 +120,22 @@ public class ExchangeHouseModel {
 
     public int getHasSettlementDaily() {
         return this.hasSettlementDaily;
+    }
+
+    public String getCountryCode() {
+        return this.countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getCountryName() {
+        return this.countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
     }
 
     public void setHasSettlementDaily(int hasSettlementDaily) {

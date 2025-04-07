@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.service;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import abl.frd.qremit.converter.model.ErrorDataModel;
@@ -160,11 +161,12 @@ public class NecItalyModelService {
     
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
+        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4), "dd/MM/yyyy");
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", csvRecord.get(17));
         data.put("beneficiaryName", csvRecord.get(6));
