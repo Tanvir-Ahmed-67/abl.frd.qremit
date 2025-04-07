@@ -32,7 +32,7 @@ public class AnbModelController {
 
     @PostMapping("/anbUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, 
-        @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, Model model) {
+        @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, @RequestParam("tbl") String tbl, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         int userId = 000000000;
         // Getting Logged In user Details in this block
@@ -46,7 +46,7 @@ public class AnbModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = anbModelService.save(file, userId, exchangeCode, nrtaCode);
+                    Map<String, Object> resp = anbModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {
