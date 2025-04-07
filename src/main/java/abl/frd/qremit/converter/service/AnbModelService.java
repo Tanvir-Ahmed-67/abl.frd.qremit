@@ -119,7 +119,7 @@ public class AnbModelService {
                 String beneficiaryAccount = getBenificiaryAccount(csvRecord, branchCode, bankName);
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
                 data.put("nrtaCode", nrtaCode);
-                fileExchangeCode = csvRecord.get(0).trim();   
+                fileExchangeCode = nrtaCode;   
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
