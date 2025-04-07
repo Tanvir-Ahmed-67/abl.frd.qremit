@@ -213,11 +213,12 @@ public class AgexSingaporeModelService {
 
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String bankCode, String branchCode){
         Map<String, Object> data = new HashMap<>();
+        LocalDateTime date = CommonService.convertStringToDate(csvRecord.get(4));
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", date.toLocalDate().toString());
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", "");
         data.put("beneficiaryName", csvRecord.get(6));

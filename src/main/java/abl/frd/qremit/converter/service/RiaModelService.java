@@ -180,6 +180,10 @@ public class RiaModelService {
         String currrency = (type == 1) ? "BDT": csvRecord.get(2);
         String enteredDate = (type == 1) ? csvRecord.get(10) : csvRecord.get(4);
         String remiterName = (type == 1) ? csvRecord.get(3) : csvRecord.get(5);
+        if(type == 0){
+            LocalDateTime date = CommonService.convertStringToDate(enteredDate);
+            enteredDate = date.toLocalDate().toString();
+        }
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", currrency);
