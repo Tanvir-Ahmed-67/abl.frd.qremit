@@ -1,8 +1,6 @@
 package abl.frd.qremit.converter.service;
-
 import java.io.*;
-import java.time.LocalDateTime;
-
+import java.time.*;
 import abl.frd.qremit.converter.model.EasternModel;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
@@ -13,7 +11,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import abl.frd.qremit.converter.repository.AccountPayeeModelRepository;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.repository.CocModelRepository;
@@ -48,7 +45,9 @@ public class EasternModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    @Autowired
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -61,7 +60,7 @@ public class EasternModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> easternData = csvToEasternModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            Map<String, Object> easternData = csvToEasternModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             List<EasternModel> easternModels = (List<EasternModel>) easternData.get("easternDataModelList");
 
             if(easternData.containsKey("errorMessage")){
@@ -102,55 +101,52 @@ public class EasternModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToEasternModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToEasternModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<EasternModel> duplicateData;
+        Optional<EasternModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<EasternModel> easternDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
-            int i = 0;
             int duplicateCount = 0;
+            int i = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
+            int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = easternModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
-
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
+                data.put("nrtaCode", nrtaCode);
+                if(!csvRecord.get(0).trim().equals(exchangeCode)){
+                    resp.put("errorMessage", "Please Upload Correct File");
+                    isValidFile = 0;
                     break;
                 }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
-                EasternModel easternDataModel = new EasternModel();
-                easternDataModel = CommonService.createDataModel(easternDataModel, data);
-                easternDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                easternDataModel.setUploadDateTime(currentDateTime);
-                easternDataModelList.add(easternDataModel);
+                fileExchangeCode = nrtaCode; 
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
 
+            if(isValidFile == 1){
+                Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, EasternModel.class, resp, fileExchangeCode, 0, 0);
+                easternDataModelList = (List<EasternModel>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
+            }
+            
+            
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -176,11 +172,12 @@ public class EasternModelService {
     
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
+        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4), "dd/MM/yyyy");
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", csvRecord.get(17));
         data.put("beneficiaryName", csvRecord.get(6));
