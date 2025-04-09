@@ -1266,9 +1266,8 @@ public class CommonService {
     }
 
     public static <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
-        Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, String fileExchangeCode, int checkType, int type){
+        Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, List<ErrorDataModel> errorDataModelList, String fileExchangeCode, int checkType, int type){
         Map<String, Object> modelResp = new HashMap<>();
-        List<ErrorDataModel> errorDataModelList = new ArrayList<>();
         List<String> transactionList = new ArrayList<>();
         String duplicateMessage = "";
         int duplicateCount = 0;

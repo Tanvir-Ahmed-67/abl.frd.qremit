@@ -111,6 +111,7 @@ public class AlawnehModelService {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             int i = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
@@ -132,9 +133,9 @@ public class AlawnehModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AlawnehModel.class, resp, fileExchangeCode, 0, 0);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AlawnehModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<AlawnehModel> alawnehDataModelList = (List<AlawnehModel>) modelResp.get("modelList");
-            List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
             int duplicateCount = (int) modelResp.get("duplicateCount");
 
