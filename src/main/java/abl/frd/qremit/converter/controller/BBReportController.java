@@ -1,12 +1,26 @@
 package abl.frd.qremit.converter.controller;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import abl.frd.qremit.converter.helper.MyUserDetails;
 import abl.frd.qremit.converter.service.CommonService;
 @SuppressWarnings("unchecked")
 @Controller
@@ -82,7 +96,7 @@ public class BBReportController {
             data.put("year", String.valueOf(row[1]));
             data.put("target", String.valueOf(row[2]));
             data.put("achievement", String.valueOf(row[3]));
-            data.put("percentage", String.valueOf(row[4]));
+            data.put("percentage", String.valueOf(row[4]) + "%");
             dataList.add(data);
         }
         resp.put("data", dataList);
@@ -173,6 +187,22 @@ public class BBReportController {
             dataList.add(data);
         }
         resp.put("data", dataList);
+        return resp;
+    }
+    
+    @PostMapping(value="/uploadMonthly", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> uploadBbReport(@AuthenticationPrincipal MyUserDetails userDetails,@RequestParam("file") MultipartFile file, Model model){
+        Map<String, Object> resp = new HashMap<>();
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+         CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
+            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            for(CSVRecord csvRecord:csvRecords){
+
+            }
+        }catch(IOException e){
+
+        }
         return resp;
     }
 

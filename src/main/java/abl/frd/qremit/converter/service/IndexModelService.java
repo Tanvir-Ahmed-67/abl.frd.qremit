@@ -105,6 +105,7 @@ public class IndexModelService {
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             int i = 0;
+            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
             Map<String, Object> modelResp = new HashMap<>();
@@ -124,9 +125,9 @@ public class IndexModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, IndexModel.class, resp, fileExchangeCode, 0, 0);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, IndexModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<IndexModel> indexModelList = (List<IndexModel>) modelResp.get("modelList");
-            List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
             int duplicateCount = (int) modelResp.get("duplicateCount");
             //save error data

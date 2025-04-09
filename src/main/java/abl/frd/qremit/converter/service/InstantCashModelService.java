@@ -143,7 +143,7 @@ public class InstantCashModelService {
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, InstantCashModel.class, resp, fileExchangeCode, 1, type);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, InstantCashModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
                 instantCashDataModelList = (List<InstantCashModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
