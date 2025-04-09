@@ -108,6 +108,7 @@ public class AmanModelService {
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             int i = 0;
+            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
             Map<String, Object> modelResp = new HashMap<>();
@@ -127,9 +128,9 @@ public class AmanModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AmanModel.class, resp, fileExchangeCode, 0, 0);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AmanModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<AmanModel> amanDataModelList = (List<AmanModel>) modelResp.get("modelList");
-            List<ErrorDataModel> errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
             int duplicateCount = (int) modelResp.get("duplicateCount");
 
