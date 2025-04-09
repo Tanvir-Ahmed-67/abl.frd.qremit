@@ -3,6 +3,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -55,6 +56,10 @@ public class ReportService {
     LogModelService logModelService;
     @Autowired
     DynamicOperationService dynamicOperationService;
+
+    DateTimeFormatter yyMMddFormatter = DateTimeFormatter.ofPattern("yyMMdd");     // YYMMDD
+    DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // YYYY/MM/DD
+    DateTimeFormatter ddMMyyyyFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // DD/MM/YYYY
     
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
@@ -157,7 +162,7 @@ public class ReportService {
                     .sorted(Comparator.comparing(ReportModel::getExchangeCode))
                     .collect(Collectors.toList());
             int counter = 1;
-            String formattedDate = null;
+            LocalDate formattedDate;
             for(ReportModel reportModel:sortedReportsList){
                 ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
                 exchangeReportDTO.setTotalRowCount(counter);
@@ -171,7 +176,43 @@ public class ReportService {
                 exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
                 exchangeReportDTO.setBranchName(reportModel.getBranchName());
                 exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
-                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime().toLocalDate());
+
+                // Block for setting different date pattern for different exchange houses for swift operation.
+                String enteredDateStr = reportModel.getEnteredDate();
+                if(enteredDateStr == null || enteredDateStr.trim().isEmpty()){
+                    formattedDate = null;
+                }else{
+                    formattedDate = CommonService.convertStringToLocalDate(enteredDateStr,"yyyy-MM-dd");
+                }
+                //if (enteredDateStr == null || enteredDateStr.trim().isEmpty()) {
+                if(formattedDate == null){
+                    formattedDate = LocalDate.now();
+                }
+                String exchangeCode = reportModel.getExchangeCode();
+                String pattern;
+
+                // Assign pattern based on exchangeCode
+                switch (exchangeCode) {
+                    case "7119":       // Ajraji
+                        exchangeReportDTO.setExchangeCode("7009");
+                    case "7010204":    // Bilad
+                        pattern = "yyMMdd";
+                        break;
+
+                    case "7010203":    // Anb
+                        pattern = "yyyy/MM/dd";
+                        break;
+
+                    case "7010241":    // Ncb
+                    case "7010299":    // BFC UK
+                        pattern = "dd/MM/yyyy";
+                        break;
+
+                    default:
+                        pattern = "dd/MM/yyyy";
+                        break;
+                }
+                exchangeReportDTO.setEnteredDateForSearchFile(CommonService.convertLocalDateToString(formattedDate,pattern));
                 exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
                 report.add(exchangeReportDTO);
                 counter++;
@@ -992,7 +1033,7 @@ public class ReportService {
         SimpleCsvExporterConfiguration configuration = new SimpleCsvExporterConfiguration();
         configuration.setFieldDelimiter(",");
         configuration.setForceFieldEnclosure(true);
-        configuration.setRecordDelimiter("\n");
+        configuration.setRecordDelimiter("\r\n");
         exporter.setConfiguration(configuration);
     }
 }

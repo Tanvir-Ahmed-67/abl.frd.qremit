@@ -52,7 +52,7 @@
 				<text><![CDATA[CODE: 11-104]]></text>
 			</element>
 			<element kind="staticText" x="0" y="123" width="159" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
-				<text><![CDATA[ADVICE NO:ARB-MO-1-Txn24-]]></text>
+				<text><![CDATA[ADVICE NO:FRD-MO-1-Txn25-]]></text>
 			</element>
 			<element kind="textField" x="160" y="123" width="106" height="20" fontSize="11.0" hTextAlign="Left" vTextAlign="Middle">
 				<expression><![CDATA[$V{IncrementedPageNumber}]]></expression>
