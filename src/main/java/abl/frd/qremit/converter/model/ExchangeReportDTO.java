@@ -10,6 +10,7 @@ public class ExchangeReportDTO {
     private String currency;
     private Double amount;
     private LocalDate enteredDate;
+    private String enteredDateForSearchFile;
     private LocalDate voucherDate;
     private String remitterName;
     private String remitterMobile;
@@ -259,5 +260,13 @@ public class ExchangeReportDTO {
 
     public void setPurposeOfRemittance(String purposeOfRemittance) {
         this.purposeOfRemittance = purposeOfRemittance;
+    }
+
+    public String getEnteredDateForSearchFile() {
+        return enteredDateForSearchFile;
+    }
+
+    public void setEnteredDateForSearchFile(String enteredDateForSearchFile) {
+        this.enteredDateForSearchFile = enteredDateForSearchFile;
     }
 }
