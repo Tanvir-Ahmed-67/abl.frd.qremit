@@ -80,7 +80,7 @@ $(document).ready(function(){
 
     function get_user_upload_report(resp,params){
         var sfun = [upload_report_ui];
-        get_dynamic_dataTable(params.tbl, params.url, resp.column, sfun);        
+        get_dynamic_dataTable(params.tbl, params.url, resp.column, sfun, '', 'get',[], true);        
     }
 
     function upload_report_ui(resp){
