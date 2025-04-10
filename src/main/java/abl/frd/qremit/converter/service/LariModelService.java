@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -44,7 +45,9 @@ public class LariModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    @Autowired
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -57,7 +60,7 @@ public class LariModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> lariData = csvToLariModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            Map<String, Object> lariData = csvToLariModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             List<LariModel> lariModels = (List<LariModel>) lariData.get("lariModelList");
 
             if(lariData.containsKey("errorMessage")){
@@ -96,67 +99,53 @@ public class LariModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToLariModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
+    public Map<String, Object> csvToLariModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<LariModel> duplicateData;
+        Optional<LariModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<LariModel> lariModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
             for (CSVRecord csvRecord : csvRecords) {
                 if(csvRecord.get(0).trim().toLowerCase().startsWith("test"))    continue;
                 if(csvRecord.get(0).isEmpty())  continue;
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = lariModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                LariModel lariModel = new LariModel();
-                lariModel = CommonService.createDataModel(lariModel, data);
-                lariModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                lariModel.setUploadDateTime(currentDateTime);
-                lariModelList.add(lariModel);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, bankName, branchCode);
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = csvRecord.get(0).trim();   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-           //save error data
-           Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
-           if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
-           if(saveError.containsKey("errorMessage")){
-               resp.put("errorMessage", saveError.get("errorMessage"));
-               return resp;
-           }
-           //if both model is empty then delete fileInfoModel
-           if(errorDataModelList.isEmpty() && lariModelList.isEmpty()){
-               fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
-           }
-           resp.put("lariModelList", lariModelList);
-           if(!resp.containsKey("errorMessage")){
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, LariModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            List<LariModel> lariModelList = (List<LariModel>) modelResp.get("modelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
+
+            //save error data
+            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
+            if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
+            if(saveError.containsKey("errorMessage")){
+                resp.put("errorMessage", saveError.get("errorMessage"));
+                return resp;
+            }
+            //if both model is empty then delete fileInfoModel
+            if(errorDataModelList.isEmpty() && lariModelList.isEmpty()){
+                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
+            }
+            resp.put("lariModelList", lariModelList);
+            if(!resp.containsKey("errorMessage")){
                 resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
             }
         } catch (IOException e) {
@@ -167,13 +156,15 @@ public class LariModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo,  String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
+        String beneficiaryAccount = csvRecord.get(7).trim().replace("SB ", "");
+        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4), "dd/MM/yyyy");
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", "");
         data.put("beneficiaryName", csvRecord.get(6));
