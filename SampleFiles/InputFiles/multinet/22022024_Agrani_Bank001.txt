@@ -1,0 +1,3 @@
+Exchange House Code|TT No|Transaction Currency Code|Transaction Value|Transaction Date|Beneficiary Bank Name|Beneficiary Bank Branch Name|Beneficiary Mobile No|Drawee Bank Branch Code|Purpose of Remittance|Source of Income|Remitter Mobile No
+7040|24101101593|BDT|400000.000|2/20/2024 12:00:00 AM|ASIF MIA SIRAJ UDDIN|MD MAHIDUL ISLAM|0200016886553|AGRANI BANK LTD |010120583|CHANDURA BAZAR|010||AGRANI BANK LIMITED|11|FAMILY MAINTENANCE|Savings|00971501339124
+

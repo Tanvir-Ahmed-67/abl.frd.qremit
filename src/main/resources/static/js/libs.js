@@ -34,11 +34,15 @@ function checkDataTable(tbl){
         if(successfunc){
           for(var i in successfunc)  successfunc[i](json);
         }
+        if(exportTbl) $('.dt-buttons button').removeClass('btn-secondary').addClass('btn-info');
       },
     };
     if(exportTbl){
-      oSettings.dom = 'Bfrtip';
-      oSettings.buttons = ['copy', 'csv','pdf', 'print'];
+      oSettings.layout = {
+        topStart: {
+          buttons:['copy','csv','excel','print'],
+        }
+      };
     }
     $(tbl).DataTable(oSettings);
    }
