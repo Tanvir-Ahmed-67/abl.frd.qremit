@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.service;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -45,7 +46,9 @@ public class ShahGlobalModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    @Autowired
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try{
@@ -57,7 +60,7 @@ public class ShahGlobalModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
             Map<String, Object> shahGlobalData = new HashMap<>();
-            shahGlobalData = xlsToShahGlobalModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            shahGlobalData = xlsToShahGlobalModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
 
             List<ShahGlobalModel> shahGlobalModels = (List<ShahGlobalModel>) shahGlobalData.get("shahGlobalDataModelList");
 
@@ -99,19 +102,19 @@ public class ShahGlobalModelService {
         return resp;
     }
 
-    public Map<String, Object> xlsToShahGlobalModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
+    public Map<String, Object> xlsToShahGlobalModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<ShahGlobalModel> duplicateData;
+        Optional<ShahGlobalModel> duplicateData = Optional.empty();
         try{
             Workbook records = CommonService.getWorkbook(is);
             Row row;
             Sheet worksheet = records.getSheetAt(0);
-            List<ShahGlobalModel> shahGlobalDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
             for (int rowIndex = 1; rowIndex <= worksheet.getLastRowNum(); rowIndex++) {
                 row = worksheet.getRow(rowIndex);
                 if(row == null) continue;
@@ -123,33 +126,18 @@ public class ShahGlobalModelService {
                 String beneficiaryAccount = data.get("beneficiaryAccount").toString();
                 String bankName = data.get("bankName").toString();
                 String branchCode = data.get("branchCode").toString();
-                duplicateData = shahGlobalModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, nrtaCode, duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
-                ShahGlobalModel shahGlobalDataModel = new ShahGlobalModel();
-                shahGlobalDataModel = CommonService.createDataModel(shahGlobalDataModel, data);
-                shahGlobalDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                shahGlobalDataModel.setUploadDateTime(currentDateTime);
-                shahGlobalDataModelList.add(shahGlobalDataModel);
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ShahGlobalModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            List<ShahGlobalModel> shahGlobalDataModelList = (List<ShahGlobalModel>) modelResp.get("modelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -181,12 +169,13 @@ public class ShahGlobalModelService {
         String bankCode = "";
         String branchName = CommonService.getCellValueAsString(row.getCell(8));
         String amount = CommonService.getCellValueAsString(row.getCell(3));
+        LocalDate date = CommonService.convertStringToLocalDate(CommonService.getCellValueAsString(row.getCell(2)), "MM/dd/yyyy");
 
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", CommonService.getCellValueAsString(row.getCell(1)));
         data.put("currency", "BDT");
         data.put("amount", amount);
-        data.put("enteredDate", CommonService.getCellValueAsString(row.getCell(2)));
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("remitterName", CommonService.getCellValueAsString(row.getCell(10)));
         data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(4)));
         data.put("beneficiaryAccount", CommonService.getCellValueAsString(row.getCell(5)));

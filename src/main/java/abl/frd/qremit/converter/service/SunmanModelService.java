@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import abl.frd.qremit.converter.model.ErrorDataModel;
@@ -46,7 +47,9 @@ public class SunmanModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    @Autowired
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -59,7 +62,7 @@ public class SunmanModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> sunmanData = csvToSunmanModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            Map<String, Object> sunmanData = csvToSunmanModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             List<SunmanModel> sunmanModels = (List<SunmanModel>) sunmanData.get("sunmanDataModelList");
 
             if(sunmanData.containsKey("errorMessage")){
@@ -100,18 +103,18 @@ public class SunmanModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToSunmanModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToSunmanModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<SunmanModel> duplicateData;
+        Optional<SunmanModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-16LE"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<SunmanModel> sunmanDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
@@ -122,34 +125,18 @@ public class SunmanModelService {
                 String bankName = processData.get("bankName").toString();
                 String branchCode = processData.get("branchCode").toString();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, processData);
-
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
-                SunmanModel sunmanDataModel = new SunmanModel();
-                sunmanDataModel = CommonService.createDataModel(sunmanDataModel, data);
-                sunmanDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                sunmanDataModel.setUploadDateTime(currentDateTime);
-                sunmanDataModelList.add(sunmanDataModel);
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, SunmanModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            List<SunmanModel> sunmanDataModelList = (List<SunmanModel>) modelResp.get("modelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -193,7 +180,7 @@ public class SunmanModelService {
             draweeBranchCode = "";
             draweeBranchName = "";
             branchCode = "";
-            benificiaryMobile = csvRecord.get(12).trim();
+            benificiaryMobile = csvRecord.get(12).trim().replace("COC", "");
             purposeOfRemittance = csvRecord.get(15).trim();
             sourceOfIncome = csvRecord.get(16).trim();
             remitterMobile = csvRecord.get(17).trim();
@@ -214,11 +201,12 @@ public class SunmanModelService {
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, 
         String branchCode, Map<String, Object> processData){
         Map<String, Object> data = new HashMap<>();
+        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4), "dd-MM-yyyy");
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", processData.get("remitterMobile").toString());
         data.put("beneficiaryName", csvRecord.get(6));
