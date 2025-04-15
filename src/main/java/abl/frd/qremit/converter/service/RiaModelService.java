@@ -75,7 +75,7 @@ public class RiaModelService {
                 Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(riaModelList, fileInfoModel, user, currentDateTime, type);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(riaModelList.size()));
-                fileInfoModel.setIsSettlement(1);
+                fileInfoModel.setIsSettlement(type);
                 fileInfoModel.setRiaModel(riaModelList);
                 // SAVING TO MySql Data Table
                 try{
