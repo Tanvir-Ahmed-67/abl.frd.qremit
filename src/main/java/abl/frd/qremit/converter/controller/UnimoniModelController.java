@@ -35,7 +35,7 @@ public class UnimoniModelController {
     
     @PostMapping("/unimoniUpload")
     public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode,
-        @RequestParam("nrtaCode") String nrtaCode, Model model) {
+        @RequestParam("nrtaCode") String nrtaCode, @RequestParam("tbl") String tbl, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));  
         int userId = 000000000;
         // Getting Logged In user Details in this block
@@ -49,7 +49,7 @@ public class UnimoniModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
-                    Map<String, Object> resp = unimoniModelService.save(file, userId, exchangeCode, nrtaCode);
+                    Map<String, Object> resp = unimoniModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 }catch (IllegalArgumentException e) {
