@@ -182,7 +182,7 @@ public class InstantCashModelService {
         String purposeOfRemittance = (type == 1) ? csvRecord.get(15).trim():"";
         String sourceOfIncome = (type == 1) ? csvRecord.get(16).trim():"";
         
-        String format = (type == 1) ? "ddMMyy":"yyyy-MM-dd HH:mm:ss";
+        String format = (type == 1) ? "ddMMyy":"yyyy-MM-dd'T'HH:mm:ss.SSS";
         LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4),format);
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
