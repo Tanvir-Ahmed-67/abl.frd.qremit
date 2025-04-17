@@ -57,9 +57,9 @@ public class ReimbursementModelServiceHelper {
         this.govtIncentiveAccountNoForReimbursement = govtIncentiveAccountNoForReimbursement;
         this.agraniIncentiveAccountNoForReimbursement = agraniIncentiveAccountNoForReimbursement;
     }
-    public static byte[] ReimbursementModelsToExcel(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
+    public static byte[] ReimbursementModelsForGovtIncentiveToExcel(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Daily Reimbursement_"+localDate);
+        Sheet sheet = workbook.createSheet("Reimbursement_Govt_Inc_"+localDate);
         Iterator<ReimbursementModel> iterator = reimbursementModelList.iterator();
         byte[] xls = null;
         int rowIndex = 0;
@@ -115,9 +115,33 @@ public class ReimbursementModelServiceHelper {
                 }
             }
         }
-        // Third Portion: Fill cell 4 with agraniIncentiveAmount if non-zero
-        iterator = reimbursementModelList.iterator();
-        count = 1;
+        ByteArrayOutputStream fos = new ByteArrayOutputStream();
+        ByteArrayInputStream is = null;
+        try {
+            workbook.write(fos);
+            xls = fos.toByteArray();
+            is = new ByteArrayInputStream(xls);
+            fos.close();
+            is.close();
+            workbook.close();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return xls;
+    }
+    public static byte[] ReimbursementModelsForAgraniIncentiveToExcel(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Reimbursement_Agrani_Inc_"+localDate);
+        Iterator<ReimbursementModel> iterator = reimbursementModelList.iterator();
+        byte[] xls = null;
+        int rowIndex = 0;
+        int count=1;
+        Row row = null;
+        // Fill cell 4 with agraniIncentiveAmount if non-zero
         while (iterator.hasNext()) {
             ReimbursementModel reimbursementModel = iterator.next();
             if(!reimbursementModel.getType().equals("4")) {

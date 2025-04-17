@@ -537,8 +537,8 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-    @RequestMapping(value = "/downloadDailyReimbursement", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyReimbursement(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
+    @RequestMapping(value = "/downloadDailyReimbursementForGovtIncentive", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDailyReimbursementForGovtIncentive(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
         try {
             if (fromDate.isEmpty()) {
                 fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
@@ -546,8 +546,8 @@ public class ReportController {
             if (toDate.isEmpty()) {
                 toDate = CommonService.getCurrentDate("yyyy-MM-dd");
             }
-            byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
-            String fileName = CommonService.generateDynamicFileName("Reimbursement_", ".csv");
+            byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDateForGovtIncentive(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            String fileName = CommonService.generateDynamicFileName("Reimbursement_Govt_Incentive_", ".csv");
             MediaType mediaType = MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
@@ -569,6 +569,27 @@ public class ReportController {
             }
             byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_ICash_", ".csv");
+            MediaType mediaType = MediaType.TEXT_PLAIN;
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(mediaType)
+                    .body(contentStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+    @RequestMapping(value = "/downloadDailyReimbursementForAgraniIncentive", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadDailyReimbursementForAgraniIncentive(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
+        try {
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDateForAgraniIncentive(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            String fileName = CommonService.generateDynamicFileName("Reimbursement_Agrani_Incentive_", ".csv");
             MediaType mediaType = MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")

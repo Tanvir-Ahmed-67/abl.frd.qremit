@@ -21,9 +21,14 @@ public class ReimbursementModelService {
     @Autowired
     CommonService commonService;
 
-    public byte[] loadAllReimbursementByDate(LocalDate fromDate, LocalDate toDate) {
+    public byte[] loadAllReimbursementByDateForGovtIncentive(LocalDate fromDate, LocalDate toDate) {
         List<ReimbursementModel> reimbursementModels = findAllReimbursementByDate(fromDate, toDate);
-        byte[] in = ReimbursementModelServiceHelper.ReimbursementModelsToExcel(reimbursementModels, toDate);
+        byte[] in = ReimbursementModelServiceHelper.ReimbursementModelsForGovtIncentiveToExcel(reimbursementModels, toDate);
+        return in;
+    }
+    public byte[] loadAllReimbursementByDateForAgraniIncentive(LocalDate fromDate, LocalDate toDate) {
+        List<ReimbursementModel> reimbursementModels = findAllReimbursementByDate(fromDate, toDate);
+        byte[] in = ReimbursementModelServiceHelper.ReimbursementModelsForAgraniIncentiveToExcel(reimbursementModels, toDate);
         return in;
     }
     public byte[] loadAllReimbursementForIcashByDate(LocalDate fromDate, LocalDate toDate) {
