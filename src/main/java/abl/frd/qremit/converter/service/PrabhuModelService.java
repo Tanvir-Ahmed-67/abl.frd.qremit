@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
-import abl.frd.qremit.converter.model.OmanModel;
 import abl.frd.qremit.converter.model.User;
 import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;

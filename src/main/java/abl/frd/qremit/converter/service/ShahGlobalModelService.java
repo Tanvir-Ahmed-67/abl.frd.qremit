@@ -123,9 +123,6 @@ public class ShahGlobalModelService {
                 Map<String, Object> data = getBeftnData(row, exchangeCode);
                 String transactionNo = data.get("transactionNo").toString();
                 String amount = data.get("amount").toString();
-                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                String bankName = data.get("bankName").toString();
-                String branchCode = data.get("branchCode").toString();
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = nrtaCode;   
                 dataList.add(data);
