@@ -50,16 +50,16 @@ public class ReimbursementModelServiceHelper {
     }
 
     @Autowired
-    public ReimbursementModelServiceHelper(@Value("${incentive.percentage}") float govtIncentivePercentage, @Value("${incentive.percentage}") float agraniIncentivePercentage, @Value("12665") String mainAccountNoForReimbursement, @Value("12661") String govtIncentiveAccountNoForReimbursement, @Value("12665") String agraniIncentiveAccountNoForReimbursement) {
+    public ReimbursementModelServiceHelper(@Value("${govt.incentive.percentage}") float govtIncentivePercentage, @Value("${agrani.incentive.percentage}") float agraniIncentivePercentage, @Value("12665") String mainAccountNoForReimbursement, @Value("12661") String govtIncentiveAccountNoForReimbursement, @Value("12665") String agraniIncentiveAccountNoForReimbursement) {
         this.govtIncentivePercentage = govtIncentivePercentage;
         this.agraniIncentivePercentage = agraniIncentivePercentage;
         this.mainAccountNoForReimbursement = mainAccountNoForReimbursement;
         this.govtIncentiveAccountNoForReimbursement = govtIncentiveAccountNoForReimbursement;
         this.agraniIncentiveAccountNoForReimbursement = agraniIncentiveAccountNoForReimbursement;
     }
-    public static byte[] ReimbursementModelsToExcel(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
+    public static byte[] ReimbursementModelsForGovtIncentiveToExcel(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Daily Reimbursement_"+localDate);
+        Sheet sheet = workbook.createSheet("Reimbursement_Govt_Inc_"+localDate);
         Iterator<ReimbursementModel> iterator = reimbursementModelList.iterator();
         byte[] xls = null;
         int rowIndex = 0;
@@ -94,7 +94,7 @@ public class ReimbursementModelServiceHelper {
         while (iterator.hasNext()) {
             ReimbursementModel reimbursementModel = iterator.next();
             if(!reimbursementModel.getType().equals("4")) {
-                if (reimbursementModel.getGovtIncentiveAmount() != 0) {
+                if (reimbursementModel.getGovtIncentive() != 0) {
                     row = sheet.createRow(rowIndex++);
 
                     Cell cell0 = row.createCell(0);
@@ -110,18 +110,42 @@ public class ReimbursementModelServiceHelper {
                     cell3.setCellValue(reimbursementModel.getBranchName().trim());
 
                     Cell cell4 = row.createCell(4);
-                    cell4.setCellValue(reimbursementModel.getGovtIncentiveAmount());
+                    cell4.setCellValue(reimbursementModel.getGovtIncentive());
                     count++;
                 }
             }
         }
-        // Third Portion: Fill cell 4 with agraniIncentiveAmount if non-zero
-        iterator = reimbursementModelList.iterator();
-        count = 1;
+        ByteArrayOutputStream fos = new ByteArrayOutputStream();
+        ByteArrayInputStream is = null;
+        try {
+            workbook.write(fos);
+            xls = fos.toByteArray();
+            is = new ByteArrayInputStream(xls);
+            fos.close();
+            is.close();
+            workbook.close();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return xls;
+    }
+    public static byte[] ReimbursementModelsForAgraniIncentiveToExcel(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Reimbursement_Agrani_Inc_"+localDate);
+        Iterator<ReimbursementModel> iterator = reimbursementModelList.iterator();
+        byte[] xls = null;
+        int rowIndex = 0;
+        int count=1;
+        Row row = null;
+        // Fill cell 4 with agraniIncentiveAmount if non-zero
         while (iterator.hasNext()) {
             ReimbursementModel reimbursementModel = iterator.next();
             if(!reimbursementModel.getType().equals("4")) {
-                if (reimbursementModel.getAgraniIncentiveAmount() != 0) {
+                if (reimbursementModel.getAgraniIncentive() != 0) {
                     row = sheet.createRow(rowIndex++);
 
                     Cell cell0 = row.createCell(0);
@@ -137,7 +161,7 @@ public class ReimbursementModelServiceHelper {
                     cell3.setCellValue(reimbursementModel.getBranchName().trim());
 
                     Cell cell4 = row.createCell(4);
-                    cell4.setCellValue(reimbursementModel.getAgraniIncentiveAmount());
+                    cell4.setCellValue(reimbursementModel.getAgraniIncentive());
                     count++;
                 }
             }
@@ -187,7 +211,7 @@ public class ReimbursementModelServiceHelper {
                 row.createCell(0).setCellValue(reimbursementModel.getBranchCode().trim());
                 row.createCell(1).setCellValue(reimbursementModel.getTransactionNo().trim());
                 row.createCell(2).setCellValue(reimbursementModel.getMainAmount());
-                row.createCell(3).setCellValue(reimbursementModel.getGovtIncentiveAmount());
+                row.createCell(3).setCellValue(reimbursementModel.getGovtIncentive());
                 row.createCell(4).setCellValue(reimbursementModel.getReimbursementDate().format(formatter));
                 row.createCell(5).setCellValue(reimbursementModel.getExchangeCode().trim());
                 row.createCell(6).setCellValue(reimbursementModel.getBeneficiaryAccount().trim());

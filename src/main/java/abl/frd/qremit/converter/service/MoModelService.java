@@ -15,6 +15,7 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.*;
 
 @Service
@@ -27,16 +28,18 @@ public class MoModelService {
     CommonService commonService;
 
     public MoModel processAndGenerateMoData(MoModel moModel){
+        String moNumber = generateMoNumber();  // Generating auto incremented Mo Number for each Mo.
+        moModel.setMoNumber(moNumber);
         LocalDate reportDate = moModel.getMoDate();
 
-        List<Object> beftnData = reportService.getAllBeftnSummaryForMo(reportDate);
+        List<Object> beftnData = reportService.getAllBeftnSummaryForMo(moNumber, reportDate);
 
         moModel.setTotalNumberBeftn((Long) beftnData.get(0));
         moModel.setTotalAmountBeftn(BigDecimal.valueOf((Double) beftnData.get(1)).setScale(2, RoundingMode.DOWN));
         moModel.doSumGrandTotalNumber(moModel.getTotalNumberBeftn());
         moModel.doSumGrandTotalAmount(moModel.getTotalAmountBeftn());
 
-        List<Object> allOtherSummaryData = reportService.getAllOtherSummaryForMo(reportDate);
+        List<Object> allOtherSummaryData = reportService.getAllOtherSummaryForMo(moNumber, reportDate);
 
         moModel.setTotalNumberAllOtherBranch((Long) allOtherSummaryData.get(0));
         moModel.setTotalAmountAllOtherBranch(BigDecimal.valueOf((Double) allOtherSummaryData.get(1)).setScale(2, RoundingMode.DOWN));
@@ -48,14 +51,14 @@ public class MoModelService {
         moModel.doSumGrandTotalNumber(moModel.getTotalNumberIcash());
         moModel.doSumGrandTotalAmount(moModel.getTotalAmountIcash());
 
-        List<Object> onlineData = reportService.getAllOnlineSummaryForMo(reportDate);
+        List<Object> onlineData = reportService.getAllOnlineSummaryForMo(moNumber, reportDate);
 
         moModel.setTotalNumberOnline((Long) onlineData.get(0));
         moModel.setTotalAmountOnline(BigDecimal.valueOf((Double) onlineData.get(1)).setScale(2, RoundingMode.DOWN));
         moModel.doSumGrandTotalNumber(moModel.getTotalNumberOnline());
         moModel.doSumGrandTotalAmount(moModel.getTotalAmountOnline());
 
-        List<Object> apiData = reportService.getAllApiSummaryForMo(reportDate);
+        List<Object> apiData = reportService.getAllApiSummaryForMo(moNumber, reportDate);
 
         moModel.setTotalNumberApi((Long) apiData.get(0));
         moModel.setTotalAmountApi(BigDecimal.valueOf((Double) apiData.get(1)).setScale(2, RoundingMode.DOWN));
@@ -81,6 +84,7 @@ public class MoModelService {
 
     public MoModel generateMoDTOForPreparingPdfFile(MoModel moModel, String date){
         MoModel model = new MoModel();
+        model.setMoNumber(moModel.getMoNumber());
         model.setId(moModel.getId());
         model.setMoDate(LocalDate.parse(date));
 
@@ -132,5 +136,12 @@ public class MoModelService {
         try (InputStream inputStream = resource.getInputStream()) {
             return JasperCompileManager.compileReport(inputStream);
         }
+    }
+    public String generateMoNumber() {
+        String yearSuffix = String.format("%02d", Year.now().getValue() % 100); // e.g., 25
+        String prefix = "FRD-MO-1-Txn" + yearSuffix + "-";
+        Long maxSuffix = moModelRepository.findMaxMoNumberSuffix(prefix);
+        long next = (maxSuffix != null) ? maxSuffix + 1 : 1;
+        return prefix + next;
     }
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
         @Index(name = "idx_is_downloaded", columnList = "is_downloaded"), @Index(name = "idx_temp_status", columnList = "temp_status"), 
-        @Index(name = "idx_beneficiary_account_no", columnList = "beneficiary_account_no")
+        @Index(name = "idx_beneficiary_account_no", columnList = "beneficiary_account_no"), @Index(name = "idx_govt_incentive", columnList = "govt_incentive"),@Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"), @Index(name = "idx_incentive", columnList = "incentive")
     }
 )
 public class CocModel {
@@ -45,6 +45,10 @@ public class CocModel {
     private String beneficiaryAccount;
     @Column(name = "remitter_name", length=128)
     private String remitterName;
+    @Column(name = "govt_incentive")
+    private Double govtIncentive;
+    @Column(name = "agrani_incentive")
+    private Double agraniIncentive;
     @Column(name = "incentive")
     private Double incentive;
     @Column(name = "coc_code")
@@ -210,12 +214,12 @@ public class CocModel {
         this.remitterName = remitterName;
     }
 
-    public Double getIncentive() {
-        return incentive;
+    public Double getGovtIncentive() {
+        return govtIncentive;
     }
 
-    public void setIncentive(Double incentive) {
-        this.incentive = incentive;
+    public void setGovtIncentive(Double incentive) {
+        this.govtIncentive = incentive;
     }
 
     public String getCocCode() {
@@ -291,9 +295,24 @@ public class CocModel {
     public void setUploadDateTime(LocalDateTime uploadDateTime) {
         this.uploadDateTime = uploadDateTime;
     }
-    
 
-    public CocModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String cocCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public Double getIncentive() {
+        return incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
+    }
+
+    public CocModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double govtIncentive, Double agraniIncentive, Double incentive, String cocCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;
@@ -308,6 +327,8 @@ public class CocModel {
         this.branchCode = branchCode;
         this.beneficiaryAccount = beneficiaryAccount;
         this.remitterName = remitterName;
+        this.govtIncentive = govtIncentive;
+        this.agraniIncentive = agraniIncentive;
         this.incentive = incentive;
         this.cocCode = cocCode;
         this.isProcessed = extraA;
@@ -334,6 +355,8 @@ public class CocModel {
                 ", branchCode='" + branchCode + '\'' +
                 ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
                 ", remitterName='" + remitterName + '\'' +
+                ", govtIncentive=" + govtIncentive +
+                ", agraniIncentive=" + agraniIncentive +
                 ", incentive=" + incentive +
                 ", cocCode='" + cocCode + '\'' +
                 ", extraA='" + isProcessed + '\'' +

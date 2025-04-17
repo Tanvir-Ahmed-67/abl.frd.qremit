@@ -63,6 +63,7 @@
 		</field>
 		<field name="amount" class="java.lang.Double">
 		</field>
+		<field name="incentive" class="java.lang.Double"></field>
 		<field name="beneficiaryName" class="java.lang.String">
 		</field>
 		<field name="beneficiaryAccount" class="java.lang.String">

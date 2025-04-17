@@ -77,6 +77,8 @@ public class TemporaryReportService {
                     temporaryReportModel.setAmount(amount);
                     temporaryReportModel.setBeneficiaryName((String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
                     temporaryReportModel.setBeneficiaryAccount((String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
+                    temporaryReportModel.setGovtIncentive((Double) CommonService.getPropertyValue(model, "getGovtIncentive"));
+                    temporaryReportModel.setAgraniIncentive((Double) CommonService.getPropertyValue(model, "getAgraniIncentive"));
                     temporaryReportModel.setIncentive((Double) CommonService.getPropertyValue(model, "getIncentive"));
                     temporaryReportModel.setRemitterName((String) CommonService.getPropertyValue(model, "getRemitterName"));
                     temporaryReportModel.setDownloadDateTime((LocalDateTime) CommonService.getPropertyValue(model, "getDownloadDateTime"));

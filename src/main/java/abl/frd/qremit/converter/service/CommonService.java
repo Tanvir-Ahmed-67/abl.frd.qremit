@@ -25,6 +25,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -32,8 +33,14 @@ import java.nio.file.*;
 @SuppressWarnings("unchecked")
 @Service
 public class CommonService {
+    @Value("${govt.incentive.percentage}")
+    private float govtIncentivePercentage;
+    private static float govtIncentivePercentageStatic;
+    @Value("${agrani.incentive.percentage}")
+    private float agraniIncentivePercentage;
+    private static float agraniIncentivePercentageStatic;
     private static final DecimalFormat df = new DecimalFormat("0.00");
-    private static float incentivePercentage = 2.5f;
+    //private static float incentivePercentage = 2.5f;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -56,6 +63,12 @@ public class CommonService {
     @Value("${app.dir-prefix}")
     private String dirPrefix;
     public static String reportDir = "report/";
+
+    @PostConstruct
+    public void init() {
+        govtIncentivePercentageStatic = govtIncentivePercentage;
+        agraniIncentivePercentageStatic = agraniIncentivePercentage;
+    }
 
     public Path generateOutputFile(String file) throws IOException{
         return generateOutputFile(reportDir, file);
@@ -155,6 +168,9 @@ public class CommonService {
         OnlineModel onlineModel = new OnlineModel();
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
+            onlineModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            onlineModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            onlineModel.setIncentive(onlineModel.getGovtIncentive()+onlineModel.getAgraniIncentive());
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
             onlineModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             onlineModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
@@ -207,6 +223,9 @@ public class CommonService {
         CocModel cocModel = new CocModel();
         try {
             cocModel.setAmount((Double) getPropertyValue(model, "getAmount"));
+            cocModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            cocModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            cocModel.setIncentive(cocModel.getGovtIncentive()+cocModel.getAgraniIncentive());
             cocModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             cocModel.setBankName((String) getPropertyValue(model, "getBankName"));
             cocModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -220,7 +239,6 @@ public class CommonService {
             cocModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             cocModel.setDownloadUserId(9999);
             cocModel.setUploadDateTime(uploadDateTime);
-            cocModel.setIncentive(00.00);
             cocModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             cocModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
         } catch (Exception e) {
@@ -247,6 +265,9 @@ public class CommonService {
         AccountPayeeModel accountPayeeModel = new AccountPayeeModel();
         try {
             accountPayeeModel.setAmount((Double) getPropertyValue(model, "getAmount"));
+            accountPayeeModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            accountPayeeModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            accountPayeeModel.setIncentive(accountPayeeModel.getGovtIncentive()+accountPayeeModel.getAgraniIncentive());
             accountPayeeModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             accountPayeeModel.setBankName((String) getPropertyValue(model, "getBankName"));
             accountPayeeModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -260,7 +281,6 @@ public class CommonService {
             accountPayeeModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             accountPayeeModel.setDownloadUserId(9999);
             accountPayeeModel.setUploadDateTime(uploadDateTime);
-            accountPayeeModel.setIncentive(00.00);
             accountPayeeModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             accountPayeeModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
         } catch (Exception e) {
@@ -293,7 +313,9 @@ public class CommonService {
             beftnModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             beftnModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             beftnModel.setDownloadUserId(9999);
-            beftnModel.setIncentive(calculatePercentage((Double) getPropertyValue(model, "getAmount")));
+            beftnModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            beftnModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            beftnModel.setIncentive(beftnModel.getGovtIncentive()+beftnModel.getAgraniIncentive());
             beftnModel.setOrgAccountNo("160954");
             beftnModel.setOrgAccountType("CA");
             beftnModel.setOrgCustomerNo("7892");
@@ -312,10 +334,16 @@ public class CommonService {
         }
         return beftnModel;
     }
-    public static Double calculatePercentage(Double mainAmount){
+    public static Double calculateGovtIncentivePercentage(Double mainAmount){
         df.setRoundingMode(RoundingMode.DOWN);
         Double percentage;
-        percentage = (incentivePercentage / 100f) * mainAmount;
+        percentage = (govtIncentivePercentageStatic / 100f) * mainAmount;
+        return Double.valueOf(df.format(percentage));
+    }
+    public static Double calculateAgraniIncentivePercentage(Double mainAmount){
+        df.setRoundingMode(RoundingMode.DOWN);
+        Double percentage;
+        percentage = (agraniIncentivePercentageStatic / 100f) * mainAmount;
         return Double.valueOf(df.format(percentage));
     }
     public static String putCocFlag(String accountNumber){

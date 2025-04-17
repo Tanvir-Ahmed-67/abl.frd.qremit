@@ -19,6 +19,7 @@ import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.core.io.Resource;
 @SuppressWarnings("unchecked")
@@ -169,6 +170,9 @@ public class ReportService {
                 exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
                 exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
                 exchangeReportDTO.setAmount(reportModel.getAmount());
+                exchangeReportDTO.setGovtIncentive(reportModel.getGovtIncentive());
+                exchangeReportDTO.setAgraniIncentive(reportModel.getAgraniIncentive());
+                exchangeReportDTO.setIncentive(reportModel.getIncentive());
                 exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
                 exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
                 exchangeReportDTO.setBankCode(reportModel.getBankCode());
@@ -440,6 +444,8 @@ public class ReportService {
                     reportModel.setBeneficiaryAccount((String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
                     reportModel.setRemitterName((String) CommonService.getPropertyValue(model, "getRemitterName"));
                     reportModel.setDownloadDateTime((LocalDateTime) CommonService.getPropertyValue(model, downloadTimeMethod));
+                    reportModel.setGovtIncentive((Double) CommonService.getPropertyValue(model, "getGovtIncentive"));
+                    reportModel.setAgraniIncentive((Double) CommonService.getPropertyValue(model, "getAgraniIncentive"));
                     reportModel.setIncentive((Double) CommonService.getPropertyValue(model, "getIncentive"));
                     reportModel.setUploadDateTime((LocalDateTime) CommonService.getPropertyValue(model, "getUploadDateTime"));
                     reportModel.setReportDate(currentDate);
@@ -935,21 +941,29 @@ public class ReportService {
         return resp;
     }
 
-   //------------------------- Below Methods for getting data from Report Table for generating MO -----------------------
-    public List<Object> getAllBeftnSummaryForMo(LocalDate date){
+   //------------------------- Below Methods for getting data from Report Table for generating MO and updating MO Number in each row-----------------------
+   @Transactional
+    public List<Object> getAllBeftnSummaryForMo(String moNumber, LocalDate date){
         Object[] result = reportModelRepository.getAllBeftnSummaryForMo(date);
+        reportModelRepository.updateMoNumberForAllBeftn(moNumber, date);
         return getSummary(result);
     }
-    public List<Object> getAllOtherSummaryForMo(LocalDate date){
+    @Transactional
+    public List<Object> getAllOtherSummaryForMo(String moNumber, LocalDate date){
         Object[] result = reportModelRepository.getAllOtherSummaryForMo(date);
+        reportModelRepository.updateMoNumberForAllOther(moNumber, date);
         return getSummary(result);
     }
-    public List<Object> getAllOnlineSummaryForMo(LocalDate date){
+    @Transactional
+    public List<Object> getAllOnlineSummaryForMo(String moNumber, LocalDate date){
         Object[] result = reportModelRepository.getAllOnlineSummaryForMo(date);
+        reportModelRepository.updateMoNumberForAllOnline(moNumber, date);
         return getSummary(result);
     }
-    public List<Object> getAllApiSummaryForMo(LocalDate date){
+    @Transactional
+    public List<Object> getAllApiSummaryForMo(String moNumber, LocalDate date){
         Object[] result = reportModelRepository.getAllApiSummaryForMo(date);
+        reportModelRepository.updateMoNumberForAllApi(moNumber, date);
         return getSummary(result);
     }
     private List<Object> getSummary(Object[] result) {

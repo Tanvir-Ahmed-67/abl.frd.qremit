@@ -8,10 +8,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -20,11 +20,17 @@ import java.util.List;
 @Component
 public class BeftnModelServiceHelper {
     private static final DecimalFormat df = new DecimalFormat("0.00");
+    @Value("${govt.incentive.percentage}")
+    private float govtIncentivePercentage;
+    private static float govtIncentivePercentageStatic;
+    @Value("${agrani.incentive.percentage}")
+    private float agraniIncentivePercentage;
+    private static float agraniIncentivePercentageStatic;
 
-    private static float incentivePercentage;
-    @Autowired
-    public BeftnModelServiceHelper(@Value("${incentive.percentage}") float incentivePercentage) {
-        this.incentivePercentage = incentivePercentage;
+    @PostConstruct
+    public void init() {
+        govtIncentivePercentageStatic = govtIncentivePercentage;
+        agraniIncentivePercentageStatic = agraniIncentivePercentage;
     }
 
 
@@ -227,13 +233,6 @@ public class BeftnModelServiceHelper {
             e.printStackTrace();
         }
         return is;
-    }
-
-    public static Double calculatePercentage(Double mainAmount){
-        df.setRoundingMode(RoundingMode.DOWN);
-        Double percentage;
-        percentage = (incentivePercentage / 100f) * mainAmount;
-        return Double.valueOf(df.format(percentage));
     }
 
 }

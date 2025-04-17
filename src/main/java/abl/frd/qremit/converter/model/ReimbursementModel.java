@@ -35,10 +35,12 @@ public class ReimbursementModel {
     private String branchName;
     @Column(name = "main_amount", length=30, nullable = false)
     private Double mainAmount = 0.0;
-    @Column(name = "govt_incentive_amount", length=30, nullable = false)
-    private Double govtIncentiveAmount = 0.0;
-    @Column(name = "agrani_incentive_amount", length=30, nullable = false)
-    private Double agraniIncentiveAmount = 0.0;
+    @Column(name = "govt_incentive", length=30, nullable = false)
+    private Double govtIncentive = 0.0;
+    @Column(name = "agrani_incentive", length=30, nullable = false)
+    private Double agraniIncentive = 0.0;
+    @Column(name = "incentive", length = 15)
+    private Double incentive = 0.0;
     @Column(name = "type", length = 10)
     private String type;
     @Transient
@@ -70,7 +72,7 @@ public class ReimbursementModel {
 
     public ReimbursementModel() {
     }
-    public ReimbursementModel(int sl, String exchangeCode, String transactionNo, LocalDate reportDate, String beneficiaryName, String beneficiaryAccount, String remitterName, String branchCode, String branchName, Double mainAmount, String type, LocalDate reimbursementDate) {
+    public ReimbursementModel(int sl, String exchangeCode, String transactionNo, LocalDate reportDate, String beneficiaryName, String beneficiaryAccount, String remitterName, String branchCode, String branchName, Double mainAmount, Double govtIncentive, Double agraniIncentive, Double incentive, String type, LocalDate reimbursementDate) {
         this.sl = sl;
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
@@ -81,8 +83,19 @@ public class ReimbursementModel {
         this.branchCode = branchCode;
         this.branchName = branchName;
         this.mainAmount = mainAmount;
+        this.govtIncentive = govtIncentive;
+        this.agraniIncentive = agraniIncentive;
+        this.incentive = incentive;
         this.type = type;
         this.reimbursementDate = reimbursementDate;
+    }
+
+    public Double getIncentive() {
+        return incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
     }
 
     public LocalDate getReimbursementDate() {
@@ -125,20 +138,20 @@ public class ReimbursementModel {
         this.mainAmount = mainAmount;
     }
 
-    public Double getGovtIncentiveAmount() {
-        return govtIncentiveAmount;
+    public Double getGovtIncentive() {
+        return govtIncentive;
     }
 
-    public void setGovtIncentiveAmount(Double govtIncentiveAmount) {
-        this.govtIncentiveAmount = govtIncentiveAmount;
+    public void setGovtIncentive(Double govtIncentiveAmount) {
+        this.govtIncentive = govtIncentiveAmount;
     }
 
-    public Double getAgraniIncentiveAmount() {
-        return agraniIncentiveAmount;
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
     }
 
-    public void setAgraniIncentiveAmount(Double agraniIncentiveAmount) {
-        this.agraniIncentiveAmount = agraniIncentiveAmount;
+    public void setAgraniIncentive(Double agraniIncentiveAmount) {
+        this.agraniIncentive = agraniIncentiveAmount;
     }
 
     public String getExchangeCode() {

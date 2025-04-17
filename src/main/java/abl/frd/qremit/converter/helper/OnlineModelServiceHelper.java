@@ -5,6 +5,8 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,10 +18,17 @@ import java.util.regex.Pattern;
 
 @Component
 public class OnlineModelServiceHelper {
-    private static float incentivePercentage;
-    @Autowired
-    public OnlineModelServiceHelper(@Value("${incentive.percentage}") float incentivePercentage) {
-        this.incentivePercentage = incentivePercentage;
+
+    @Value("${govt.incentive.percentage}")
+    private float govtIncentivePercentage;
+    private static float govtIncentivePercentageStatic;
+    @Value("${agrani.incentive.percentage}")
+    private float agraniIncentivePercentage;
+    private static float agraniIncentivePercentageStatic;
+    @PostConstruct
+    public void init() {
+        govtIncentivePercentageStatic = govtIncentivePercentage;
+        agraniIncentivePercentageStatic = agraniIncentivePercentage;
     }
 
     public static ByteArrayInputStream OnlineModelToCSV(List<OnlineModel> onlineModelList) {

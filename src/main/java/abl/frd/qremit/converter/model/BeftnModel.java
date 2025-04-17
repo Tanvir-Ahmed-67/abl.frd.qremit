@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
         @Index(name = "idx_is_processed_main", columnList = "is_processed_main"), @Index(name = "idx_is_processed_incentive", columnList = "is_processed_incentive"),
         @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account"),
-        @Index(name = "idx_beneficiary_name", columnList = "beneficiary_name"),@Index(name = "idx_incentive", columnList = "incentive")
+        @Index(name = "idx_beneficiary_name", columnList = "beneficiary_name"),@Index(name = "idx_govt_incentive", columnList = "govt_incentive"),@Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"),@Index(name = "idx_incentive", columnList = "incentive")
     }
 )
 public class BeftnModel {
@@ -42,6 +42,10 @@ public class BeftnModel {
     private String exchangeCode;
     @Column(name = "routing_no")
     private String routingNo;
+    @Column(name = "govt_incentive")
+    private Double govtIncentive;
+    @Column(name = "agrani_incentive")
+    private Double agraniIncentive;
     @Column(name = "incentive")
     private Double incentive;
     @Column(name = "is_processed_main", columnDefinition = "TINYINT(1) DEFAULT 0")
@@ -235,12 +239,12 @@ public class BeftnModel {
         this.routingNo = routingNo;
     }
 
-    public Double getIncentive() {
-        return incentive;
+    public Double getGovtIncentive() {
+        return govtIncentive;
     }
 
-    public void setIncentive(Double incentive) {
-        this.incentive = incentive;
+    public void setGovtIncentive(Double incentive) {
+        this.govtIncentive = incentive;
     }
 
     public int getIsProcessedMain() {
@@ -332,7 +336,23 @@ public class BeftnModel {
         this.reportDate = reportDate;
     }
 
-    public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double incentive, String remitterName, String bankName, String bankCode, String branchName, int extraA, int extraB, int downloadUserId, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime) {
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public Double getIncentive() {
+        return incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
+    }
+
+    public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, String bankName, String bankCode, String branchName, int extraA, int extraB, int downloadUserId, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.orgCustomerNo = orgCustomerNo;
@@ -345,6 +365,8 @@ public class BeftnModel {
         this.beneficiaryAccountType = beneficiaryAccountType;
         this.exchangeCode = exchangeCode;
         this.routingNo = routingNo;
+        this.govtIncentive = govtIncentive;
+        this.agraniIncentive = agraniIncentive;
         this.incentive = incentive;
         this.isProcessedMain = extraA;
         this.isProcessedIncentive = extraB;
@@ -372,6 +394,8 @@ public class BeftnModel {
                 ", beneficiaryAccountType='" + beneficiaryAccountType + '\'' +
                 ", exchangeCode='" + exchangeCode + '\'' +
                 ", routingNo='" + routingNo + '\'' +
+                ", govtIncentive=" + govtIncentive +
+                ", agraniIncentive=" + govtIncentive +
                 ", incentive=" + incentive +
                 ", extraA='" + isProcessedMain + '\'' +
                 ", extraB='" + isProcessedIncentive + '\'' +
