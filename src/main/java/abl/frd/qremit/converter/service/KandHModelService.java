@@ -1,16 +1,13 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.*;
-
 import abl.frd.qremit.converter.model.KandHModel;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
@@ -46,7 +43,9 @@ public class KandHModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    @Autowired
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try{
@@ -58,7 +57,7 @@ public class KandHModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
             Map<String, Object> kandhData = new HashMap<>();
-            kandhData = xlsToKandHModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            kandhData = xlsToKandHModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
 
             List<KandHModel> kandhModels = (List<KandHModel>) kandhData.get("kandhDataModelList");
 
@@ -100,20 +99,23 @@ public class KandHModelService {
         return resp;
     }
 
-    public Map<String, Object> xlsToKandHModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
+    public Map<String, Object> xlsToKandHModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<KandHModel> duplicateData;
+        Optional<KandHModel> duplicateData = Optional.empty();
         try{
             Workbook records = CommonService.getWorkbook(is);
             Row row;
             Sheet worksheet = records.getSheetAt(0);
             List<KandHModel> kandhDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
-            int i = 0;
             int duplicateCount = 0;
-
+            int i = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
+            int isValidFile = 1;
             for (int rowIndex = 1; rowIndex <= worksheet.getLastRowNum(); rowIndex++) {
                 row = worksheet.getRow(rowIndex);
                 if(row == null) continue;
@@ -122,35 +124,24 @@ public class KandHModelService {
                 Map<String, Object> data = getBeftnData(row, exchangeCode);
                 String transactionNo = data.get("transactionNo").toString();
                 String amount = data.get("amount").toString();
-                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                String bankName = data.get("bankName").toString();
-                String branchCode = data.get("branchCode").toString();
-                duplicateData = kandhModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, nrtaCode, duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
+                data.put("nrtaCode", nrtaCode);
+                if(!CommonService.getCellValueAsString(row.getCell(0)).trim().replace(".0", "").equals(exchangeCode)){
+                    resp.put("errorMessage", "Please Upload Correct File");
+                    isValidFile = 0;
                     break;
                 }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
-                KandHModel kandhDataModel = new KandHModel();
-                kandhDataModel = CommonService.createDataModel(kandhDataModel, data);
-                kandhDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                kandhDataModel.setUploadDateTime(currentDateTime);
-                kandhDataModelList.add(kandhDataModel);
+                fileExchangeCode = nrtaCode;
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+            }
+            if(isValidFile == 1){
+                Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, KandHModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+                kandhDataModelList = (List<KandHModel>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -187,12 +178,13 @@ public class KandHModelService {
      
         String transactionNo = dataFormatter.formatCellValue(row.getCell(1));
         String beneficiaryAccount = dataFormatter.formatCellValue(row.getCell(7));
+        LocalDate date = CommonService.convertStringToLocalDate(CommonService.getCellValueAsString(row.getCell(4)), "dd/MM/yyyy");
 
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", "BDT");
         data.put("amount",  CommonService.getCellValueAsString(row.getCell(3)));
-        data.put("enteredDate", CommonService.getCellValueAsString(row.getCell(4)));
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("remitterName", CommonService.getCellValueAsString(row.getCell(5)));
         data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(6)));
         data.put("beneficiaryAccount", beneficiaryAccount);

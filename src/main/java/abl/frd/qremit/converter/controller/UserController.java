@@ -34,6 +34,7 @@ public class UserController {
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
     private final CommonService commonService;
+    protected String redirectUrl = "/adminReport?type=6";
 
     @Autowired
     private EntityManager entityManager;
@@ -637,7 +638,7 @@ public class UserController {
         user.setRoles(roleSet);
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
-        return "redirect:/allUsers";
+        return "redirect:" + redirectUrl;
     }
     @GetMapping("/adminDashboard")
     @ResponseBody
@@ -668,7 +669,7 @@ public class UserController {
         if (result.hasErrors()) {
             user.setId(idInIntegerFormat);
             ra.addFlashAttribute("message","Error Occurred: User Update Failed !!");
-            return "redirect:/allUsers";
+            return "redirect:/" + redirectUrl;
         }
         try {
             String startTime = user.getStartTime();
@@ -687,7 +688,7 @@ public class UserController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/adminReport?type=6";
+        return "redirect:/" + redirectUrl;
     }
 
     @RequestMapping("/showInactiveUsers")
