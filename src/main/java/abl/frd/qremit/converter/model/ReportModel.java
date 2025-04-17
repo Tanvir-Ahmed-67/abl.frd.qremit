@@ -9,7 +9,7 @@ import javax.persistence.*;
         @Index(name = "idx_exchange_code", columnList = "exchange_code"), @Index(name = "idx_zone_code", columnList = "zone_code"),
         @Index(name = "idx_circle_code", columnList = "circle_code"), @Index(name = "idx_type", columnList = "type"), 
         @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id"), @Index(name = "idx_upload_user_id", columnList = "upload_user_id"),
-        @Index(name = "idx_branch_code", columnList = "branch_code"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account")
+        @Index(name = "idx_branch_code", columnList = "branch_code"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account"), @Index(name = "idx_govt_incentive", columnList = "govt_incentive"), @Index(name = "idx_agrani_incentive", columnList = "agrani_incentive")
     }
 )
 
@@ -36,6 +36,12 @@ public class ReportModel {
     private String beneficiaryName;
     @Column(name = "beneficiary_account", length = 32)
     private String beneficiaryAccount;
+    @Column(name = "govt_incentive", length = 15)
+    private Double govtIncentive;
+    @Column(name = "agrani_incentive", length = 15)
+    private Double agraniIncentive;
+    @Column(name = "mo_number", length = 30)
+    private String moNumber;
     @Column(name = "incentive", length = 15)
     private Double incentive;
     @Column(name = "remitter_name", length = 128)
@@ -272,8 +278,23 @@ public class ReportModel {
     public ReportModel() {
     }
 
+    public Double getGovtIncentive() {
+        return govtIncentive;
+    }
 
-    public ReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDate reportDate) {
+    public void setGovtIncentive(Double govtIncentive) {
+        this.govtIncentive = govtIncentive;
+    }
+
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public ReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDate reportDate) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.bankCode = bankCode;
@@ -283,6 +304,8 @@ public class ReportModel {
         this.amount = amount;
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryAccount = beneficiaryAccount;
+        this.govtIncentive = govtIncentive;
+        this.agraniIncentive = agraniIncentive;
         this.incentive = incentive;
         this.remitterName = remitterName;
         this.downloadDateTime = downloadDateTime;
@@ -310,6 +333,8 @@ public class ReportModel {
             ", amount='" + getAmount() + "'" +
             ", beneficiaryName='" + getBeneficiaryName() + "'" +
             ", beneficiaryAccount='" + getBeneficiaryAccount() + "'" +
+            ", govtIncentive='" + getGovtIncentive() + "'" +
+            ", agraniIncentive='" + getAgraniIncentive() + "'" +
             ", incentive='" + getIncentive() + "'" +
             ", remitterName='" + getRemitterName() + "'" +
             ", downloadDateTime='" + getDownloadDateTime() + "'" +

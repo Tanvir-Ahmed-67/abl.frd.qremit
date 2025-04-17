@@ -12,7 +12,7 @@ $(document).ready(function () {
     function get_remimbursement(fromDate, toDate){
         var url = "/getReimbursementData?fromDate=" + fromDate + "&toDate=" + toDate;
         var column = ['sl','exchangeCode','transactionNo','beneficiaryAccount','branchCode','branchName',
-            'mainAmount','govtIncentiveAmount','agraniIncentiveAmount','type'];
+            'mainAmount','govtIncentive','agraniIncentive','type'];
         var cols = DataTableColumns(column);
         $("#dataSection").show();
         get_dynamic_dataTable(tbl, url, cols);

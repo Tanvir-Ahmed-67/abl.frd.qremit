@@ -49,17 +49,22 @@ public class ReimbursementModelService {
                             report.getBranchCode(),
                             report.getBranchName(),
                             report.getAmount(),
+                            report.getGovtIncentive(),
+                            report.getAgraniIncentive(),
+                            report.getIncentive(),
                             report.getType(),
                             endDate
                     );
+                    /*
                     // Calculate and set Govt incentive amounts
-                    reimbursement.setGovtIncentiveAmount(
+                    reimbursement.setGovtIncentive(
                             ReimbursementModelServiceHelper.calculateGovtIncentivePercentage(report.getAmount())
                     );
                     // Calculate and set Agrani incentive amounts
-                    reimbursement.setAgraniIncentiveAmount(
+                    reimbursement.setAgraniIncentive(
                             ReimbursementModelServiceHelper.calculateAgraniIncentivePercentage(report.getAmount())
                     );
+                     */
                     return reimbursement;
                 })
                 .collect(Collectors.toList());

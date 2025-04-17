@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name="converted_data_online",
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
-        @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account")
+        @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account"), @Index(name = "idx_govt_incentive", columnList = "govt_incentive"),@Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"), @Index(name = "idx_incentive", columnList = "incentive")
     }
 )
 public class OnlineModel {
@@ -38,7 +38,11 @@ public class OnlineModel {
     private String branchName;
     @Column(name = "branch_code", length=15)
     private String branchCode;
-    @Column(name = "incentive", length = 12)
+    @Column(name = "govt_incentive", length = 12)
+    private Double govtIncentive;
+    @Column(name = "agrani_incentive", length = 12)
+    private Double agraniIncentive;
+    @Column(name = "incentive")
     private Double incentive;
     @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isProcessed = 0;
@@ -143,6 +147,14 @@ public class OnlineModel {
 
     public Double getAmount() {
         return amount;
+    }
+
+    public Double getIncentive() {
+        return incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
     }
 
     public void setAmount(Double amount) {
@@ -261,15 +273,23 @@ public class OnlineModel {
         this.tempStatus = tempStatus;
     }
 
-    public Double getIncentive() {
-        return this.incentive;
+    public Double getGovtIncentive() {
+        return this.govtIncentive;
     }
 
-    public void setIncentive(Double incentive) {
-        this.incentive = incentive;
+    public void setGovtIncentive(Double incentive) {
+        this.govtIncentive = incentive;
     }
-    
-    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
+
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, Double govtIncentive, Double agraniIncentive, Double incentive, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.exchangeCode = exchangeCode;
@@ -279,6 +299,9 @@ public class OnlineModel {
         this.remitterName = remitterName;
         this.isProcessed = extraA;
         this.isDownloaded = extraB;
+        this.govtIncentive = govtIncentive;
+        this.agraniIncentive = agraniIncentive;
+        this.incentive = incentive;
         this.downloadDateTime = downloadDateTime;
         this.downloadUserId = downloadUserId;
         this.uploadDateTime = uploadDateTime;
@@ -298,6 +321,9 @@ public class OnlineModel {
                 ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
                 ", amount=" + amount +
                 ", remitterName='" + remitterName + '\'' +
+                ", govtIncentive='" + govtIncentive + '\'' +
+                ", agraniIncentive='" + agraniIncentive + '\'' +
+                ", incentive='" + incentive + '\'' +
                 ", extraA='" + isProcessed + '\'' +
                 ", extraB='" + isDownloaded + '\'' +
                 ", extraC='" + downloadDateTime + '\'' +

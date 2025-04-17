@@ -3,10 +3,10 @@ package abl.frd.qremit.converter.helper;
 import abl.frd.qremit.converter.model.CocModel;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,11 +20,16 @@ import java.util.List;
 public class CocModelServiceHelper {
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
-
-    private static float incentivePercentage;
-    @Autowired
-    public CocModelServiceHelper(@Value("${incentive.percentage}") float incentivePercentage) {
-        this.incentivePercentage = incentivePercentage;
+    @Value("${govt.incentive.percentage}")
+    private float govtIncentivePercentage;
+    private static float govtIncentivePercentageStatic;
+    @Value("${agrani.incentive.percentage}")
+    private float agraniIncentivePercentage;
+    private static float agraniIncentivePercentageStatic;
+    @PostConstruct
+    public void init() {
+        govtIncentivePercentageStatic = govtIncentivePercentage;
+        agraniIncentivePercentageStatic = agraniIncentivePercentage;
     }
 
     public static ByteArrayInputStream cocModelToCSV(List<CocModel> cocDataModelList) {
@@ -52,7 +57,7 @@ public class CocModelServiceHelper {
                         "PRINCIPAL CORP.BR.",
                         "22",
                         "1",
-                        calculatePercentage(cocDataModel.getAmount()),    //incentive
+                        cocDataModel.getIncentive(), //incentive
                         "5"
                 );
                 csvPrinter.printRecord(data);
@@ -64,10 +69,16 @@ public class CocModelServiceHelper {
         }
     }
 
-    public static Double calculatePercentage(Double mainAmount){
+    public static Double calculateGovtIncentivePercentage(Double mainAmount){
         df.setRoundingMode(RoundingMode.DOWN);
         Double percentage;
-        percentage = (incentivePercentage / 100f) * mainAmount;
+        percentage = (govtIncentivePercentageStatic / 100f) * mainAmount;
+        return Double.valueOf(df.format(percentage));
+    }
+    public static Double calculateAgraniIncentivePercentage(Double mainAmount){
+        df.setRoundingMode(RoundingMode.DOWN);
+        Double percentage;
+        percentage = (agraniIncentivePercentageStatic / 100f) * mainAmount;
         return Double.valueOf(df.format(percentage));
     }
 }

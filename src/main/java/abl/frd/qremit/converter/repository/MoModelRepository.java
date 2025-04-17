@@ -10,4 +10,7 @@ import java.time.LocalDate;
 public interface MoModelRepository extends JpaRepository<MoModel, Integer> {
     @Query("SELECT n FROM MoModel n WHERE n.moDate = :moDate")
     MoModel findByMoGenerationDate(@Param("moDate") LocalDate moDate);
+    @Query(value = "SELECT MAX(CAST(SUBSTRING_INDEX(mo_number, '-', -1) AS UNSIGNED)) " +
+            "FROM mo WHERE mo_number LIKE CONCAT(:prefix, '%')", nativeQuery = true)
+    Long findMaxMoNumberSuffix(@Param("prefix") String prefix);
 }

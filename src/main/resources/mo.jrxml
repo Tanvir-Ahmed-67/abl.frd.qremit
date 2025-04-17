@@ -15,6 +15,7 @@
 		<field name="grandTotalNumber" class="java.lang.Long"></field>
 		<field name="grandTotalAmount" class="java.math.BigDecimal"></field>
 		<field name="totalAmountInWords" class="java.lang.String"></field>
+		<field name="moNumber" class="java.lang.String"></field>
 		<field name="id" class="java.lang.Integer"></field>
 	</dataset>
 	<field name="moDate" class="java.time.LocalDate"></field>
@@ -31,6 +32,7 @@
 	<field name="grandTotalNumber" class="java.lang.Long"></field>
 	<field name="grandTotalAmount" class="java.math.BigDecimal"></field>
 	<field name="totalAmountInWords" class="java.lang.String"></field>
+	<field name="moNumber" class="java.lang.String"></field>
 	<field name="id" class="java.lang.Integer"></field>
 	<variable name="IncrementedPageNumber" class="java.lang.String" calculation="Nothing">
 		<expression><![CDATA[String.format("%06d", $F{id})]]></expression>
@@ -51,12 +53,13 @@
 			<element kind="staticText" x="0" y="95" width="118" height="17" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
 				<text><![CDATA[CODE: 11-104]]></text>
 			</element>
-			<element kind="staticText" x="0" y="123" width="159" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
-				<text><![CDATA[ADVICE NO:FRD-MO-1-Txn25-]]></text>
+			<element kind="textField" x="0" y="123" width="259" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<expression><![CDATA["ADVICE NO : " + $F{moNumber}]]></expression>
 			</element>
-			<element kind="textField" x="160" y="123" width="106" height="20" fontSize="11.0" hTextAlign="Left" vTextAlign="Middle">
+			<!--<element kind="textField" x="160" y="123" width="106" height="20" fontSize="11.0" hTextAlign="Left" vTextAlign="Middle">
 				<expression><![CDATA[$V{IncrementedPageNumber}]]></expression>
 			</element>
+			-->
 			<element kind="staticText" x="322" y="52" width="118" height="21" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
 				<text><![CDATA[TO BRANCH]]></text>
 			</element>

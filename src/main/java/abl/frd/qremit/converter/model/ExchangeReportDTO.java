@@ -9,6 +9,9 @@ public class ExchangeReportDTO {
     private String transactionNo;
     private String currency;
     private Double amount;
+    private Double govtIncentive;
+    private Double agraniIncentive;
+    private Double incentive;
     private LocalDate enteredDate;
     private String enteredDateForSearchFile;
     private LocalDate voucherDate;
@@ -268,5 +271,29 @@ public class ExchangeReportDTO {
 
     public void setEnteredDateForSearchFile(String enteredDateForSearchFile) {
         this.enteredDateForSearchFile = enteredDateForSearchFile;
+    }
+
+    public Double getGovtIncentive() {
+        return govtIncentive;
+    }
+
+    public void setGovtIncentive(Double govtIncentive) {
+        this.govtIncentive = govtIncentive;
+    }
+
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public Double getIncentive() {
+        return incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
     }
 }

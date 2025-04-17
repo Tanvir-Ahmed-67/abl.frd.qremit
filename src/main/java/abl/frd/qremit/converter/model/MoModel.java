@@ -13,9 +13,10 @@ public class MoModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int  id;
+    @Column(name = "mo_number", length=30, nullable = false)
+    private String moNumber;
     @Column(name = "mo_date", length=30, nullable = false)
     private LocalDate moDate;
-
 
     @Column(name = "total_number_beftn", length = 20)
     private Long totalNumberBeftn;
@@ -45,6 +46,14 @@ public class MoModel {
     private Long grandTotalNumber= 0L;
     @Column(name = "grand_total_amount", length=30, nullable = false)
     private BigDecimal grandTotalAmount = BigDecimal.ZERO;
+
+    public String getMoNumber() {
+        return moNumber;
+    }
+
+    public void setMoNumber(String moNumber) {
+        this.moNumber = moNumber;
+    }
 
     public Long doSumGrandTotalNumber(Long totalNumber){
         return this.grandTotalNumber = this.grandTotalNumber+totalNumber;
