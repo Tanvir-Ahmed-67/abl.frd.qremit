@@ -337,10 +337,18 @@ public class CommonService {
             return false;
         }
     }
+
+    public static Matcher checkOnlineAccountPattern(String accountNumber){
+        Pattern p = Pattern.compile("^.*0200(\\d{9})$.*");
+        Matcher m = p.matcher(accountNumber);
+        return m;   
+    }
+
     public static String getOnlineAccountNumber(String accountNumber){
         //^.*02000(\d{8})$.*
-        Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
-        Matcher m = p.matcher(accountNumber);
+        //Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
+        //Matcher m = p.matcher(accountNumber);
+        Matcher m = checkOnlineAccountPattern(accountNumber);
         String onlineAccountNumber=null;
         if (m.find())
         {
@@ -358,17 +366,31 @@ public class CommonService {
     }
     
     public static boolean isOnlineAccoutNumberFound(String accountNumber){
+        /*
         Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
         Matcher m = p.matcher(accountNumber);
         if (m.find())
         {
             return true;
         }
-        
         return false;
+        */
+        return isOnlineAccoutNumberFound(accountNumber, "");
     }
 
     public static boolean isOnlineAccoutNumberFound(String accountNumber, String bankName){
+        Matcher m = checkOnlineAccountPattern(accountNumber);
+        if(!bankName.isEmpty()){
+            if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")){
+
+            }else return false;
+        }
+        if (m.find())
+        {
+            return true;
+        }
+        return false;
+        /*
         Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
         Matcher m = p.matcher(accountNumber);
         if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")){
@@ -378,6 +400,7 @@ public class CommonService {
             }else return false;
         }
         return false;
+        */
     }
     public static boolean isBeftnFound(String bankName, String accountNumber, String routingNo){
         if(!checkAgraniBankName(bankName)){
@@ -824,9 +847,9 @@ public class CommonService {
         String errorMessage = "";
         if(isOnlineAccoutNumberFound(accountNo) && (!checkAgraniRoutingNo(routingNo) || !checkAgraniBankName(bankName))){
             errorMessage = "Invalid Routing Number or Bank Name";
-        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02000") && accountNo.length() != 13){
+        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("0200") && accountNo.length() != 13){
             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits";  //check routing no
-        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("02000") && accountNo.length() != 13){
+        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("0200") && accountNo.length() != 13){
             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits"; //check agrani bankName 
         }
         return errorMessage;
@@ -883,7 +906,7 @@ public class CommonService {
         errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
         if(!errorMessage.isEmpty())  return errorMessage;
         if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
-            errorMessage = validateBeftn(bankName, branchCode);
+            errorMessage = validateBeftn(bankName, branchCode, beneficiaryAccount);
             if(!errorMessage.isEmpty())  return errorMessage;
         }else if(isCocFound(beneficiaryAccount)){
             errorMessage = checkCOCBankName(bankName);
@@ -897,11 +920,13 @@ public class CommonService {
         return errorMessage;
     }
 
-    public static String validateBeftn(String bankName, String branchCode){
+    public static String validateBeftn(String bankName, String branchCode, String beneficiaryAccount){
         String errorMessage = "";
         if(checkEmptyString(bankName)){
             return "Bank Name is empty. Please correct it";
         }
+        beneficiaryAccount = removeAllSpecialCharacterFromString(beneficiaryAccount);
+        if(beneficiaryAccount.length() > 17)    return "Beneficiary A/C No must be 17 digits for BEFTN";
         errorMessage = checkBEFTNRouting(branchCode);
         return errorMessage;
     }
