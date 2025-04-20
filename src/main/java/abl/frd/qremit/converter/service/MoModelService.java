@@ -35,14 +35,14 @@ public class MoModelService {
         List<Object> beftnData = reportService.getAllBeftnSummaryForMo(moNumber, reportDate);
 
         moModel.setTotalNumberBeftn((Long) beftnData.get(0));
-        moModel.setTotalAmountBeftn(BigDecimal.valueOf((Double) beftnData.get(1)).setScale(2, RoundingMode.DOWN));
+        moModel.setTotalAmountBeftn(new BigDecimal(String.valueOf(beftnData.get(1))).setScale(2, RoundingMode.HALF_UP));
         moModel.doSumGrandTotalNumber(moModel.getTotalNumberBeftn());
         moModel.doSumGrandTotalAmount(moModel.getTotalAmountBeftn());
 
         List<Object> allOtherSummaryData = reportService.getAllOtherSummaryForMo(moNumber, reportDate);
 
         moModel.setTotalNumberAllOtherBranch((Long) allOtherSummaryData.get(0));
-        moModel.setTotalAmountAllOtherBranch(BigDecimal.valueOf((Double) allOtherSummaryData.get(1)).setScale(2, RoundingMode.DOWN));
+        moModel.setTotalAmountAllOtherBranch(new BigDecimal(String.valueOf(allOtherSummaryData.get(1))).setScale(2, RoundingMode.HALF_UP));
         moModel.doSumGrandTotalNumber(moModel.getTotalNumberAllOtherBranch());
         moModel.doSumGrandTotalAmount(moModel.getTotalAmountAllOtherBranch());
 
@@ -54,14 +54,14 @@ public class MoModelService {
         List<Object> onlineData = reportService.getAllOnlineSummaryForMo(moNumber, reportDate);
 
         moModel.setTotalNumberOnline((Long) onlineData.get(0));
-        moModel.setTotalAmountOnline(BigDecimal.valueOf((Double) onlineData.get(1)).setScale(2, RoundingMode.DOWN));
+        moModel.setTotalAmountOnline(new BigDecimal(String.valueOf(onlineData.get(1))).setScale(2, RoundingMode.HALF_UP));
         moModel.doSumGrandTotalNumber(moModel.getTotalNumberOnline());
         moModel.doSumGrandTotalAmount(moModel.getTotalAmountOnline());
 
         List<Object> apiData = reportService.getAllApiSummaryForMo(moNumber, reportDate);
 
         moModel.setTotalNumberApi((Long) apiData.get(0));
-        moModel.setTotalAmountApi(BigDecimal.valueOf((Double) apiData.get(1)).setScale(2, RoundingMode.DOWN));
+        moModel.setTotalAmountApi(new BigDecimal(String.valueOf(apiData.get(1))).setScale(2, RoundingMode.HALF_UP));
         moModel.doSumGrandTotalNumber(moModel.getTotalNumberApi());
         moModel.doSumGrandTotalAmount(moModel.getTotalAmountApi());
 

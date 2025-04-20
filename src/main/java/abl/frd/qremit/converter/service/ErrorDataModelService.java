@@ -98,37 +98,6 @@ public class ErrorDataModelService {
             return CommonService.getResp(1, errorMessage, null);
         }
         errorMessage = CommonService.getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
-        /*
-        //check empty 
-        errorMessage = CommonService.checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
-        if(!errorMessage.isEmpty()) return CommonService.getResp(1, errorMessage, null);
-
-        if(CommonService.isBeftnFound(bankName, beneficiaryAccount, branchCode)){
-            if(CommonService.checkEmptyString(bankName)){
-                errorMessage = "Bank Name is empty. Please correct it";
-            }
-            errorMessage = CommonService.checkBEFTNRouting(branchCode);
-        }else if(CommonService.isCocFound(beneficiaryAccount)){
-            errorMessage = CommonService.checkCOCBankName(bankName);
-        }else if(CommonService.isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
-            errorMessage = CommonService.checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
-            if(errorMessage.isEmpty()) errorMessage = CommonService.checkCOString(beneficiaryAccount);
-            if(errorMessage.isEmpty()){
-                if(CommonService.checkEmptyString(branchCode)){
-                    errorMessage = "Branch Code can not be empty for A/C payee";
-                }
-            }
-            if(errorMessage.isEmpty()){
-                if(CommonService.checkAblIslamiBankingWindow(beneficiaryAccount) || CommonService.checkAccountToBeOpened(beneficiaryAccount)){
-
-                }else{
-                    errorMessage = "No Legacy Account will not be processed";
-                }
-            }
-        }else if(CommonService.isOnlineAccoutNumberFound(beneficiaryAccount)){
-
-        }
-        */
         if(!errorMessage.isEmpty()) return CommonService.getResp(1, errorMessage, null);
 
         errorDataModel.setBankCode(formData.get("bankCode"));
@@ -152,30 +121,6 @@ public class ErrorDataModelService {
                 resp = CommonService.getResp(1, "Error Updating status: " + e.getMessage(), null);
             }
         }
-        /*
-        String ipAddress = request.getRemoteAddr();
-        String infoStr = "";
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        //objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        try{
-            infoStr = objectMapper.writeValueAsString(info);
-        }catch(JsonProcessingException e){
-            e.printStackTrace();
-        }
-        //String userId = String.valueOf(errorDataModel.getUserModel().getId());
-        LogModel logModel = new LogModel(String.valueOf(userId), String.valueOf(errorDataModel.getId()), fileInfoModelId, exchangeCode, "1", infoStr, ipAddress);
-        LogModel saveLogModel = logModelRepository.save(logModel);
-        if(saveLogModel != null){
-            try{
-                updateErrorDataModelUpdateStatus(errorDataModel.getId(), 1);
-                resp = CommonService.getResp(0, "Data updated", null);
-            }catch(Exception e){
-                resp = CommonService.getResp(1, "Error Updating status: " + e.getMessage(), null);
-            }
-        }
-            */
         return resp;
     }
 

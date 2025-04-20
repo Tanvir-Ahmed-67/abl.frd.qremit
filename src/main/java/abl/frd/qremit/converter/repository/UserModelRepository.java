@@ -53,6 +53,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     String getAllowedEndTime(@Param("userId") int userId);
     @Modifying
     @Transactional
+    /*
     @Query("UPDATE User u " +
             "SET u.startTime = :startTime, u.endTime = :endTime " +
             "WHERE u.id NOT IN (" +
@@ -60,5 +61,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
             "  JOIN u2.roles r " +
             "  WHERE r.roleName IN ('ROLE_ADMIN', 'ROLE_SUPERADMIN')" +
             ")")
+    */
+    @Query(value = "UPDATE User u SET u.start_time = :startTime, u.end_time = :endTime WHERE u.user_id IN (SELECT r.user_id FROM user_role r WHERE r.role_id = 1)", nativeQuery = true)
     int setLoginTimeRestrictionsForAllUsers(@Param("startTime") String startTime, @Param("endTime") String endTime);
 }

@@ -1,7 +1,6 @@
 package abl.frd.qremit.converter.service;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
-import abl.frd.qremit.converter.model.PrabhuModel;
 import abl.frd.qremit.converter.model.SaibModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.*;

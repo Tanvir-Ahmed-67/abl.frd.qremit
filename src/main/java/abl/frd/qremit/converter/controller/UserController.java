@@ -34,7 +34,7 @@ public class UserController {
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
     private final CommonService commonService;
-    protected String redirectUrl = "/adminReport?type=6";
+    protected String redirectUrl = "adminReport?type=6";
 
     @Autowired
     private EntityManager entityManager;
@@ -638,7 +638,7 @@ public class UserController {
         user.setRoles(roleSet);
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
-        return "redirect:" + redirectUrl;
+        return "redirect:/" + redirectUrl;
     }
     @GetMapping("/adminDashboard")
     @ResponseBody
