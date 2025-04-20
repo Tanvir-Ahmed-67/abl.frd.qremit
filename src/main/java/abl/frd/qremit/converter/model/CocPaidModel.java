@@ -50,6 +50,10 @@ public class CocPaidModel {
     private int isUpdated = 0;
     @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isVoucherGenerated = 0;
+    @Column(name = "govt_incentive")
+    private Double govtIncentive;
+    @Column(name = "agrani_incentive")
+    private Double agraniIncentive;
     @Column(name = "incentive", length = 15)
     private Double incentive;
     @Column(name = "type_flag")
@@ -265,6 +269,22 @@ public class CocPaidModel {
 
     public void setTempStatus(int tempStatus) {
         this.tempStatus = tempStatus;
+    }
+
+    public Double getGovtIncentive() {
+        return this.govtIncentive;
+    }
+
+    public void setGovtIncentive(Double govtIncentive) {
+        this.govtIncentive = govtIncentive;
+    }
+
+    public Double getAgraniIncentive() {
+        return this.agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
     }
 
     public CocPaidModel(String exchangeCode, String transactionNo, Double amount, String enteredDate, LocalDateTime paidDate, String remitterName, 
