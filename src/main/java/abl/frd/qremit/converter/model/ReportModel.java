@@ -294,6 +294,14 @@ public class ReportModel {
         this.agraniIncentive = agraniIncentive;
     }
 
+    public String getMoNumber() {
+        return moNumber;
+    }
+
+    public void setMoNumber(String moNumber) {
+        this.moNumber = moNumber;
+    }
+
     public ReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDate reportDate) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;

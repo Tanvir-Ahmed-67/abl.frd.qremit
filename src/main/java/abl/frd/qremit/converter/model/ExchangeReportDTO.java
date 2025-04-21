@@ -34,6 +34,7 @@ public class ExchangeReportDTO {
     private Double sumOfAmount = 0.00;
     private int totalRowCount = 0;
     private String totalAmountInWords;
+    private String moNumber;
 
     public DecimalFormat formattedAmount = new DecimalFormat("#,##,###.00");
 
@@ -295,5 +296,13 @@ public class ExchangeReportDTO {
 
     public void setIncentive(Double incentive) {
         this.incentive = incentive;
+    }
+
+    public String getMoNumber() {
+        return moNumber;
+    }
+
+    public void setMoNumber(String moNumber) {
+        this.moNumber = moNumber;
     }
 }

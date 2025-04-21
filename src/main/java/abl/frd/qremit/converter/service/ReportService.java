@@ -180,6 +180,7 @@ public class ReportService {
                 exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
                 exchangeReportDTO.setBranchName(reportModel.getBranchName());
                 exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setMoNumber(reportModel.getMoNumber());
 
                 // Block for setting different date pattern for different exchange houses for swift operation.
                 String enteredDateStr = reportModel.getEnteredDate();
