@@ -707,7 +707,7 @@ public class ReportController {
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return HttpStatus.UNAUTHORIZED.getReasonPhrase();
         int userId = (int) userData.get("userid");
-        Map<String, Object> searchType = CommonService.getSerachType(type);
+        Map<String, Object> searchType = CommonService.getSearchType(type);
         Map<String, String> exchangeMap = new HashMap<>();
         if(userData.containsKey("exchangeMap")) exchangeMap = (Map<String, String>) userData.get("exchangeMap");
         model.addAttribute("exchangeMap", exchangeMap);
@@ -784,6 +784,23 @@ public class ReportController {
         
         return ResponseEntity.ok(resp);
     }
+    @DeleteMapping(value = "/deleteIndividual/{id}", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteIndividualDataById(@PathVariable int id, @RequestParam("type") String type, HttpServletRequest request){
+        Map<String, Object> resp = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        int userId = (int) userData.get("userid");
+        if(userId != 0) return ResponseEntity.ok(CommonService.getResp(1, "You are not allowed to perform this operation", null));
+        Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
+        if(role.get("isAdmin") == 1){
+            userId = (int) userData.get("adminUserId");
+        }
+        resp = reportService.deleteIndividualDataById(id, userId, type, request);
+        return ResponseEntity.ok(resp);
+    }
+
     @GetMapping(value="/getRouting", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getRoutingDetails(@RequestParam(defaultValue = "") String routingNo, @RequestParam(defaultValue = "") String bankCode){

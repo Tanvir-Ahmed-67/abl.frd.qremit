@@ -199,6 +199,23 @@ public class CustomQueryRepository {
             return null;
         }
     }
+
+    @Transactional
+    public Map<String, Object> deleteByTransactionNoAndFileInfoModelId(String entityName, int fileInfoModelId, String transactionNo){
+        Map<String, Object> resp = CommonService.getResp(1, "Data not deleted", null);
+        try{
+            Query query = entityManager.createQuery("DELETE FROM " + entityName + " n WHERE n.transactionNo=:transactionNo AND n.fileInfoModel.id = :fileInfoModelId");
+            query.setParameter("fileInfoModelId", fileInfoModelId);
+            query.setParameter("transactionNo", transactionNo);
+            int affectedRows = query.executeUpdate();
+            resp = CommonService.getResp(0, "Data deleted successful", null);
+            resp.put("affectedRows", affectedRows);
+        }catch(Exception e){
+            e.printStackTrace();
+            return CommonService.getResp(1, e.getMessage(), null);
+        }
+        return resp;
+    }
         
 
 }
