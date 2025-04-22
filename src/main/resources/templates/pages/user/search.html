@@ -2,6 +2,8 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: head-css"></head>
 <body th:fragment="fileUploadForm">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <div id="app"><!--main content-->
         <div th:if="${sidebar == 'sidebarAdmin'}">
             <span th:replace="fragments/sidebarAdmin :: sidebarAdmin"></span>

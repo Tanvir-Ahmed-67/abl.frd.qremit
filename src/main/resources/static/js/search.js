@@ -5,6 +5,8 @@ $(document).ready(function(){
     var sbtn = "#searchBtn";
     var tbl = "#search_tbl";
     var type = getParameterByName("type");
+    var csrf_token = $("meta[name='_csrf']").attr("content");
+    var csrf_header = $("meta[name='_csrf_header']").attr("content");
     if(type == 2){
         $('#searchType').val("1");
         $("#page-header").html("Data Correction");
@@ -77,5 +79,19 @@ $(document).ready(function(){
         $(sbtn).hide();
         var params = { 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
         get_ajax(url,data,success_modal,fail_func,"post","json",params);
+    });
+
+    $(document).off('click','.delete');
+    $(document).on('click','.delete', function(e){
+        e.preventDefault();
+        var id = $(this).attr("id");
+        var dtype = $("#type_" + id).val();
+        var data = {'_csrf': csrf_token, '_csrf_header': csrf_header, 'type': dtype};
+        console.log(data);
+        var url = "/deleteIndividual/" + id;
+        var params = {  'success_reload': 'true'};
+        if(confirm("Are you sure you want to delete data ?")){
+            get_ajax(url,data,success_alert,fail_func,"DELETE","json",params);
+        }
     });
 });

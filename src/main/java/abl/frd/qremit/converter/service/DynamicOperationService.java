@@ -15,6 +15,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import javax.transaction.Transactional;
 @SuppressWarnings({"unchecked","rawtypes"})
 @Service
 public class DynamicOperationService {
@@ -583,6 +585,44 @@ public class DynamicOperationService {
             swiftModel =CommonService.createDataModel(swiftModel, updatedData);
             swiftModelRepository.save(swiftModel);
             return CommonService.getResp(0, msg, null);
+        }
+        return resp;
+    }
+    @Transactional
+    public Map<String, Object> deleteIndividualDataById(Map<String, Object> obj, FileInfoModel fileInfoModel, String type){
+        Map<String, Object> resp = new HashMap<>();
+        int fileInfoModelId = fileInfoModel.getId();
+        String exchangeCode = obj.get("exchangeCode").toString();
+        String transactionNo = obj.get("transactionNo").toString();
+        Double amount = CommonService.convertStringToDouble(obj.get("amount").toString());
+        int dataId = CommonService.convertStringToInt(obj.get("id").toString());
+        int checkT24 = (("1").equals(type))  ? -1:0; 
+        int checkAccPayee = (("2").equals(type))  ? -1:0; 
+        int checkBeftn = (("3").equals(type))  ? -1:0;
+        int checkCoc = (("4").equals(type))  ? -1:0;
+        Double totalAmount = CommonService.convertStringToDouble(fileInfoModel.getTotalAmount()) - amount;
+        String totalAmountStr = CommonService.convertNumberFormat(totalAmount, 2);
+        try{
+            RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);
+            if (wrapper != null) {
+                JpaRepository repository = wrapper.getRepository();
+                Class<?> modelClass = wrapper.getModelClass();
+                String entityName = modelClass.getSimpleName();
+                boolean isDeleted = deleteIndividualConvertedModel(type, dataId);
+                if(!isDeleted)  return CommonService.getResp(1, "No data found in converter model", null);
+                fileInfoModel = updateFileInfoCount(fileInfoModel, checkT24, checkAccPayee, checkBeftn, checkCoc, 0);
+                fileInfoModel.setTotalAmount(totalAmountStr);
+                resp = customQueryRepository.deleteByTransactionNoAndFileInfoModelId(entityName, fileInfoModelId, transactionNo);
+                if((Integer) resp.get("err") == 0){
+                    if((Integer) resp.get("affectedRows") == 0)  return CommonService.getResp(1, "No data found for delete", null);
+                    fileInfoModelRepository.save(fileInfoModel);
+                    resp = CommonService.getResp(0, "Data deleted successfully", null);
+                }
+                return resp;                
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return CommonService.getResp(1, e.getMessage(), null);
         }
         return resp;
     }

@@ -1251,7 +1251,7 @@ public class CommonService {
         return resp;
     }
 
-    public static Map<String, Object> getSerachType(String type){
+    public static Map<String, Object> getSearchType(String type){
         Map<String, Object> resp = new HashMap<>();
         resp.put("1", "Transaction No");
         if(!type.equals("2"))    resp.put("2", "Beneficiary Account No");
