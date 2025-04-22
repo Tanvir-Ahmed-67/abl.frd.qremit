@@ -248,7 +248,78 @@ public class ReportController {
         resp.put("data", dataList);
         return ResponseEntity.ok(resp);
     }
-
+    @RequestMapping(value="/showDatePickerFormForCmoData", method= RequestMethod.GET)
+    public String showCmoData(Model model, @RequestParam(defaultValue = "") String startDate, @RequestParam(defaultValue = "") String endDate) {
+        if(startDate.isEmpty()){
+            startDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        if(endDate.isEmpty()){
+            endDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        return "report/cmo";
+    }
+    @RequestMapping(value = "/getCmoData", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getCmoData(@RequestParam(defaultValue = "") String fromDate, @RequestParam(defaultValue = "") String toDate) {
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        int i = 1;
+        try {
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            resp = moModelService.findCmoByDateRange(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            Object dataObject = resp.get("data");
+            if (dataObject instanceof ArrayList<?>) {
+                List<?> moModelList = (ArrayList<?>) dataObject;
+                for(Object obj: moModelList){
+                    if (obj instanceof MoModel) {
+                        MoModel moModel = (MoModel) obj;
+                        Map<String, Object> dataMap = new HashMap<>();
+                        dataMap.put("sl", i++);
+                        dataMap.put("moDate", moModel.getMoDate());
+                        dataMap.put("moNumber", moModel.getMoNumber());
+                        dataMap.put("totalRemittances", moModel.getGrandTotalNumber());
+                        dataMap.put("totalAmount", moModel.getGrandTotalAmount());
+                        dataList.add(dataMap);
+                    }
+                }
+                resp.put("data", dataList);
+            }if((Integer) resp.get("err") == 1){
+                resp = CommonService.getResp(1,"No data found for the selected dates.", dataList);
+            }
+        } catch (Exception e) {
+            resp = CommonService.getResp(1,"An error occurred while fetching CMO data: " + e.getMessage(), null);
+        }
+        return ResponseEntity.ok(resp);
+    }
+    @RequestMapping(value = "/downloadCmoInExcelFormat", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadCmoInExcelFormat(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
+        try {
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            byte[] contentStream  = moModelService.loadAllCmoByDateRange(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            String fileName = "CMO_"+fromDate+"_To_"+toDate+".csv";
+            //String fileName = CommonService.generateDynamicFileName("CMO_", ".csv");
+            MediaType mediaType = MediaType.TEXT_PLAIN;
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(mediaType)
+                    .body(contentStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
     @RequestMapping(value="/summaryOfDailyStatement", method= RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Map<String, Object> generateSummaryOfDailyStatement(Model model, @RequestParam(defaultValue = "") String date) {

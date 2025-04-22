@@ -1,14 +1,20 @@
 package abl.frd.qremit.converter.service;
 
+import abl.frd.qremit.converter.helper.ReimbursementModelServiceHelper;
 import abl.frd.qremit.converter.model.MoModel;
+import abl.frd.qremit.converter.model.ReimbursementModel;
 import abl.frd.qremit.converter.repository.MoModelRepository;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -66,6 +73,102 @@ public class MoModelService {
         moModel.doSumGrandTotalAmount(moModel.getTotalAmountApi());
 
         return moModelRepository.save(moModel);
+    }
+    public Map<String, Object> findCmoByDateRange(LocalDate formDate, LocalDate toDate){
+        Map<String, Object> resp;
+        List<MoModel> moModelList =  moModelRepository.findCmoByDateRange(formDate, toDate);
+        if(moModelList == null || moModelList.isEmpty()) {
+            resp = CommonService.getResp(1,"No Data Found", null);
+        }
+        else{
+            resp = CommonService.getResp(0,"", null);
+            resp.put("data", moModelList);
+        }
+        return resp;
+    }
+    public byte[] loadAllCmoByDateRange(LocalDate fromDate, LocalDate toDate) {
+        List<MoModel> moModelList = moModelRepository.findCmoByDateRange(fromDate, toDate);
+        byte[] in = cmoModelsToExcelForCAD(moModelList, fromDate, toDate);
+        return in;
+    }
+    public static byte[] cmoModelsToExcelForCAD(List<MoModel> moModelList, LocalDate fromDate, LocalDate toDate) {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("CMO_" +fromDate+"_To_"+toDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        byte[] xls = null;
+        int rowIndex = 0;
+
+        // Create center-aligned style with borders
+        CellStyle centeredStyle = workbook.createCellStyle();
+        centeredStyle.setAlignment(HorizontalAlignment.CENTER);
+        centeredStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        centeredStyle.setBorderTop(BorderStyle.THIN);
+        centeredStyle.setBorderBottom(BorderStyle.THIN);
+        centeredStyle.setBorderLeft(BorderStyle.THIN);
+        centeredStyle.setBorderRight(BorderStyle.THIN);
+
+        // Create bold style for header
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.cloneStyleFrom(centeredStyle);
+        headerStyle.setFont(headerFont);
+
+        // Header titles
+        String[] headers = {
+                "Data Type", "Reporting Branch", "Transaction Date", "Transaction Type",
+                "Second Branch", "Originating Date(For RSP Transaction)", "Advice Prefix",
+                "Advice No", "TR Code", "Debit Amount", " Credit Amount", "Particular"
+        };
+        // Create header row
+        Row headerRow = sheet.createRow(rowIndex++);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+        // Create data rows
+        for (MoModel moModel : moModelList) {
+            Row row = sheet.createRow(rowIndex++);
+            String[] rowData = {
+                    "T",
+                    "00011(104)",
+                    moModel.getMoDate().format(formatter),
+                    "01",
+                    "4006",
+                    moModel.getMoDate().format(formatter),
+                    "",
+                    moModel.getMoNumber(),
+                    "07",
+                    "",
+                    moModel.getGrandTotalAmount().toPlainString(),
+                    ""
+            };
+            for (int i = 0; i < rowData.length; i++) {
+                Cell cell = row.createCell(i);
+                cell.setCellValue(rowData[i]);
+                cell.setCellStyle(centeredStyle);
+            }
+        }
+
+        // Auto-size columns
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // Write to byte array
+        try (ByteArrayOutputStream fos = new ByteArrayOutputStream()) {
+            workbook.write(fos);
+            xls = fos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return xls;
     }
     public MoModel updateMo(MoModel mo, Map<String, String> formData){
         mo.setTotalNumberIcash(Long.valueOf(formData.get("totalNumberIcash")));
