@@ -24,9 +24,9 @@ public class TemporaryReportService {
     @Autowired
     AccountPayeeModelService accountPayeeModelService;
     protected String emsg = "No data found for processing temporary table";
-    public Map<String, Object> processTemporaryReport(){
+    public Map<String, Object> processTemporaryReport(String currentDate){
         Map<String, Object> resp = new HashMap<>();
-        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        //String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
 
         List<OnlineModel> onlineModelList = onlineModelService.getTemopraryReportData(1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
