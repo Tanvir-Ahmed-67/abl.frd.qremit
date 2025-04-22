@@ -731,8 +731,10 @@ public class ReportService {
                     String action = "";
                     String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
                     if(isEdit == 1){
-                        action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit",String.valueOf(id),"Edit");
-                        action += "<input type='hidden' id='type_" + id + "' value='" + typeFlag + "' />";
+                        String btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit",String.valueOf(id),"Edit");
+                        btn += "<input type='hidden' id='type_" + id + "' value='" + typeFlag + "' />";
+                        btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete",String.valueOf(id),"Delete");
+                        action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
                     }
                     
                     data.put("sl", i++);
@@ -933,6 +935,15 @@ public class ReportService {
         return resp;
     }
 
+    public Map<String, Object> deleteIndividualDataById(int id, int userId, String type, HttpServletRequest request){
+        Map<String, Object> resp = getEditData(id, type, 1);
+        if((Integer) resp.get("err") == 1)  return resp;
+        Map<String, Object> obj = (Map<String, Object>) resp.get("data");
+        FileInfoModel fileInfoModel = (FileInfoModel) obj.get("fileInfoModel");
+        resp = dynamicOperationService.deleteIndividualDataById(obj, fileInfoModel, type);
+        return resp;
+    }
+
     public Map<String, Object> getExchangeWiseData(String date, int userId){
         Map<String, Object> resp = new HashMap<>();
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
@@ -973,7 +984,6 @@ public class ReportService {
             Object[] innerResult = (Object[]) result[0]; // Extract the nested Object[]
             Long totalRows = innerResult[0] instanceof Number ? ((Number) innerResult[0]).longValue() : 0L;
             Double totalAmount = innerResult[1] instanceof Number ? ((Number) innerResult[1]).doubleValue() : 0.0;
-
             summary.add(totalRows);
             summary.add(totalAmount);
         }
