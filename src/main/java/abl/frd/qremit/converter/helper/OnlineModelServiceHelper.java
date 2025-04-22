@@ -2,20 +2,14 @@ package abl.frd.qremit.converter.helper;
 import abl.frd.qremit.converter.model.OnlineModel;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import java.util.*;
 @Component
 public class OnlineModelServiceHelper {
 
@@ -36,7 +30,6 @@ public class OnlineModelServiceHelper {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             for (OnlineModel onlineModel : onlineModelList) {
-                onlineModel.setBeneficiaryAccount(getOnlineAccountNumber(onlineModel.getBeneficiaryAccount()));
                 List<Object> data = Arrays.asList(
                         onlineModel.getTransactionNo().trim(),
                         onlineModel.getExchangeCode().trim(),
@@ -54,17 +47,6 @@ public class OnlineModelServiceHelper {
         }
     }
 
-    public static String getOnlineAccountNumber(String accountNumber){
-        //^.*(02000\d{8})$.*
-        Pattern p = Pattern.compile("^.*(02000\\d{8})$.*");
-        Matcher m = p.matcher(accountNumber);
-        String updatedOlineAccountNumber=null;
-        if (m.find())
-        {
-            updatedOlineAccountNumber = m.group(1);
-        }
-        return updatedOlineAccountNumber;
-    }
 }
 
 
