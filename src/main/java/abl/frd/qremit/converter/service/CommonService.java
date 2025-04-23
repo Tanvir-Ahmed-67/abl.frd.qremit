@@ -367,7 +367,7 @@ public class CommonService {
     }
 
     public static Matcher checkOnlineAccountPattern(String accountNumber){
-        Pattern p = Pattern.compile("^.*0200(\\d{9})$.*");
+        Pattern p = Pattern.compile("^.*020(\\d{10})$.*");
         Matcher m = p.matcher(accountNumber);
         return m;   
     }
