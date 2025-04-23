@@ -821,6 +821,7 @@ public class ReportService {
 
         if(cnt > 0) return CommonService.getResp(1, pmsg, null);
         resp = fileInfoModelService.deleteFileInfoModel(fileInfoModel);
+        if((Integer) resp.get("err") == 1)  return resp;
         resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", "3", info);
         return resp;
     }
@@ -940,7 +941,15 @@ public class ReportService {
         if((Integer) resp.get("err") == 1)  return resp;
         Map<String, Object> obj = (Map<String, Object>) resp.get("data");
         FileInfoModel fileInfoModel = (FileInfoModel) obj.get("fileInfoModel");
+        User user = (User) obj.get("userModel");
+        int fileInfoModelId = fileInfoModel.getId();
         resp = dynamicOperationService.deleteIndividualDataById(obj, fileInfoModel, type);
+        if((Integer) resp.get("err") == 1)  return resp;
+        obj.put("userId", user.getId());
+        obj.put("fileInfoModelId", fileInfoModelId);
+        obj.remove("fileInfoModel");
+        obj.remove("userModel");
+        resp = addDataLogModel(resp, fileInfoModel, userId, fileInfoModelId, request, String.valueOf(id), "5", obj);
         return resp;
     }
 
