@@ -47,6 +47,19 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-md-4">
+                                                <label>User ID</label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group has-icon-left">
+                                                    <div class="position-relative">
+                                                        <input type="text" th:name="loginId" th:field="*{loginId}" th:value="${user.loginId}" class="form-control" placeholder="User ID" required th:minlength="3" th:maxlength="45">
+                                                        <div class="form-control-icon">
+                                                            <i data-feather="mail"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <!--
                                             <div class="col-md-4">
                                                 <label>Allowed Ips</label>

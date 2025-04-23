@@ -52,7 +52,7 @@ public class SecurityConfiguration {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .usernameParameter("userEmail")
+                        .usernameParameter("loginId")
                         .passwordParameter("password")
                         .successHandler(loginSuccessHandler)  // Use the custom login success handler
                         .failureHandler(authenticationFailureHandler())  // Add custom failure handler
