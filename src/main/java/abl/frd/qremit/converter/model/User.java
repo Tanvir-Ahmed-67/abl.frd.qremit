@@ -12,6 +12,8 @@ public class User {
     private String userName;
     @Column(nullable=false, unique=true)
     private String userEmail;
+    @Column(name="login_id", length=32, nullable=false, unique=true)
+    private String loginId;
     @Column(nullable=false)
     private String password;
     private boolean activeStatus;
@@ -62,6 +64,22 @@ public class User {
 
     public void setAllowedIps(String allowedIps) {
         this.allowedIps = allowedIps;
+    }
+
+    public String getLoginId() {
+        return this.loginId;
+    }
+
+    public void setLoginId(String loginId) {
+        this.loginId = loginId;
+    }
+
+    public boolean isActiveStatus() {
+        return this.activeStatus;
+    }
+
+    public boolean getPasswordChangeRequired() {
+        return this.passwordChangeRequired;
     }
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "userModel")

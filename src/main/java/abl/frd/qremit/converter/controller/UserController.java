@@ -70,7 +70,8 @@ public class UserController {
     }
     @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST)
     public String changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
-        User user = myUserDetailsService.loadUserByUserEmail(userDetails.getUserEmail());
+        //User user = myUserDetailsService.loadUserByUserEmail(userDetails.getUserEmail());
+        User user = myUserDetailsService.loadUserByLoginId(userDetails.getLoginId());
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setPasswordChangeRequired(false);
         myUserDetailsService.updatePasswordForFirstTimeUserLogging(user);
@@ -127,6 +128,7 @@ public class UserController {
                     }
                     
                     dataMap.put("sl", i++);
+                    dataMap.put("loginId", user.getLoginId());
                     dataMap.put("email", user.getUserEmail());
                     dataMap.put("userName", user.getUserName());
                     dataMap.put("exchangeCode", exchangeCode);
@@ -636,6 +638,8 @@ public class UserController {
         user.setActiveStatus(false);
         user.setPasswordChangeRequired(true);
         user.setRoles(roleSet);
+        user.setStartTime("10:00:00");
+        user.setEndTime("16:00:00");
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
         return "redirect:/" + redirectUrl;

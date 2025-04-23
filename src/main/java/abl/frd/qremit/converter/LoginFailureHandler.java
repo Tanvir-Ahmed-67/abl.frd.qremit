@@ -1,6 +1,4 @@
 package abl.frd.qremit.converter;
-
-import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.service.CustomLoginRestrictionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -29,10 +27,10 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         if (exception instanceof UsernameNotFoundException) {
             errorMessage = "User not found!";
         } else if (exception instanceof BadCredentialsException) {
-            String userEmail = request.getParameter("userEmail");
-            if (userEmail != null && !userEmail.isEmpty()) {
+            String loginId = request.getParameter("loginId");
+            if (loginId != null && !loginId.isEmpty()) {
                 try {
-                    customLoginRestrictionsService.loginFailed(userEmail);
+                    customLoginRestrictionsService.loginFailed(loginId);
                 } catch (UsernameNotFoundException e) {
                     errorMessage = "User not found!";
                 }

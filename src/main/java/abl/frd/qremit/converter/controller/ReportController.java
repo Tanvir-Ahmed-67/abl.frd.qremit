@@ -81,8 +81,8 @@ public class ReportController {
                 break;
             case "6":
             case "10":
-                columnData = new String[] {"sl", "email", "userName", "role", "exchangeCode", "status", "action"};
-                columnTitles = new String[] {"SL", "Email", "User Name", "Role", "Exchange Code","Status","Action"};
+                columnData = new String[] {"sl", "loginId", "email", "userName", "role", "exchangeCode", "status", "action"};
+                columnTitles = new String[] {"SL", "User ID", "Email", "User Name", "Role", "Exchange Code","Status","Action"};
                 break;
             case "7":
                 columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};

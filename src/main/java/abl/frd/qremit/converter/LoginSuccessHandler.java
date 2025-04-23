@@ -56,7 +56,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
         // Reset failed login attempts
-        customLoginRestrictionsService.resetAttempts(user.getUserEmail());
+        customLoginRestrictionsService.resetAttempts(user.getLoginId());
 
         // Validate IP restriction
         /*
