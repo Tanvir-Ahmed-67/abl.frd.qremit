@@ -51,11 +51,11 @@ public class CocPaidModel {
     @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isVoucherGenerated = 0;
     @Column(name = "govt_incentive")
-    private Double govtIncentive;
+    private Double govtIncentive = 0.0;
     @Column(name = "agrani_incentive")
-    private Double agraniIncentive;
+    private Double agraniIncentive = 0.0;
     @Column(name = "incentive", length = 15)
-    private Double incentive;
+    private Double incentive = 0.0;
     @Column(name = "type_flag")
     private String typeFlag;
     @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
