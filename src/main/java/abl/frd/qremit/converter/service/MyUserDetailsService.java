@@ -169,11 +169,12 @@ public class MyUserDetailsService implements UserDetailsService {
         int userId = user.getId();
         String userName = user.getUserName();
         String userEmail = user.getUserEmail();
+        String loginId = user.getLoginId();
         String exchangeCode = user.getExchangeCode();
         String allowedIps = user.getAllowedIps();
         String startTime = user.getStartTime();
         String endTime = user.getEndTime();
-        userModelRepository.updateUser(userId, userName, userEmail, exchangeCode, allowedIps, startTime, endTime);
+        userModelRepository.updateUser(userId, userName, userEmail, loginId, exchangeCode, allowedIps, startTime, endTime);
     }
     public void updatePasswordForFirstTimeUserLogging(User user){
         int userId = user.getId();
