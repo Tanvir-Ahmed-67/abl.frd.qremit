@@ -31,8 +31,8 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<Object[]> loadAllUsersAndRoles(); 
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.exchangeCode = :exchangeCode, n.allowedIps = :allowedIps, n.startTime = :startTime, n.endTime = :endTime, n.activeStatus = false where n.id = :userId")
-    void updateUser(int userId, String userName, String userEmail, String exchangeCode, String allowedIps, String startTime, String endTime);
+    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.loginId=:loginId, n.exchangeCode = :exchangeCode, n.allowedIps = :allowedIps, n.startTime = :startTime, n.endTime = :endTime, n.activeStatus = false where n.id = :userId")
+    void updateUser(int userId, String userName, String userEmail, String loginId, String exchangeCode, String allowedIps, String startTime, String endTime);
     @Query("SELECT u FROM User u WHERE u.activeStatus = false")
     public List<User> loadAllInactiveUsers();
     @Transactional
