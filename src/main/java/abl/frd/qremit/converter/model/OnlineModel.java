@@ -39,11 +39,11 @@ public class OnlineModel {
     @Column(name = "branch_code", length=15)
     private String branchCode;
     @Column(name = "govt_incentive", length = 12)
-    private Double govtIncentive;
+    private Double govtIncentive = 0.0;
     @Column(name = "agrani_incentive", length = 12)
-    private Double agraniIncentive;
+    private Double agraniIncentive = 0.0;
     @Column(name = "incentive")
-    private Double incentive;
+    private Double incentive = 0.0;
     @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isProcessed = 0;
     @Column(name = "is_downloaded", columnDefinition = "TINYINT(1) DEFAULT 0")

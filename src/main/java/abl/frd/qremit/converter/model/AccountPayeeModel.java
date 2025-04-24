@@ -45,12 +45,12 @@ public class AccountPayeeModel {
     @Column(name = "remitter_name", length=128)
     private String remitterName;
     @Column(name = "govt_incentive")
-    private Double govtIncentive;
+    private Double govtIncentive = 0.0;
     @Column(name = "agrani_incentive")
-    private Double agraniIncentive;
+    private Double agraniIncentive = 0.0;
 
     @Column(name = "incentive")
-    private Double incentive;
+    private Double incentive = 0.0;
     @Column(name = "account_payee_code")
     private String accountPayeeCode;
     @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")

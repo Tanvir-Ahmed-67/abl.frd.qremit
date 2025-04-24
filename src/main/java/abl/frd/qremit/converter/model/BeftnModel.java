@@ -43,11 +43,11 @@ public class BeftnModel {
     @Column(name = "routing_no")
     private String routingNo;
     @Column(name = "govt_incentive")
-    private Double govtIncentive;
+    private Double govtIncentive = 0.0;
     @Column(name = "agrani_incentive")
-    private Double agraniIncentive;
+    private Double agraniIncentive = 0.0;
     @Column(name = "incentive")
-    private Double incentive;
+    private Double incentive = 0.0;
     @Column(name = "is_processed_main", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isProcessedMain = 0;
     @Column(name = "is_processed_incentive", columnDefinition = "TINYINT(1) DEFAULT 0")
