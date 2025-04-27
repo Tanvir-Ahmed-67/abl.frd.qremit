@@ -799,9 +799,6 @@ public class CommonService {
         String nrtaCode;
         for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
             try{
-                if(exchangeHouseModel.getExchangeCode().equals("710000") && exchangeHouseModel.getExchangeCode().equals("720000")){
-                    continue;
-                }
                 nrtaCode = exchangeHouseModel.getNrtaCode();
                 exchangeCode = exchangeHouseModel.getExchangeCode();
                 nrtaCodeVsExchangeCodeMap.put(nrtaCode, exchangeCode);
@@ -810,6 +807,18 @@ public class CommonService {
             }
         }
         return nrtaCodeVsExchangeCodeMap;
+    }
+
+    public static Map<String, Object> getExchangeCodeVsNrtaCodeMap(String exchangeCode, List<ExchangeHouseModel> exchangeHouseModelList){
+        Map<String, Object> resp = new HashMap<>();
+        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+            if(exchangeCode.equals(exchangeHouseModel.getExchangeCode())){
+                resp.put(exchangeHouseModel.getExchangeCode(), exchangeHouseModel.getNrtaCode());
+                return resp;
+            }
+            
+        }
+        return resp;
     }
 
     public String getClientIpAddress(HttpServletRequest request) {
@@ -1399,6 +1408,10 @@ public class CommonService {
         modelResp.put("duplicateCount", duplicateCount);
         modelResp.put("transactionList", transactionList);
         return modelResp;
+    }
+
+    public static Double calculateIncentive(double govtIncentive, double agraniIncentive){
+        return govtIncentive + agraniIncentive;
     }
     
 }

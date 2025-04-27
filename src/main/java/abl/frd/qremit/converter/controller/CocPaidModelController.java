@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 
@@ -28,7 +29,8 @@ public class CocPaidModelController {
         this.commonService = commonService;
     }
     @PostMapping("/coc_paidUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, Model model) {
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("exchangeCode") String exchangeCode, 
+        @RequestParam("tbl") String tbl, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
 
         int userId = 000000000;
@@ -43,7 +45,7 @@ public class CocPaidModelController {
         if (CommonService.hasCSVFormat(file)) {
             if (!commonService.ifFileExist(file.getOriginalFilename())) {
                 try {
-                    Map<String, Object> resp = cocPaidModelService.save(file, userId, exchangeCode);
+                    Map<String, Object> resp = cocPaidModelService.save(file, userId, exchangeCode, tbl);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {
