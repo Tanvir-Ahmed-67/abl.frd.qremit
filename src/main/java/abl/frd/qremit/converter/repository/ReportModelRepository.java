@@ -14,6 +14,12 @@ public interface ReportModelRepository  extends JpaRepository<ReportModel, Integ
     List<ReportModel> getReportModelByReportDate(@Param("reportDate") LocalDate reportDate);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate")
     List<ReportModel> getReportModelByReportDateRange(@Param("fromDate") LocalDate fromDate,@Param("toDate") LocalDate toDate);
+    @Query("SELECT n FROM ReportModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate AND n.isApi=0 AND n.type IN ('1','2','4')")
+    List<ReportModel> getAllCocOnlineAndAccountPayeeDataDataByDateRange(@Param("fromDate") LocalDate fromDate, @Param("toDate") LocalDate toDate);
+    @Query("SELECT n FROM ReportModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate AND n.isApi=0 AND n.type IN ('2','4')")
+    List<ReportModel> getAllCocAndAccountPayeeDataByDateRange(@Param("fromDate") LocalDate fromDate, @Param("toDate") LocalDate toDate);
+    @Query("SELECT n FROM ReportModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate AND n.isApi=0 AND n.type IN ('1')")
+    List<ReportModel> getAllOnlineDataByDateRange(@Param("fromDate") LocalDate fromDate, @Param("toDate") LocalDate toDate);
     List<ReportModel> findReportModelByTransactionNo(String transactionNo);
     List<ReportModel> findReportModelByBeneficiaryAccount(String beneficiaryAccount);
     @Query("SELECT COUNT(n), SUM(n.amount) FROM ReportModel n WHERE n.reportDate = :reportDate AND n.isApi=0 AND n.type='3'")

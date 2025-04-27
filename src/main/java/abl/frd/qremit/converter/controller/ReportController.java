@@ -376,6 +376,101 @@ public class ReportController {
         totalData.put("totalRemittance", CommonService.generateClassForText(totalRemittance, "fw-bold"));
         return totalData;
     }
+    @RequestMapping(value="/showDatePickerFormForCocOnlineAndAccountPayeeReportForBranch", method= RequestMethod.GET)
+    public String showDatePickerFormForCocOnlineAndAccountPayeeReportForBranch(Model model, @RequestParam(defaultValue = "") String startDate, @RequestParam(defaultValue = "") String endDate) {
+        if(startDate.isEmpty()){
+            startDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        if(endDate.isEmpty()){
+            endDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        return "report/cocOnlineAndAccountPayeeDetailsForBranchReport";
+    }
+    @RequestMapping(value="/detailsOfDailyCocOnlineAndAccountPayee", method= RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> detailsOfDailyCocOnlineAndAccountPayee(@RequestParam(defaultValue = "") String fromDate, @RequestParam(defaultValue = "") String toDate) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            if (fromDate.isEmpty()) {
+                fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            if (toDate.isEmpty()) {
+                toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+            }
+            resp = reportService.generateDetailsOfDailyCocOnlineAndAccountPayeeData(fromDate, toDate);
+            Object dataObject = resp.get("data");
+            if (dataObject instanceof ArrayList<?>) {
+                List<?> dataList = (ArrayList<?>) dataObject;
+                String valueOfType;
+                for (Object obj : dataList) {
+                    if (obj instanceof ExchangeReportDTO) {
+                        ExchangeReportDTO exchangeReportData = (ExchangeReportDTO) obj;
+                        valueOfType = exchangeReportData.getType();
+                        if (valueOfType.equals("1")) {
+                            exchangeReportData.setType("Online");
+                        }
+                        else if (valueOfType.equals("4")) {
+                            exchangeReportData.setType("COC");
+                        } else if (valueOfType.equals("2")) {
+                            exchangeReportData.setType("A/C Payee");
+                        }
+                    }
+                }
+            }
+            if((Integer) resp.get("err") == 1){
+                resp = CommonService.getResp(1,"No data found for the selected dates.", null);
+            }
+        } catch (Exception e) {
+            resp = CommonService.getResp(1,"An error occurred while fetching reimbursement data: " + e.getMessage(), null);
+        }
+        return ResponseEntity.ok(resp);
+    }
+    @RequestMapping(value = "/downloadCocAndAccountPayeeFileInTextFormatForBranch", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadCocAndAccountPayeeFileForBranch(@RequestParam("type") String format, @RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate){
+        if(fromDate.isEmpty()){
+            fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        if(toDate.isEmpty()){
+            toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        try {
+            List<ExchangeReportDTO> dataList = reportService.getAllCocAndAccountPayeeDataByDateRange(fromDate, toDate);
+            byte[] reportBytes = reportService.generateCocAndAccountPayeeForBranchInTxtFile(dataList, toDate);
+            String fileName = commonService.generateFileName("Coc_&_A/C_Payee_for_branch_", toDate, "." + format.toLowerCase());
+            MediaType mediaType = MediaType.TEXT_PLAIN;
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(mediaType)
+                    .body(reportBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+    @RequestMapping(value = "/downloadOnlineFileInTextFormatForBranch", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadOnlineFileForBranch(@RequestParam("type") String format, @RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate){
+        if(fromDate.isEmpty()){
+            fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        if(toDate.isEmpty()){
+            toDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        try {
+            List<ExchangeReportDTO> dataList = reportService.getAllOnlineDataByDateRange(fromDate, toDate);
+            byte[] reportBytes = reportService.generateOnlineForBranchInTxtFile(dataList, toDate);
+            String fileName = commonService.generateFileName("Online_for_branch_", toDate, "." + format.toLowerCase());
+            MediaType mediaType = MediaType.TEXT_PLAIN;
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(mediaType)
+                    .body(reportBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
 
     @RequestMapping(value="/showDetailsOfDailyStatement", method= RequestMethod.GET)
     public String showDetailsOfDailyStatement(Model model, @RequestParam(defaultValue = "") String startDate, @RequestParam(defaultValue = "") String endDate) {
