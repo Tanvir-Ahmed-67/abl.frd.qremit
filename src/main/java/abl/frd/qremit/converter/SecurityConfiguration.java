@@ -43,11 +43,11 @@ public class SecurityConfiguration {
                         .antMatchers("/generateTemporaryReport").permitAll()
                         .antMatchers("/bbReport/**").permitAll()
                         .antMatchers("/getRouting").permitAll()
-                        .antMatchers("/css/**", "/js/**", "/images/**", "/login", "/change-password", "/change-password-for-first-time-login").permitAll()
+                        .antMatchers("/css/**", "/js/**", "/images/**", "/login").permitAll()
+                        .antMatchers("/change-password", "/change-password-for-first-time-login").authenticated()
                         .antMatchers("**/upload", "**/allUsers", "**/downloadaccountpayee/**", "**/downloadbeftn/**", "**/downloadcoc/**", "**/downloadonline/**", "**/apibeftntransfer/**").hasAnyRole("ADMIN", "USER", "SUPERADMIN")
                         .antMatchers("**/newUserCreationForm/**", "**/createNewUser/**", "**/showInactiveUsers/**").hasRole("SUPERADMIN")
                         .antMatchers("**/exchangeHouseEditForm/**", "**/editExchangeHouse/**").hasRole("ADMIN")
-                        .antMatchers("**/bec/index/**", "**/upload/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

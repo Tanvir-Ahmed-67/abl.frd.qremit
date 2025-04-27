@@ -74,41 +74,6 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="col-md-4">
-                                                <label>Password</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <div class="form-group has-icon-left">
-                                                    <div class="position-relative">
-                                                        <input th:name="userPassword" th:id="password" th:field="*{password}" type="password" class="form-control" placeholder="Password" required th:minlength="5" th:maxlength="20" onkeyup="check();">
-                                                        <div class="form-control-icon">
-                                                            <i data-feather="lock"></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label>Re-Type Password</label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <div class="form-group has-icon-left">
-                                                    <div class="position-relative">
-                                                        <input th:name="userRetypePassword" th:id="confirm-password" type="password" class="form-control" placeholder="Re-Type Password" required onkeyup="check();">
-                                                        <div class="form-control-icon">
-                                                            <i data-feather="lock"></i>
-                                                        </div>
-                                                    </div>
-                                                    <strong><span th:id="message"></span></strong>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-8 offset-md-4">
-                                                <div class='form-check'>
-                                                    <div class="checkbox">
-                                                        <input type="checkbox" id="checkbox2" class='form-check-input'>
-                                                        <label for="checkbox2">Remember Me</label>
-                                                    </div>
-                                                </div>
-                                            </div>
                                             <div class="col-12 d-flex justify-content-end ">
                                                 <button type="submit" th:name="submitButton" class="btn btn-primary me-1 mb-1">Submit</button>
                                                 <button type="reset" th:name="resetButton" class="btn btn-light-secondary me-1 mb-1">Reset</button>

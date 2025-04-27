@@ -21,19 +21,7 @@ public class MyUserDetailsService implements UserDetailsService {
     private static final String other = null;
     @Autowired
     UserModelRepository userModelRepository;
-    /*
-    public User loadUserByUserEmail(String userEmail) throws UsernameNotFoundException {
-        User user = userModelRepository.findByUserEmail(userEmail);
-        if (user == null) {
-            throw new UsernameNotFoundException("Could not find user");
-        }
-        // Check if the user is locked
-        if (user.getFailedAttempt() >= 5) {
-            throw new LockedException("User Locked. Please Contact With Admin");
-        }
-        return user;
-    }
-    */
+
     public User loadUserByLoginId(String loginId) throws UsernameNotFoundException{
         User user = userModelRepository.findByLoginId(loginId);
         if(user == null)    throw new UsernameNotFoundException("Could not find user");
