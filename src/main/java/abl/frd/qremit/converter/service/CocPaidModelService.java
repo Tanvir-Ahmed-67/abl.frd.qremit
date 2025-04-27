@@ -1,9 +1,11 @@
 package abl.frd.qremit.converter.service;
 import abl.frd.qremit.converter.model.CocPaidModel;
 import abl.frd.qremit.converter.model.ErrorDataModel;
+import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.CocPaidModelRepository;
+import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import org.apache.commons.csv.*;
@@ -31,8 +33,10 @@ public class CocPaidModelService {
     ErrorDataModelService errorDataModelService;
     @Autowired
     FileInfoModelService fileInfoModelService;
+    @Autowired
+    ExchangeHouseModelRepository exchangeHouseModelRepository;
     
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode){
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String tbl){
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try{
@@ -44,7 +48,7 @@ public class CocPaidModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> cocPaidData = csvToCocPaidModels(file.getInputStream(), user, fileInfoModel, currentDateTime);
+            Map<String, Object> cocPaidData = csvToCocPaidModels(file.getInputStream(), user, fileInfoModel, currentDateTime, tbl);
             List<CocPaidModel> cocPaidModels = (List<CocPaidModel>) cocPaidData.get("cocPaidModelList");
             if(cocPaidData.containsKey("errorMessage")){
                 resp.put("errorMessage", cocPaidData.get("errorMessage"));
@@ -85,18 +89,21 @@ public class CocPaidModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToCocPaidModels(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToCocPaidModels(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<CocPaidModel> duplicateData;
+        Optional<CocPaidModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<CocPaidModel> cocPaidModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
+            List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
+           
             int i = 0;
-            int duplicateCount = 0;
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
+            //int duplicateCount = 0;
             Double totalAmount = 0.0;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
@@ -105,38 +112,33 @@ public class CocPaidModelService {
                 String amountStr = data.get("amount").toString();
                 Double amount = CommonService.convertStringToDouble(amountStr);
                 String exchangeCode = data.get("exchangeCode").toString();
-                String branchCode = data.get("branchCode").toString();
-                String bankName = data.get("bankName").toString();
-                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                duplicateData = cocPaidModelRepository.findByTransactionNoEqualsIgnoreCaseAndAmountAndExchangeCode(transactionNo, amount, exchangeCode);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, "", fileInfoModel, user, currentDateTime, duplicateMessage, duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                CocPaidModel cocPaidModel = new CocPaidModel();
-                cocPaidModel = CommonService.createDataModel(cocPaidModel, data);
-                cocPaidModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                cocPaidModel.setUploadDateTime(currentDateTime);
-                cocPaidModel.setFileInfoModel(fileInfoModel);
-                cocPaidModel.setUserModel(user);
-                cocPaidModelList.add(cocPaidModel);
+                Map<String, Object> nrtaMap = CommonService.getExchangeCodeVsNrtaCodeMap(exchangeCode, exchangeHouseModelList);
+                String nrtaCode = nrtaMap.get(exchangeCode).toString();
+                data.put("nrtaCode", nrtaCode);
+                double govtIncentive = CommonService.calculateGovtIncentivePercentage(amount);
+                double agraniIncentive = CommonService.calculateAgraniIncentivePercentage(amount);
+                String incentive = CommonService.convertDoubleToString(CommonService.calculateIncentive(govtIncentive, agraniIncentive));
+                data.put("govtIncentive", CommonService.convertDoubleToString(govtIncentive));
+                data.put("agraniIncentive", CommonService.convertDoubleToString(agraniIncentive));
+                data.put("incentive", incentive);
+                data.put("fileInfoModel", fileInfoModel);
+                data.put("userModel", user);
+                fileExchangeCode = nrtaCode;   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amountStr, exchangeCode, uniqueKeys);
                 totalAmount += amount;
             }
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, CocPaidModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            List<CocPaidModel> cocPaidModelList  = (List<CocPaidModel>) modelResp.get("modelList");
+            for(CocPaidModel cocPaidModel: cocPaidModelList){
+                cocPaidModel.setFileInfoModel(fileInfoModel);
+                cocPaidModel.setUserModel(user);
+            }
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -153,7 +155,6 @@ public class CocPaidModelService {
                 resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
             }
             resp.put("totalAmount", totalAmount);
-            //return cocPaidModelList;
             return resp;
         } catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
