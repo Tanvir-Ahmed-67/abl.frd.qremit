@@ -35,6 +35,7 @@ public class ExchangeReportDTO {
     private int totalRowCount = 0;
     private String totalAmountInWords;
     private String moNumber;
+    private String type;
 
     public DecimalFormat formattedAmount = new DecimalFormat("#,##,###.00");
 
@@ -304,5 +305,13 @@ public class ExchangeReportDTO {
 
     public void setMoNumber(String moNumber) {
         this.moNumber = moNumber;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
