@@ -216,6 +216,11 @@ public class CustomQueryRepository {
         }
         return resp;
     }
+
+    public Map<String, Object> getIpRange(){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;    
+    }
         
 
 }

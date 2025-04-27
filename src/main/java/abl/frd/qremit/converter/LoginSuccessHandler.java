@@ -1,7 +1,9 @@
 package abl.frd.qremit.converter;
 
 import abl.frd.qremit.converter.helper.MyUserDetails;
+import abl.frd.qremit.converter.model.IpRange;
 import abl.frd.qremit.converter.model.User;
+import abl.frd.qremit.converter.repository.IpRangeRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.CustomLoginRestrictionsService;
@@ -24,6 +26,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final UserModelRepository userModelRepository;
     @Autowired
     CommonService commonService;
+    @Autowired
+    IpRangeRepository ipRangeRepository;
 
     @Autowired
     public LoginSuccessHandler(CustomLoginRestrictionsService customLoginRestrictionsService,
@@ -59,18 +63,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         customLoginRestrictionsService.resetAttempts(user.getLoginId());
 
         // Validate IP restriction
-        /*
         String clientIP = commonService.getClientIpAddress(request);
-        System.out.println(clientIP);
-        String allowedIps = customLoginRestrictionsService.getAllowedIpsForUser(user.getId());
-        Set<String> allowedIpSet = new HashSet<>(
-                Arrays.asList(allowedIps.split(","))
-        );
-        if (!allowedIpSet.contains(clientIP)) {
-            response.sendRedirect("/login?error=Access Denied: Invalid IP Address");
+        List<IpRange> ipRangeList = ipRangeRepository.findAllByPublished(1);
+        Map<String, Object> validateIp = CommonService.validateIpRange(clientIP, ipRangeList);
+        if((Integer) validateIp.get("err") == 1){
+            response.sendRedirect("/login?error=" + validateIp.get("msg"));
             return;
         }
-        */
+
         // Check login time restriction for non-admin users
         if (!customLoginRestrictionsService.isLoginAllowed(user.getId(), authorities)) {
             response.sendRedirect("/login?error=Access denied: Outside allowed login hours");

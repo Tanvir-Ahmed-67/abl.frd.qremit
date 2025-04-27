@@ -68,14 +68,20 @@ public class UserController {
     public String showChangePasswordPage() {
         return "pages/user/userPasswordChangeForm";
     }
-    @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST)
-    public String changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
-        //User user = myUserDetailsService.loadUserByUserEmail(userDetails.getUserEmail());
+    @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
+        Map<String, Object> resp = new HashMap<>();
+        if(!CommonService.validatePassword(newPassword, 8)){
+            return CommonService.getResp(1, "Password must be minimum 8 character and atleast 1 uppercase, 1 lowercase, 1 digits, 1 special character", null);
+        }
         User user = myUserDetailsService.loadUserByLoginId(userDetails.getLoginId());
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setPasswordChangeRequired(false);
         myUserDetailsService.updatePasswordForFirstTimeUserLogging(user);
-        return "redirect:/login";
+        resp = CommonService.getResp(0, "Password Changed Successfully", null);
+        resp.put("url", "/login");
+        return resp;
     }
 
     @RequestMapping("/home")
@@ -634,7 +640,7 @@ public class UserController {
         Role role = roleModelService.findRoleByRoleName("ROLE_USER");
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(role);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode("12345"));
         user.setActiveStatus(false);
         user.setPasswordChangeRequired(true);
         user.setRoles(roleSet);

@@ -17,7 +17,9 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.net.InetAddress;
 import java.text.DecimalFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +31,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import org.apache.commons.net.util.SubnetUtils;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -1413,5 +1416,56 @@ public class CommonService {
     public static Double calculateIncentive(double govtIncentive, double agraniIncentive){
         return govtIncentive + agraniIncentive;
     }
+
+    public static boolean validatePassword(String password, int length){
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{" + length + ",}$";
+        return password != null && password.matches(passwordPattern);
+    }
+
+    public static boolean isIpInRange(String ip, String cidr) {
+        // Check if IP is within CIDR range
+        SubnetUtils subnetUtils = new SubnetUtils(cidr);
+        subnetUtils.setInclusiveHostCount(true);
+        return subnetUtils.getInfo().isInRange(ip);
+    }
+
+    public static boolean isIpInSpecificRange(String ip, String startIp, String endIp) {
+        try {
+            BigInteger ipBigInt = ipToBigInt(InetAddress.getByName(ip).getAddress());
+            BigInteger startBigInt = ipToBigInt(InetAddress.getByName(startIp).getAddress());
+            BigInteger endBigInt = ipToBigInt(InetAddress.getByName(endIp).getAddress());
+            return ipBigInt.compareTo(startBigInt) >= 0 && ipBigInt.compareTo(endBigInt) <= 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    private static BigInteger ipToBigInt(byte[] address) {
+        BigInteger bigInt = BigInteger.ZERO;
+        for (byte b : address) {
+            bigInt = bigInt.shiftLeft(8);
+            bigInt = bigInt.or(BigInteger.valueOf(b & 0xFF));
+        }
+        return bigInt;
+    }
+
+    public static Map<String, Object> validateIpRange(String clientIP, List<IpRange> ipRangeList){
+        Map<String, Object> resp = new HashMap<>();
+        String msg = "Access Denied: Invalid IP Address";
+        System.out.println(clientIP);
+        if(ipRangeList.isEmpty())   return getResp(1, "IP Address Range Not Found in DB", null);
+        for(IpRange ipRange: ipRangeList){
+            String startIp = ipRange.getStartIp();
+            String endIp = ipRange.getEndIp();
+            String cidr = ipRange.getCidr();
+            if((!checkEmptyString(cidr)  && isIpInRange(clientIP, cidr)) ||(isIpInSpecificRange(clientIP, startIp, endIp))){
+                return getResp(0, "Valid IP Address", null);
+            }else{
+                resp = getResp(1,msg, null);
+            }
+        }
+        return resp;
+    }
+
     
 }
