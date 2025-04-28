@@ -94,7 +94,6 @@
 			</element>
 			<element kind="textField" x="2100" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{voucherDate} == null ? "" : java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").format($F{voucherDate})]]></expression>
-				<!--<expression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{voucherDate})]]></expression>-->
 				<property name="net.sf.jasperreports.export.csv.field.delimiter" value=","/>
 				<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="pageHeader"/>
 				<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
