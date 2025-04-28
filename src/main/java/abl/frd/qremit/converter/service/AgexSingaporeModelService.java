@@ -120,8 +120,8 @@ public class AgexSingaporeModelService {
                 String bankName = (type == 1) ? csvRecord.get(8): csvRecord.get(9);
                 String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                if(type == 1 && branchCode.startsWith("11"))    branchCode = branchCode.replaceFirst("11", ""); //remove 11 from branch code
+                String branchCode = (type == 1) ?  "4006": CommonService.fixRoutingNo(csvRecord.get(11).trim());
+                String branchName = (type == 1) ?  "Principal": csvRecord.get(10);
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
                     if((Integer) apiCheckResp.get("err") == 1){
@@ -130,7 +130,7 @@ public class AgexSingaporeModelService {
                         break;
                     }
                 }
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode, branchName);
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = nrtaCode;   
                 dataList.add(data);
@@ -211,7 +211,7 @@ public class AgexSingaporeModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String bankCode, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String bankCode, String branchCode, String branchName){
         Map<String, Object> data = new HashMap<>();
         LocalDateTime date = CommonService.convertStringToDate(csvRecord.get(4));
         data.put("exchangeCode", exchangeCode);
@@ -226,7 +226,7 @@ public class AgexSingaporeModelService {
         data.put("beneficiaryMobile", "");
         data.put("bankName", bankName);
         data.put("bankCode", bankCode);
-        data.put("branchName", csvRecord.get(10));
+        data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         data.put("draweeBranchName", "");
         data.put("draweeBranchCode", "");

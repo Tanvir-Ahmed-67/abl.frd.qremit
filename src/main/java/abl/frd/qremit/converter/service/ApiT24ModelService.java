@@ -118,8 +118,7 @@ public class ApiT24ModelService {
                 }
                 
                 String beneficiaryAccount = csvRecord.get(7).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName);
                 data.put("nrtaCode", nrtaCode);
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
@@ -206,9 +205,11 @@ public class ApiT24ModelService {
         }
         return resp;
     }
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName){
         Map<String, Object> data = new HashMap<>();
         LocalDateTime enteredDate = CommonService.convertStringToDate(csvRecord.get(4));
+        String branchCode = "4006";
+        String branchName = "Principal";
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
@@ -221,7 +222,7 @@ public class ApiT24ModelService {
         data.put("beneficiaryMobile", "");
         data.put("bankName", bankName);
         data.put("bankCode", csvRecord.get(9));
-        data.put("branchName", csvRecord.get(10));
+        data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         data.put("draweeBranchName", "");
         data.put("draweeBranchCode", "");
