@@ -85,9 +85,9 @@ public class ReportService {
         //Path reportPath = CommonService.getReportFile("summary_report_" + date.replace("-", "_") +".pdf");
         Path reportPath = commonService.getReportFile(commonService.generateFileName("summary_report_", date, ".pdf"));
         String outputFile = reportPath.toString();
-        if(!Files.exists(reportPath)){
+        //if(!Files.exists(reportPath)){
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
-        }
+        //}
         
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
@@ -116,9 +116,9 @@ public class ReportService {
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         Path reportPath = commonService.getReportFile(commonService.generateFileName("daily_voucher_", date, ".pdf"));
         String outputFile = reportPath.toString();
-        if(!Files.exists(reportPath)){
+        ///if(!Files.exists(reportPath)){
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
-        }
+        //}
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
