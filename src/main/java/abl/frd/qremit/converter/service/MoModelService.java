@@ -244,7 +244,7 @@ public class MoModelService {
         String yearSuffix = String.format("%02d", Year.now().getValue() % 100); // e.g., 25
         String prefix = "FRD-MO-1-Txn" + yearSuffix + "-";
         Long maxSuffix = moModelRepository.findMaxMoNumberSuffix(prefix);
-        long next = (maxSuffix != null) ? maxSuffix + 1 : 80;
+        long next = (maxSuffix != null) ? maxSuffix + 1 : 81;
         return prefix + next;
     }
 }
