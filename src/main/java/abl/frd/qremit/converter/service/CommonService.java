@@ -1142,12 +1142,14 @@ public class CommonService {
         try {
             // Write to file
             writeToFile(contentBytes, tempFilePath);
+            resp = getResp(0, "File generated", null);
+            resp.put("fileName", fileName);
+            String url = "/getReportFile?fileName=" + fileName;
+            resp.put("url", url);
         }catch (IOException e) {
             e.printStackTrace();
             return getResp(1, e.getMessage(), null);
         }
-        String url = "/getReportFile?fileName=" + fileName;
-        resp.put("url", url);
         resp.put("count", count);
         return resp;
     }

@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import abl.frd.qremit.converter.helper.RepositoryModelWrapper;
 import abl.frd.qremit.converter.model.ErrorDataModel;
+import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.SwiftModel;
 import abl.frd.qremit.converter.model.User;
@@ -56,7 +58,7 @@ public class SwiftModelService {
     CustomQueryService customQueryService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -69,7 +71,7 @@ public class SwiftModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> swiftData = csvToSwiftModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            Map<String, Object> swiftData = csvToSwiftModels(file.getInputStream(), user, fileInfoModel, exchangeCode, currentDateTime, tbl);
             List<SwiftModel> swiftModels = (List<SwiftModel>) swiftData.get("swiftDataModelList");
 
             if(swiftData.containsKey("errorMessage")){
@@ -114,9 +116,9 @@ public class SwiftModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToSwiftModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToSwiftModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<SwiftModel> duplicateData;
+        Optional<SwiftModel> duplicateData = Optional.empty();
 
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"))){
             StringBuilder swiftContent = new StringBuilder();
@@ -128,45 +130,32 @@ public class SwiftModelService {
             if (transactions.isEmpty()) {
                 resp.put("errorMessage", "No valid SWIFT transactions found in the file.");
             } else {
-                // Create lists to store error models and swift data models
-                List<SwiftModel> swiftDataModelList = new ArrayList<>();
                 List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-                String duplicateMessage = "";
-                int duplicateCount = 0;
-                List<String> transactionList = new ArrayList<>();
+                int i = 0;
+                List<String[]> uniqueKeys = new ArrayList<>();
+                List<Map<String, Object>> dataList = new ArrayList<>();
+                Map<String, Object> modelResp = new HashMap<>();
+                String fileExchangeCode = "";
                 for(Map<String, Object> data: transactions){
-                    //System.out.println(data);
+                    i++;
                     String transactionNo = data.get("transactionNo").toString();
                     String amount = data.get("amount").toString();
-                    String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                    String bankName = data.get("bankName").toString();
-                    String branchCode = data.get("branchCode").toString();
                     exchangeCode = data.get("exchangeCode").toString();
-                    duplicateData = swiftModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);                 
-                 
-                    if (duplicateData.isPresent()) {
-                        duplicateMessage += "Duplicate transaction detected for: " + transactionNo + "\n";
-                        duplicateCount++;
-                        continue; // Skip adding this duplicate transaction
-                    }
-                    Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, duplicateMessage, duplicateData, transactionList);
-                    //System.out.println(errResp);
-                    if ((Integer) errResp.get("err") == 1) {
-                        errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                        continue; // Skip this transaction due to errors
-                    }
-
-                    if ((Integer) errResp.get("err") == 2) {
-                        resp.put("errorMessage", errResp.get("msg"));
-                        break; // Critical error, stop processing
-                    }
-
-                    SwiftModel swiftDataModel = new SwiftModel();
-                    swiftDataModel = CommonService.createDataModel(swiftDataModel, data);
-                    swiftDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                    swiftDataModel.setUploadDateTime(currentDateTime);
-                    swiftDataModelList.add(swiftDataModel);
+                    ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+                    String nrtaCode = exchangeHouseModel.getNrtaCode();
+                    data.put("nrtaCode", nrtaCode);
+                    fileExchangeCode = nrtaCode;
+                    dataList.add(data);
+                    uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
                 }
+
+                Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, SwiftModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+                List<SwiftModel> swiftDataModelList = (List<SwiftModel>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                String duplicateMessage = modelResp.get("duplicateMessage").toString();
+                int duplicateCount = (int) modelResp.get("duplicateCount");
 
                 // Save the error data models if any
                 if (!errorDataModelList.isEmpty()) {
@@ -259,7 +248,8 @@ public class SwiftModelService {
         String amountCurrency = extractField(rawData, ":32A:", "\\d{6}BDT[0-9,]+");
         if (amountCurrency != null) {
             String[] parts = amountCurrency.split("BDT");
-            data.put("enteredDate", parts[0]); // First 6 digits are the date
+            LocalDate enteredDate = CommonService.convertStringToLocalDate(parts[0], "yyMMdd");
+            data.put("enteredDate", CommonService.convertLocalDateToString(enteredDate)); // First 6 digits are the date
             data.put("amount", parts[1].replace(",", ".")); // Remove commas for numeric amount
             data.put("currency", "BDT");
         }

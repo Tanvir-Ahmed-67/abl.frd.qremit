@@ -1,6 +1,8 @@
 package abl.frd.qremit.converter.controller;
 import abl.frd.qremit.converter.service.BeftnModelService;
 import abl.frd.qremit.converter.service.CommonService;
+import abl.frd.qremit.converter.service.FileDownloadService;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
@@ -15,6 +17,8 @@ public class BeftnModelController {
     private final BeftnModelService beftnModelService;
     @Autowired
     CommonService commonService;
+    @Autowired
+    FileDownloadService fileDownloadService;
     public BeftnModelController(BeftnModelService beftnModelService){
         this.beftnModelService = beftnModelService;
     }
@@ -25,8 +29,11 @@ public class BeftnModelController {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = beftnModelService.loadAndUpdateUnprocessedBeftnMainData(0);
         int countRemaining = beftnModelService.countRemainingBeftnDataMain();
-        String fileName = CommonService.generateDynamicFileName("Beftn_Main", ".xlsx");
+        String fileName = CommonService.generateDynamicFileName("Beftn_Main_", ".xlsx");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
+        if((Integer) resp.get("err") == 0){
+            fileDownloadService.add("3", fileName, resp.get("url").toString());
+        }
         return ResponseEntity.ok(resp);
     }
 
@@ -36,8 +43,11 @@ public class BeftnModelController {
         Map<String, Object> resp = new HashMap<>();
         ByteArrayInputStream contentStream  = beftnModelService.loadAndUpdateUnprocessedBeftnIncentiveData(0);
         int countRemaining = beftnModelService.countRemainingBeftnDataIncentive();
-        String fileName = CommonService.generateDynamicFileName("Beftn_Incentive", ".xlsx");
+        String fileName = CommonService.generateDynamicFileName("Beftn_Incentive_", ".xlsx");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
+        if((Integer) resp.get("err") == 0){
+            fileDownloadService.add("3", fileName, resp.get("url").toString());
+        }
         return ResponseEntity.ok(resp);
     }
 

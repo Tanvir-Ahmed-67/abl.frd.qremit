@@ -120,7 +120,7 @@ public class RiaModelService {
                     }
                 }
                 String bankName = (type == 1) ? "Agrani Bank": csvRecord.get(9).trim();
-                String branchCode = (type == 1) ? "": csvRecord.get(11).trim();
+                String branchCode = (type == 1) ? "4006": csvRecord.get(11).trim();
                 branchCode = CommonService.fixRoutingNo(branchCode);
                 String transactionNo = (type == 1) ? csvRecord.get(0).trim(): csvRecord.get(1).trim();
                 String beneficiaryAccount = csvRecord.get(7).trim();
@@ -176,7 +176,7 @@ public class RiaModelService {
     public Map<String, Object> getCsvData(CSVRecord csvRecord, int type, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount){
         Map<String, Object> data = new HashMap<>();
         String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
-        String branchName = (type == 1) ? "": csvRecord.get(10).trim();
+        String branchName = (type == 1) ? "Principal": csvRecord.get(10).trim();
         String currrency = (type == 1) ? "BDT": csvRecord.get(2);
         String enteredDate = (type == 1) ? csvRecord.get(10) : csvRecord.get(4);
         String remiterName = (type == 1) ? csvRecord.get(3) : csvRecord.get(5);
