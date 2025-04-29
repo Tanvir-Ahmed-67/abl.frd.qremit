@@ -734,7 +734,7 @@ public class ReportController {
                 toDate = CommonService.getCurrentDate("yyyy-MM-dd");
             }
             byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
-            String fileName = CommonService.generateDynamicFileName("Reimbursement_ICash_", ".csv");
+            String fileName = CommonService.generateDynamicFileName("Reimbursement_COC_", ".csv");
             MediaType mediaType = MediaType.TEXT_PLAIN;
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
