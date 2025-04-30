@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>abl.frd.qremit</groupId>
-    <artifactId>converter</artifactId>
-    <version>0.0.1</version>
-    <name>converter</name>
-    <description>Qremit Converter for Agrani Bank Limited</description>
+    <artifactId>agrani-rms</artifactId>
+    <version>1.0</version>
+    <name>agrani-rms</name>
+    <description>Agrani Remittance Management System (Agrani RMS)</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>
