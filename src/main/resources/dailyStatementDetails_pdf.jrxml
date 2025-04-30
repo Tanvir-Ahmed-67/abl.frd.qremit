@@ -6,7 +6,7 @@
 	</field>
 	<field name="exchangeCode" class="java.lang.String">
 	</field>
-	<field name="enteredDate" class="java.time.LocalDateTime">
+	<field name="enteredDate" class="java.time.LocalDate">
 	</field>
 	<field name="amount" class="java.lang.Double">
 	</field>

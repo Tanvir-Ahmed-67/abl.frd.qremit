@@ -17,7 +17,9 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.net.InetAddress;
 import java.text.DecimalFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -25,15 +27,23 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import org.apache.commons.net.util.SubnetUtils;
 
 @SuppressWarnings("unchecked")
 @Service
 public class CommonService {
+    @Value("${govt.incentive.percentage}")
+    private float govtIncentivePercentage;
+    private static float govtIncentivePercentageStatic;
+    @Value("${agrani.incentive.percentage}")
+    private float agraniIncentivePercentage;
+    private static float agraniIncentivePercentageStatic;
     private static final DecimalFormat df = new DecimalFormat("0.00");
-    private static float incentivePercentage = 2.5f;
+    //private static float incentivePercentage = 2.5f;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -56,6 +66,12 @@ public class CommonService {
     @Value("${app.dir-prefix}")
     private String dirPrefix;
     public static String reportDir = "report/";
+
+    @PostConstruct
+    public void init() {
+        govtIncentivePercentageStatic = govtIncentivePercentage;
+        agraniIncentivePercentageStatic = agraniIncentivePercentage;
+    }
 
     public Path generateOutputFile(String file) throws IOException{
         return generateOutputFile(reportDir, file);
@@ -155,6 +171,9 @@ public class CommonService {
         OnlineModel onlineModel = new OnlineModel();
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
+            onlineModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            onlineModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            onlineModel.setIncentive(onlineModel.getGovtIncentive()+onlineModel.getAgraniIncentive());
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
             onlineModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             onlineModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
@@ -164,6 +183,7 @@ public class CommonService {
             onlineModel.setBankName((String) getPropertyValue(model, "getBankName"));
             onlineModel.setBranchCode((String) getPropertyValue(model, "getBranchCode"));
             onlineModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
+            onlineModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
             onlineModel.setIsProcessed(flag);
             onlineModel.setIsDownloaded(flag);
             if(flag == 1){
@@ -206,6 +226,9 @@ public class CommonService {
         CocModel cocModel = new CocModel();
         try {
             cocModel.setAmount((Double) getPropertyValue(model, "getAmount"));
+            cocModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            cocModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            cocModel.setIncentive(cocModel.getGovtIncentive()+cocModel.getAgraniIncentive());
             cocModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             cocModel.setBankName((String) getPropertyValue(model, "getBankName"));
             cocModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -219,7 +242,6 @@ public class CommonService {
             cocModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             cocModel.setDownloadUserId(9999);
             cocModel.setUploadDateTime(uploadDateTime);
-            cocModel.setIncentive(00.00);
             cocModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             cocModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
         } catch (Exception e) {
@@ -246,6 +268,9 @@ public class CommonService {
         AccountPayeeModel accountPayeeModel = new AccountPayeeModel();
         try {
             accountPayeeModel.setAmount((Double) getPropertyValue(model, "getAmount"));
+            accountPayeeModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            accountPayeeModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            accountPayeeModel.setIncentive(accountPayeeModel.getGovtIncentive()+accountPayeeModel.getAgraniIncentive());
             accountPayeeModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             accountPayeeModel.setBankName((String) getPropertyValue(model, "getBankName"));
             accountPayeeModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
@@ -259,7 +284,6 @@ public class CommonService {
             accountPayeeModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             accountPayeeModel.setDownloadUserId(9999);
             accountPayeeModel.setUploadDateTime(uploadDateTime);
-            accountPayeeModel.setIncentive(00.00);
             accountPayeeModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             accountPayeeModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
         } catch (Exception e) {
@@ -292,7 +316,9 @@ public class CommonService {
             beftnModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             beftnModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
             beftnModel.setDownloadUserId(9999);
-            beftnModel.setIncentive(calculatePercentage((Double) getPropertyValue(model, "getAmount")));
+            beftnModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            beftnModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            beftnModel.setIncentive(beftnModel.getGovtIncentive()+beftnModel.getAgraniIncentive());
             beftnModel.setOrgAccountNo("160954");
             beftnModel.setOrgAccountType("CA");
             beftnModel.setOrgCustomerNo("7892");
@@ -304,16 +330,23 @@ public class CommonService {
             beftnModel.setBankName((String) getPropertyValue(model, "getBankName"));
             beftnModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             beftnModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
+            beftnModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
         }
         return beftnModel;
     }
-    public static Double calculatePercentage(Double mainAmount){
+    public static Double calculateGovtIncentivePercentage(Double mainAmount){
         df.setRoundingMode(RoundingMode.DOWN);
         Double percentage;
-        percentage = (incentivePercentage / 100f) * mainAmount;
+        percentage = (govtIncentivePercentageStatic / 100f) * mainAmount;
+        return Double.valueOf(df.format(percentage));
+    }
+    public static Double calculateAgraniIncentivePercentage(Double mainAmount){
+        df.setRoundingMode(RoundingMode.DOWN);
+        Double percentage;
+        percentage = (agraniIncentivePercentageStatic / 100f) * mainAmount;
         return Double.valueOf(df.format(percentage));
     }
     public static String putCocFlag(String accountNumber){
@@ -335,10 +368,18 @@ public class CommonService {
             return false;
         }
     }
+
+    public static Matcher checkOnlineAccountPattern(String accountNumber){
+        Pattern p = Pattern.compile("^.*020(\\d{10})$.*");
+        Matcher m = p.matcher(accountNumber);
+        return m;   
+    }
+
     public static String getOnlineAccountNumber(String accountNumber){
         //^.*02000(\d{8})$.*
-        Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
-        Matcher m = p.matcher(accountNumber);
+        //Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
+        //Matcher m = p.matcher(accountNumber);
+        Matcher m = checkOnlineAccountPattern(accountNumber);
         String onlineAccountNumber=null;
         if (m.find())
         {
@@ -356,17 +397,31 @@ public class CommonService {
     }
     
     public static boolean isOnlineAccoutNumberFound(String accountNumber){
+        /*
         Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
         Matcher m = p.matcher(accountNumber);
         if (m.find())
         {
             return true;
         }
-        
         return false;
+        */
+        return isOnlineAccoutNumberFound(accountNumber, "");
     }
 
     public static boolean isOnlineAccoutNumberFound(String accountNumber, String bankName){
+        Matcher m = checkOnlineAccountPattern(accountNumber);
+        if(!bankName.isEmpty()){
+            if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")){
+
+            }else return false;
+        }
+        if (m.find())
+        {
+            return true;
+        }
+        return false;
+        /*
         Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
         Matcher m = p.matcher(accountNumber);
         if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")){
@@ -376,6 +431,7 @@ public class CommonService {
             }else return false;
         }
         return false;
+        */
     }
     public static boolean isBeftnFound(String bankName, String accountNumber, String routingNo){
         if(!checkAgraniBankName(bankName)){
@@ -746,9 +802,6 @@ public class CommonService {
         String nrtaCode;
         for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
             try{
-                if(exchangeHouseModel.getExchangeCode().equals("710000") && exchangeHouseModel.getExchangeCode().equals("720000")){
-                    continue;
-                }
                 nrtaCode = exchangeHouseModel.getNrtaCode();
                 exchangeCode = exchangeHouseModel.getExchangeCode();
                 nrtaCodeVsExchangeCodeMap.put(nrtaCode, exchangeCode);
@@ -757,6 +810,18 @@ public class CommonService {
             }
         }
         return nrtaCodeVsExchangeCodeMap;
+    }
+
+    public static Map<String, Object> getExchangeCodeVsNrtaCodeMap(String exchangeCode, List<ExchangeHouseModel> exchangeHouseModelList){
+        Map<String, Object> resp = new HashMap<>();
+        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+            if(exchangeCode.equals(exchangeHouseModel.getExchangeCode())){
+                resp.put(exchangeHouseModel.getExchangeCode(), exchangeHouseModel.getNrtaCode());
+                return resp;
+            }
+            
+        }
+        return resp;
     }
 
     public String getClientIpAddress(HttpServletRequest request) {
@@ -822,9 +887,9 @@ public class CommonService {
         String errorMessage = "";
         if(isOnlineAccoutNumberFound(accountNo) && (!checkAgraniRoutingNo(routingNo) || !checkAgraniBankName(bankName))){
             errorMessage = "Invalid Routing Number or Bank Name";
-        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("02000") && accountNo.length() != 13){
+        }else if(checkAgraniRoutingNo(routingNo) && accountNo.startsWith("0200") && accountNo.length() != 13){
             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits";  //check routing no
-        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("02000") && accountNo.length() != 13){
+        }else if(checkAgraniBankName(bankName) && accountNo.startsWith("0200") && accountNo.length() != 13){
             errorMessage = "Invalid ABL Online A/C Number which requires 13 digits"; //check agrani bankName 
         }
         return errorMessage;
@@ -857,11 +922,6 @@ public class CommonService {
         if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
             return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }
-        //check exchange code
-        String exchangeMessage = CommonService.checkExchangeCode(userExCode, exchangeCode, nrtaCode);
-        if(!exchangeMessage.isEmpty()){
-            return getResp(2, exchangeMessage, null);
-        }
         errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
         if(!errorMessage.isEmpty()){
             addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
@@ -869,74 +929,6 @@ public class CommonService {
             resp.put("errorDataModelList", errorDataModelList);
             return resp;
         }
-        /*
-        //a/c no, benficiary name, amount empty or null check
-        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
-        if(!errorMessage.isEmpty()){
-            addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-            resp = getResp(1, errorMessage, null);
-            resp.put("errorDataModelList", errorDataModelList);
-            return resp;
-        }
-        if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
-            if(checkEmptyString(bankName)){
-                errorMessage = "Bank Name is empty. Please correct it";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            errorMessage = checkBEFTNRouting(branchCode);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isCocFound(beneficiaryAccount)){
-            errorMessage = checkCOCBankName(bankName);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
-            errorMessage = checkABLAccountAndRoutingNo(beneficiaryAccount, branchCode, bankName);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            errorMessage = checkCOString(beneficiaryAccount);
-            if(!errorMessage.isEmpty()){
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            if(checkEmptyString(branchCode)){
-                errorMessage = "Branch Code can not be empty for A/C payee";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-            if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
-                //only processed for a/c payee
-            }
-            else{
-                errorMessage = "No Legacy Account will not be processed";
-                addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                resp = getResp(1, errorMessage, null);
-                resp.put("errorDataModelList", errorDataModelList);
-                return resp;
-            }
-        }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
-            
-        }
-        */
         //check duplicate data exists in csv data
         if(transactionList.contains(transactionNo)){
             return getResp(4, "Duplicate Reference No " + transactionNo + " Found <br>", null);
@@ -954,7 +946,7 @@ public class CommonService {
         errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
         if(!errorMessage.isEmpty())  return errorMessage;
         if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
-            errorMessage = validateBeftn(bankName, branchCode);
+            errorMessage = validateBeftn(bankName, branchCode, beneficiaryAccount);
             if(!errorMessage.isEmpty())  return errorMessage;
         }else if(isCocFound(beneficiaryAccount)){
             errorMessage = checkCOCBankName(bankName);
@@ -968,11 +960,13 @@ public class CommonService {
         return errorMessage;
     }
 
-    public static String validateBeftn(String bankName, String branchCode){
+    public static String validateBeftn(String bankName, String branchCode, String beneficiaryAccount){
         String errorMessage = "";
         if(checkEmptyString(bankName)){
             return "Bank Name is empty. Please correct it";
         }
+        beneficiaryAccount = removeAllSpecialCharacterFromString(beneficiaryAccount);
+        if(beneficiaryAccount.length() > 17)    return "Beneficiary A/C No must be 17 digits for BEFTN";
         errorMessage = checkBEFTNRouting(branchCode);
         return errorMessage;
     }
@@ -1027,6 +1021,16 @@ public class CommonService {
         return formattedDateTime;
     }
 
+    public static String convertLocalDateToString(LocalDate date){
+        return convertLocalDateToString(date,"yyyy-MM-dd");
+    }
+    public static String convertLocalDateToString(LocalDate date, String format){
+        if(date == null)    return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        String formattedDateTime = date.format(formatter);
+        return formattedDateTime;
+    }
+
     public static LocalDateTime convertStringToDate(String date){
         return convertStringToDate(date,"yyyy-MM-dd HH:mm:ss");
     }
@@ -1048,12 +1052,22 @@ public class CommonService {
         
     }
 
+    public static LocalDate convertStringToLocalDate(String date, String format){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        try{
+            return LocalDate.parse(date, formatter);
+        }catch(DateTimeException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static Map<String, LocalDateTime> getStartAndEndDateTime(String date){
         Map<String, LocalDateTime> dateTimeRange = new HashMap<>();
         String startDate = date + " 00:00:00";
         String endDate = date + " 23:59:59";
-        LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
-        LocalDateTime endDateTime = CommonService.convertStringToDate(endDate);
+        LocalDateTime startDateTime = convertStringToDate(startDate);
+        LocalDateTime endDateTime = convertStringToDate(endDate);
         dateTimeRange.put("startDateTime", startDateTime);
         dateTimeRange.put("endDateTime", endDateTime);
         return dateTimeRange;
@@ -1084,7 +1098,7 @@ public class CommonService {
             model.addAttribute("fileInfo", fileInfoModelObject);
             model.addAttribute("beftnIncentive", 0);
             int errorCount = fileInfoModelObject.getErrorCount();
-            int beftnCount = CommonService.convertStringToInt(fileInfoModelObject.getBeftnCount());
+            int beftnCount = convertStringToInt(fileInfoModelObject.getBeftnCount());
             if(beftnCount > 0){
                 model.addAttribute("beftnIncentive", 1);
             }
@@ -1128,18 +1142,20 @@ public class CommonService {
         try {
             // Write to file
             writeToFile(contentBytes, tempFilePath);
+            resp = getResp(0, "File generated", null);
+            resp.put("fileName", fileName);
+            String url = "/getReportFile?fileName=" + fileName;
+            resp.put("url", url);
         }catch (IOException e) {
             e.printStackTrace();
             return getResp(1, e.getMessage(), null);
         }
-        String url = "/getReportFile?fileName=" + fileName;
-        resp.put("url", url);
         resp.put("count", count);
         return resp;
     }
 
     public static String generateDynamicFileName(String text, String ext){
-        String formattedDate = CommonService.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
+        String formattedDate = getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss"));
         String fileName = text + formattedDate + ext;
         return fileName;
     }
@@ -1249,7 +1265,7 @@ public class CommonService {
         return resp;
     }
 
-    public static Map<String, Object> getSerachType(String type){
+    public static Map<String, Object> getSearchType(String type){
         Map<String, Object> resp = new HashMap<>();
         resp.put("1", "Transaction No");
         if(!type.equals("2"))    resp.put("2", "Beneficiary Account No");
@@ -1283,14 +1299,14 @@ public class CommonService {
     }
 
     public static Map<String, Object> checkBeftnEditForSpecialExchange(String exchangeCode, String type){
-        Map<String,Object> resp = CommonService.getResp(0, "", null);
+        Map<String,Object> resp = getResp(0, "", null);
         String[] exchangeCodeList = {"7010226","7010228","7010290","7010299","111111"};
         if(exchangeCode.equals("444444")){
-            if(("3").equals(type))  return CommonService.getResp(1, "BEFTN not allowed in swift", null);
+            if(("3").equals(type))  return getResp(1, "BEFTN not allowed in swift", null);
         }
         for(String exCode: exchangeCodeList){
             if(exCode.equals(exchangeCode)){
-                if(!("3").equals(type)) resp = CommonService.getResp(1, "You are not allowed to change beftn to any other type for specific exchange code", null);
+                if(!("3").equals(type)) resp = getResp(1, "You are not allowed to change beftn to any other type for specific exchange code", null);
             }
         }
         return resp;
@@ -1312,4 +1328,146 @@ public class CommonService {
         return sidebar;
     }
 
+    public static String removeAllSpecialCharacterFromString(String str){
+        return str.replaceAll("[^a-zA-Z0-9]", "");
+    }
+
+    public static <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
+        Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, List<ErrorDataModel> errorDataModelList, String fileExchangeCode, int checkType, int type){
+        Map<String, Object> modelResp = new HashMap<>();
+        List<String> transactionList = new ArrayList<>();
+        String duplicateMessage = "";
+        int duplicateCount = 0;
+        List<T> modelList = new ArrayList<>();
+        int isValidFile = 0;
+        for(Map<String, Object> data: dataList){
+            String transactionNo = data.get("transactionNo").toString();
+            String exchangeCode = data.get("exchangeCode").toString();
+            String nrtaCode = data.get("nrtaCode").toString();
+            String bankName = data.get("bankName").toString();
+            if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
+            //check exchange code
+            if(isValidFile == 0){
+                String exchangeMessage = checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
+                if(!exchangeMessage.isEmpty()){
+                    resp.put("errorMessage", exchangeMessage);
+                    break;
+                }else isValidFile = 1;
+            }
+            
+            String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+            String branchCode = data.get("branchCode").toString();
+            data.remove("nrtaCode");
+            Map<String, Object> dupResp = getDuplicateTransactionNo(transactionNo, uniqueDataList);
+            if((Integer) dupResp.get("isDuplicate") == 1){
+                duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                duplicateCount++;
+                continue;
+            }
+            Map<String, Object> archiveResp = getDuplicateTransactionNo(transactionNo, archiveDataList);
+            if((Integer) archiveResp.get("isDuplicate") == 1){
+                duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
+                duplicateCount++;
+                continue;
+            }
+        
+            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
+            if((Integer) errResp.get("err") == 1){
+                errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
+                continue;
+            }
+            if((Integer) errResp.get("err") == 4){
+                duplicateMessage += errResp.get("msg");
+                continue;
+            }
+            if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
+            String typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
+            /*
+             * need to modify
+             */
+            if(checkType == 1){
+                int allowedType = (type == 1) ? 1:3;  //for betn 3
+                if(!convertStringToInt(typeFlag).equals(allowedType)){
+                    String msg = "Invalid Remittence Type for ";
+                    msg += (type == 1) ? "API": "BEFTN";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+            }
+            try{
+                T modelInstance = modelClass.getDeclaredConstructor().newInstance();
+                modelInstance = createDataModel(modelInstance, data);
+                Method setTypeFlagMethod = modelClass.getMethod("setTypeFlag", String.class);
+                setTypeFlagMethod.invoke(modelInstance, typeFlag);
+                Method setUploadDateTimeMethod = modelClass.getMethod("setUploadDateTime", LocalDateTime.class);
+                setUploadDateTimeMethod.invoke(modelInstance, currentDateTime);
+                modelList.add(modelInstance);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        modelResp.put("errorDataModelList", errorDataModelList);
+        modelResp.put("modelList",modelList);
+        modelResp.put("resp",resp);
+        modelResp.put("duplicateMessage", duplicateMessage);
+        modelResp.put("duplicateCount", duplicateCount);
+        modelResp.put("transactionList", transactionList);
+        return modelResp;
+    }
+
+    public static Double calculateIncentive(double govtIncentive, double agraniIncentive){
+        return govtIncentive + agraniIncentive;
+    }
+
+    public static boolean validatePassword(String password, int length){
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{" + length + ",}$";
+        return password != null && password.matches(passwordPattern);
+    }
+
+    public static boolean isIpInRange(String ip, String cidr) {
+        // Check if IP is within CIDR range
+        SubnetUtils subnetUtils = new SubnetUtils(cidr);
+        subnetUtils.setInclusiveHostCount(true);
+        return subnetUtils.getInfo().isInRange(ip);
+    }
+
+    public static boolean isIpInSpecificRange(String ip, String startIp, String endIp) {
+        try {
+            BigInteger ipBigInt = ipToBigInt(InetAddress.getByName(ip).getAddress());
+            BigInteger startBigInt = ipToBigInt(InetAddress.getByName(startIp).getAddress());
+            BigInteger endBigInt = ipToBigInt(InetAddress.getByName(endIp).getAddress());
+            return ipBigInt.compareTo(startBigInt) >= 0 && ipBigInt.compareTo(endBigInt) <= 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    private static BigInteger ipToBigInt(byte[] address) {
+        BigInteger bigInt = BigInteger.ZERO;
+        for (byte b : address) {
+            bigInt = bigInt.shiftLeft(8);
+            bigInt = bigInt.or(BigInteger.valueOf(b & 0xFF));
+        }
+        return bigInt;
+    }
+
+    public static Map<String, Object> validateIpRange(String clientIP, List<IpRange> ipRangeList){
+        Map<String, Object> resp = new HashMap<>();
+        String msg = "Access Denied: Invalid IP Address";
+        System.out.println(clientIP);
+        if(ipRangeList.isEmpty())   return getResp(1, "IP Address Range Not Found in DB", null);
+        for(IpRange ipRange: ipRangeList){
+            String startIp = ipRange.getStartIp();
+            String endIp = ipRange.getEndIp();
+            String cidr = ipRange.getCidr();
+            if((!checkEmptyString(cidr)  && isIpInRange(clientIP, cidr)) ||(isIpInSpecificRange(clientIP, startIp, endIp))){
+                return getResp(0, "Valid IP Address", null);
+            }else{
+                resp = getResp(1,msg, null);
+            }
+        }
+        return resp;
+    }
+
+    
 }

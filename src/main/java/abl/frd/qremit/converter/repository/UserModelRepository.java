@@ -19,6 +19,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public User findByUserEmail(@Param("useremail") String useremail);
     @Query("SELECT u FROM User u WHERE u.id = :userid")
     public User findByUserId(@Param("userid") int id);
+    public User findByLoginId(String loginId);
 
     @Query("SELECT u FROM User u")
     public List<User> loadAllUsers();
@@ -30,8 +31,8 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     public List<Object[]> loadAllUsersAndRoles(); 
     @Transactional
     @Modifying
-    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.exchangeCode = :exchangeCode, n.allowedIps = :allowedIps, n.startTime = :startTime, n.endTime = :endTime, n.activeStatus = false where n.id = :userId")
-    void updateUser(int userId, String userName, String userEmail, String exchangeCode, String allowedIps, String startTime, String endTime);
+    @Query("UPDATE User n SET n.userName = :userName, n.userEmail = :userEmail, n.loginId=:loginId, n.exchangeCode = :exchangeCode, n.allowedIps = :allowedIps, n.startTime = :startTime, n.endTime = :endTime, n.activeStatus = false where n.id = :userId")
+    void updateUser(int userId, String userName, String userEmail, String loginId, String exchangeCode, String allowedIps, String startTime, String endTime);
     @Query("SELECT u FROM User u WHERE u.activeStatus = false")
     public List<User> loadAllInactiveUsers();
     @Transactional
@@ -53,6 +54,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
     String getAllowedEndTime(@Param("userId") int userId);
     @Modifying
     @Transactional
+    /*
     @Query("UPDATE User u " +
             "SET u.startTime = :startTime, u.endTime = :endTime " +
             "WHERE u.id NOT IN (" +
@@ -60,5 +62,7 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
             "  JOIN u2.roles r " +
             "  WHERE r.roleName IN ('ROLE_ADMIN', 'ROLE_SUPERADMIN')" +
             ")")
+    */
+    @Query(value = "UPDATE User u SET u.start_time = :startTime, u.end_time = :endTime WHERE u.user_id IN (SELECT r.user_id FROM user_role r WHERE r.role_id = 1)", nativeQuery = true)
     int setLoginTimeRestrictionsForAllUsers(@Param("startTime") String startTime, @Param("endTime") String endTime);
 }

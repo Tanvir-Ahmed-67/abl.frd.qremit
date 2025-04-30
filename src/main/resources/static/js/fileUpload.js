@@ -34,11 +34,15 @@ $(document).ready(function(){
         var csrf_token = $('#_csrf').val();
         var csrf_header = $('#_csrf_header').val();
         var beftnIncentive = $("#beftnIncentive").val();
-        console.log(beftnIncentive);
         if(beftnIncentive == 1){
             var url = "/notProcessingBeftnIncentive";
             get_ajax(url,"", success_beftn_incentive, fail_func,'get','json',params);
         }
+        var apiUrl = $('#apiUrl').val();
+        if(apiUrl){
+            var id = $('#fileInfoId').val();
+            process_api_url(apiUrl, id);
+        }  
         $('.view_btn').on('click', function(e){
             e.preventDefault();
             var id = $(this).attr('id');
@@ -48,7 +52,6 @@ $(document).ready(function(){
         });
 
         function success_beftn_incentive(resp, params){
-            //if(resp.err == 1)   alert(resp.msg);
         }
 
         function view_exchange_data(resp){
@@ -61,14 +64,11 @@ $(document).ready(function(){
             get_dynamic_dataTable(tbl1, url, cols);
         }
         
-        $(".apiUrl").on('click', function(e){
-            e.preventDefault();
-            var id = $(this).attr('id');
-            var url = $("#apiUrl").val();
+        function process_api_url(url, id){
             var data = {'_csrf': csrf_token, '_csrf_header': csrf_header, id: id};
             var params = {'success_alert': "", "success_redirect": "true"};
             get_ajax(url,data, success_alert, fail_func,'post','json',params, 1000000);
-        });
+        }
 
         if($(tbl).length){
             var uid = $('#id').val();

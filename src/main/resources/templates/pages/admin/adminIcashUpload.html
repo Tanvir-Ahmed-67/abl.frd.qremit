@@ -27,39 +27,29 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
-                                        <form th:action="@{/generateMo(date=${currentDate})}" th:object="${mo}"  th:name="moGenerationForm" method="post" class="form form-horizontal">
+                                    <form id="adminIcashForm" th:action="@{#}"  method="post" enctype="multipart/form-data">
                                         <div class="row">
-                                            <div class="col-2"><label>MO Generation Date</label></div>
-                                            <div class="col-2 form-group">
-                                                <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" th:placeholder="${currentDate}" readonly="true">
+                                            <div class="col-md-2 form-group mb-2">MO Generation Date</div>
+                                            <div class="col-md-2 group">
+                                                <input class="form-control dpicker report_date" type="text" name="reportDate" id="report_date" th:value="${currentDate}" readonly="true">
+                                            </div>
+                                            <div class="col-md-2 form-group">Total ICash Number</div>
+                                            <div class="col-md-2 group">
+                                                <input type="text" id="total_number" class="form-control" th:name="totalNumberIcash"  required placeholder="Total Number" th:minlength="1" th:maxlength="6">
+                                            </div>
+                                            <div class="col-md-2 form-group">Total ICash Amount</div>
+                                            <div class="col-md-2 group">
+                                                <input type="text" id="total_amount" class="form-control" th:name="totalAmountIcash"  required placeholder="Total Amount">
+                                            </div>
+                                            <div class="col-md-12 text-center mt-2">
+                                                <button type="submit" class="btn btn-sm btn-danger generate_mo">Generate Mo</button>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row align-items-center">
-                                                    <div class="col-lg-2 col-3">
-                                                        <label class="col-form-label">Total ICash Number</label>
-                                                    </div>
-                                                    <div class="col-lg-10 col-9">
-                                                        <input type="text" id="total_number" class="form-control" th:name="totalNumberIcash" th:field="*{totalNumberIcash}"  required placeholder="Total Number" th:minlength="1" th:maxlength="6">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row align-items-center">
-                                                    <div class="col-lg-2 col-3">
-                                                        <label class="col-form-label">Total ICash Amount</label>
-                                                    </div>
-                                                    <div class="col-lg-10 col-9">
-                                                        <input type="text" id="total_amount" class="form-control" th:name="totalAmountIcash" th:field="*{totalAmountIcash}" required placeholder="Total Amount">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <div id="moBtn" class="text-center">
-                                        <button type="submit" class="btn btn-sm btn-danger generate_mo">Generate Mo</button>
-                                    </div>
                                     </form>
+                                    <div id="show_mo" class="mb-2"></div>
+                                    <div id="search" class="col-md-12 text-center">
+                                        <button class="btn btn-info">Search Again</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -70,7 +60,48 @@
             <span th:replace="fragments/footer :: footer"></span>
         </div>
     </div>
-    <script src="/js/script.js"></script>
-    <script src="/js/admin_api_upload.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (){
+            $('#search').hide();
+            var report_date = $('#report_date').val();
+            getMo(report_date);
+            $('#report_date').on('change',function (){
+                var val = $(this).val();
+                getMo(val);
+            });
+
+            function getMo(date){
+                var url = "/getMo";
+                var data = {'date': date};
+                get_ajax(url,data,view_mo, fail_func, "get","json");
+            }
+
+            function view_mo(resp,params){
+               $('#total_number').val("");
+               $('#total_amount').val("");
+               if(resp.err == 0){
+                   var data = resp.data;
+                   $('#total_number').val(data.totalIcashNumber);
+                   $('#total_amount').val(data.totalIcashAmount);
+               }
+            }
+            $('#adminIcashForm').on("submit", function (e){
+               e.preventDefault();
+               var url = "/generateMo";
+               var data = $(this).serialize();
+               get_ajax(url,data,view_icash_data,fail_func,"post");
+            });
+            function view_icash_data(resp,params){
+               $('#adminIcashForm').hide();
+               $('#show_mo').html(resp);
+               $('#search').show();
+            }
+            $('#search').on('click', function (){
+               $('#adminIcashForm').show();
+               $('#show_mo').html("");
+               $('#search').hide();
+            })
+        });
+    </script>
 </body>
 </html>

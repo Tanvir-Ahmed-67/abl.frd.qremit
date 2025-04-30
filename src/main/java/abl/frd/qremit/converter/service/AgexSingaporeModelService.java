@@ -105,12 +105,12 @@ public class AgexSingaporeModelService {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<AgexSingaporeModel> agexSingaporeModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
@@ -120,8 +120,8 @@ public class AgexSingaporeModelService {
                 String bankName = (type == 1) ? csvRecord.get(8): csvRecord.get(9);
                 String bankCode = (type == 1) ? csvRecord.get(9): csvRecord.get(8);
                 String beneficiaryAccount = csvRecord.get(7).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                if(type == 1 && branchCode.startsWith("11"))    branchCode = branchCode.replaceFirst("11", ""); //remove 11 from branch code
+                String branchCode = (type == 1) ?  "4006": CommonService.fixRoutingNo(csvRecord.get(11).trim());
+                String branchName = (type == 1) ?  "Principal": csvRecord.get(10);
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
                     if((Integer) apiCheckResp.get("err") == 1){
@@ -130,13 +130,21 @@ public class AgexSingaporeModelService {
                         break;
                     }
                 }
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode);
-                fileExchangeCode = csvRecord.get(0).trim();   
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode, branchName);
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;   
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgexSingaporeModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                agexSingaporeModelList = (List<AgexSingaporeModel>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
+                /*
                 for(Map<String, Object> data: dataList){
                     String transactionNo = data.get("transactionNo").toString();
                     String bankName = data.get("bankName").toString();
@@ -177,8 +185,9 @@ public class AgexSingaporeModelService {
                     agexSingaporeModel.setUploadDateTime(currentDateTime);
                     agexSingaporeModelList.add(agexSingaporeModel);
                 }
+                */
             }
-            
+
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -202,13 +211,14 @@ public class AgexSingaporeModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String bankCode, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String bankCode, String branchCode, String branchName){
         Map<String, Object> data = new HashMap<>();
+        LocalDateTime date = CommonService.convertStringToDate(csvRecord.get(4));
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", date.toLocalDate().toString());
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", "");
         data.put("beneficiaryName", csvRecord.get(6));
@@ -216,7 +226,7 @@ public class AgexSingaporeModelService {
         data.put("beneficiaryMobile", "");
         data.put("bankName", bankName);
         data.put("bankCode", bankCode);
-        data.put("branchName", csvRecord.get(10));
+        data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         data.put("draweeBranchName", "");
         data.put("draweeBranchCode", "");

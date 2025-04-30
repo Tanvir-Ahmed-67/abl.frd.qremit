@@ -14,7 +14,7 @@ function checkDataTable(tbl){
     return data;
   }
 
-  function get_dataTable(url,tbl,cols,successfunc,drawfunc,PostParams = [], RequestType = 'get',exportTbl){
+  function get_dataTable(url,tbl,cols,successfunc,drawfunc,PostParams = [], RequestType = 'get',exportTbl,paging = true, searching = true, info = true, lengthChange = true){
     checkDataTable(tbl);
     if(!url) return false;
     var data = DataTableColumns(cols);
@@ -26,15 +26,23 @@ function checkDataTable(tbl){
       },
       "columns": data,
       "sort": false,
+      "paging": paging,
+      "searching": searching,
+      "info": info,
+      "lengthChange": lengthChange,
       "initComplete":function(settings,json){
         if(successfunc){
           for(var i in successfunc)  successfunc[i](json);
         }
+        if(exportTbl) $('.dt-buttons button').removeClass('btn-secondary').addClass('btn-info');
       },
     };
     if(exportTbl){
-      oSettings.dom = 'Bfrtip';
-      oSettings.buttons = ['copy', 'csv','pdf', 'print'];
+      oSettings.layout = {
+        topStart: {
+          buttons:['copy','csv','excel','print'],
+        }
+      };
     }
     $(tbl).DataTable(oSettings);
    }
@@ -52,7 +60,7 @@ function checkDataTable(tbl){
  
   }
 
-  function get_dynamic_dataTable(tbl,url,columns,sfun,lazy, RequestType = 'get', PostParams = [],exportTbl){
+  function get_dynamic_dataTable(tbl,url,columns,sfun,lazy, RequestType = 'get', PostParams = [],exportTbl, paging = true, searching = true, info = true, lengthChange= true){
     checkDataTable(tbl);
     var data = [];
     var func = [];
@@ -62,7 +70,7 @@ function checkDataTable(tbl){
       data.push(keys);
     }
     $(tbl).DataTable({"columns": columns });
-    get_dataTable(url,tbl,data,sfun,'',PostParams,RequestType,exportTbl);
+    get_dataTable(url,tbl,data,sfun,'',PostParams,RequestType,exportTbl, paging, searching, info, lengthChange);
   }
 
   function dataTable_reload(tbl,pagination = true){
@@ -156,7 +164,8 @@ function checkDataTable(tbl){
     alert(resp.msg);
     if(resp.err == 0)   $('#' + params.modalID).modal('hide');
     if(params.failModalhide)  $('#' + params.modalID).modal('hide');
-    if(params.reload) dataTable_reload(params.tbl);
+    var pagination = (params.pagination !== undefined) ? params.pagination: true;
+    if(params.reload) dataTable_reload(params.tbl, pagination);
   }
 
   function fail_func(data){
@@ -180,7 +189,8 @@ function checkDataTable(tbl){
         $(params.modalID).modal('hide');
       }
       if(params.dataTable_reload === 'true'){
-        dataTable_reload(params.tbl);
+        var pagination = (params.pagination !== undefined) ? params.pagination: true;
+        dataTable_reload(params.tbl, pagination);
       }
       if(params.form_reset === 'true'){
         $('form')[0].reset();

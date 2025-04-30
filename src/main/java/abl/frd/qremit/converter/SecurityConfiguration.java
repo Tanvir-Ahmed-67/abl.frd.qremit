@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.web.client.RestTemplate;
 
 
 @Configuration
@@ -41,17 +42,18 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers("/getExchangeHouse").permitAll()
                         .antMatchers("/generateTemporaryReport").permitAll()
+                        .antMatchers("/bbReport/**").permitAll()
                         .antMatchers("/getRouting").permitAll()
-                        .antMatchers("/css/**", "/js/**", "/images/**", "/login", "/change-password", "/change-password-for-first-time-login").permitAll()
+                        .antMatchers("/css/**", "/js/**", "/images/**", "/login").permitAll()
+                        .antMatchers("/change-password", "/change-password-for-first-time-login").authenticated()
                         .antMatchers("**/upload", "**/allUsers", "**/downloadaccountpayee/**", "**/downloadbeftn/**", "**/downloadcoc/**", "**/downloadonline/**", "**/apibeftntransfer/**").hasAnyRole("ADMIN", "USER", "SUPERADMIN")
                         .antMatchers("**/newUserCreationForm/**", "**/createNewUser/**", "**/showInactiveUsers/**").hasRole("SUPERADMIN")
                         .antMatchers("**/exchangeHouseEditForm/**", "**/editExchangeHouse/**").hasRole("ADMIN")
-                        .antMatchers("**/bec/index/**", "**/upload/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .usernameParameter("userEmail")
+                        .usernameParameter("loginId")
                         .passwordParameter("password")
                         .successHandler(loginSuccessHandler)  // Use the custom login success handler
                         .failureHandler(authenticationFailureHandler())  // Add custom failure handler
@@ -93,5 +95,9 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return new LoginFailureHandler(customLoginRestrictionsService);
+    }
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

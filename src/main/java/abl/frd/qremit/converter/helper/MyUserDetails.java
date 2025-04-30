@@ -17,6 +17,10 @@ public class MyUserDetails implements UserDetails {
     public MyUserDetails(User user) {
         this.user = user;
     }
+    
+    public String getLoginId() {
+        return user.getLoginId();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

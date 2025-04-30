@@ -2,7 +2,6 @@ package abl.frd.qremit.converter.model;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ExchangeReportDTO {
     private String exchangeCode;
@@ -10,7 +9,11 @@ public class ExchangeReportDTO {
     private String transactionNo;
     private String currency;
     private Double amount;
-    private LocalDateTime enteredDate;
+    private Double govtIncentive;
+    private Double agraniIncentive;
+    private Double incentive;
+    private LocalDate enteredDate;
+    private String enteredDateForSearchFile;
     private LocalDate voucherDate;
     private String remitterName;
     private String remitterMobile;
@@ -24,10 +27,15 @@ public class ExchangeReportDTO {
     private String bankName;
     private String zoneCode;
     private String zoneName;
+    private String districtCode;
+    private String districtName;
+    private String purposeOfRemittance;
     private String nrtAccountNo;
     private Double sumOfAmount = 0.00;
     private int totalRowCount = 0;
     private String totalAmountInWords;
+    private String moNumber;
+    private String type;
 
     public DecimalFormat formattedAmount = new DecimalFormat("#,##,###.00");
 
@@ -51,12 +59,14 @@ public class ExchangeReportDTO {
         this.totalRowCount = totalRowCount;
     }
 
-    public String doFormatAmount(Double amount){
+    public String doFormatAmount(Double amount) {
         return formattedAmount.format(amount);
     }
-    public ExchangeReportDTO(){}
 
-    public ExchangeReportDTO(String exchangeCode, String transactionNo, Double amount, String beneficiaryName, String beneficiaryAccount, LocalDateTime enteredDate) {
+    public ExchangeReportDTO() {
+    }
+
+    public ExchangeReportDTO(String exchangeCode, String transactionNo, Double amount, String beneficiaryName, String beneficiaryAccount, LocalDate enteredDate) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.amount = amount;
@@ -81,17 +91,19 @@ public class ExchangeReportDTO {
         this.zoneName = zoneName;
     }
 
-    public void doSum(Double amount){
-        this.sumOfAmount = this.sumOfAmount+amount;
-    }
-    public void doCount(){
-        this.totalRowCount = this.totalRowCount+1;
+    public void doSum(Double amount) {
+        this.sumOfAmount = this.sumOfAmount + amount;
     }
 
-    public double getTotalAmountCount(){
+    public void doCount() {
+        this.totalRowCount = this.totalRowCount + 1;
+    }
+
+    public double getTotalAmountCount() {
         return this.sumOfAmount;
     }
-    public int getTotalRowCount(){
+
+    public int getTotalRowCount() {
         return this.totalRowCount;
     }
 
@@ -135,11 +147,11 @@ public class ExchangeReportDTO {
         this.amount = amount;
     }
 
-    public LocalDateTime getEnteredDate() {
+    public LocalDate getEnteredDate() {
         return enteredDate;
     }
 
-    public void setEnteredDate(LocalDateTime enteredDate) {
+    public void setEnteredDate(LocalDate enteredDate) {
         this.enteredDate = enteredDate;
     }
 
@@ -182,6 +194,7 @@ public class ExchangeReportDTO {
     public void setBeneficiaryMobile(String beneficiaryMobile) {
         this.beneficiaryMobile = beneficiaryMobile;
     }
+
     public Double getSumOfAmount() {
         return sumOfAmount;
     }
@@ -228,5 +241,77 @@ public class ExchangeReportDTO {
 
     public void setBankName(String bankName) {
         this.bankName = bankName;
+    }
+
+    public String getDistrictCode() {
+        return districtCode;
+    }
+
+    public void setDistrictCode(String districtCode) {
+        this.districtCode = districtCode;
+    }
+
+    public String getDistrictName() {
+        return districtName;
+    }
+
+    public void setDistrictName(String districtName) {
+        this.districtName = districtName;
+    }
+
+    public String getPurposeOfRemittance() {
+        return purposeOfRemittance;
+    }
+
+    public void setPurposeOfRemittance(String purposeOfRemittance) {
+        this.purposeOfRemittance = purposeOfRemittance;
+    }
+
+    public String getEnteredDateForSearchFile() {
+        return enteredDateForSearchFile;
+    }
+
+    public void setEnteredDateForSearchFile(String enteredDateForSearchFile) {
+        this.enteredDateForSearchFile = enteredDateForSearchFile;
+    }
+
+    public Double getGovtIncentive() {
+        return govtIncentive;
+    }
+
+    public void setGovtIncentive(Double govtIncentive) {
+        this.govtIncentive = govtIncentive;
+    }
+
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public Double getIncentive() {
+        return incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
+    }
+
+    public String getMoNumber() {
+        return moNumber;
+    }
+
+    public void setMoNumber(String moNumber) {
+        this.moNumber = moNumber;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

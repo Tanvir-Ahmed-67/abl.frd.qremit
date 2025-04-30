@@ -98,7 +98,7 @@ function edit_error_data(tbl){
         e.preventDefault();
         var data = $(this).serialize();
         var url = "/error/update";
-        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
+        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal','pagination': false };
         get_ajax(url,data,success_modal,fail_func,"post","json",params);
     });
 }
@@ -109,7 +109,7 @@ function delete_error(tbl, csrf_token, csrf_header){
         e.preventDefault();
         var id = $(this).attr("id");
         var url  = "/error/delete/" + id;
-        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal' };
+        var params = {'reload': true, 'tbl': tbl, 'modal_hide': 'true', 'modalID': 'myModal','pagination': false };
         var data = {'_csrf': csrf_token, '_csrf_header': csrf_header};
         if(confirm("Are you sure you want to delete this data?")){
             get_ajax(url,data,success_modal,fail_func,"DELETE","json",params);

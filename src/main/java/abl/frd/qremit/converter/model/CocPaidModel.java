@@ -18,8 +18,8 @@ public class CocPaidModel {
     private String transactionNo;
     @Column(name = "amount", length = 20, nullable = false)
     private Double amount;
-    @Column(name = "entered_date", columnDefinition = "DATETIME")
-    private LocalDateTime enteredDate;
+    @Column(name = "entered_date", length=30)
+    private String enteredDate;
     @Column(name = "paid_date", columnDefinition = "DATETIME")
     private LocalDateTime paidDate;
     @Column(name = "remitter_name", length = 128)
@@ -50,8 +50,12 @@ public class CocPaidModel {
     private int isUpdated = 0;
     @Column(name = "is_voucher_generated", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isVoucherGenerated = 0;
+    @Column(name = "govt_incentive")
+    private Double govtIncentive = 0.0;
+    @Column(name = "agrani_incentive")
+    private Double agraniIncentive = 0.0;
     @Column(name = "incentive", length = 15)
-    private Double incentive;
+    private Double incentive = 0.0;
     @Column(name = "type_flag")
     private String typeFlag;
     @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
@@ -99,11 +103,11 @@ public class CocPaidModel {
         this.amount = amount;
     }
 
-    public LocalDateTime getEnteredDate() {
+    public String getEnteredDate() {
         return this.enteredDate;
     }
 
-    public void setEnteredDate(LocalDateTime enteredDate) {
+    public void setEnteredDate(String enteredDate) {
         this.enteredDate = enteredDate;
     }
 
@@ -267,7 +271,23 @@ public class CocPaidModel {
         this.tempStatus = tempStatus;
     }
 
-    public CocPaidModel(String exchangeCode, String transactionNo, Double amount, LocalDateTime enteredDate, LocalDateTime paidDate, String remitterName, 
+    public Double getGovtIncentive() {
+        return this.govtIncentive;
+    }
+
+    public void setGovtIncentive(Double govtIncentive) {
+        this.govtIncentive = govtIncentive;
+    }
+
+    public Double getAgraniIncentive() {
+        return this.agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public CocPaidModel(String exchangeCode, String transactionNo, Double amount, String enteredDate, LocalDateTime paidDate, String remitterName, 
         String beneficiaryName, String beneficiaryAccount, String routingNo, String beneficiaryMobile, String bankName, String bankCode, String branchName, 
         String branchCode, String trMode, LocalDateTime uploadDateTime, String typeFlag) {
         this.exchangeCode = exchangeCode;

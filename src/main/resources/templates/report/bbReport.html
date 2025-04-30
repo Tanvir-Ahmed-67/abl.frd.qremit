@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head-css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FRD Remittance</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
+    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/choices.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <!-- jquery ui -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" rel = "stylesheet">
+    <link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-html5-3.0.2/b-print-3.0.2/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon">    
+    <style>
+        .navbar-brand {
+            color: white !important;
+        }
+        .navbar-dark .navbar-nav .nav-link{
+            color: white  !important;
+        }
+        .amount_div{
+            font-size: 13px;
+            color: blue !important;
+        }
+        .bd-navbar {
+            padding: .75rem 0;
+            background-color: #008A05;
+            font-weight: bold;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-collapse{
+            background-color: #008A05 !important;
+            padding: 10px;
+        }
+        .footer_custom{
+            background-color: #008A05;
+            color: white;
+            min-height: 30px;
+            padding: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    
+<div id="app"><!--main content-->
+    <div id=""><!--content Id-->
+        <nav class="navbar navbar-expand-lg navbar-dark bd-navbar sticky-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">Agrani Bank PLC.</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="main-content container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <!--<div class="card-header">
+                            <h4>Welcome to Foreign Remittance Management System</h4>
+                        </div>-->
+                        <div class="card-body">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="text-success">Agrani Bank PLC. Yearly Target <span class="amount_div">(Amount in BDT Crore)</span></h4>
+                                    <div class="table-responsive">
+                                        <table class='table table-striped' id="yearly_target_tbl" width="100%"></table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="text-success">BankWise Remittance in 2025 <span class="data_update"></span> <span class="amount_div">(Amount in USD million)</span></h4>
+                                    <div class="table-responsive">
+                                        <table class='table table-striped' id="bank_wise_2025_tbl" width="100%"></table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="text-success">Top 10 Bank in 2024 <span class="amount_div">(Amount in USD million)</span></h4>
+                                    <div class="table-responsive">
+                                        <table class='table table-striped' id="bank_wise_2024_tbl" width="100%"></table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="text-success">Top 10 Country in 2024 <span class="amount_div">(Amount in USD million)</span></h4>
+                                    <div class="table-responsive">
+                                        <table class='table table-striped' id="country_wise_2024_tbl" width="100%"></table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="text-success">Top 10 Exchange House in 2024 <span class="amount_div">(Amount in USD million)</span></h4>
+                                    <div class="table-responsive">
+                                        <table class='table table-striped' id="exchange_wise_2024_tbl" width="100%"></table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+    </div>
+</div>
+</body>
+    <footer><!--footer-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+        <script>$.widget.bridge('uibutton', $.ui.button)</script>
+        <script th:src="@{/js/feather.min.js}"></script>
+        <script th:src="@{/js/perfect-scrollbar.min.js}"></script>
+        <script th:src="@{/js/app.js}"></script>
+        <script th:src="@{/js/apexcharts.min.js}"></script>
+        <script th:src="@{/js/main.js}"></script>
+        <script th:src="@{/js/choices.min.js}"></script>
+        <script src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-html5-3.0.2/b-print-3.0.2/datatables.min.js"></script>
+        <script th:src="@{/js/libs.js}"></script>
+        <script th:src="@{/js/bb_report.js}"></script>
+        <!--
+        <div class="footer clearfix footer_custom mb-0 text-muted"></div>
+        <div class="float-start">
+            <p>2023 &copy; Agrani Bank PLC</p>
+        </div>
+        <div class="float-end">
+            <p>Crafted by <a href="https://www.agranibank.org/">Foreign Remittance Division</a></p>
+        </div>
+        </div>-->
+  </footer>
+  <div class="footer_custom">
+    <div class="col-md-12 text-center">Developed & Maintained By Foreign Remittance Division</div>
+</div>
+</html>

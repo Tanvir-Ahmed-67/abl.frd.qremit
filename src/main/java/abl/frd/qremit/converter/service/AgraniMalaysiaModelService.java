@@ -1,6 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
-import java.time.LocalDateTime;
+import java.time.*;
 
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
@@ -50,7 +50,7 @@ public class AgraniMalaysiaModelService {
     @Autowired
     CommonService commonService;
     
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode) {
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String fileType, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -66,8 +66,8 @@ public class AgraniMalaysiaModelService {
             int type = 0;
             if(fileType.equalsIgnoreCase("API")) type = 1;
             Map<String, Object> agraniMalaysiaData = new HashMap<>();
-            if(type == 1)   agraniMalaysiaData = csvToAgraniMalaysiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
-            else    agraniMalaysiaData = beftnToAgraniMalaysiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            if(type == 1)   agraniMalaysiaData = csvToAgraniMalaysiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
+            else    agraniMalaysiaData = beftnToAgraniMalaysiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
 
             List<AgraniMalaysiaModel> agraniMalaysiaModels = (List<AgraniMalaysiaModel>) agraniMalaysiaData.get("agraniMalaysiaDataModelList");
 
@@ -110,54 +110,39 @@ public class AgraniMalaysiaModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToAgraniMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime) {
+    public Map<String, Object> csvToAgraniMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<AgraniMalaysiaModel> duplicateData;
+        Optional<AgraniMalaysiaModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = new ArrayList<>();
-            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
-                duplicateData = agraniMalaysiaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 if(CommonService.checkAgraniBankName(bankName) && beneficiaryAccount.isEmpty()) beneficiaryAccount = "Account to be opened";
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
-
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                AgraniMalaysiaModel agraniMalaysiaDataModel = new AgraniMalaysiaModel();
-                agraniMalaysiaDataModel = CommonService.createDataModel(agraniMalaysiaDataModel, data);
-                agraniMalaysiaDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                agraniMalaysiaDataModel.setUploadDateTime(currentDateTime);
-                agraniMalaysiaDataModelList.add(agraniMalaysiaDataModel);
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = csvRecord.get(0).trim();   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
 
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -184,11 +169,12 @@ public class AgraniMalaysiaModelService {
     
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
+        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4), "MM/dd/yyyy");
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", csvRecord.get(3));
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", csvRecord.get(17));
         data.put("beneficiaryName", csvRecord.get(6));
@@ -208,19 +194,19 @@ public class AgraniMalaysiaModelService {
         return data;
     }
 
-    public Map<String, Object> beftnToAgraniMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
+    public Map<String, Object> beftnToAgraniMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AgraniMalaysiaModel> duplicateData;
+        Optional<AgraniMalaysiaModel> duplicateData = Optional.empty();
         try{
             Workbook records = CommonService.getWorkbook(is);
             Row row;
             Sheet worksheet = records.getSheetAt(0);
-            List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = new ArrayList<>();
-            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
             for (int rowIndex = 2; rowIndex <= worksheet.getLastRowNum(); rowIndex++) {
                 row = worksheet.getRow(rowIndex);
                 if(row == null) continue;
@@ -229,9 +215,12 @@ public class AgraniMalaysiaModelService {
                 Map<String, Object> data = getBeftnData(row, exchangeCode);
                 String transactionNo = data.get("transactionNo").toString();
                 String amount = data.get("amount").toString();
-                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                String bankName = data.get("bankName").toString();
-                String branchCode = data.get("branchCode").toString();
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+            }
+                /*
                 duplicateData = agraniMalaysiaModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, nrtaCode, duplicateData, transactionList);
                 if((Integer) errResp.get("err") == 1){
@@ -263,7 +252,16 @@ public class AgraniMalaysiaModelService {
                 agraniMalaysiaDataModel.setTypeFlag(typeFlag);
                 agraniMalaysiaDataModel.setUploadDateTime(currentDateTime);
                 agraniMalaysiaDataModelList.add(agraniMalaysiaDataModel);
+            
             }
+            */
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, 3);
+            List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -290,6 +288,34 @@ public class AgraniMalaysiaModelService {
     public Map<String, Object> getBeftnData(Row row, String exchangeCode){
         Map<String, Object> data = new HashMap<>();
         String[] fields = {"beneficiaryMobile","draweeBranchName","draweeBranchCode","purposeOfRemittance","sourceOfIncome","processFlag","processedBy","processedDate","remitterMobile"};
+        String branchCode = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(10)));
+        String amount = CommonService.getCellValueAsString(row.getCell(11));
+        String bankName = "";
+        String bankCode = "";
+        String branchName = "";
+        if(!branchCode.isEmpty()){
+            Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode);
+            if(!routingDetails.isEmpty()){
+                bankName = routingDetails.get("bank_name").toString();
+                bankCode = routingDetails.get("bank_code").toString();
+                branchName = routingDetails.get("branch_name").toString();
+            }
+        }
+        data.put("exchangeCode", exchangeCode);
+        data.put("transactionNo", CommonService.getCellValueAsString(row.getCell(5)));
+        data.put("currency", "BDT");
+        data.put("amount", amount);
+        data.put("enteredDate", CommonService.getCurrentDate("yyyy-MM-dd"));
+        data.put("remitterName", "");
+        data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(7)));
+        data.put("beneficiaryAccount", CommonService.getCellValueAsString(row.getCell(8)));
+        data.put("bankName", bankName);
+        data.put("bankCode", bankCode);
+        data.put("branchName", branchName);
+        data.put("branchCode", branchCode);
+        for(String field: fields)   data.put(field, "");
+
+        /*
         String branchCode = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(8)));
         Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByRoutingNo(branchCode);
         String bankName = "";
@@ -316,7 +342,7 @@ public class AgraniMalaysiaModelService {
         data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         for(String field: fields)   data.put(field, "");
-
+        */
         return data;
     }
 }

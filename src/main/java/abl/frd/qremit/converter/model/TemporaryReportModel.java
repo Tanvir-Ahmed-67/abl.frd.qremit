@@ -34,6 +34,10 @@ public class TemporaryReportModel {
     private String beneficiaryName;
     @Column(name = "beneficiary_account", length = 32)
     private String beneficiaryAccount;
+    @Column(name = "govt_incentive", length = 15)
+    private Double govtIncentive;
+    @Column(name = "agrani_incentive", length = 15)
+    private Double agraniIncentive;
     @Column(name = "incentive", length = 15)
     private Double incentive;
     @Column(name = "remitter_name", length = 128)
@@ -62,6 +66,8 @@ public class TemporaryReportModel {
     private int dataModelId;
     @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int isApi = 0;
+    @Column(name = "entered_date", length=30)
+    private String enteredDate;
 
     public int getId() {
         return this.id;
@@ -121,6 +127,14 @@ public class TemporaryReportModel {
 
     public Double getAmount() {
         return this.amount;
+    }
+
+    public String getEnteredDate() {
+        return this.enteredDate;
+    }
+
+    public void setEnteredDate(String enteredDate) {
+        this.enteredDate = enteredDate;
     }
 
     public void setAmount(Double amount) {
@@ -258,8 +272,23 @@ public class TemporaryReportModel {
     public TemporaryReportModel() {
     }
 
+    public Double getGovtIncentive() {
+        return govtIncentive;
+    }
 
-    public TemporaryReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDateTime reportDate, int dataModelId) {
+    public void setGovtIncentive(Double govtIncentive) {
+        this.govtIncentive = govtIncentive;
+    }
+
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public TemporaryReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDateTime reportDate, int dataModelId) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.bankCode = bankCode;
@@ -269,6 +298,8 @@ public class TemporaryReportModel {
         this.amount = amount;
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryAccount = beneficiaryAccount;
+        this.govtIncentive = govtIncentive;
+        this.agraniIncentive = agraniIncentive;
         this.incentive = incentive;
         this.remitterName = remitterName;
         this.downloadDateTime = downloadDateTime;
@@ -298,6 +329,8 @@ public class TemporaryReportModel {
             ", amount='" + getAmount() + "'" +
             ", beneficiaryName='" + getBeneficiaryName() + "'" +
             ", beneficiaryAccount='" + getBeneficiaryAccount() + "'" +
+            ", govtIncentive='" + getGovtIncentive() + "'" +
+            ", agraniIncentive='" + getAgraniIncentive() + "'" +
             ", incentive='" + getIncentive() + "'" +
             ", remitterName='" + getRemitterName() + "'" +
             ", downloadDateTime='" + getDownloadDateTime() + "'" +

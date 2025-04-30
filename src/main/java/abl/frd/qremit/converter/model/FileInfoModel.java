@@ -206,31 +206,26 @@ public class FileInfoModel {
     @JsonIgnore
     private List<MuzainiModel> muzainiModel;
 
-    @OneToMany(cascade = CascadeType.ALL , mappedBy = "fileInfoModel")
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<CocPaidModel> cocPaidModelList;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
-    //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<CocModel> cocModelList;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
-    //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<AccountPayeeModel> accountPayeeModelList;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
-    //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<BeftnModel> beftnModelList;
 
     @OneToMany(cascade= { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
-    //@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<OnlineModel> onlineModelList;
 
-    //@OneToMany(cascade=CascadeType.ALL, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @OneToMany(cascade={ CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<ErrorDataModel> errorDataModelList;

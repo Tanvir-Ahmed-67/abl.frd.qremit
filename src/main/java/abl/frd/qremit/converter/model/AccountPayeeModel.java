@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name="converted_data_account_payee",
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
-        @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account_no", columnList = "beneficiary_account_no")
+        @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account_no", columnList = "beneficiary_account_no"), @Index(name = "idx_govt_incentive", columnList = "govt_incentive"),@Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"),@Index(name = "idx_incentive", columnList = "incentive")
     }
 )
 public class AccountPayeeModel {
@@ -44,8 +44,13 @@ public class AccountPayeeModel {
     private String beneficiaryAccount;
     @Column(name = "remitter_name", length=128)
     private String remitterName;
+    @Column(name = "govt_incentive")
+    private Double govtIncentive = 0.0;
+    @Column(name = "agrani_incentive")
+    private Double agraniIncentive = 0.0;
+
     @Column(name = "incentive")
-    private Double incentive;
+    private Double incentive = 0.0;
     @Column(name = "account_payee_code")
     private String accountPayeeCode;
     @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
@@ -210,12 +215,12 @@ public class AccountPayeeModel {
         this.remitterName = remitterName;
     }
 
-    public Double getIncentive() {
-        return incentive;
+    public Double getGovtIncentive() {
+        return govtIncentive;
     }
 
-    public void setIncentive(Double incentive) {
-        this.incentive = incentive;
+    public void setGovtIncentive(Double incentive) {
+        this.govtIncentive = incentive;
     }
 
     public String getAccountPayeeCode() {
@@ -290,9 +295,25 @@ public class AccountPayeeModel {
 
     public void setReportDate(LocalDateTime reportDate) {
         this.reportDate = reportDate;
-    }    
+    }
 
-    public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double incentive, String accountPayeeCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
+    public Double getAgraniIncentive() {
+        return agraniIncentive;
+    }
+
+    public void setAgraniIncentive(Double agraniIncentive) {
+        this.agraniIncentive = agraniIncentive;
+    }
+
+    public Double getIncentive() {
+        return incentive;
+    }
+
+    public void setIncentive(Double incentive) {
+        this.incentive = incentive;
+    }
+
+    public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double govtIncentive, Double agraniIncentive, Double incentive, String accountPayeeCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
         this.id = id;
         this.transactionNo = transactionNo;
         this.creditMark = creditMark;
@@ -307,6 +328,8 @@ public class AccountPayeeModel {
         this.branchCode = branchCode;
         this.beneficiaryAccount = beneficiaryAccount;
         this.remitterName = remitterName;
+        this.govtIncentive = govtIncentive;
+        this.agraniIncentive = agraniIncentive;
         this.incentive = incentive;
         this.accountPayeeCode = accountPayeeCode;
         this.isProcessed = extraA;
@@ -333,6 +356,8 @@ public class AccountPayeeModel {
                 ", branchCode='" + branchCode + '\'' +
                 ", beneficiaryAccount='" + beneficiaryAccount + '\'' +
                 ", remitterName='" + remitterName + '\'' +
+                ", govtIncentive=" + govtIncentive +
+                ", agraniIncentive=" + agraniIncentive +
                 ", incentive=" + incentive +
                 ", accountPayeeCode='" + accountPayeeCode + '\'' +
                 ", extraA='" + isProcessed + '\'' +

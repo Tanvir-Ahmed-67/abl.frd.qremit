@@ -1,0 +1,108 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="Blank_A4" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
+	<field name="transactionNo" class="java.lang.String"></field>
+	<field name="exchangeCode" class="java.lang.String"></field>
+	<field name="enteredDateForSearchFile" class="java.lang.String"></field>
+	<field name="currency" class="java.lang.String"></field>
+	<field name="bankCode" class="java.lang.String"></field>
+	<field name="bankName" class="java.lang.String"></field>
+	<field name="branchCode" class="java.lang.String"></field>
+	<field name="districtCode" class="java.lang.String"></field>
+	<field name="districtName" class="java.lang.String"></field>
+	<field name="purposeOfRemittance" class="java.lang.String"></field>
+	<field name="branchName" class="java.lang.String"></field>
+	<field name="zoneCode" class="java.lang.String"></field>
+	<field name="zoneName" class="java.lang.String"></field>
+	<field name="amount" class="java.lang.Double"></field>
+	<field name="incentive" class="java.lang.Double"></field>
+	<field name="beneficiaryName" class="java.lang.String"></field>
+	<field name="beneficiaryAccount" class="java.lang.String"></field>
+	<field name="remitterName" class="java.lang.String"></field>
+	<field name="moNumber" class="java.lang.String"></field>
+	<field name="type" class="java.lang.String"></field>
+	<field name="voucherDate" class="java.time.LocalDate"></field>
+	<background splitType="Stretch"/>
+	<title height="79" splitType="Stretch"/>
+	<pageHeader height="35" splitType="Stretch"/>
+	<columnHeader height="61" splitType="Stretch"/>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<element kind="textField" x="0" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{transactionNo}.toString()]]></expression>
+			</element>
+			<element kind="staticText" x="100" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[CRED]]></text>
+			</element>
+			<element kind="textField" x="200" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{enteredDateForSearchFile}]]></expression>
+			</element>
+			<element kind="staticText" x="300" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[BDT]]></text>
+			</element>
+			<element kind="textField" x="400" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{amount}]]></expression>
+			</element>
+			<element kind="textField" x="500" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{beneficiaryName}]]></expression>
+			</element>
+			<element kind="textField" x="600" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{exchangeCode}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="700" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{bankName}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="800" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{branchName}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="900" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{districtName}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="1000" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{beneficiaryAccount}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="1100" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{remitterName}.toString()]]></expression>
+			</element>
+			<element kind="staticText" x="1200" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[ ]]></text>
+			</element>
+			<element kind="textField" x="1300" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{purposeOfRemittance}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="1400" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{branchCode}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="1500" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{branchName}.toString()]]></expression>
+			</element>
+			<element kind="textField" x="1600" y="0" width="100" height="30" blankWhenNull="true">
+				<expression><![CDATA[$F{zoneName}.toString()]]></expression>
+			</element>
+			<element kind="staticText" x="1700" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[22]]></text>
+			</element>
+			<element kind="staticText" x="1800" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[1]]></text>
+			</element>
+			<element kind="textField" x="1900" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{incentive}]]></expression>
+			</element>
+			<element kind="textField" x="2000" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA["4".equals($F{type}) ? 5 : ("2".equals($F{type}) ? 15 : 0)]]></expression>
+			</element>
+			<element kind="textField" x="2100" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{voucherDate} == null ? "" : java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").format($F{voucherDate})]]></expression>
+				<property name="net.sf.jasperreports.export.csv.field.delimiter" value=","/>
+				<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="pageHeader"/>
+				<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+				<property name="net.sf.jasperreports.export.csv.exclude.origin.band.3" value="columnHeader"/>
+				<property name="net.sf.jasperreports.export.csv.exclude.origin.band.4" value="columnFooter"/>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>

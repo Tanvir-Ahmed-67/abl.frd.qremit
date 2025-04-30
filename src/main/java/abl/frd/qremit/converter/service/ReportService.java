@@ -3,6 +3,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.core.io.Resource;
 @SuppressWarnings("unchecked")
@@ -55,6 +57,10 @@ public class ReportService {
     LogModelService logModelService;
     @Autowired
     DynamicOperationService dynamicOperationService;
+
+    DateTimeFormatter yyMMddFormatter = DateTimeFormatter.ofPattern("yyMMdd");     // YYMMDD
+    DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // YYYY/MM/DD
+    DateTimeFormatter ddMMyyyyFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // DD/MM/YYYY
     
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
@@ -79,15 +85,15 @@ public class ReportService {
         //Path reportPath = CommonService.getReportFile("summary_report_" + date.replace("-", "_") +".pdf");
         Path reportPath = commonService.getReportFile(commonService.generateFileName("summary_report_", date, ".pdf"));
         String outputFile = reportPath.toString();
-        if(!Files.exists(reportPath)){
+        //if(!Files.exists(reportPath)){
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
-        }
+        //}
         
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
     public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
-        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
+        LocalDate currentDate = LocalDate.now();
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
                 .map(ExchangeReportDTO::getExchangeCode)
@@ -97,7 +103,7 @@ public class ReportService {
         for(int i =0; i<dataList.size();i++){
             dataList.get(i).setExchangeName(exchangeHouseMap.get(dataList.get(i).getExchangeCode()).getExchangeName());
             dataList.get(i).setNrtAccountNo(exchangeHouseMap.get(dataList.get(i).getExchangeCode()).getNrtaCode());
-            dataList.get(i).setEnteredDate(currentDateTime);
+            dataList.get(i).setEnteredDate(currentDate);
         }
         // Load File And Compile It.
         JasperReport jasperReport = loadJasperReport("dailyVoucher.jrxml");
@@ -110,9 +116,9 @@ public class ReportService {
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         Path reportPath = commonService.getReportFile(commonService.generateFileName("daily_voucher_", date, ".pdf"));
         String outputFile = reportPath.toString();
-        if(!Files.exists(reportPath)){
+        ///if(!Files.exists(reportPath)){
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputFile);
-        }
+        //}
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
@@ -129,7 +135,7 @@ public class ReportService {
                 exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
                 exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
                 exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
-                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime());
+                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime().toLocalDate());
                 report.add(exchangeReportDTO);
             }
         }
@@ -138,6 +144,13 @@ public class ReportService {
     public List<ExchangeReportDTO> generateDetailsOfDailyRemittances(String fromDate, String toDate) {
         List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportDataByDateRange(fromDate, toDate);
         return exchangeReportDTOSList;
+    }
+    public Map<String, Object> generateDetailsOfDailyCocOnlineAndAccountPayeeData(String fromDate, String toDate) {
+        List<ExchangeReportDTO> exchangeReportDTOSList = getAllCocOnlineAndAccountPayeeDataDataByDateRange(fromDate, toDate);
+        Map<String, Object> resp;
+        resp = CommonService.getResp(0,"", null);
+        resp.put("data", exchangeReportDTOSList);
+        return resp;
     }
 
     public Map<String, Object> generateDetailsOfDailyStatement(String fromDate, String toDate) {
@@ -153,13 +166,20 @@ public class ReportService {
         LocalDate tDate = LocalDate.parse(toDate);
         List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDateRange(fDate, tDate);
         if(isListValid(reportModelsList)){
+            List<ReportModel> sortedReportsList = reportModelsList.stream()
+                    .sorted(Comparator.comparing(ReportModel::getExchangeCode))
+                    .collect(Collectors.toList());
             int counter = 1;
-            for(ReportModel reportModel:reportModelsList){
+            LocalDate formattedDate;
+            for(ReportModel reportModel:sortedReportsList){
                 ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
                 exchangeReportDTO.setTotalRowCount(counter);
                 exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
                 exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
                 exchangeReportDTO.setAmount(reportModel.getAmount());
+                exchangeReportDTO.setGovtIncentive(reportModel.getGovtIncentive());
+                exchangeReportDTO.setAgraniIncentive(reportModel.getAgraniIncentive());
+                exchangeReportDTO.setIncentive(reportModel.getIncentive());
                 exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
                 exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
                 exchangeReportDTO.setBankCode(reportModel.getBankCode());
@@ -167,7 +187,44 @@ public class ReportService {
                 exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
                 exchangeReportDTO.setBranchName(reportModel.getBranchName());
                 exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
-                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime());
+                exchangeReportDTO.setMoNumber(reportModel.getMoNumber());
+
+                // Block for setting different date pattern for different exchange houses for swift operation.
+                String enteredDateStr = reportModel.getEnteredDate();
+                if(enteredDateStr == null || enteredDateStr.trim().isEmpty()){
+                    formattedDate = null;
+                }else{
+                    formattedDate = CommonService.convertStringToLocalDate(enteredDateStr,"yyyy-MM-dd");
+                }
+                //if (enteredDateStr == null || enteredDateStr.trim().isEmpty()) {
+                if(formattedDate == null){
+                    formattedDate = LocalDate.now();
+                }
+                String exchangeCode = reportModel.getExchangeCode();
+                String pattern;
+
+                // Assign pattern based on exchangeCode
+                switch (exchangeCode) {
+                    case "7119":       // Ajraji
+                        exchangeReportDTO.setExchangeCode("7009");
+                    case "7010204":    // Bilad
+                        pattern = "yyMMdd";
+                        break;
+
+                    case "7010203":    // Anb
+                        pattern = "yyyy/MM/dd";
+                        break;
+
+                    case "7010241":    // Ncb
+                    case "7010299":    // BFC UK
+                        pattern = "dd/MM/yyyy";
+                        break;
+
+                    default:
+                        pattern = "dd/MM/yyyy";
+                        break;
+                }
+                exchangeReportDTO.setEnteredDateForSearchFile(CommonService.convertLocalDateToString(formattedDate,pattern));
                 exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
                 report.add(exchangeReportDTO);
                 counter++;
@@ -175,7 +232,114 @@ public class ReportService {
         }
         return report;
     }
-
+    public List<ExchangeReportDTO> getAllCocOnlineAndAccountPayeeDataDataByDateRange(String fromDate, String toDate){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate fDate = LocalDate.parse(fromDate);
+        LocalDate tDate = LocalDate.parse(toDate);
+        List<ReportModel> reportModelsList = reportModelRepository.getAllCocOnlineAndAccountPayeeDataDataByDateRange(fDate, tDate);
+        if(isListValid(reportModelsList)){
+            List<ReportModel> sortedReportsList = reportModelsList.stream()
+                    .sorted(Comparator.comparing(ReportModel::getExchangeCode))
+                    .collect(Collectors.toList());
+            int counter = 1;
+            for(ReportModel reportModel:sortedReportsList){
+                ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
+                exchangeReportDTO.setTotalRowCount(counter);
+                exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
+                exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
+                exchangeReportDTO.setAmount(reportModel.getAmount());
+                exchangeReportDTO.setGovtIncentive(reportModel.getGovtIncentive());
+                exchangeReportDTO.setAgraniIncentive(reportModel.getAgraniIncentive());
+                exchangeReportDTO.setIncentive(reportModel.getIncentive());
+                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
+                exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
+                exchangeReportDTO.setBankCode(reportModel.getBankCode());
+                exchangeReportDTO.setBankName(reportModel.getBankName());
+                exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
+                exchangeReportDTO.setBranchName(reportModel.getBranchName());
+                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setMoNumber(reportModel.getMoNumber());
+                exchangeReportDTO.setEnteredDateForSearchFile(reportModel.getEnteredDate());
+                exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
+                exchangeReportDTO.setType(reportModel.getType());
+                report.add(exchangeReportDTO);
+                counter++;
+            }
+        }
+        return report;
+    }
+    public List<ExchangeReportDTO> getAllCocAndAccountPayeeDataByDateRange(String fromDate, String toDate){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate fDate = LocalDate.parse(fromDate);
+        LocalDate tDate = LocalDate.parse(toDate);
+        List<ReportModel> reportModelsList = reportModelRepository.getAllCocAndAccountPayeeDataByDateRange(fDate, tDate);
+        if(isListValid(reportModelsList)){
+            List<ReportModel> sortedReportsList = reportModelsList.stream()
+                    .sorted(Comparator.comparing(ReportModel::getExchangeCode))
+                    .collect(Collectors.toList());
+            int counter = 1;
+            for(ReportModel reportModel:sortedReportsList){
+                ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
+                exchangeReportDTO.setTotalRowCount(counter);
+                exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
+                exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
+                exchangeReportDTO.setAmount(reportModel.getAmount());
+                exchangeReportDTO.setGovtIncentive(reportModel.getGovtIncentive());
+                exchangeReportDTO.setAgraniIncentive(reportModel.getAgraniIncentive());
+                exchangeReportDTO.setIncentive(reportModel.getIncentive());
+                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
+                exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
+                exchangeReportDTO.setBankCode(reportModel.getBankCode());
+                exchangeReportDTO.setBankName(reportModel.getBankName());
+                exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
+                exchangeReportDTO.setBranchName(reportModel.getBranchName());
+                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setMoNumber(reportModel.getMoNumber());
+                exchangeReportDTO.setEnteredDateForSearchFile(reportModel.getEnteredDate());
+                exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
+                exchangeReportDTO.setType(reportModel.getType());
+                report.add(exchangeReportDTO);
+                counter++;
+            }
+        }
+        return report;
+    }
+    public List<ExchangeReportDTO> getAllOnlineDataByDateRange(String fromDate, String toDate){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate fDate = LocalDate.parse(fromDate);
+        LocalDate tDate = LocalDate.parse(toDate);
+        List<ReportModel> reportModelsList = reportModelRepository.getAllOnlineDataByDateRange(fDate, tDate);
+        if(isListValid(reportModelsList)){
+            List<ReportModel> sortedReportsList = reportModelsList.stream()
+                    .sorted(Comparator.comparing(ReportModel::getExchangeCode))
+                    .collect(Collectors.toList());
+            int counter = 1;
+            for(ReportModel reportModel:sortedReportsList){
+                ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
+                exchangeReportDTO.setTotalRowCount(counter);
+                exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
+                exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
+                exchangeReportDTO.setAmount(reportModel.getAmount());
+                exchangeReportDTO.setGovtIncentive(reportModel.getGovtIncentive());
+                exchangeReportDTO.setAgraniIncentive(reportModel.getAgraniIncentive());
+                exchangeReportDTO.setIncentive(reportModel.getIncentive());
+                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
+                exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
+                exchangeReportDTO.setBankCode(reportModel.getBankCode());
+                exchangeReportDTO.setBankName(reportModel.getBankName());
+                exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
+                exchangeReportDTO.setBranchName(reportModel.getBranchName());
+                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setMoNumber(reportModel.getMoNumber());
+                exchangeReportDTO.setEnteredDateForSearchFile(reportModel.getEnteredDate());
+                exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
+                exchangeReportDTO.setType(reportModel.getType());
+                report.add(exchangeReportDTO);
+                counter++;
+            }
+        }
+        return report;
+    }
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement(String date) {
         List<ExchangeReportDTO> report = getAllDailyReportData(date);
         report = aggregateExchangeReports(report, date);
@@ -221,7 +385,7 @@ public class ReportService {
         dto.setTransactionNo(onlineModel.getTransactionNo());
         dto.setExchangeCode(onlineModel.getExchangeCode());
         dto.setAmount(onlineModel.getAmount());
-        dto.setEnteredDate(onlineModel.getFileInfoModel().getUploadDateTime());
+        dto.setEnteredDate(onlineModel.getFileInfoModel().getUploadDateTime().toLocalDate());
         dto.setBeneficiaryName(onlineModel.getBeneficiaryName());
         dto.setBeneficiaryAccount(onlineModel.getBeneficiaryAccount());
         dto.setRemitterName(onlineModel.getRemitterName());
@@ -234,7 +398,7 @@ public class ReportService {
         dto.setTransactionNo(beftnModel.getTransactionNo());
         dto.setExchangeCode(beftnModel.getExchangeCode());
         dto.setAmount(beftnModel.getAmount());
-        dto.setEnteredDate(beftnModel.getFileInfoModel().getUploadDateTime());
+        dto.setEnteredDate(beftnModel.getFileInfoModel().getUploadDateTime().toLocalDate());
         dto.setBeneficiaryName(beftnModel.getBeneficiaryName());
         dto.setBeneficiaryAccount(beftnModel.getBeneficiaryAccount());
         // Set other fields as needed
@@ -246,7 +410,7 @@ public class ReportService {
         dto.setTransactionNo(cocModel.getTransactionNo());
         dto.setExchangeCode(cocModel.getExchangeCode());
         dto.setAmount(cocModel.getAmount());
-        dto.setEnteredDate(cocModel.getFileInfoModel().getUploadDateTime());
+        dto.setEnteredDate(cocModel.getFileInfoModel().getUploadDateTime().toLocalDate());
         dto.setBeneficiaryName(cocModel.getBeneficiaryName());
         dto.setBeneficiaryAccount(cocModel.getBeneficiaryAccount());
         dto.setRemitterName(cocModel.getRemitterName());
@@ -259,7 +423,7 @@ public class ReportService {
         dto.setTransactionNo(accountPayeeModel.getTransactionNo());
         dto.setExchangeCode(accountPayeeModel.getExchangeCode());
         dto.setAmount(accountPayeeModel.getAmount());
-        dto.setEnteredDate(accountPayeeModel.getFileInfoModel().getUploadDateTime());
+        dto.setEnteredDate(accountPayeeModel.getFileInfoModel().getUploadDateTime().toLocalDate());
         dto.setBeneficiaryName(accountPayeeModel.getBeneficiaryName());
         dto.setBeneficiaryAccount(accountPayeeModel.getBeneficiaryAccount());
         dto.setRemitterName(accountPayeeModel.getRemitterName());
@@ -395,11 +559,14 @@ public class ReportService {
                     reportModel.setBeneficiaryAccount((String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
                     reportModel.setRemitterName((String) CommonService.getPropertyValue(model, "getRemitterName"));
                     reportModel.setDownloadDateTime((LocalDateTime) CommonService.getPropertyValue(model, downloadTimeMethod));
+                    reportModel.setGovtIncentive((Double) CommonService.getPropertyValue(model, "getGovtIncentive"));
+                    reportModel.setAgraniIncentive((Double) CommonService.getPropertyValue(model, "getAgraniIncentive"));
                     reportModel.setIncentive((Double) CommonService.getPropertyValue(model, "getIncentive"));
                     reportModel.setUploadDateTime((LocalDateTime) CommonService.getPropertyValue(model, "getUploadDateTime"));
                     reportModel.setReportDate(currentDate);
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
+                    reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
                     if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":
@@ -678,8 +845,10 @@ public class ReportService {
                     String action = "";
                     String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
                     if(isEdit == 1){
-                        action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit",String.valueOf(id),"Edit");
-                        action += "<input type='hidden' id='type_" + id + "' value='" + typeFlag + "' />";
+                        String btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit",String.valueOf(id),"Edit");
+                        btn += "<input type='hidden' id='type_" + id + "' value='" + typeFlag + "' />";
+                        btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete",String.valueOf(id),"Delete");
+                        action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
                     }
                     
                     data.put("sl", i++);
@@ -766,6 +935,7 @@ public class ReportService {
 
         if(cnt > 0) return CommonService.getResp(1, pmsg, null);
         resp = fileInfoModelService.deleteFileInfoModel(fileInfoModel);
+        if((Integer) resp.get("err") == 1)  return resp;
         resp = addDataLogModel(resp, fileInfoModel, userId, id, request, "", "3", info);
         return resp;
     }
@@ -880,6 +1050,23 @@ public class ReportService {
         return resp;
     }
 
+    public Map<String, Object> deleteIndividualDataById(int id, int userId, String type, HttpServletRequest request){
+        Map<String, Object> resp = getEditData(id, type, 1);
+        if((Integer) resp.get("err") == 1)  return resp;
+        Map<String, Object> obj = (Map<String, Object>) resp.get("data");
+        FileInfoModel fileInfoModel = (FileInfoModel) obj.get("fileInfoModel");
+        User user = (User) obj.get("userModel");
+        int fileInfoModelId = fileInfoModel.getId();
+        resp = dynamicOperationService.deleteIndividualDataById(obj, fileInfoModel, type);
+        if((Integer) resp.get("err") == 1)  return resp;
+        obj.put("userId", user.getId());
+        obj.put("fileInfoModelId", fileInfoModelId);
+        obj.remove("fileInfoModel");
+        obj.remove("userModel");
+        resp = addDataLogModel(resp, fileInfoModel, userId, fileInfoModelId, request, String.valueOf(id), "5", obj);
+        return resp;
+    }
+
     public Map<String, Object> getExchangeWiseData(String date, int userId){
         Map<String, Object> resp = new HashMap<>();
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
@@ -889,21 +1076,29 @@ public class ReportService {
         return resp;
     }
 
-   //------------------------- Below Methods for getting data from Report Table for generating MO -----------------------
-    public List<Object> getAllBeftnSummaryForMo(LocalDate date){
+   //------------------------- Below Methods for getting data from Report Table for generating MO and updating MO Number in each row-----------------------
+   @Transactional
+    public List<Object> getAllBeftnSummaryForMo(String moNumber, LocalDate date){
         Object[] result = reportModelRepository.getAllBeftnSummaryForMo(date);
+        reportModelRepository.updateMoNumberForAllBeftn(moNumber, date);
         return getSummary(result);
     }
-    public List<Object> getAllOtherSummaryForMo(LocalDate date){
+    @Transactional
+    public List<Object> getAllOtherSummaryForMo(String moNumber, LocalDate date){
         Object[] result = reportModelRepository.getAllOtherSummaryForMo(date);
+        reportModelRepository.updateMoNumberForAllOther(moNumber, date);
         return getSummary(result);
     }
-    public List<Object> getAllOnlineSummaryForMo(LocalDate date){
+    @Transactional
+    public List<Object> getAllOnlineSummaryForMo(String moNumber, LocalDate date){
         Object[] result = reportModelRepository.getAllOnlineSummaryForMo(date);
+        reportModelRepository.updateMoNumberForAllOnline(moNumber, date);
         return getSummary(result);
     }
-    public List<Object> getAllApiSummaryForMo(LocalDate date){
+    @Transactional
+    public List<Object> getAllApiSummaryForMo(String moNumber, LocalDate date){
         Object[] result = reportModelRepository.getAllApiSummaryForMo(date);
+        reportModelRepository.updateMoNumberForAllApi(moNumber, date);
         return getSummary(result);
     }
     private List<Object> getSummary(Object[] result) {
@@ -912,7 +1107,6 @@ public class ReportService {
             Object[] innerResult = (Object[]) result[0]; // Extract the nested Object[]
             Long totalRows = innerResult[0] instanceof Number ? ((Number) innerResult[0]).longValue() : 0L;
             Double totalAmount = innerResult[1] instanceof Number ? ((Number) innerResult[1]).doubleValue() : 0.0;
-
             summary.add(totalRows);
             summary.add(totalAmount);
         }
@@ -974,6 +1168,32 @@ public class ReportService {
             return outputStream.toByteArray();
         }
     }
+    public byte[] generateCocAndAccountPayeeForBranchInTxtFile(List<ExchangeReportDTO> dataList, String date) throws Exception {
+        Map<String, Object> parameters = prepareReportParameters(dataList, date);
+        JasperReport jasperReport = loadJasperReport("cocAndAccPayeeForBranch_csv.jrxml");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(dataList, false));
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JRCsvExporter exporter = new JRCsvExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+            configureCsvExporterForPipeDelimiter(exporter);
+            exporter.exportReport();
+            return outputStream.toByteArray();
+        }
+    }
+    public byte[] generateOnlineForBranchInTxtFile(List<ExchangeReportDTO> dataList, String date) throws Exception {
+        Map<String, Object> parameters = prepareReportParameters(dataList, date);
+        JasperReport jasperReport = loadJasperReport("onlineForBranch_csv.jrxml");
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(dataList, false));
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JRCsvExporter exporter = new JRCsvExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+            configureCsvExporterForPipeDelimiter(exporter);
+            exporter.exportReport();
+            return outputStream.toByteArray();
+        }
+    }
 
     private Map<String, Object> prepareReportParameters(List<ExchangeReportDTO> dataList, String date) {
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList, false);
@@ -987,7 +1207,14 @@ public class ReportService {
         SimpleCsvExporterConfiguration configuration = new SimpleCsvExporterConfiguration();
         configuration.setFieldDelimiter(",");
         configuration.setForceFieldEnclosure(true);
-        configuration.setRecordDelimiter("\n");
+        configuration.setRecordDelimiter("\r\n");
+        exporter.setConfiguration(configuration);
+    }
+    private void configureCsvExporterForPipeDelimiter(JRCsvExporter exporter) {
+        SimpleCsvExporterConfiguration configuration = new SimpleCsvExporterConfiguration();
+        configuration.setFieldDelimiter("|");
+        configuration.setForceFieldEnclosure(true);
+        configuration.setRecordDelimiter("\r\n");
         exporter.setConfiguration(configuration);
     }
 }

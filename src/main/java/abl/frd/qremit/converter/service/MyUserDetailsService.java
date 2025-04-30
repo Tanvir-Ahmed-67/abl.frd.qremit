@@ -21,17 +21,18 @@ public class MyUserDetailsService implements UserDetailsService {
     private static final String other = null;
     @Autowired
     UserModelRepository userModelRepository;
-    public User loadUserByUserEmail(String userEmail) throws UsernameNotFoundException {
-        User user = userModelRepository.findByUserEmail(userEmail);
-        if (user == null) {
-            throw new UsernameNotFoundException("Could not find user");
-        }
+
+    public User loadUserByLoginId(String loginId) throws UsernameNotFoundException{
+        User user = userModelRepository.findByLoginId(loginId);
+        if(user == null)    throw new UsernameNotFoundException("Could not find user");
         // Check if the user is locked
         if (user.getFailedAttempt() >= 5) {
             throw new LockedException("User Locked. Please Contact With Admin");
         }
         return user;
     }
+
+    
     
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
         Map<String, String> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
@@ -111,8 +112,8 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
-        User user = userModelRepository.findByUserEmail(userEmail);
+    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
+        User user = userModelRepository.findByLoginId(loginId);
         if (user == null) {
             throw new UsernameNotFoundException("Could not find user");
         }
@@ -156,11 +157,12 @@ public class MyUserDetailsService implements UserDetailsService {
         int userId = user.getId();
         String userName = user.getUserName();
         String userEmail = user.getUserEmail();
+        String loginId = user.getLoginId();
         String exchangeCode = user.getExchangeCode();
         String allowedIps = user.getAllowedIps();
         String startTime = user.getStartTime();
         String endTime = user.getEndTime();
-        userModelRepository.updateUser(userId, userName, userEmail, exchangeCode, allowedIps, startTime, endTime);
+        userModelRepository.updateUser(userId, userName, userEmail, loginId, exchangeCode, allowedIps, startTime, endTime);
     }
     public void updatePasswordForFirstTimeUserLogging(User user){
         int userId = user.getId();

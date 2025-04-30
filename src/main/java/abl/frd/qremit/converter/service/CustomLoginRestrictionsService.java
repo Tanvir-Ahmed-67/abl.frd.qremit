@@ -21,8 +21,9 @@ public class CustomLoginRestrictionsService {
         return MAX_ATTEMPTS;
     }
 
-    public void loginFailed(String userEmail) {
-        User user = myUserDetailsService.loadUserByUserEmail(userEmail);
+    public void loginFailed(String loginId) {
+        //User user = myUserDetailsService.loadUserByUserEmail(userEmail);
+        User user = myUserDetailsService.loadUserByLoginId(loginId);
         if (user != null) {
             user.setFailedAttempt(user.getFailedAttempt() + 1);
             if (user.getFailedAttempt() >= MAX_ATTEMPTS) {
@@ -32,8 +33,9 @@ public class CustomLoginRestrictionsService {
         }
     }
 
-    public void resetAttempts(String userEamil) {
-        User user = myUserDetailsService.loadUserByUserEmail(userEamil);
+    public void resetAttempts(String loginId) {
+        //User user = myUserDetailsService.loadUserByUserEmail(userEamil);
+        User user = myUserDetailsService.loadUserByLoginId(loginId);
         if (user != null) {
             user.setFailedAttempt(0);
             userModelRepository.save(user);

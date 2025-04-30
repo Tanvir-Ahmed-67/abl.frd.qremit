@@ -118,6 +118,8 @@ public class CustomQueryRepository {
     
     public Map<String, Object> getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
         tbl = "base_data_table_" + tbl;
+        return generateUniqueTransactionSql(data, tbl, "CAST(amount AS CHAR)");
+        /*
         Map<String, Object> params = new HashMap<>();
         List<String> tuples = new ArrayList<>();
         for(String[] record: data){
@@ -128,7 +130,27 @@ public class CustomQueryRepository {
         String queryStr = String.format(sql, tbl);
         StringBuilder queryBuilder = new StringBuilder(queryStr);
         queryBuilder.append(String.join(", ", tuples)).append(")");
-        return getData(queryBuilder.toString(),params); 
+        return getData(queryBuilder.toString(),params);
+        */ 
+    }
+
+    public Map<String, Object> getArchiveUniqueList(List<String[]> data, String year){
+        String tbl = "qremit_archive_" + year;
+        return generateUniqueTransactionSql(data, tbl, "amount");
+    }
+
+    public Map<String, Object> generateUniqueTransactionSql(List<String[]> data, String tbl, String amountField){
+        Map<String, Object> params = new HashMap<>();
+        List<String> tuples = new ArrayList<>();
+        for(String[] record: data){
+            tuples.add(String.format("('%s', %s, '%s')", record[0], record[1], record[2]));
+        }
+        
+        String sql = "SELECT * FROM %s WHERE (transaction_no, " + amountField + " , exchange_code) IN ( ";
+        String queryStr = String.format(sql, tbl);
+        StringBuilder queryBuilder = new StringBuilder(queryStr);
+        queryBuilder.append(String.join(", ", tuples)).append(")");
+        return getData(queryBuilder.toString(),params);
     }
 
     @Transactional
@@ -176,6 +198,28 @@ public class CustomQueryRepository {
         }catch(NoResultException e){
             return null;
         }
+    }
+
+    @Transactional
+    public Map<String, Object> deleteByTransactionNoAndFileInfoModelId(String entityName, int fileInfoModelId, String transactionNo){
+        Map<String, Object> resp = CommonService.getResp(1, "Data not deleted", null);
+        try{
+            Query query = entityManager.createQuery("DELETE FROM " + entityName + " n WHERE n.transactionNo=:transactionNo AND n.fileInfoModel.id = :fileInfoModelId");
+            query.setParameter("fileInfoModelId", fileInfoModelId);
+            query.setParameter("transactionNo", transactionNo);
+            int affectedRows = query.executeUpdate();
+            resp = CommonService.getResp(0, "Data deleted successful", null);
+            resp.put("affectedRows", affectedRows);
+        }catch(Exception e){
+            e.printStackTrace();
+            return CommonService.getResp(1, e.getMessage(), null);
+        }
+        return resp;
+    }
+
+    public Map<String, Object> getIpRange(){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;    
     }
         
 

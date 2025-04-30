@@ -1,7 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
 import java.time.LocalDateTime;
-
 import abl.frd.qremit.converter.model.AnbModel;
 import abl.frd.qremit.converter.repository.AnbModelRepository;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
@@ -44,7 +43,9 @@ public class AnbModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     CommonService commonService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode) {
+    @Autowired
+    CustomQueryService customQueryService;
+    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         try
@@ -57,7 +58,7 @@ public class AnbModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            Map<String, Object> anbData = csvToAnbModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime);
+            Map<String, Object> anbData = csvToAnbModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             List<AnbModel> anbModels = (List<AnbModel>) anbData.get("anbModelList");
 
             if(anbData.containsKey("errorMessage")){
@@ -96,61 +97,49 @@ public class AnbModelService {
         }
         return resp;
     }
-    public Map<String, Object> csvToAnbModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime){
+    public Map<String, Object> csvToAnbModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AnbModel> duplicateData;
+        Optional<AnbModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|') .withIgnoreHeaderCase().withTrim())) {
             //skip first line
             fileReader.readLine();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<AnbModel> anbModelList = new ArrayList<>();
-            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
-            String duplicateMessage = "";
             int i = 0;
-            int duplicateCount = 0;
+            List<ErrorDataModel> errorDataModelList = new ArrayList<>();
+            List<String[]> uniqueKeys = new ArrayList<>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
+            String fileExchangeCode = "";
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(4).trim();
                 String amount = getAmount(csvRecord.get(14).trim());
-                duplicateData = anbModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
                 String bankName = csvRecord.get(24).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(22).trim());
                 String beneficiaryAccount = getBenificiaryAccount(csvRecord, branchCode, bankName);
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
-                Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, csvRecord.get(0).trim(), duplicateData, transactionList);
-                if((Integer) errResp.get("err") == 1){
-                    errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 2){
-                    resp.put("errorMessage", errResp.get("msg"));
-                    break;
-                }
-                if((Integer) errResp.get("err") == 3){
-                    duplicateMessage += errResp.get("msg");
-                    duplicateCount++;
-                    continue;
-                }
-                if((Integer) errResp.get("err") == 4){
-                    duplicateMessage += errResp.get("msg");
-                    continue;
-                }
-                if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                AnbModel anbModel = new AnbModel();
-                anbModel = CommonService.createDataModel(anbModel, data);
-                anbModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                anbModel.setUploadDateTime(currentDateTime);
-                anbModelList.add(anbModel);
+                data.put("nrtaCode", nrtaCode);
+                fileExchangeCode = nrtaCode;   
+                dataList.add(data);
+                uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-           //save error data
-           Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
-           if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
-           if(saveError.containsKey("errorMessage")){
+
+            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AnbModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            List<AnbModel> anbModelList = (List<AnbModel>) modelResp.get("modelList");
+            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+            String duplicateMessage = modelResp.get("duplicateMessage").toString();
+            int duplicateCount = (int) modelResp.get("duplicateCount");
+            
+            //save error data
+            Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
+            if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
+            if(saveError.containsKey("errorMessage")){
                resp.put("errorMessage", saveError.get("errorMessage"));
                return resp;
-           }
+            }
            //if both model is empty then delete fileInfoModel
            if(errorDataModelList.isEmpty() && anbModelList.isEmpty()){
                fileInfoModelService.deleteFileInfoModelById(fileInfoModel.getId());
@@ -189,7 +178,7 @@ public class AnbModelService {
         data.put("transactionNo", transactionNo);
         data.put("currency", "BDT");
         data.put("amount", amount);
-        data.put("enteredDate", csvRecord.get(6));
+        data.put("enteredDate", csvRecord.get(6).replace("/", "-"));
         data.put("remitterName", csvRecord.get(10));
         data.put("remitterMobile", "");
         data.put("beneficiaryName", csvRecord.get(11));

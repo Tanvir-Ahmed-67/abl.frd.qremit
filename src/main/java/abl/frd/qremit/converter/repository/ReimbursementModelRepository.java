@@ -19,3 +19,10 @@ public interface ReimbursementModelRepository extends JpaRepository<Reimbursemen
     List<ReportModel> findAllAccountPayeeAndCocPaidDataForReimbursement(@Param("reimbursementStartDate") LocalDate reimbursementStartDate, @Param("reimbursementEndDate") LocalDate reimbursementEndDate);
 
 }
+/*
+Mo Generating Logic For Type. There is a method in commonservice.
+        resp.put("1", "Online");
+        resp.put("2", "Account Payee");
+        resp.put("3", "BEFTN");
+        resp.put("4", "COC");
+*/

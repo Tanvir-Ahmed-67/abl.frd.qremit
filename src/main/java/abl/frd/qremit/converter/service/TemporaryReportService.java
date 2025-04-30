@@ -1,7 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +23,9 @@ public class TemporaryReportService {
     @Autowired
     AccountPayeeModelService accountPayeeModelService;
     protected String emsg = "No data found for processing temporary table";
-    public Map<String, Object> processTemporaryReport(){
+    public Map<String, Object> processTemporaryReport(String currentDate){
         Map<String, Object> resp = new HashMap<>();
-        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        //String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
 
         List<OnlineModel> onlineModelList = onlineModelService.getTemopraryReportData(1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
@@ -77,6 +76,8 @@ public class TemporaryReportService {
                     temporaryReportModel.setAmount(amount);
                     temporaryReportModel.setBeneficiaryName((String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
                     temporaryReportModel.setBeneficiaryAccount((String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
+                    temporaryReportModel.setGovtIncentive((Double) CommonService.getPropertyValue(model, "getGovtIncentive"));
+                    temporaryReportModel.setAgraniIncentive((Double) CommonService.getPropertyValue(model, "getAgraniIncentive"));
                     temporaryReportModel.setIncentive((Double) CommonService.getPropertyValue(model, "getIncentive"));
                     temporaryReportModel.setRemitterName((String) CommonService.getPropertyValue(model, "getRemitterName"));
                     temporaryReportModel.setDownloadDateTime((LocalDateTime) CommonService.getPropertyValue(model, "getDownloadDateTime"));
@@ -87,6 +88,7 @@ public class TemporaryReportService {
                     temporaryReportModel.setFileInfoModelId((int) fileInfoModel.getId());
                     temporaryReportModel.setType(type);
                     temporaryReportModel.setDataModelId(id);
+                    temporaryReportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
                     //added api for online model
                     if(("1").equals(type))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     tempInsertList.add(temporaryReportModel);

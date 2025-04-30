@@ -34,6 +34,7 @@ public class UserController {
     private final RoleModelService roleModelService;
     private PasswordEncoder passwordEncoder;
     private final CommonService commonService;
+    protected String redirectUrl = "adminReport?type=6";
 
     @Autowired
     private EntityManager entityManager;
@@ -67,13 +68,20 @@ public class UserController {
     public String showChangePasswordPage() {
         return "pages/user/userPasswordChangeForm";
     }
-    @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST)
-    public String changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
-        User user = myUserDetailsService.loadUserByUserEmail(userDetails.getUserEmail());
+    @RequestMapping(value="/change-password-for-first-time-login", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> changePassword(@RequestParam("password") String newPassword, @AuthenticationPrincipal MyUserDetails userDetails) {
+        Map<String, Object> resp = new HashMap<>();
+        if(!CommonService.validatePassword(newPassword, 8)){
+            return CommonService.getResp(1, "Password must be minimum 8 character and atleast 1 uppercase, 1 lowercase, 1 digits, 1 special character", null);
+        }
+        User user = myUserDetailsService.loadUserByLoginId(userDetails.getLoginId());
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setPasswordChangeRequired(false);
         myUserDetailsService.updatePasswordForFirstTimeUserLogging(user);
-        return "redirect:/login";
+        resp = CommonService.getResp(0, "Password Changed Successfully", null);
+        resp.put("url", "/login");
+        return resp;
     }
 
     @RequestMapping("/home")
@@ -126,6 +134,7 @@ public class UserController {
                     }
                     
                     dataMap.put("sl", i++);
+                    dataMap.put("loginId", user.getLoginId());
                     dataMap.put("email", user.getUserEmail());
                     dataMap.put("userName", user.getUserName());
                     dataMap.put("exchangeCode", exchangeCode);
@@ -243,6 +252,7 @@ public class UserController {
         // SQL Query
         String query = "SELECT bank_name, year, SUM(amount) AS total_amount " +
                        "FROM analytics_all_bank_remittance " +
+                       "WHERE amount != 0 " +
                        "GROUP BY bank_name, year " +
                        "ORDER BY bank_name, year";
 
@@ -303,6 +313,7 @@ public class UserController {
           // SQL Query
           String query = "SELECT bank_name, year, SUM(amount) AS total_amount " +
           "FROM analytics_all_bank_remittance " +
+          "WHERE amount != 0 " +
           "GROUP BY bank_name, year " +
           "ORDER BY bank_name, year";
 
@@ -356,6 +367,36 @@ public class UserController {
             response.put("datasets", datasets);
 
             return response;
+    }
+
+
+    @GetMapping(value = "/getAgraniBankRemittance", produces = "application/json")
+    public ResponseEntity<?> getAgraniBankRemittance() {
+        try {
+            // SQL query
+            String query = "SELECT year, SUM(amount) AS total_remittance " +
+                           "FROM analytics_all_bank_remittance  " +
+                           "WHERE bank_name = 'Agrani Bank' " +
+                           "GROUP BY year " +
+                           "ORDER BY year";
+
+            // Execute query
+            List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+            // Transform results
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (Object[] row : resultList) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("year", row[0]);
+                data.put("totalRemittance", ((Number) row[1]).doubleValue());
+                response.add(data);
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching remittance data.");
+        }
     }
 
     @GetMapping(value = "/getBankRemittanceDataForTable", produces = "application/json")
@@ -417,8 +458,174 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching analytics data.");
         }
     }
-
     
+    @GetMapping(value = "/getTTComparisonData", produces = "application/json")
+    public ResponseEntity<?> getTTComparisonData() {
+        try {
+            String query = "SELECT year, month, " +
+                           "SUM(COALESCE(spot_cash, 0)) AS spot_cash, " +
+                           "SUM(COALESCE(account_payee, 0)) AS account_payee, " +
+                           "SUM(COALESCE(coc, 0)) AS coc, " +
+                           "SUM(COALESCE(beftn, 0)) AS beftn " +
+                           "FROM analytics_abl_no_of_tt " +
+                           "GROUP BY year, month " +
+                           "ORDER BY year, " +
+                           "CASE month " +
+                           "    WHEN 'January' THEN 1 WHEN 'February' THEN 2 WHEN 'March' THEN 3 " +
+                           "    WHEN 'April' THEN 4 WHEN 'May' THEN 5 WHEN 'June' THEN 6 " +
+                           "    WHEN 'July' THEN 7 WHEN 'August' THEN 8 WHEN 'September' THEN 9 " +
+                           "    WHEN 'October' THEN 10 WHEN 'November' THEN 11 WHEN 'December' THEN 12 " +
+                           "END";
+
+            //System.out.println("Executing query: " + query);
+
+            List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+            //System.out.println("Query executed successfully. Result size: " + resultList.size());
+
+            // Structure the response by year and month
+            Map<Integer, Map<String, Map<String, Integer>>> response = new LinkedHashMap<>();
+
+            for (Object[] row : resultList) {
+                int year = Integer.parseInt((String) row[0]); // Convert year from VARCHAR to int
+                String month = (String) row[1]; // Month remains a string
+                int spotCash = row[2] != null ? ((Number) row[2]).intValue() : 0;
+                int accountPayee = row[3] != null ? ((Number) row[3]).intValue() : 0;
+                int coc = row[4] != null ? ((Number) row[4]).intValue() : 0;
+                int beftn = row[5] != null ? ((Number) row[5]).intValue() : 0;
+
+                // Create a map for transaction data with Integer values
+                Map<String, Integer> transactionData = new HashMap<>();
+                transactionData.put("spot_cash", spotCash);
+                transactionData.put("account_payee", accountPayee);
+                transactionData.put("coc", coc);
+                transactionData.put("beftn", beftn);
+
+                // Add to the year and month structure
+                response.computeIfAbsent(year, k -> new LinkedHashMap<>()).put(month, transactionData);
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(Collections.singletonMap("error", "Error fetching TT comparison data."));
+        }
+    }
+
+    @GetMapping(value = "/getCountryBubbleData", produces = "application/json")
+    public ResponseEntity<?> getCountryBubbleData() {
+        try {
+            String query = "SELECT country_name, latitude, longitude, amount_usd FROM analytics_abl_country_wise";
+
+            //System.out.println("Executing query: " + query);
+
+            List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+            //System.out.println("Query executed successfully. Result size: " + resultList.size());
+
+            // Prepare response
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (Object[] row : resultList) {
+                String countryName = (String) row[0];
+                double latitudeStr = (Double) row[1];
+                double longitudeStr = (Double) row[2];
+                String amountUsdStr = (String) row[3];
+
+                double latitude = latitudeStr != 0.0 ? latitudeStr : 0.0;
+                double longitude = longitudeStr != 0.0 ? longitudeStr : 0.0;
+                double amountUsd = amountUsdStr != null ? Double.parseDouble(amountUsdStr) : 0.0;
+
+                Map<String, Object> countryData = new HashMap<>();
+                countryData.put("country", countryName);
+                countryData.put("latitude", latitude);
+                countryData.put("longitude", longitude);
+                countryData.put("amount", amountUsd);
+
+                response.add(countryData);
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(Collections.singletonMap("error", "Error fetching country bubble data."));
+        }
+    }
+
+    @GetMapping(value = "/getCountryPieChartData", produces = "application/json")
+    public ResponseEntity<?> getCountryPieChartData() {
+        try {
+            // Query to fetch top 10 countries by amount_usd, excluding "Other"
+            String query = "SELECT country_name, amount_usd " +
+                           "FROM analytics_abl_country_wise " +
+                           "WHERE country_name != 'Other' " +
+                           "ORDER BY CAST(amount_usd AS DECIMAL) DESC " +
+                           "LIMIT 10";
+
+            List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+            // Prepare response
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (Object[] row : resultList) {
+                String countryName = (String) row[0];
+                String amountUsdStr = (String) row[1]; // Fetch amount as String
+                double amountUsd = amountUsdStr != null ? Double.parseDouble(amountUsdStr) : 0.0;
+
+                // Convert amount to millions
+                double amountInMillions = amountUsd / 1_000_000;
+
+                Map<String, Object> countryData = new HashMap<>();
+                countryData.put("country", countryName);
+                countryData.put("amount", amountInMillions);
+
+                response.add(countryData);
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(Collections.singletonMap("error", "Error fetching pie chart data."));
+        }
+    }
+
+    @GetMapping(value = "/getExchangeWiseData", produces = "application/json")
+    public ResponseEntity<?> getExchangeWiseData() {
+        try {
+            // Query to fetch data for the year 2024
+            String query = "SELECT ex_name, SUM(usd_amount) AS total_usd, SUM(no_of_tt) AS total_tt " +
+                           "FROM analytics_abl_exchange_wise_remittance " +
+                           "WHERE year = 2024 " +
+                           "GROUP BY ex_name " +
+                           "ORDER BY total_usd DESC";
+
+            List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+
+            // Prepare response
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (Object[] row : resultList) {
+                String exName = (String) row[0];
+                double totalUsd = row[1] != null ? ((Number) row[1]).doubleValue() : 0.0;
+                int totalTt = row[2] != null ? ((Number) row[2]).intValue() : 0;
+
+                Map<String, Object> exchangeData = new HashMap<>();
+                exchangeData.put("ex_name", exName);
+                exchangeData.put("usd_amount_million", totalUsd / 1_000_000); // Convert USD to millions
+                exchangeData.put("no_of_tt", totalTt);
+
+                response.add(exchangeData);
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(Collections.singletonMap("error", "Error fetching exchange-wise data."));
+        }
+    }
+
+
+
+
     @RequestMapping("/newUserCreationForm")
     public String showUserCreateFromAdmin(Model model){
         model.addAttribute("user", new User());
@@ -433,13 +640,15 @@ public class UserController {
         Role role = roleModelService.findRoleByRoleName("ROLE_USER");
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(role);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode("12345"));
         user.setActiveStatus(false);
         user.setPasswordChangeRequired(true);
         user.setRoles(roleSet);
+        user.setStartTime("10:00:00");
+        user.setEndTime("16:00:00");
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
-        return "redirect:/allUsers";
+        return "redirect:/" + redirectUrl;
     }
     @GetMapping("/adminDashboard")
     @ResponseBody
@@ -470,7 +679,7 @@ public class UserController {
         if (result.hasErrors()) {
             user.setId(idInIntegerFormat);
             ra.addFlashAttribute("message","Error Occurred: User Update Failed !!");
-            return "redirect:/allUsers";
+            return "redirect:/" + redirectUrl;
         }
         try {
             String startTime = user.getStartTime();
@@ -489,7 +698,7 @@ public class UserController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/adminReport?type=6";
+        return "redirect:/" + redirectUrl;
     }
 
     @RequestMapping("/showInactiveUsers")

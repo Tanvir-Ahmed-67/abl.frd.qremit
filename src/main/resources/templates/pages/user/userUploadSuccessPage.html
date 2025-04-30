@@ -41,8 +41,8 @@
                             <input id="exchange_code" type="hidden" th:value="${fileInfo.exchangeCode}">
                         </span>
                         <span th:if="${apiBtn == 1}">
-                            <button type="button" class="btn btn-sm btn-info apiUrl" th:id="${fileInfo.id}">Process</button> 
-                            <input id="apiUrl" type="hidden" th:value="${apiUrl}">
+                            <input id="apiUrl" type="hidden" th:value="${apiUrl}" />
+                            <input id="fileInfoId" type="hidden"th:value="${fileInfo.id}" />
                         </span>
                     </td>
                 

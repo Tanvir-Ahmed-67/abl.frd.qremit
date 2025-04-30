@@ -1,39 +1,27 @@
 package abl.frd.qremit.converter.controller;
-
 import abl.frd.qremit.converter.service.CocModelService;
 import abl.frd.qremit.converter.service.CommonService;
+import abl.frd.qremit.converter.service.FileDownloadService;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 @Controller
 public class CocModelController {
     private final CocModelService cocModelService;
     @Autowired
     CommonService commonService;
     @Autowired
+    FileDownloadService fileDownloadService;
+    @Autowired
     public CocModelController(CocModelService cocModelService){
         this.cocModelService = cocModelService;
     }
 
-    @GetMapping("/downloadcoc/{fileId}/{fileType}")
-    public ResponseEntity<Resource> download_File(@PathVariable String fileId, @PathVariable String fileType) {
-        InputStreamResource file = new InputStreamResource(cocModelService.load(fileId, fileType));
-        String fileName = "Coc";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName+".txt")
-                .contentType(MediaType.parseMediaType("application/csv"))
-                .body(file);
-    }
     @GetMapping(value="/downloadcoc", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> downloadFile() throws IOException {
@@ -42,6 +30,9 @@ public class CocModelController {
         int countRemaining = cocModelService.countRemainingCocData();
         String fileName = CommonService.generateDynamicFileName("COC_", ".txt");
         resp = commonService.generateFile(contentStream, countRemaining, fileName);
+        if((Integer) resp.get("err") == 0){
+            fileDownloadService.add("4", fileName, resp.get("url").toString());
+        }
         return ResponseEntity.ok(resp);
     }
 }

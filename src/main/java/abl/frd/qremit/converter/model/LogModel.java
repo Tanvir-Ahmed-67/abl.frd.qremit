@@ -107,7 +107,7 @@ public class LogModel {
         
     }
     /*
-     *action: 1- error data update, 2 - error data delete, 3 - file delete, 4- individual data update
+     *action: 1- error data update, 2 - error data delete, 3 - file delete, 4- individual data update, 5- individual data delete
      */
     public LogModel(String userId, String dataId, int fileInfoModelId, String exchangeCode, String action, String info, String ipAddress){
         this.userId = userId;

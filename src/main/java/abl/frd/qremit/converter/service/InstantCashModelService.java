@@ -1,8 +1,6 @@
 package abl.frd.qremit.converter.service;
-
 import java.io.*;
-import java.time.LocalDateTime;
-
+import java.time.*;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -111,86 +109,45 @@ public class InstantCashModelService {
         Optional<InstantCashModel> duplicateData = Optional.empty();
         CSVFormat csvFormat = (type == 1) ? CSVFormat.DEFAULT.withDelimiter('|'): CSVFormat.DEFAULT;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            //CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             CSVParser csvParser = new CSVParser(fileReader, csvFormat.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())){
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<InstantCashModel> instantCashDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
-            List<String> transactionList = new ArrayList<>();
             String duplicateMessage = "";
             int i = 0;
             int duplicateCount = 0;
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
+            Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String bankCode = (type == 1) ? csvRecord.get(9).trim(): csvRecord.get(8).trim();
                 if(i == 1){
-                    
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
                         break;
                     }
-                
-                    
                 }
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
                 Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode, bankCode, transactionNo, amount);
+                data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = csvRecord.get(0).trim();
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-                
-
-                /*
-                String transactionNo = csvRecord.get(1).trim();
-                String amount = csvRecord.get(3).trim();
-                duplicateData = instantCashModelRepository.findByTransactionNoIgnoreCaseAndAmountAndExchangeCode(transactionNo, CommonService.convertStringToDouble(amount), exchangeCode);
-                String beneficiaryAccount = csvRecord.get(7).trim();
-                String bankName = csvRecord.get(8).trim();
-                String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
-                */
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
-                for(Map<String, Object> data: dataList){
-                    String transactionNo = data.get("transactionNo").toString();
-                    String bankName = data.get("bankName").toString();
-                    String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                    String branchCode = data.get("branchCode").toString();
-                    Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
-                    if((Integer) dupResp.get("isDuplicate") == 1){
-                        duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
-                        duplicateCount++;
-                        continue;
-                    }
-                
-                    Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
-                    if((Integer) errResp.get("err") == 1){
-                        errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                        continue;
-                    }
-                    if((Integer) errResp.get("err") == 2){
-                        resp.put("errorMessage", errResp.get("msg"));
-                        break;
-                    }
-                    if((Integer) errResp.get("err") == 4){
-                        duplicateMessage += errResp.get("msg");
-                        continue;
-                    }
-                    if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-
-                    InstantCashModel instantCashDataModel = new InstantCashModel();
-                    instantCashDataModel = CommonService.createDataModel(instantCashDataModel, data);
-                    instantCashDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
-                    instantCashDataModel.setUploadDateTime(currentDateTime);
-                    instantCashDataModelList.add(instantCashDataModel);
-                }
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, InstantCashModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                instantCashDataModelList = (List<InstantCashModel>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
             }
 
             //save error data
@@ -224,12 +181,15 @@ public class InstantCashModelService {
         String draweeBranchCode = (type == 1) ? csvRecord.get(14).trim():"";
         String purposeOfRemittance = (type == 1) ? csvRecord.get(15).trim():"";
         String sourceOfIncome = (type == 1) ? csvRecord.get(16).trim():"";
+        
+        String format = (type == 1) ? "ddMMyy":"yyyy-MM-dd'T'HH:mm:ss.SSS";
+        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4),format);
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
         data.put("amount", amount);
-        data.put("enteredDate", csvRecord.get(4));
+        data.put("enteredDate", CommonService.convertLocalDateToString(date));
         data.put("remitterName", csvRecord.get(5));
         data.put("remitterMobile", remitterMobile);
         data.put("beneficiaryName", csvRecord.get(6));

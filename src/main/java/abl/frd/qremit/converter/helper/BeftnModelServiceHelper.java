@@ -1,28 +1,35 @@
 package abl.frd.qremit.converter.helper;
 
 import abl.frd.qremit.converter.model.BeftnModel;
+import abl.frd.qremit.converter.service.CommonService;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 @Component
 public class BeftnModelServiceHelper {
     private static final DecimalFormat df = new DecimalFormat("0.00");
+    @Value("${govt.incentive.percentage}")
+    private float govtIncentivePercentage;
+    private static float govtIncentivePercentageStatic;
+    @Value("${agrani.incentive.percentage}")
+    private float agraniIncentivePercentage;
+    private static float agraniIncentivePercentageStatic;
 
-    private static float incentivePercentage;
-    @Autowired
-    public BeftnModelServiceHelper(@Value("${incentive.percentage}") float incentivePercentage) {
-        this.incentivePercentage = incentivePercentage;
+    @PostConstruct
+    public void init() {
+        govtIncentivePercentageStatic = govtIncentivePercentage;
+        agraniIncentivePercentageStatic = agraniIncentivePercentage;
     }
 
 
@@ -91,7 +98,7 @@ public class BeftnModelServiceHelper {
             cell7.setCellValue(beftnModel.getBeneficiaryName().trim());
 
             Cell cell8 = row.createCell(8);
-            cell8.setCellValue(beftnModel.getBeneficiaryAccount().trim());
+            cell8.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getBeneficiaryAccount().trim()));
 
             Cell cell9 = row.createCell(9);
             cell9.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
@@ -103,7 +110,7 @@ public class BeftnModelServiceHelper {
             cell11.setCellValue(beftnModel.getAmount());
 
             Cell cell12 = row.createCell(12);
-            cell12.setCellValue(beftnModel.getTransactionNo().trim());
+            cell12.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getTransactionNo().trim()));
 
             count++;
         }
@@ -191,7 +198,7 @@ public class BeftnModelServiceHelper {
             cell7.setCellValue(beftnModel.getBeneficiaryName().trim());
 
             Cell cell8 = row.createCell(8);
-            cell8.setCellValue(beftnModel.getBeneficiaryAccount().trim());
+            cell8.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getBeneficiaryAccount().trim()));
 
             Cell cell9 = row.createCell(9);
             cell9.setCellValue(beftnModel.getBeneficiaryAccountType().trim());
@@ -203,7 +210,7 @@ public class BeftnModelServiceHelper {
             cell11.setCellValue(beftnModel.getIncentive());
 
             Cell cell12 = row.createCell(12);
-            cell12.setCellValue(beftnModel.getTransactionNo().trim());
+            cell12.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getTransactionNo().trim()));
 
             count++;
         }
@@ -225,13 +232,6 @@ public class BeftnModelServiceHelper {
             e.printStackTrace();
         }
         return is;
-    }
-
-    public static Double calculatePercentage(Double mainAmount){
-        df.setRoundingMode(RoundingMode.DOWN);
-        Double percentage;
-        percentage = (incentivePercentage / 100f) * mainAmount;
-        return Double.valueOf(df.format(percentage));
     }
 
 }

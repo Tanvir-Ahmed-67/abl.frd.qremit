@@ -15,6 +15,7 @@
 		<field name="grandTotalNumber" class="java.lang.Long"></field>
 		<field name="grandTotalAmount" class="java.math.BigDecimal"></field>
 		<field name="totalAmountInWords" class="java.lang.String"></field>
+		<field name="moNumber" class="java.lang.String"></field>
 		<field name="id" class="java.lang.Integer"></field>
 	</dataset>
 	<field name="moDate" class="java.time.LocalDate"></field>
@@ -31,6 +32,7 @@
 	<field name="grandTotalNumber" class="java.lang.Long"></field>
 	<field name="grandTotalAmount" class="java.math.BigDecimal"></field>
 	<field name="totalAmountInWords" class="java.lang.String"></field>
+	<field name="moNumber" class="java.lang.String"></field>
 	<field name="id" class="java.lang.Integer"></field>
 	<variable name="IncrementedPageNumber" class="java.lang.String" calculation="Nothing">
 		<expression><![CDATA[String.format("%06d", $F{id})]]></expression>
@@ -51,12 +53,13 @@
 			<element kind="staticText" x="0" y="95" width="118" height="17" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
 				<text><![CDATA[CODE: 11-104]]></text>
 			</element>
-			<element kind="staticText" x="0" y="123" width="159" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
-				<text><![CDATA[ADVICE NO:ARB-MO-1-Txn24-]]></text>
+			<element kind="textField" x="0" y="123" width="259" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
+				<expression><![CDATA["ADVICE NO : " + $F{moNumber}]]></expression>
 			</element>
-			<element kind="textField" x="160" y="123" width="106" height="20" fontSize="11.0" hTextAlign="Left" vTextAlign="Middle">
+			<!--<element kind="textField" x="160" y="123" width="106" height="20" fontSize="11.0" hTextAlign="Left" vTextAlign="Middle">
 				<expression><![CDATA[$V{IncrementedPageNumber}]]></expression>
 			</element>
+			-->
 			<element kind="staticText" x="322" y="52" width="118" height="21" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
 				<text><![CDATA[TO BRANCH]]></text>
 			</element>
@@ -76,7 +79,7 @@
 				<expression><![CDATA[new java.util.Date()]]></expression>
 			</element>
 			<element kind="staticText" x="1" y="157" width="552" height="19" fontSize="11.0">
-				<text><![CDATA[We advise that your M.O. account has been credited with the following item for crediting the beneficiaries' A/C.]]></text>
+				<text><![CDATA[We advise that your M.O. account has been credited with the following item for crediting the beneficiaries A/C.]]></text>
 			</element>
 			<element kind="textField" x="0" y="331" width="552" height="25" textAdjust="StretchHeight" hTextAlign="Left" vTextAlign="Middle">
 				<expression><![CDATA["IN WORDS: "+$F{totalAmountInWords}]]></expression>
@@ -120,7 +123,7 @@
 				<expression><![CDATA[$F{moDate}]]></expression>
 			</element>
 			<element kind="staticText" x="5" y="553" width="224" height="20" fontSize="11.0" bold="false" hTextAlign="Left" vTextAlign="Middle">
-				<text><![CDATA[Debit M . O . A/C, Head Office, Dhaka.]]></text>
+				<text><![CDATA[Debit M.O. A/C, Head Office, Dhaka.]]></text>
 			</element>
 			<element kind="staticText" x="1" y="642" width="178" height="20" fontSize="11.0" bold="false" hTextAlign="Center" vTextAlign="Middle">
 				<text><![CDATA[AUTH. COUNTER SIGNATURE]]></text>
@@ -139,6 +142,8 @@
 			<element kind="textField" x="178" y="3" width="204" height="27" fontSize="16.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA["Agrani Bank PLC"]]></expression>
 			</element>
+			<!--<element kind="staticText" x="221" y="30" width="100" height="14" bold="true" hTextAlign="Center">
+				<text><![CDATA[DUPLICATE]]></text>-->
 			<element kind="staticText" x="0" y="180" width="179" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle">
 				<text><![CDATA[Exchange House Name]]></text>
 				<box>

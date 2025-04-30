@@ -87,4 +87,13 @@ body.loading .lmodal {
     all: unset; /* Resets all properties */
     font-weight: bold;
 }
+.dt-buttons .btn span {
+    color: white !important;
+}
+
+.btn-primary {
+    color: #fff !important;
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
 
