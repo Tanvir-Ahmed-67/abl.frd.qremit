@@ -25,8 +25,8 @@ public class CronJobService {
         triggerGenerateTemporaryReport();
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Dhaka")
-    public void triggerTempTwelveAm(){
+    @Scheduled(cron = "0 0 23 * * *", zone = "Asia/Dhaka")
+    public void triggerTempElevenPm(){
         triggerGenerateTemporaryReport();
     }
 }
