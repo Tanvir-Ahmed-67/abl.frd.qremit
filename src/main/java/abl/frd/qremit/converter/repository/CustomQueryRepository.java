@@ -118,7 +118,7 @@ public class CustomQueryRepository {
     
     public Map<String, Object> getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
         tbl = "base_data_table_" + tbl;
-        return generateUniqueTransactionSql(data, tbl, "CAST(amount AS CHAR)");
+        return generateUniqueTransactionSql(data, tbl, "amount");
         /*
         Map<String, Object> params = new HashMap<>();
         List<String> tuples = new ArrayList<>();

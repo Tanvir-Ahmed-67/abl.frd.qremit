@@ -221,7 +221,10 @@ public class AlBiladModelService {
     }
 
     public String getBeneficiaryAccountNo(String beneficiaryAccount, String remittanceType, String mobileNo){
-        if(remittanceType.toLowerCase().startsWith("cash")) beneficiaryAccount = "COC" + mobileNo;
+        if(remittanceType.toLowerCase().startsWith("cash")){
+            if(CommonService.isOnlineAccoutNumberFound(mobileNo))   beneficiaryAccount = "";
+            else beneficiaryAccount = "COC" + mobileNo;
+        } 
         return beneficiaryAccount;
     }
 
