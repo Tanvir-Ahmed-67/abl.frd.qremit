@@ -370,15 +370,12 @@ public class CommonService {
     }
 
     public static Matcher checkOnlineAccountPattern(String accountNumber){
-        Pattern p = Pattern.compile("^.*020(\\d{10})$.*");
+        Pattern p = Pattern.compile("^020(\\d{10})$");
         Matcher m = p.matcher(accountNumber);
         return m;   
     }
 
     public static String getOnlineAccountNumber(String accountNumber){
-        //^.*02000(\d{8})$.*
-        //Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
-        //Matcher m = p.matcher(accountNumber);
         Matcher m = checkOnlineAccountPattern(accountNumber);
         String onlineAccountNumber=null;
         if (m.find())
@@ -397,15 +394,6 @@ public class CommonService {
     }
     
     public static boolean isOnlineAccoutNumberFound(String accountNumber){
-        /*
-        Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
-        Matcher m = p.matcher(accountNumber);
-        if (m.find())
-        {
-            return true;
-        }
-        return false;
-        */
         return isOnlineAccoutNumberFound(accountNumber, "");
     }
 
@@ -421,17 +409,6 @@ public class CommonService {
             return true;
         }
         return false;
-        /*
-        Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
-        Matcher m = p.matcher(accountNumber);
-        if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")){
-            if (m.find())
-            {
-                return true;
-            }else return false;
-        }
-        return false;
-        */
     }
     public static boolean isBeftnFound(String bankName, String accountNumber, String routingNo){
         if(!checkAgraniBankName(bankName)){
