@@ -281,6 +281,7 @@ public class DynamicOperationService {
                 int checkBeftn = (("3").equals(typeFlag))  ? 1:0;
                 int checkCoc = (("4").equals(typeFlag))  ? 1:0;
                 FileInfoModel fileInfoModel = fileInfoModelRepository.findById(fileInfoId);
+                int isSettlement = fileInfoModel.getIsSettlement();
                 fileInfoModel = updateFileInfoCount(fileInfoModel, checkT24, checkAccPayee, checkBeftn, checkCoc, 1);
                 User user = userModelRepository.findByUserId(userId);      
                 Object modelInstance = constructor.newInstance(exchangeCode, updatedData.get("transactionNo"), updatedData.get("currency"), amount, 
@@ -292,7 +293,7 @@ public class DynamicOperationService {
                 
                 List<Object> modelInstanceList = new ArrayList<>();
                 modelInstanceList.add(modelInstance);
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, isSettlement);
                 fileInfoModel = (FileInfoModel)  convertedDataModels.get("fileInfoModel");     
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved successfully", null);
