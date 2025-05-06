@@ -100,15 +100,8 @@ public class CustomQueryService {
     }
 
     public Map<String, Object> processArchiveUniqueList(List<String[]> data){
-        Map<String, Object> archive_23 = getArchiveUniqueList(data, "2023");
-        if((Integer) archive_23.get("err") == 0)    return archive_23;
-        if (archive_23.containsKey("data") && archive_23.get("data") instanceof List){
-            List<Map<String, Object>> dataList = (List<Map<String, Object>>) archive_23.get("data");
-            if (dataList == null || dataList.isEmpty()){
-                return getArchiveUniqueList(data, "2024");
-            }
-        }
-        return archive_23;
+        Map<String, Object> archive_24 = getArchiveUniqueList(data, "2024");
+        return archive_24;
     }
 
 }
