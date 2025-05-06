@@ -107,7 +107,9 @@ public class AccountPayeeModelService {
         return accountPayeeModelRepository.findByIdAndIsDownloaded(id, isDownloaded);
     }
 
-    public List<AccountPayeeModel> findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
-        return accountPayeeModelRepository.findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
+    public List<AccountPayeeModel> findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId, int isSettlement){
+        if(isSettlement == 1){
+            return accountPayeeModelRepository.findAccountPayeeModelByApiAndFileInfoModelId(fileInfoModelId,1);
+        }else   return accountPayeeModelRepository.findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
     }
 }

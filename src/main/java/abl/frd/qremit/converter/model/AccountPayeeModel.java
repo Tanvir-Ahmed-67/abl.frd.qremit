@@ -70,6 +70,8 @@ public class AccountPayeeModel {
 
     @Column(name = "download_user_id")
     private int downloadUserId;
+    @Column(name = "is_api", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int isApi = 0;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
@@ -311,6 +313,14 @@ public class AccountPayeeModel {
 
     public void setIncentive(Double incentive) {
         this.incentive = incentive;
+    }
+
+    public int getIsApi() {
+        return this.isApi;
+    }
+
+    public void setIsApi(int isApi) {
+        this.isApi = isApi;
     }
 
     public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double govtIncentive, Double agraniIncentive, Double incentive, String accountPayeeCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {
