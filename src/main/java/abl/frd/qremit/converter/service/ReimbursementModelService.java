@@ -31,9 +31,9 @@ public class ReimbursementModelService {
         byte[] in = ReimbursementModelServiceHelper.ReimbursementModelsForAgraniIncentiveToExcel(reimbursementModels, toDate);
         return in;
     }
-    public byte[] loadAllReimbursementForIcashByDate(LocalDate fromDate, LocalDate toDate) {
-        List<ReimbursementModel> reimbursementModels = findAllCocReimbursementByDate(fromDate, toDate);
-        byte[] in = ReimbursementModelServiceHelper.ReimbursementModelsToExcelForIcash(reimbursementModels, toDate);
+    public byte[] loadAllClaimDataForCocByDate(LocalDate fromDate, LocalDate toDate) {
+        List<ReimbursementModel> reimbursementModels = findAllCocClaimDataByDate(fromDate, toDate);
+        byte[] in = ReimbursementModelServiceHelper.ReimbursementModelsToExcelForCocClaim(reimbursementModels, toDate);
         return in;
     }
     public Map<String, Object> insertReimbursementData(LocalDate startDate, LocalDate endDate){
@@ -88,8 +88,8 @@ public class ReimbursementModelService {
     public List<ReimbursementModel> findAllReimbursementByDate(LocalDate fromDate, LocalDate toDate){
         return reimbursementModelRepository.findAllReimbursementByDate(fromDate, toDate);
     }
-    public List<ReimbursementModel> findAllCocReimbursementByDate(LocalDate fromDate, LocalDate toDate){
-        return reimbursementModelRepository.findAllCocReimbursementByDate(fromDate, toDate);
+    public List<ReimbursementModel> findAllCocClaimDataByDate(LocalDate fromDate, LocalDate toDate){
+        return reimbursementModelRepository.findAllCocClaimByDate(fromDate, toDate);
     }
     public List<ReportModel> findAllAccountPayeeAndCocPaidDataForReimbursement(LocalDate startDate, LocalDate endDate){
         return reimbursementModelRepository.findAllAccountPayeeAndCocPaidDataForReimbursement(startDate, endDate);
