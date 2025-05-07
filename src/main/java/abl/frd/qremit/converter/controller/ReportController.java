@@ -2,6 +2,7 @@ package abl.frd.qremit.converter.controller;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
@@ -627,8 +628,8 @@ public class ReportController {
         String date = formData.get("reportDate");
         MoModel mo = new MoModel();
         mo.setMoDate(LocalDate.parse(date));
-        mo.setTotalNumberIcash(Long.valueOf(formData.get("totalNumberIcash")));
-        mo.setTotalAmountIcash(new BigDecimal(formData.get("totalAmountIcash")));
+        mo.setTotalNumberIcash(Long.valueOf(formData.get("totalNumberIcash").trim()));
+        mo.setTotalAmountIcash(new BigDecimal(formData.get("totalAmountIcash").trim()));
         MoModel moModel = moModelService.findMoByDate(date);
         if(moModel == null) moModel = moModelService.processAndGenerateMoData(mo);
         else    moModel = moModelService.updateMo(moModel, formData);
@@ -714,7 +715,7 @@ public class ReportController {
             }
             byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDateForGovtIncentive(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_Govt_Incentive_", ".csv");
-            MediaType mediaType = MediaType.TEXT_PLAIN;
+            MediaType mediaType = new MediaType("text", "csv", StandardCharsets.UTF_8);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .contentType(mediaType)
@@ -724,8 +725,8 @@ public class ReportController {
             return ResponseEntity.status(500).build();
         }
     }
-    @RequestMapping(value = "/downloadDailyReimbursementForIcash", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyReimbursementForIcash(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
+    @RequestMapping(value = "/downloadClaimForCoc", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadClaimForCoc(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
         try {
             if (fromDate.isEmpty()) {
                 fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
@@ -733,9 +734,9 @@ public class ReportController {
             if (toDate.isEmpty()) {
                 toDate = CommonService.getCurrentDate("yyyy-MM-dd");
             }
-            byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
-            String fileName = CommonService.generateDynamicFileName("Reimbursement_COC_", ".csv");
-            MediaType mediaType = MediaType.TEXT_PLAIN;
+            byte[] contentStream  = reimbursementModelService.loadAllClaimDataForCocByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            String fileName = CommonService.generateDynamicFileName("Claim_COC_", ".csv");
+            MediaType mediaType = new MediaType("text", "csv", StandardCharsets.UTF_8);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .contentType(mediaType)
@@ -756,7 +757,7 @@ public class ReportController {
             }
             byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDateForAgraniIncentive(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_Agrani_Incentive_", ".csv");
-            MediaType mediaType = MediaType.TEXT_PLAIN;
+            MediaType mediaType = new MediaType("text", "csv", StandardCharsets.UTF_8);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .contentType(mediaType)
