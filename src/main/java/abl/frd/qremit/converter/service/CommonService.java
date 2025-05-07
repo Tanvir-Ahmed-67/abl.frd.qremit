@@ -250,12 +250,12 @@ public class CommonService {
         }
         return cocModel;
     }
-    public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, LocalDateTime uploadDateTime, int isProcessed) {
+    public static <T> List<AccountPayeeModel> generateAccountPayeeModelList(List<T> models, LocalDateTime uploadDateTime) {
         List<AccountPayeeModel> accountPayeeModelList = new ArrayList<>();
         for (T singleModel : models) {
             try {
                 String typeFlag = (String) getPropertyValue(singleModel, "getTypeFlag");
-                if(("2").equals(typeFlag))  accountPayeeModelList.add(generateAccountPayeeModel(singleModel, uploadDateTime, isProcessed));
+                if(("2").equals(typeFlag))  accountPayeeModelList.add(generateAccountPayeeModel(singleModel, uploadDateTime));
             } catch (Exception e) {
                 e.printStackTrace();
                 // Handle exception
@@ -264,7 +264,7 @@ public class CommonService {
         return accountPayeeModelList;
     }
 
-    public static <T> AccountPayeeModel generateAccountPayeeModel(T model, LocalDateTime uploadDateTime, int flag) {
+    public static <T> AccountPayeeModel generateAccountPayeeModel(T model, LocalDateTime uploadDateTime) {
         AccountPayeeModel accountPayeeModel = new AccountPayeeModel();
         try {
             accountPayeeModel.setAmount((Double) getPropertyValue(model, "getAmount"));
@@ -286,11 +286,6 @@ public class CommonService {
             accountPayeeModel.setUploadDateTime(uploadDateTime);
             accountPayeeModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             accountPayeeModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
-            accountPayeeModel.setIsProcessed(flag);
-            accountPayeeModel.setIsDownloaded(flag);
-            if(flag == 1){
-                accountPayeeModel.setDownloadDateTime(uploadDateTime);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -557,7 +552,7 @@ public class CommonService {
         Map<String, Object> resp = new HashMap<>();
         List<OnlineModel> onlineModelList = generateOnlineModelList(model, currentDateTime, isProcessed);
         List<CocModel> cocModelList = generateCocModelList(model, currentDateTime);
-        List<AccountPayeeModel> accountPayeeModelList = generateAccountPayeeModelList(model, currentDateTime, isProcessed);
+        List<AccountPayeeModel> accountPayeeModelList = generateAccountPayeeModelList(model, currentDateTime);
         List<BeftnModel> beftnModelList = generateBeftnModelList(model, currentDateTime);
         
         fileInfoModel.setCocModelList(cocModelList);
@@ -582,7 +577,6 @@ public class CommonService {
             for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
                 accountPayeeModel.setUserModel(user);
-                if(isProcessed == 1)    accountPayeeModel.setIsApi(1);  //isProcessed =1 is for Api data
                 Map<String, Object> rdata = convertAblRoutingToBranchCode(accountPayeeModel.getBranchCode(), routingData);
                 if(!rdata.isEmpty()){
                     accountPayeeModel.setBranchCode(rdata.get("branchCode").toString());
@@ -838,22 +832,6 @@ public class CommonService {
         return errorMessage;
     }
 
-    public static String checkAmountOrBeneficiaryAccount(String beneficiaryAccount, String amount){
-        String errorMessage = "";
-        if(checkEmptyString(beneficiaryAccount) || checkEmptyString(amount)){
-            errorMessage = "A/C Number or Amount can not be empty";
-        }
-        return errorMessage;
-    }
-
-    public static String checkBeneficiaryName(String beneficiaryName){
-        String errorMessage = "";
-        if(checkEmptyString(beneficiaryName)){
-            errorMessage = "Beneficiary Name can not be empty";
-        }
-        return errorMessage;
-    }
-
     public static String fixRoutingNo(String routingNo){
         if(!routingNo.isEmpty() && routingNo.length() == 8){
             routingNo = "0" + routingNo;
@@ -942,23 +920,16 @@ public class CommonService {
     public static String getErrorMessage(String beneficiaryAccount, String beneficiaryName, String amount, String bankName, String branchCode){
         String errorMessage = "";
         //a/c no, benficiary name, amount empty or null check
-        //errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
-        errorMessage = checkAmountOrBeneficiaryAccount(beneficiaryAccount, amount);
+        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
         if(!errorMessage.isEmpty())  return errorMessage;
         if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
             errorMessage = validateBeftn(bankName, branchCode, beneficiaryAccount);
             if(!errorMessage.isEmpty())  return errorMessage;
-            errorMessage = checkBeneficiaryName(beneficiaryName);
-            if(!errorMessage.isEmpty())  return errorMessage;
         }else if(isCocFound(beneficiaryAccount)){
             errorMessage = checkCOCBankName(bankName);
             if(!errorMessage.isEmpty())  return errorMessage;
-            errorMessage = checkBeneficiaryName(beneficiaryName);
-            if(!errorMessage.isEmpty())  return errorMessage;
         }else if(isAccountPayeeFound(bankName, beneficiaryAccount, branchCode)){
             errorMessage = validateAccountPayee(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
-            if(!errorMessage.isEmpty())  return errorMessage;
-            errorMessage = checkBeneficiaryName(beneficiaryName);
             if(!errorMessage.isEmpty())  return errorMessage;
         }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
             
@@ -1392,22 +1363,6 @@ public class CommonService {
              * need to modify
              */
             if(checkType == 1){
-                int intTypeFlag = convertStringToInt(typeFlag);
-                boolean isIslamicAccount = checkAblIslamiBankingWindow(beneficiaryAccount);
-                boolean isValid = false;
-                if(type == 1){ //API
-                    if(isIslamicAccount && intTypeFlag == 2)    isValid = true;
-                    else if(intTypeFlag == 1)   isValid = true;
-                }else if(type == 3 && intTypeFlag == 3){
-                    isValid = true; 
-                }
-                if(!isValid){
-                    String msg = "Invalid Remittence Type for ";
-                    msg += (type == 1) ? "API": "BEFTN";
-                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
-                    continue;
-                }
-                /*
                 int allowedType = (type == 1) ? 1:3;  //for betn 3
                 if(!convertStringToInt(typeFlag).equals(allowedType)){
                     String msg = "Invalid Remittence Type for ";
@@ -1415,7 +1370,6 @@ public class CommonService {
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
                 }
-                    */
             }
             try{
                 T modelInstance = modelClass.getDeclaredConstructor().newInstance();

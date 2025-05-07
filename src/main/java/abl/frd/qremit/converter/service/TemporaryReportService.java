@@ -90,7 +90,7 @@ public class TemporaryReportService {
                     temporaryReportModel.setDataModelId(id);
                     temporaryReportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
                     //added api for online model
-                    if(("1").equals(type) || ("2").equals(type))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
+                    if(("1").equals(type))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     tempInsertList.add(temporaryReportModel);
                     count++;
                 }catch(Exception e){

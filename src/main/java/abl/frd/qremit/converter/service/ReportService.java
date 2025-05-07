@@ -567,7 +567,7 @@ public class ReportService {
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
                     reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
-                    if(("1").equals(types) || ("2").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
+                    if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":
                             onlineInsertList.add(id);
@@ -911,7 +911,7 @@ public class ReportService {
             cnt += onlineModels.size();
         }
         if(CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount()) >= 1){
-            List<AccountPayeeModel> accountPayeeModels = accountPayeeModelService.findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(id, fileInfoModel.getIsSettlement());
+            List<AccountPayeeModel> accountPayeeModels = accountPayeeModelService.findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(id);
             cnt += accountPayeeModels.size();
         }
         if(CommonService.convertStringToInt(fileInfoModel.getBeftnCount()) >= 1){
