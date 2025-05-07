@@ -34,7 +34,7 @@ public class OnlineModelServiceHelper {
                         onlineModel.getTransactionNo().trim(),
                         onlineModel.getExchangeCode().trim(),
                         onlineModel.getBeneficiaryAccount().trim(),
-                        onlineModel.getBeneficiaryName().trim(),
+                        onlineModel.getBeneficiaryName().trim().replace(",",""),
                         onlineModel.getAmount()
                 );
                 csvPrinter.printRecord(data);
