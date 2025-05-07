@@ -832,6 +832,22 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static String checkAmountOrBeneficiaryAccount(String beneficiaryAccount, String amount){
+        String errorMessage = "";
+        if( checkEmptyString(beneficiaryAccount) || checkEmptyString(amount)){
+            errorMessage = "A/C Number or Amount can not be empty";
+        }
+        return errorMessage;
+    }
+
+    public static String checkBeneficiaryName(String beneficiaryName){
+        String errorMessage = "";
+        if(checkEmptyString(beneficiaryName)){
+            errorMessage = "Beneficiary Name can not be empty";
+        }
+        return errorMessage;
+    }
+
     public static String fixRoutingNo(String routingNo){
         if(!routingNo.isEmpty() && routingNo.length() == 8){
             routingNo = "0" + routingNo;
@@ -919,8 +935,9 @@ public class CommonService {
 
     public static String getErrorMessage(String beneficiaryAccount, String beneficiaryName, String amount, String bankName, String branchCode){
         String errorMessage = "";
-        //a/c no, benficiary name, amount empty or null check
-        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
+        //a/c no, amount empty or null check
+        errorMessage = checkAmountOrBeneficiaryAccount(beneficiaryAccount, amount);
+        int isOnline = 0;
         if(!errorMessage.isEmpty())  return errorMessage;
         if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
             errorMessage = validateBeftn(bankName, branchCode, beneficiaryAccount);
@@ -932,7 +949,11 @@ public class CommonService {
             errorMessage = validateAccountPayee(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
             if(!errorMessage.isEmpty())  return errorMessage;
         }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
-            
+            isOnline = 1;
+        }
+        if(isOnline == 0){
+            errorMessage = checkBeneficiaryName(beneficiaryName);
+            if(!errorMessage.isEmpty())  return errorMessage;
         }
         return errorMessage;
     }
