@@ -15,6 +15,7 @@ public class CustomQueryRepository {
     @PersistenceContext
     private EntityManager entityManager;
     private final DataSource dataSource;
+    private String routingTbl = "routing_no";
     public CustomQueryRepository(DataSource dataSource){
         this.dataSource = dataSource;
     }
@@ -87,7 +88,7 @@ public class CustomQueryRepository {
 
     public Map<String,Object> getRoutingDetails(String routingNo, String bankCode){
         Map<String, Object> params = new HashMap<>();
-        StringBuilder queryStr = new StringBuilder("SELECT * FROM routing_no");
+        StringBuilder queryStr = new StringBuilder("SELECT * FROM "+ this.routingTbl);
         boolean hasRoutingNo = routingNo != null && !routingNo.trim().isEmpty();
         boolean hasBankCode = bankCode != null && !bankCode.trim().isEmpty();
 
@@ -106,6 +107,13 @@ public class CustomQueryRepository {
             }
         }
         return getData(queryStr.toString(),params);
+    }
+
+    public Map<String, Object> getRoutingDetailsByAblBranchCode(String branchCode){
+        Map<String, Object> params = new HashMap<>();
+        String queryStr = "SELECT * FROM "+ this.routingTbl + " WHERE abl_branch_code= ?";
+        params.put("1", branchCode);
+        return getData(queryStr,params);
     }
     
 

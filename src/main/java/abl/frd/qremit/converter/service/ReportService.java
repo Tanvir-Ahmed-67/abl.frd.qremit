@@ -61,6 +61,7 @@ public class ReportService {
     DateTimeFormatter yyMMddFormatter = DateTimeFormatter.ofPattern("yyMMdd");     // YYMMDD
     DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // YYYY/MM/DD
     DateTimeFormatter ddMMyyyyFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // DD/MM/YYYY
+    protected String pMsg = "No data found for processing report";
     
     public List<ErrorDataModel> findByUserModelId(int userId) {
         return errorDataModelRepository.findByUserModelId(userId);
@@ -506,13 +507,13 @@ public class ReportService {
             count += resp.size();
             if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
         }
-        if(count == 0)  return CommonService.getResp(0, "No data found for processing report", null);
+        if(count == 0)  return CommonService.getResp(0, this.pMsg, null);
         resp = CommonService.getResp(0, "Data Processed successfully", null);
         return resp;
     }
-
+    @Transactional
     public <T> Map<String, Object> setReportModelData(List<T> modelList, String type){
-        Map<String, Object> resp = new HashMap<>();
+        Map<String, Object> resp = CommonService.getResp(0, this.pMsg, null);
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
         LocalDate currentDate = LocalDate.now();
         String types = type;
@@ -593,17 +594,22 @@ public class ReportService {
                     return CommonService.getResp(1, "Error processing model " + e.getMessage(), null);
                 }
             }
-            if(count == 0)  return CommonService.getResp(0, "No data found for processing report", null);
+            if(count == 0)  return CommonService.getResp(0, this.pMsg, null);
             if(!reportInsertList.isEmpty()){
-                List<ReportModel> savedModels = reportModelRepository.saveAll(reportInsertList);
-                reportModelRepository.flush();
-                if(!savedModels.isEmpty()){
-                    for (Map.Entry<String, List<Integer>> entry : insertList.entrySet()) {
-                        setIsVoucherGeneratedBulk(entry.getKey(), entry.getValue(), currentDateTime);
-                    }
-                    if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
+                try{
+                    List<ReportModel> savedModels = reportModelRepository.saveAll(reportInsertList);
+                    reportModelRepository.flush();
+                    if(!savedModels.isEmpty()){
+                        for (Map.Entry<String, List<Integer>> entry : insertList.entrySet()) {
+                            setIsVoucherGeneratedBulk(entry.getKey(), entry.getValue(), currentDateTime);
+                        }
+                        if(("").equals(type))  temporaryReportService.truncateTemporaryReportModel();
+                        resp = CommonService.getResp(0, "Data processed successfully", null);
+                    }else resp = CommonService.getResp(1, "No records were inserted into Report Model", null);
+                }catch(Exception e){
+                    e.printStackTrace();
+                    return CommonService.getResp(1, "Exception occurred during report insertion: " + e.getMessage(), null);
                 }
-                resp = CommonService.getResp(0, "Data processed successfully", null);
             }
         }
         return resp;
