@@ -89,12 +89,12 @@ public class ReimbursementModelServiceHelper {
         for (ReimbursementModel model : reimbursementModelList) {
             if (model.getMainAmount() != 0) {
                 csvBuilder.append(model.getBranchCode().trim()).append(",")
-                        .append("=\"").append(model.getTransactionNo().trim()).append("\"").append(",")
+                        .append(model.getTransactionNo().trim()).append(",")
                         .append(model.getMainAmount()).append(",")
                         .append(model.getGovtIncentive()).append(",")
                         .append(model.getReimbursementDate().format(formatter)).append(",")
                         .append(model.getExchangeCode().trim()).append(",")
-                        .append("=\"").append(model.getBeneficiaryAccount().trim()).append("\"").append(",")
+                        .append(model.getBeneficiaryAccount().trim()).append(",")
                         .append(model.getRemitterName().trim()).append(",")
                         .append(model.getBeneficiaryName().trim()).append("\n");
             }

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface FileInfoModelRepository extends JpaRepository<FileInfoModel, Integer> {
     @Query("SELECT n FROM FileInfoModel n WHERE n.userModel.id =:userId and n.uploadDateTime BETWEEN :startDate AND :endDate ORDER BY n.exchangeCode, n.uploadDateTime")
     List<FileInfoModel> getUploadedFileDetails(@Param("userId") int userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
-    @Query("SELECT n FROM FileInfoModel n WHERE n.uploadDateTime BETWEEN :startDate AND :endDate ORDER BY n.exchangeCode")
+    @Query("SELECT n FROM FileInfoModel n WHERE n.uploadDateTime BETWEEN :startDate AND :endDate ORDER BY n.exchangeCode, n.uploadDateTime")
     List<FileInfoModel> getUploadedFileDetails(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     FileInfoModel findByFileName(String fileName);
     FileInfoModel findById(int id);

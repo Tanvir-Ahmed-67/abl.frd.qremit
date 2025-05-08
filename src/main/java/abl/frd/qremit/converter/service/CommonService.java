@@ -1452,7 +1452,6 @@ public class CommonService {
     public static Map<String, Object> validateIpRange(String clientIP, List<IpRange> ipRangeList){
         Map<String, Object> resp = new HashMap<>();
         String msg = "Access Denied: Invalid IP Address";
-        System.out.println(clientIP);
         if(ipRangeList.isEmpty())   return getResp(1, "IP Address Range Not Found in DB", null);
         for(IpRange ipRange: ipRangeList){
             String startIp = ipRange.getStartIp();
