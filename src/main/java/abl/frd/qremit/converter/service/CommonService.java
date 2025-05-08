@@ -545,6 +545,14 @@ public class CommonService {
                 data.put("branchName", rdata.get("branch_name").toString());
             }
         }
+        else{
+            for(Map<String, Object> rdata: routingData){
+                if(rdata.get("abl_branch_code").equals(data)){
+                    data.put("branchCode", rdata.get("abl_branch_code").toString());
+                    data.put("branchName", rdata.get("branch_name").toString());
+                }
+            }
+        }
         return data;
     }
 
@@ -980,7 +988,10 @@ public class CommonService {
         }
         if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
             //only processed for a/c payee
-        }//else   return "Legacy A/C won't be processed. Online A/C needed";
+        }else{
+            if(beneficiaryAccount.length() > 13)    return "A/C Payee length must be within 13 digits";
+            //return "Legacy A/C won't be processed. Online A/C needed";
+        }   
         return errorMessage;
     }
     //error message
