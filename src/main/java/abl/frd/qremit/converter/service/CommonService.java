@@ -1341,7 +1341,7 @@ public class CommonService {
         return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 
-    public static <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
+    public <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
         Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, List<ErrorDataModel> errorDataModelList, String fileExchangeCode, int checkType, int type){
         Map<String, Object> modelResp = new HashMap<>();
         List<String> transactionList = new ArrayList<>();
@@ -1355,6 +1355,7 @@ public class CommonService {
             String nrtaCode = data.get("nrtaCode").toString();
             String bankName = data.get("bankName").toString();
             if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
+            String msg = "";
             //check exchange code
             if(isValidFile == 0){
                 String exchangeMessage = checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
@@ -1391,13 +1392,22 @@ public class CommonService {
             }
             if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
             String typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
+            if(("2").equals(typeFlag)){
+                //validate branch code for a/c payee exists in routing table
+                Map<String, Object> routingMap = customQueryService.getRoutingDetailsByAblBranchCode(branchCode);
+                if((Integer) routingMap.get("err") == 1){
+                    msg = "Invalid Branch Code for A/C Payee";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+            }
             /*
              * need to modify
              */
             if(checkType == 1){
                 int allowedType = (type == 1) ? 1:3;  //for betn 3
                 if(!convertStringToInt(typeFlag).equals(allowedType)){
-                    String msg = "Invalid Remittence Type for ";
+                    msg = "Invalid Remittence Type for ";
                     msg += (type == 1) ? "API": "BEFTN";
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
