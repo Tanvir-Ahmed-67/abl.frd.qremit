@@ -128,7 +128,7 @@ public class AmanModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AmanModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AmanModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<AmanModel> amanDataModelList = (List<AmanModel>) modelResp.get("modelList");
             errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();

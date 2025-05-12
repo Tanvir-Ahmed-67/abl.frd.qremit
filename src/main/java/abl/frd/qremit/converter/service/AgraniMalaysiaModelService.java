@@ -138,7 +138,7 @@ public class AgraniMalaysiaModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
             errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -257,7 +257,7 @@ public class AgraniMalaysiaModelService {
             */
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, 3);
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, 3);
             List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
             errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();

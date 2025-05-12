@@ -122,7 +122,7 @@ public class BecModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, BecModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, BecModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<BecModel> becDataModelList = (List<BecModel>) modelResp.get("modelList");
             errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();

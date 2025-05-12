@@ -122,7 +122,7 @@ public class AlBiladModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AlBiladModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AlBiladModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<AlBiladModel> alBiladModelList = (List<AlBiladModel>) modelResp.get("modelList");
             /*
             for(AlBiladModel alBiladModel: alBiladModelList){

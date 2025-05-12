@@ -35,6 +35,8 @@ public class CocPaidModelService {
     FileInfoModelService fileInfoModelService;
     @Autowired
     ExchangeHouseModelRepository exchangeHouseModelRepository;
+    @Autowired
+    CommonService commonService;
     
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String tbl){
         Map<String, Object> resp = new HashMap<>();
@@ -130,7 +132,7 @@ public class CocPaidModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, CocPaidModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, CocPaidModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<CocPaidModel> cocPaidModelList  = (List<CocPaidModel>) modelResp.get("modelList");
             for(CocPaidModel cocPaidModel: cocPaidModelList){
                 cocPaidModel.setFileInfoModel(fileInfoModel);
