@@ -24,7 +24,7 @@ import abl.frd.qremit.converter.repository.UserModelRepository;
 import java.util.*;
 @SuppressWarnings("unchecked")
 @Service
-public class AgraniMalaysiaModelService {
+public class InfinityMalaysiaModelService {
     @Autowired
     AgraniMalaysiaModelRepository agraniMalaysiaModelRepository;
     @Autowired

@@ -130,7 +130,7 @@ public class RiaModelService {
                 if(type == 1){
                     String errorStatus = csvRecord.get(8).toLowerCase();
                     if(errorStatus.startsWith("error") || errorStatus.startsWith("cancel")){
-                        String errorMessage = "Cancelled From API";
+                        String errorMessage = "Error/ Cancel From API";
                         CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }

@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import abl.frd.qremit.converter.service.AgraniMalaysiaModelService;
+import abl.frd.qremit.converter.service.InfinityMalaysiaModelService;
 import java.util.*;
 
 @Controller
 public class AgraniMalaysiaModelController {
     private final MyUserDetailsService myUserDetailsService;
-    private final AgraniMalaysiaModelService agraniMalaysiaModelService;
-    private final CommonService commonService;
+    @Autowired
+    InfinityMalaysiaModelService agraniMalaysiaModelService;
+    @Autowired
+    CommonService commonService;
     
     @Autowired
-    public AgraniMalaysiaModelController(AgraniMalaysiaModelService agraniMalaysiaModelService,MyUserDetailsService myUserDetailsService, CommonService commonService){
+    public AgraniMalaysiaModelController(MyUserDetailsService myUserDetailsService){
         this.myUserDetailsService = myUserDetailsService;
-        this.agraniMalaysiaModelService = agraniMalaysiaModelService;
-        this.commonService = commonService;
     }
     
     @PostMapping("/agranimalaysiaUpload")
