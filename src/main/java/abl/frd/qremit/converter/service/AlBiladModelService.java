@@ -124,19 +124,6 @@ public class AlBiladModelService {
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
             modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AlBiladModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<AlBiladModel> alBiladModelList = (List<AlBiladModel>) modelResp.get("modelList");
-            /*
-            for(AlBiladModel alBiladModel: alBiladModelList){
-                //for ac payee check valid branch code
-                if(alBiladModel.getTypeFlag().equals("2")){
-                    Map<String, Object> routingDetails = customQueryService.getRoutingDetailsByAblBranchCode(alBiladModel.getBranchCode());
-                    if((Integer) routingDetails.get("err") == 1){
-                        String errorMessage = "Invalid Branch Code";
-                        //CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                }
-            }
-            */
             errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
             int duplicateCount = (int) modelResp.get("duplicateCount");
