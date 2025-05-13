@@ -126,6 +126,14 @@ public class EzRemitModelService {
                 String beneficiaryAccount = (type == 1) ? csvRecord.get(4).trim(): csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                if(type == 1){
+                    String errorStatus = csvRecord.get(8).toLowerCase();
+                    if(errorStatus.startsWith("error") || errorStatus.startsWith("cancel")){
+                        String errorMessage = "Error/ Cancel From API";
+                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = nrtaCode;   
                 dataList.add(data);
@@ -242,7 +250,7 @@ public class EzRemitModelService {
     public Map<String, Object> checkEzRemitApiOrBeftnData(int length, int type){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
-        if(type == 1 && length != 8)    resp = CommonService.getResp(1, msg, null);
+        if(type == 1 && length != 9)    resp = CommonService.getResp(1, msg, null);
         else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
         return resp;
     }
