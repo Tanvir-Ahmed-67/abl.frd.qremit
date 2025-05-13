@@ -82,7 +82,7 @@ public class ReimbursementModelServiceHelper {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         StringBuilder csvBuilder = new StringBuilder();
         // Add UTF-8 BOM so Notepad can read special characters
-        csvBuilder.append("\uFEFF");
+        //csvBuilder.append("\uFEFF");
         // Header row
         csvBuilder.append("BR CODE,REF NO,REMITTANCE,INCENTIVE,DATE,EX CODE,CONTACT NO,REMITTER,BENEFICIARY\n");
         // Data rows
