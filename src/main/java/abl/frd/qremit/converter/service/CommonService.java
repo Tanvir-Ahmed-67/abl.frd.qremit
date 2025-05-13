@@ -990,6 +990,7 @@ public class CommonService {
             //only processed for a/c payee
         }else{
             if(beneficiaryAccount.length() > 13)    return "A/C Payee length must be within 13 digits";
+            if(beneficiaryAccount.length() == 13 && beneficiaryAccount.startsWith("02"))    return "Invalid Agrani Bank Online A/C";
             //return "Legacy A/C won't be processed. Online A/C needed";
         }   
         return errorMessage;
