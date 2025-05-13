@@ -990,6 +990,7 @@ public class CommonService {
             //only processed for a/c payee
         }else{
             if(beneficiaryAccount.length() > 13)    return "A/C Payee length must be within 13 digits";
+            if(beneficiaryAccount.length() == 13 && beneficiaryAccount.startsWith("02"))    return "Invalid Agrani Bank Online A/C";
             //return "Legacy A/C won't be processed. Online A/C needed";
         }   
         return errorMessage;
@@ -1394,10 +1395,7 @@ public class CommonService {
             String typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
             if(("2").equals(typeFlag)){
                 //validate branch code for a/c payee exists in routing table
-                Map<String, Object> routingMap = new HashMap<>();
-                if(checkAgraniRoutingNo(branchCode)){
-                    routingMap = customQueryService.getRoutingDetails(branchCode, "");
-                }else   routingMap = customQueryService.getRoutingDetailsByAblBranchCode(branchCode);
+                Map<String, Object> routingMap = checkAblBranchCode(branchCode);
                 if((Integer) routingMap.get("err") == 1){
                     msg = "Invalid Branch Code for A/C Payee";
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
@@ -1435,6 +1433,14 @@ public class CommonService {
         modelResp.put("duplicateCount", duplicateCount);
         modelResp.put("transactionList", transactionList);
         return modelResp;
+    }
+
+    public Map<String, Object> checkAblBranchCode(String branchCode){
+        Map<String, Object> routingMap = new HashMap<>();
+        if(checkAgraniRoutingNo(branchCode)){
+            routingMap = customQueryService.getRoutingDetails(branchCode, "");
+        }else   routingMap = customQueryService.getRoutingDetailsByAblBranchCode(branchCode);
+        return routingMap;
     }
 
     public static Double calculateIncentive(double govtIncentive, double agraniIncentive){
