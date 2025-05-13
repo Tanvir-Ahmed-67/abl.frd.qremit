@@ -1048,6 +1048,10 @@ public class ReportService {
             return CommonService.getResp(1, errorMessage, null);
         }
         String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
+        if(("2").equals(typeFlag)){
+            Map<String, Object> routingMap = commonService.checkAblBranchCode(branchCode);
+            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee", null);
+        }
         resp = dynamicOperationService.updateIndividualDataById(exchangeCode, fileInfoModel, user, transactionNo, formData, type, obj, typeFlag);
         if((Integer) resp.get("err") == 0){
             Map<String, Object> info = (Map<String, Object>) resp.get("data");
