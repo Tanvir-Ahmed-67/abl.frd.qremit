@@ -1498,9 +1498,9 @@ public class CommonService {
 
     public static String checkApiTransactionStatus(String status){
         String errorMessage = "";
-        if(status.startsWith("error") || status.startsWith("cancel")){
-            errorMessage = "Error/ Cancel From API";
-        }
+        if(status.startsWith("error"))  errorMessage = "Error From API";
+        if(status.startsWith("cancel")) errorMessage = "Cancel From API";
+        if(checkEmptyString(status) || status.equals("null"))   errorMessage = "A/C Not Credited from API";
         return errorMessage;
     }
 
