@@ -1496,5 +1496,13 @@ public class CommonService {
         return resp;
     }
 
+    public static String checkApiTransactionStatus(String status){
+        String errorMessage = "";
+        if(status.startsWith("error") || status.startsWith("cancel")){
+            errorMessage = "Error/ Cancel From API";
+        }
+        return errorMessage;
+    }
+
     
 }
