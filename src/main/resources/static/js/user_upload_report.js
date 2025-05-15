@@ -24,7 +24,7 @@ $(document).ready(function(){
         $('#message').hide();
     }, 3000);
     
-    function get_report_url(type,date){
+    function get_report_url(type,date, params){
         switch(type){
             case '1':
             default:
@@ -69,7 +69,7 @@ $(document).ready(function(){
                 page_header = "All Inactive Users";
                 break;
             case '11':
-                var url = "/getRouting" + date;
+                var url = "/getRouting" + params;
                 page_header = "Routing Number Search";
                 break;
         }
@@ -90,11 +90,11 @@ $(document).ready(function(){
         e.preventDefault();
         var val = $(this).val();
         var params = "?bankCode=" + val;
-        user_upload_report_ui(url,type,params);
+        user_upload_report_ui(url,type,"",params);
     });
 
-    function user_upload_report_ui(url,type,date){
-        var rdata = get_report_url(type,date);
+    function user_upload_report_ui(url,type,date, params){
+        var rdata = get_report_url(type,date, params);
         if(rdata.page_header)  $(".page-header").html(rdata.page_header);
         var report_url = rdata.url;
         var params = {'tbl': tbl,'url': report_url};
