@@ -123,6 +123,20 @@ public class ReportService {
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
+    public List<ExchangeReportDTO> getGroupedReportByReportDate(String date){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate reportDate = LocalDate.parse(date);
+        report = reportModelRepository.getGroupedReportByReportDate(reportDate);
+        for(ExchangeReportDTO reportDTO:report){
+            reportDTO.setExchangeName(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getExchangeName());
+            reportDTO.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getNrtaCode());
+            reportDTO.setVoucherDate(LocalDate.parse(date));
+        }
+        // Sort by Exchange Code
+        report.sort(Comparator.comparing(ExchangeReportDTO::getExchangeCode));
+        return report;
+    }
+
     public List<ExchangeReportDTO> getAllDailyReportData(String date){
         List<ExchangeReportDTO> report = new ArrayList<>();
         LocalDate reportDate = LocalDate.parse(date);
@@ -342,8 +356,8 @@ public class ReportService {
         return report;
     }
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement(String date) {
-        List<ExchangeReportDTO> report = getAllDailyReportData(date);
-        report = aggregateExchangeReports(report, date);
+        List<ExchangeReportDTO> report = getGroupedReportByReportDate(date);
+        //report = aggregateExchangeReports(report, date);
         return report;
     }
     public List<ExchangeReportDTO> aggregateExchangeReports(List<ExchangeReportDTO> exchangeReports, String date) {
@@ -374,10 +388,6 @@ public class ReportService {
     // Utility method to check if a list is valid (not null, not empty, and size > 0)
     private boolean isListValid(List<?> list) {
         return list != null && !list.isEmpty() && list.size() > 0;
-    }
-    public List<ExchangeReportDTO> generateDetailsOfDailyStatement(String date) {
-        List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportData(date);
-        return exchangeReportDTOSList;
     }
 
     private ExchangeReportDTO convertOnlineModelToDTO(OnlineModel onlineModel) {

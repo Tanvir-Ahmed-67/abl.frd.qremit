@@ -2,6 +2,7 @@ package abl.frd.qremit.converter.repository;
 import java.time.*;
 import java.util.*;
 
+import abl.frd.qremit.converter.model.ExchangeReportDTO;
 import abl.frd.qremit.converter.model.ReportModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,6 +13,8 @@ public interface ReportModelRepository  extends JpaRepository<ReportModel, Integ
     Optional<ReportModel> findByExchangeCodeAndTransactionNoAndAmount(String exchangeCode, String transactionNo, Double amount);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate = :reportDate")
     List<ReportModel> getReportModelByReportDate(@Param("reportDate") LocalDate reportDate);
+    @Query("SELECT new abl.frd.qremit.converter.model.ExchangeReportDTO(n.exchangeCode, COUNT(n), SUM(n.amount)) " + "FROM ReportModel n WHERE n.reportDate = :reportDate " + "GROUP BY n.exchangeCode")
+    List<ExchangeReportDTO> getGroupedReportByReportDate(@Param("reportDate") LocalDate reportDate);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate")
     List<ReportModel> getReportModelByReportDateRange(@Param("fromDate") LocalDate fromDate,@Param("toDate") LocalDate toDate);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate AND n.isApi=0 AND n.type IN ('1','2','4')")

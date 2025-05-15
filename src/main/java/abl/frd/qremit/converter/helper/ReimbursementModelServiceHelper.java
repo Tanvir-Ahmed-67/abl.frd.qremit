@@ -1,11 +1,18 @@
 package abl.frd.qremit.converter.helper;
 
 import abl.frd.qremit.converter.model.ReimbursementModel;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -79,6 +86,33 @@ public class ReimbursementModelServiceHelper {
         return csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
     }
     public static byte[] ReimbursementModelsToExcelForCocClaim(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+        try (CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT
+                .withHeader("BR CODE", "REF NO", "REMITTANCE", "INCENTIVE", "DATE", "EX CODE", "CONTACT NO", "REMITTER", "BENEFICIARY")
+                .withQuoteMode(QuoteMode.ALL))) {
+            for (ReimbursementModel model : reimbursementModelList) {
+                if (model.getMainAmount() != 0) {
+                    printer.printRecord(
+                            model.getBranchCode(),
+                            model.getTransactionNo(),
+                            model.getMainAmount(),
+                            model.getGovtIncentive(),
+                            model.getReimbursementDate().format(formatter),
+                            model.getExchangeCode(),
+                            model.getBeneficiaryAccount(),
+                            model.getRemitterName(),
+                            model.getBeneficiaryName()
+                    );
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException("Error writing CSV", e);
+        }
+        return out.toByteArray();
+    }
+    public static byte[] ReimbursementModelsToExcelForCocClaim_old(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         StringBuilder csvBuilder = new StringBuilder();
         // Add UTF-8 BOM so Notepad can read special characters
