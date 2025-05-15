@@ -115,6 +115,17 @@ public class CustomQueryRepository {
         params.put("1", branchCode);
         return getData(queryStr,params);
     }
+
+    public Map<String, Object> getBankListFromRouting(String bankCode){
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryStr = new StringBuilder("SELECT bank_code, bank_name FROM "+ this.routingTbl);
+        if(!bankCode.isEmpty()){
+            queryStr.append(" WHERE bank_code = ?");
+            params.put("1", bankCode);
+        }
+        queryStr.append(" GROUP BY bank_code");
+        return getData(queryStr.toString(), params);
+    }
     
 
     public Map<String,Object> getBranchDetailsFromSwiftCode(String swiftCode){

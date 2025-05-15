@@ -29,6 +29,10 @@ public class CustomQueryService {
         return customQueryRepository.getRoutingDetailsByAblBranchCode(branchCode);
     }
 
+    public Map<String, Object> getBankListFromRouting(String bankCode){
+        return customQueryRepository.getBankListFromRouting(bankCode);
+    }
+
     public Map<String, Object> getRoutingDetailsByRoutingNo(String routingNo){
         Map<String, Object> resp = new HashMap<>();
         if(routingNo.isEmpty()) return CommonService.getResp(1, "Routing No is Empty", null);

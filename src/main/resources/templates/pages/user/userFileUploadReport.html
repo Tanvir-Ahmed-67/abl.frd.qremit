@@ -28,10 +28,21 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-2 form-group" id="row_report_date">
+                            <div class="mb-3 col-md-2 form-group" id="row_report_date">
                                 <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" placeholder="Date" readonly="true">
                             </div>
                         </div>
+                        <div id="routing_div" class="hdiv">
+                            <div class="row">
+                                <div class="mb-3 form-group col-md-2"><label for="bank_code" class="form-label">Bank Name</label></div>
+                                <div class="mb-3 form-group col-md-4" id="row_bank_code">
+                                    <select class="form-select"  name="bank_code" id="bank_code" placeholder="Bank Name">
+                                        <option value="">Choose One</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="table-responsive">
                             <table class='table table-striped' id="user_upload_tbl" width="100%"></table>
                         </div>
