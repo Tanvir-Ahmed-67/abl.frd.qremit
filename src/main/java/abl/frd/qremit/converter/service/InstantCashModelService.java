@@ -81,10 +81,10 @@ public class InstantCashModelService {
                     instantCashModel.setUserModel(user);
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(instantCashModels, fileInfoModel, user, currentDateTime, 0);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(instantCashModels, fileInfoModel, user, currentDateTime, type);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(instantCashModels.size()));
-                fileInfoModel.setIsSettlement(0);
+                fileInfoModel.setIsSettlement(type); 
                 fileInfoModel.setInstantCashModel(instantCashModels);
    
                 // SAVING TO MySql Data Table
@@ -107,9 +107,8 @@ public class InstantCashModelService {
         LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
         Optional<InstantCashModel> duplicateData = Optional.empty();
-        CSVFormat csvFormat = (type == 1) ? CSVFormat.DEFAULT.withDelimiter('|'): CSVFormat.DEFAULT;
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            CSVParser csvParser = new CSVParser(fileReader, csvFormat.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())){
+            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())){
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             List<InstantCashModel> instantCashDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
@@ -123,9 +122,10 @@ public class InstantCashModelService {
             int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                String bankCode = (type == 1) ? csvRecord.get(9).trim(): csvRecord.get(8).trim();
+                String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
+                int length = csvRecord.size();
                 if(i == 1){
-                    Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
+                    Map<String, Object> apiCheckResp = checkInstantCashApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode);
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
@@ -133,7 +133,7 @@ public class InstantCashModelService {
                     }
                 }
                 String transactionNo = csvRecord.get(1).trim();
-                String amount = csvRecord.get(3).trim();
+                String amount = (type == 1) ? csvRecord.get(6).trim() : csvRecord.get(3).trim();
                 Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode, bankCode, transactionNo, amount);
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = csvRecord.get(0).trim();
@@ -174,40 +174,44 @@ public class InstantCashModelService {
     }
     
     public Map<String, Object> getCsvData(int type, CSVRecord csvRecord, String exchangeCode, String bankCode, String transactionNo, String amount){
-        String bankName = (type == 1) ? csvRecord.get(8).trim(): csvRecord.get(9).trim();
-        String remitterMobile = (type == 1) ? csvRecord.get(17).trim():"";
-        String beneficiaryMobile = (type == 1) ? csvRecord.get(12).trim():"";
-        String draweeBranchName = (type == 1) ? csvRecord.get(13).trim():"";
-        String draweeBranchCode = (type == 1) ? csvRecord.get(14).trim():"";
-        String purposeOfRemittance = (type == 1) ? csvRecord.get(15).trim():"";
-        String sourceOfIncome = (type == 1) ? csvRecord.get(16).trim():"";
-        
-        String format = (type == 1) ? "ddMMyy":"yyyy-MM-dd'T'HH:mm:ss.SSS";
-        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4),format);
+        String bankName = (type == 1) ? "Agrani Bank": csvRecord.get(9).trim();
+        String branchName = (type == 1) ? "Principal": csvRecord.get(10).trim();
+        String branchCode = (type == 1) ? "4006": CommonService.fixRoutingNo(csvRecord.get(11).trim());
+        String currrency = (type == 1) ? "BDT": csvRecord.get(2);
+        String remiterName = (type == 1) ? csvRecord.get(2) : csvRecord.get(5);
+        String beneficiaryName = (type == 1) ? csvRecord.get(7):csvRecord.get(6);
+        String beneficiaryAccount = (type == 1) ? csvRecord.get(5): csvRecord.get(7);
+
+        String format = (type == 1) ? "yyyy-MM-dd HH:mm:ss Z":"yyyy-MM-dd'T'HH:mm:ss.SSS";
+        String enteredDate = (type == 1) ? csvRecord.get(10): csvRecord.get(4);
+        LocalDate date = CommonService.convertStringToLocalDate(enteredDate,format);
+
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
-        data.put("currency", csvRecord.get(2));
+        data.put("currency", currrency);
         data.put("amount", amount);
         data.put("enteredDate", CommonService.convertLocalDateToString(date));
-        data.put("remitterName", csvRecord.get(5));
-        data.put("remitterMobile", remitterMobile);
-        data.put("beneficiaryName", csvRecord.get(6));
-        data.put("beneficiaryAccount", csvRecord.get(7).trim());
-        data.put("beneficiaryMobile", beneficiaryMobile);
+        data.put("remitterName", remiterName.trim());
+        data.put("remitterMobile", "");
+        data.put("beneficiaryName", beneficiaryName.trim());
+        data.put("beneficiaryAccount", beneficiaryAccount.trim());
         data.put("bankName", bankName);
         data.put("bankCode", bankCode);
-        data.put("branchName", csvRecord.get(10));
-        data.put("branchCode", CommonService.fixRoutingNo(csvRecord.get(11).trim()));
-        data.put("draweeBranchName", draweeBranchName);
-        data.put("draweeBranchCode", draweeBranchCode);
-        data.put("purposeOfRemittance", purposeOfRemittance);
-        data.put("sourceOfIncome", sourceOfIncome);
-        data.put("processFlag", "");
-        data.put("processedBy", "");
-        data.put("processedDate", "");
+        data.put("branchName", branchName);
+        data.put("branchCode", branchCode);
+        String[] fields = {"remitterMobile","beneficiaryMobile","draweeBranchName","draweeBranchCode","sourceOfIncome","processFlag","processedBy","processedDate"};
+        for(String field: fields)   data.put(field, "");
         return data;
     }
 
+    public Map<String, Object> checkInstantCashApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode){
+        Map<String, Object> resp = CommonService.getResp(0, "", null);
+        String msg = "You selected wrong file. Please select the correct file.";
+        if(!firstColumn.equals(nrtaCode))   return CommonService.getResp(1, msg, null);
+        if(type == 1 && length != 11)    resp = CommonService.getResp(1, msg, null);
+        else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
+        return resp;
+    }
 
 }
