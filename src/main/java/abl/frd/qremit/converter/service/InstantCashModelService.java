@@ -12,12 +12,8 @@ import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.InstantCashModel;
 import abl.frd.qremit.converter.model.User;
-import abl.frd.qremit.converter.repository.AccountPayeeModelRepository;
-import abl.frd.qremit.converter.repository.BeftnModelRepository;
-import abl.frd.qremit.converter.repository.CocModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.InstantCashModelRepository;
-import abl.frd.qremit.converter.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import java.util.*;
 @SuppressWarnings("unchecked")
@@ -25,14 +21,6 @@ import java.util.*;
 public class InstantCashModelService {
     @Autowired
     InstantCashModelRepository instantCashModelRepository;
-    @Autowired
-    OnlineModelRepository onlineModelRepository;
-    @Autowired
-    CocModelRepository cocModelRepository;
-    @Autowired
-    AccountPayeeModelRepository accountPayeeModelRepository;
-    @Autowired
-    BeftnModelRepository beftnModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
     @Autowired
