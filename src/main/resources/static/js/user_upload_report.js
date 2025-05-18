@@ -8,15 +8,30 @@ $(document).ready(function(){
     var pid = getParameterByName("id");
     var date = getParameterByName("date");
     $('#row_report_date').hide();
+    var load_data = 1;
+    if(type == 11 || type == 12)    load_data = 0;
     if(type == 11){
+        $(".page-header").html('');
         $('#routing_div').show();
         $('#bank_code').select2({ width: '100%' });
         var url = "/getBankList";
         var params = {'tdiv': '#bank_code', 'key':'bank_code','value': 'bank_name'};
         get_ajax(url,"",show_bank_list,fail_func,"get","json",params);
     }
+    if(type == 12){
+        $(".page-header").html('');
+        $('#exchange_div').show();
+        $('#exchange_code').select2({ width: '100%' });
+        var url = "/getExchangeListByUserId";
+        var params = {'tdiv': '#exchange_code', 'key':'exchangeCode','value': 'exchangeName'};
+        get_ajax(url,"",show_exchange_list,fail_func,"get","json",params);
+    }
 
     function show_bank_list(resp,params){
+        get_dropdown(resp.data, params);
+    }
+
+    function show_exchange_list(resp,params){
         get_dropdown(resp.data, params);
     }
 
@@ -72,12 +87,16 @@ $(document).ready(function(){
                 var url = "/getRouting" + params;
                 page_header = "Routing Number Search";
                 break;
+            case '12':
+                var url = "/getExchangeData" + params;
+                page_header = "Exchange House Wise Report";
+                break;
         }
         return {'url': url, 'page_header': page_header};
     }
 
     var url = "/getReportColumn?type=" + type;
-    if(type != 11)  user_upload_report_ui(url,type,date);
+    if(load_data == 1)  user_upload_report_ui(url,type,date);
     $(document).off('change','#report_date');
     $(document).on('change','#report_date', function(e){
         e.preventDefault();
@@ -90,6 +109,20 @@ $(document).ready(function(){
         e.preventDefault();
         var val = $(this).val();
         var params = "?bankCode=" + val;
+        user_upload_report_ui(url,type,"",params);
+    });
+
+    $(document).off('click', '#exchange_search');
+    $(document).on('click', '#exchange_search', function(e){
+        e.preventDefault();
+        var exchange_code = $('#exchange_code').val();
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        if(!exchange_code || !start_date || !end_date){
+            alert("Please Select Exchange Code or Start Date or End date");
+            return false;
+        }
+        var params = '?exchangeCode=' + exchange_code + '&startDate=' + start_date + '&endDate=' + end_date;
         user_upload_report_ui(url,type,"",params);
     });
 

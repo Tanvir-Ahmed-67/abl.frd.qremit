@@ -72,6 +72,7 @@ public class ReportController {
                 columnTitles = new String[] {"SL", "Exchange Code", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Total Amount", "Upload Date", "Action"};
                 break;
             case "2":
+            case "12":
                 columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","remitterName", "amount","processedDate","remType"};
                 columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Remitter Name","Amount","Processed Date","Type"};
                 break;
