@@ -94,6 +94,10 @@ public class ReportController {
                 columnData = new String[] {"sl", "exchangeCode", "exchangeName", "exchangeShortName", "nrtaCode", "status", "action"};
                 columnTitles = new String[] {"SL", "Exchange Code", "Exchange Name", "Exchange Short Name", "NRTA Code", "Status","Action"};
                 break;
+            case "11":
+                columnData = new String[] {"routing_no","bank_name", "branch_name", "dist_name"};
+                columnTitles = new String[] {"Routing No", "Bank Name", "Branch Name", "District",};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
@@ -974,6 +978,14 @@ public class ReportController {
         Map<String, Object> resp = new HashMap<>();
         if(routingNo.isEmpty() && bankCode.isEmpty())   return ResponseEntity.ok(CommonService.getResp(1, "Please select routing No or Bank code", null));
         resp = customQueryService.getRoutingDetails(routingNo, bankCode);
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping(value="/getBankList", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getBankListFromRouting(@RequestParam(defaultValue = "") String bankCode){
+        Map<String, Object> resp = new HashMap<>();
+        resp = customQueryService.getBankListFromRouting(bankCode);
         return ResponseEntity.ok(resp);
     }
 

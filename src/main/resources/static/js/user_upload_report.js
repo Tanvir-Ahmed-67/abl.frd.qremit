@@ -8,11 +8,23 @@ $(document).ready(function(){
     var pid = getParameterByName("id");
     var date = getParameterByName("date");
     $('#row_report_date').hide();
+    if(type == 11){
+        $('#routing_div').show();
+        $('#bank_code').select2({ width: '100%' });
+        var url = "/getBankList";
+        var params = {'tdiv': '#bank_code', 'key':'bank_code','value': 'bank_name'};
+        get_ajax(url,"",show_bank_list,fail_func,"get","json",params);
+    }
+
+    function show_bank_list(resp,params){
+        get_dropdown(resp.data, params);
+    }
+
     setTimeout(function(){
         $('#message').hide();
     }, 3000);
     
-    function get_report_url(type,date){
+    function get_report_url(type,date, params){
         switch(type){
             case '1':
             default:
@@ -56,21 +68,33 @@ $(document).ready(function(){
                 var url = "/getAllUsers?activeStatus=2";
                 page_header = "All Inactive Users";
                 break;
+            case '11':
+                var url = "/getRouting" + params;
+                page_header = "Routing Number Search";
+                break;
         }
         return {'url': url, 'page_header': page_header};
     }
 
     var url = "/getReportColumn?type=" + type;
-    user_upload_report_ui(url,type,date);
+    if(type != 11)  user_upload_report_ui(url,type,date);
     $(document).off('change','#report_date');
     $(document).on('change','#report_date', function(e){
         e.preventDefault();
         var val = $(this).val();
         user_upload_report_ui(url,type,val);
     });
+    
+    $(document).off('change', '#bank_code');
+    $(document).on('change', '#bank_code', function(e){
+        e.preventDefault();
+        var val = $(this).val();
+        var params = "?bankCode=" + val;
+        user_upload_report_ui(url,type,"",params);
+    });
 
-    function user_upload_report_ui(url,type,date){
-        var rdata = get_report_url(type,date);
+    function user_upload_report_ui(url,type,date, params){
+        var rdata = get_report_url(type,date, params);
         if(rdata.page_header)  $(".page-header").html(rdata.page_header);
         var report_url = rdata.url;
         var params = {'tbl': tbl,'url': report_url};
