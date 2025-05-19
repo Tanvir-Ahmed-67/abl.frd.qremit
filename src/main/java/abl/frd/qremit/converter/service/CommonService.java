@@ -513,7 +513,7 @@ public class CommonService {
 
     public static boolean checkAccountToBeOpened(String accountNo){
         accountNo = accountNo.toLowerCase();
-        if(accountNo.equals("Account to be opened") || accountNo.contains("a/c opened"))  return true;
+        if(accountNo.equals("account to be opened") || accountNo.contains("a/c opened"))  return true;
         return false;
     }
 
