@@ -112,29 +112,6 @@ public class ReimbursementModelServiceHelper {
         }
         return out.toByteArray();
     }
-    public static byte[] ReimbursementModelsToExcelForCocClaim_old(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        StringBuilder csvBuilder = new StringBuilder();
-        // Add UTF-8 BOM so Notepad can read special characters
-        //csvBuilder.append("\uFEFF");
-        // Header row
-        csvBuilder.append("BR CODE,REF NO,REMITTANCE,INCENTIVE,DATE,EX CODE,CONTACT NO,REMITTER,BENEFICIARY\n");
-        // Data rows
-        for (ReimbursementModel model : reimbursementModelList) {
-            if (model.getMainAmount() != 0) {
-                csvBuilder.append(model.getBranchCode().trim()).append(",")
-                        .append(model.getTransactionNo().trim()).append(",")
-                        .append(model.getMainAmount()).append(",")
-                        .append(model.getGovtIncentive()).append(",")
-                        .append(model.getReimbursementDate().format(formatter)).append(",")
-                        .append(model.getExchangeCode().trim()).append(",")
-                        .append(model.getBeneficiaryAccount().trim()).append(",")
-                        .append(model.getRemitterName().trim()).append(",")
-                        .append(model.getBeneficiaryName().trim()).append("\n");
-            }
-        }
-        return csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
-    }
     public static byte[] ReimbursementModelsForAgraniIncentiveToExcel(List<ReimbursementModel> reimbursementModelList, LocalDate localDate) {
         StringBuilder csvBuilder = new StringBuilder();
         // Add UTF-8 BOM so Notepad displays Unicode characters correctly

@@ -136,26 +136,6 @@ public class ReportService {
         report.sort(Comparator.comparing(ExchangeReportDTO::getExchangeCode));
         return report;
     }
-
-    public List<ExchangeReportDTO> getAllDailyReportData(String date){
-        List<ExchangeReportDTO> report = new ArrayList<>();
-        LocalDate reportDate = LocalDate.parse(date);
-        List<ReportModel> reportModelsList = reportModelRepository.getReportModelByReportDate(reportDate);
-        if(isListValid(reportModelsList)){
-            for(ReportModel reportModel:reportModelsList){
-                ExchangeReportDTO exchangeReportDTO = new ExchangeReportDTO();
-                exchangeReportDTO.setExchangeCode(reportModel.getExchangeCode());
-                exchangeReportDTO.setTransactionNo(reportModel.getTransactionNo());
-                exchangeReportDTO.setAmount(reportModel.getAmount());
-                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
-                exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
-                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
-                exchangeReportDTO.setEnteredDate(reportModel.getDownloadDateTime().toLocalDate());
-                report.add(exchangeReportDTO);
-            }
-        }
-        return report;
-    }
     public List<ExchangeReportDTO> generateDetailsOfDailyRemittances(String fromDate, String toDate) {
         List<ExchangeReportDTO> exchangeReportDTOSList = getAllDailyReportDataByDateRange(fromDate, toDate);
         return exchangeReportDTOSList;
@@ -302,13 +282,13 @@ public class ReportService {
                 exchangeReportDTO.setGovtIncentive(reportModel.getGovtIncentive());
                 exchangeReportDTO.setAgraniIncentive(reportModel.getAgraniIncentive());
                 exchangeReportDTO.setIncentive(reportModel.getIncentive());
-                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
+                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
                 exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
                 exchangeReportDTO.setBankCode(reportModel.getBankCode());
                 exchangeReportDTO.setBankName(reportModel.getBankName());
                 exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
                 exchangeReportDTO.setBranchName(reportModel.getBranchName());
-                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
                 exchangeReportDTO.setMoNumber(reportModel.getMoNumber());
                 exchangeReportDTO.setEnteredDateForSearchFile(reportModel.getEnteredDate());
                 exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
@@ -338,13 +318,13 @@ public class ReportService {
                 exchangeReportDTO.setGovtIncentive(reportModel.getGovtIncentive());
                 exchangeReportDTO.setAgraniIncentive(reportModel.getAgraniIncentive());
                 exchangeReportDTO.setIncentive(reportModel.getIncentive());
-                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
+                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
                 exchangeReportDTO.setBeneficiaryAccount(reportModel.getBeneficiaryAccount());
                 exchangeReportDTO.setBankCode(reportModel.getBankCode());
                 exchangeReportDTO.setBankName(reportModel.getBankName());
                 exchangeReportDTO.setBranchCode(reportModel.getBranchCode());
                 exchangeReportDTO.setBranchName(reportModel.getBranchName());
-                exchangeReportDTO.setRemitterName(reportModel.getRemitterName());
+                exchangeReportDTO.setBeneficiaryName(reportModel.getBeneficiaryName());
                 exchangeReportDTO.setMoNumber(reportModel.getMoNumber());
                 exchangeReportDTO.setEnteredDateForSearchFile(reportModel.getEnteredDate());
                 exchangeReportDTO.setVoucherDate(reportModel.getReportDate());
@@ -357,32 +337,7 @@ public class ReportService {
     }
     public List<ExchangeReportDTO> generateSummaryOfDailyStatement(String date) {
         List<ExchangeReportDTO> report = getGroupedReportByReportDate(date);
-        //report = aggregateExchangeReports(report, date);
         return report;
-    }
-    public List<ExchangeReportDTO> aggregateExchangeReports(List<ExchangeReportDTO> exchangeReports, String date) {
-        // Group by exchangeCode
-        return exchangeReports.stream()
-                .collect(Collectors.groupingBy(ExchangeReportDTO::getExchangeCode))
-                .entrySet().stream()
-                .map(entry -> {
-                    String exchangeCode = entry.getKey();
-                    List<ExchangeReportDTO> reportsWithSameCode = entry.getValue();
-
-                    // Create a new ExchangeReportDTO for the aggregated result
-                    ExchangeReportDTO aggregatedReport = new ExchangeReportDTO();
-                    aggregatedReport.setExchangeCode(exchangeCode);
-                    aggregatedReport.setExchangeName(reportsWithSameCode.get(0).getExchangeName());  // Assuming same exchangeName
-                    // Aggregate amount and count the rows
-                    reportsWithSameCode.forEach(report -> {
-                        aggregatedReport.setVoucherDate(LocalDate.parse(date));
-                        aggregatedReport.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(aggregatedReport.getExchangeCode()).getNrtaCode());
-                        aggregatedReport.doSum(report.getAmount());
-                        aggregatedReport.doCount();
-                    });
-                    return aggregatedReport;
-                })
-                .collect(Collectors.toList());
     }
 
     // Utility method to check if a list is valid (not null, not empty, and size > 0)
