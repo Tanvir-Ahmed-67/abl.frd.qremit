@@ -45,7 +45,7 @@
 				<expression><![CDATA[$F{amount}]]></expression>
 			</element>
 			<element kind="textField" x="500" y="0" width="100" height="30" blankWhenNull="true">
-				<expression><![CDATA[$F{beneficiaryName}]]></expression>
+				<expression><![CDATA[$F{remitterName}]]></expression>
 			</element>
 			<element kind="textField" x="600" y="0" width="100" height="30" blankWhenNull="true">
 				<expression><![CDATA[$F{exchangeCode}.toString()]]></expression>
@@ -63,7 +63,7 @@
 				<expression><![CDATA[$F{beneficiaryAccount}.toString()]]></expression>
 			</element>
 			<element kind="textField" x="1100" y="0" width="100" height="30" blankWhenNull="true">
-				<expression><![CDATA[$F{remitterName}.toString()]]></expression>
+				<expression><![CDATA[$F{beneficiaryName}.toString()]]></expression>
 			</element>
 			<element kind="staticText" x="1200" y="0" width="100" height="30" hTextAlign="Center" vTextAlign="Middle">
 				<text><![CDATA[ ]]></text>
