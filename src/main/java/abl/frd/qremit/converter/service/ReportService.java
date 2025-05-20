@@ -439,14 +439,15 @@ public class ReportService {
             FileInfoModel fileInfoModel = (FileInfoModel) settlement.get("fileInfoModel");
             if(fileInfoModel == null)   continue;   //for empty fileinfo no data will be generated
             int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
-            int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
-            int accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
+            //int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
+            //int accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
             if(onlineCount >= 1){
                 List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(onlineModelList, "1");
                 count += resp.size();
                 if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
             }
+            /*
             if(accPayeeCount >= 1){
                 List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(accountPayeeModelList, "2");
@@ -459,6 +460,7 @@ public class ReportService {
                 count += resp.size();
                 if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
             }
+            */
             if(("333333").equals(fileInfoModel.getExchangeCode())){
                 List<CocPaidModel> cocPaidModelList = cocPaidModelService.getProcessedDataByFileId(fileInfoModel.getId(), 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
                 resp = setReportModelData(cocPaidModelList, "4");

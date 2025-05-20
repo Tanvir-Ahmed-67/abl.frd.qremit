@@ -292,7 +292,10 @@ public class DynamicOperationService {
                 
                 List<Object> modelInstanceList = new ArrayList<>();
                 modelInstanceList.add(modelInstance);
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, 0);
+                int isProcessed = 0;
+                //for edit online data from API file will be only isProcessed = 1
+                if(fileInfoModel.getIsSettlement() == 1 && ("1").equals(typeFlag) && !("333333").equals(fileInfoModel.getExchangeCode()))  isProcessed = 1;  
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(modelInstanceList, fileInfoModel, user, currentDateTime, isProcessed);
                 fileInfoModel = (FileInfoModel)  convertedDataModels.get("fileInfoModel");     
                 repository.save(modelInstance);
                 resp = CommonService.getResp(0, "Information saved successfully", null);
