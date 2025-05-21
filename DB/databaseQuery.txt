@@ -65,3 +65,6 @@ UPDATE `qremit_archive_2024` set exchange_code = '7010226' where exchange_code =
 UPDATE `qremit_archive_2024` set exchange_code = '7010237' where exchange_code = '701023724';
 UPDATE `qremit_archive_2024` set exchange_code = '7119' where exchange_code = '7009';
 SELECT DISTINCT exchange_code FROM `qremit_archive_2024` exchange_code where exchange_code not in (SELECT exchange_code FROM ex_house_list);
+
+UPDATE `ex_house_list` set is_settlement = 1 where exchange_code = '7010260';
+UPDATE `ex_house_list` set is_settlement = 1 where exchange_code = '7010228';

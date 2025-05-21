@@ -1,6 +1,7 @@
 package abl.frd.qremit.converter.controller;
 import abl.frd.qremit.converter.helper.MyUserDetails;
 import abl.frd.qremit.converter.model.User;
+import abl.frd.qremit.converter.service.AgraniMalaysiaModelService;
 import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ import java.util.*;
 public class AgraniMalaysiaModelController {
     private final MyUserDetailsService myUserDetailsService;
     @Autowired
-    InfinityMalaysiaModelService agraniMalaysiaModelService;
+    //InfinityMalaysiaModelService agraniMalaysiaModelService;
+    AgraniMalaysiaModelService agraniMalaysiaModelService;
     @Autowired
     CommonService commonService;
     

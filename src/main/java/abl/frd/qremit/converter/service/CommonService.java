@@ -512,7 +512,8 @@ public class CommonService {
     }
 
     public static boolean checkAccountToBeOpened(String accountNo){
-        if(accountNo.equalsIgnoreCase("Account to be opened"))  return true;
+        accountNo = accountNo.toLowerCase();
+        if(accountNo.equals("account to be opened") || accountNo.contains("a/c opened"))  return true;
         return false;
     }
 
@@ -1408,10 +1409,14 @@ public class CommonService {
             if(checkType == 1){
                 int allowedType = (type == 1) ? 1:3;  //for betn 3
                 if(!convertStringToInt(typeFlag).equals(allowedType)){
-                    msg = "Invalid Remittence Type for ";
-                    msg += (type == 1) ? "API": "BEFTN";
-                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
-                    continue;
+                    if(exchangeCode.equals("7010228") && checkAccountToBeOpened(beneficiaryAccount)){
+                        //special case for ARH malaysia. A/C to be opened will be processed
+                    }else{
+                        msg = "Invalid Remittance Type for ";
+                        msg += (type == 1) ? "API": "BEFTN";
+                        addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
                 }
             }
             try{
