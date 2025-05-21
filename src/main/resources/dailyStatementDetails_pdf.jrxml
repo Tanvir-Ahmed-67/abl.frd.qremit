@@ -19,7 +19,7 @@
 	<background splitType="Stretch"/>
 	<title height="80" splitType="Stretch">
 		<element kind="textField" x="0" y="0" width="555" height="30" fontSize="18.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<expression><![CDATA["Agrani Bank PLC"]]></expression>
+			<expression><![CDATA["Agrani Bank PLC."]]></expression>
 		</element>
 		<element kind="textField" x="0" y="23" width="555" height="30" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<expression><![CDATA["Daily Remittance Details"]]></expression>

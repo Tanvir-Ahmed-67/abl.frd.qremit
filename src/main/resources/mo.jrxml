@@ -140,7 +140,7 @@
 			<element kind="line" x="421" y="739" width="121" height="1"/>
 			<element kind="line" x="18" y="740" width="121" height="1"/>
 			<element kind="textField" x="178" y="3" width="204" height="27" fontSize="16.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA["Agrani Bank PLC"]]></expression>
+				<expression><![CDATA["Agrani Bank PLC."]]></expression>
 			</element>
 			<!--<element kind="staticText" x="221" y="30" width="100" height="14" bold="true" hTextAlign="Center">
 				<text><![CDATA[DUPLICATE]]></text>-->
