@@ -67,6 +67,8 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     @Query("UPDATE BeftnModel n SET n.incentive=:incentive WHERE n.id in :ids")
     int updateNotProcessingIncentive(@Param("ids") List<Integer> ids, @Param("incentive") Double incentive);
     BeftnModel findByIdAndIsDownloaded(int id, int isDownloaded);
+    @Query("SELECT n FROM BeftnModel n WHERE n.exchangeCode = :exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate")
+    List<BeftnModel> findBeftnModelByExchangeCodeAndUploadDateTime(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 }
 /*

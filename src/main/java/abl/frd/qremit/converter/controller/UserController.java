@@ -819,7 +819,9 @@ public class UserController {
             Set<String> exchangeCodeSet = Arrays.stream(userExchangeCode.split(",")).map(String::trim).collect(Collectors.toSet());
             exchangeHouseModelList = exchangeHouseModelService.findAllByExchangeCodeIn(exchangeCodeSet);
         }else{
-
+            if((Integer) role.get("isAdmin") == 1 || (Integer) role.get("isSuperAdmin") == 1){
+                exchangeHouseModelList = exchangeHouseModelService.loadAllActiveExchangeHouse();
+            }
         }
         if(exchangeHouseModelList.isEmpty())    return ResponseEntity.ok(resp);
         String[] specialExCodes = {"111111", "222222", "333333", "444444"};

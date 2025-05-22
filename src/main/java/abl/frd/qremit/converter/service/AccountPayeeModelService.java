@@ -110,4 +110,8 @@ public class AccountPayeeModelService {
     public List<AccountPayeeModel> findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
         return accountPayeeModelRepository.findAccountPayeeModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
     }
+
+    public List<AccountPayeeModel> findAccountPayeeModelByExchangeCodeAndUploadDateTime(String exchangeCode, LocalDateTime startDate, LocalDateTime endDate){
+        return accountPayeeModelRepository.findAccountPayeeModelByExchangeCodeAndUploadDateTime(exchangeCode,startDate,endDate);
+    }
 }
