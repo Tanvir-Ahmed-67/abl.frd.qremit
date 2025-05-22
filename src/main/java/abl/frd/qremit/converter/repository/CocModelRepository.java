@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -32,4 +33,6 @@ public interface CocModelRepository extends JpaRepository<CocModel, Integer> {
     @Query("DELETE FROM CocModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
     CocModel findByIdAndIsDownloaded(int id, int isDownloaded);
+    @Query("SELECT n FROM CocModel n WHERE n.exchangeCode = :exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate")
+    List<CocModel> findCocModelByExchangeCodeAndUploadDateTime(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

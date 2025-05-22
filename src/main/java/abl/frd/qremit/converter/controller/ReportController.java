@@ -796,16 +796,15 @@ public class ReportController {
     //for getting live data exchange wise
     @GetMapping(value="/getExchangeData", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
+    public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam Map<String, String> formData){
         Map<String, Object> resp = new HashMap<>();
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         int userId = (int) userData.get("userid");
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
-        resp = reportService.getExchangeWiseData(date, userId);
+        resp = reportService.getExchangeWiseData(formData, userId);
         return ResponseEntity.ok(resp);
     }
 
