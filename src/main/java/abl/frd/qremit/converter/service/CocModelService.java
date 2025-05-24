@@ -5,6 +5,7 @@ import abl.frd.qremit.converter.repository.CocModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -80,5 +81,9 @@ public class CocModelService {
 
     public List<CocModel> findCocModelByFileInfoModelIdAndIsDownloaded(int fileInfoModelId){
         return cocModelRepository.findCocModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
+    }
+
+    public List<CocModel> findCocModelByExchangeCodeAndUploadDateTime(String exchangeCode, LocalDateTime startDate, LocalDateTime endDate){
+        return cocModelRepository.findCocModelByExchangeCodeAndUploadDateTime(exchangeCode, startDate, endDate);
     }
 }

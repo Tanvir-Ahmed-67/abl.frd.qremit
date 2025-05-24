@@ -55,4 +55,6 @@ public interface OnlineModelRepository extends JpaRepository<OnlineModel, Intege
     @Query("DELETE FROM OnlineModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
     OnlineModel findByIdAndIsDownloaded(int id, int isDownloaded);
+    @Query("SELECT n FROM OnlineModel n WHERE n.exchangeCode = :exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate")
+    List<OnlineModel> findOnlineModelByExchangeCodeAndUploadDateTime(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

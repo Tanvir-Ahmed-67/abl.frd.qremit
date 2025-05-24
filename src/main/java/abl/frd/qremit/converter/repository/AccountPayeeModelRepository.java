@@ -51,4 +51,6 @@ public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeM
     @Query("DELETE FROM AccountPayeeModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
     AccountPayeeModel findByIdAndIsDownloaded(int id, int isDownloaded);
+    @Query("SELECT n FROM AccountPayeeModel n WHERE n.exchangeCode = :exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate")
+    List<AccountPayeeModel> findAccountPayeeModelByExchangeCodeAndUploadDateTime(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

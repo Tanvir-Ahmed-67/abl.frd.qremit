@@ -1044,12 +1044,77 @@ public class ReportService {
         return resp;
     }
 
-    public Map<String, Object> getExchangeWiseData(String date, int userId){
+    public Map<String, Object> getExchangeWiseData(Map<String, String> formData, int userId){
         Map<String, Object> resp = new HashMap<>();
-        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
-        LocalDateTime starDateTime = (LocalDateTime) dateTime.get("startDateTime");
-        LocalDateTime enDateTime = (LocalDateTime) dateTime.get("endDateTime");
-        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
+        LocalDateTime starDate = CommonService.convertStringToDate(formData.get("startDate") + " 00:00:00");
+        LocalDateTime enDateTime = CommonService.convertStringToDate(formData.get("endDate") + " 23:59:59");
+        String exchangeCode = formData.get("exchangeCode");
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        int sl = 0;
+        Double totalAmount = 0.0;
+        List<OnlineModel> onlineModelList = onlineModelService.findOnlineModelByExchangeCodeAndUploadDateTime(exchangeCode, starDate, enDateTime);
+        resp = processExchangeWiseData(onlineModelList, dataList, "1",  sl, totalAmount);
+        sl = (Integer) resp.get("sl");
+        totalAmount = (Double)  resp.get("totalAmount");
+        dataList = (List<Map<String, Object>>) resp.get("dataList");
+        List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.findAccountPayeeModelByExchangeCodeAndUploadDateTime(exchangeCode, starDate, enDateTime);
+        resp = processExchangeWiseData(accountPayeeModelList, dataList, "2",  sl, totalAmount);
+        sl = (Integer) resp.get("sl");
+        totalAmount = (Double)  resp.get("totalAmount");
+        dataList = (List<Map<String, Object>>) resp.get("dataList");
+        List<BeftnModel> beftnModelList = beftnModelService.findBeftnModelByExchangeCodeAndUploadDateTime(exchangeCode, starDate, enDateTime);
+        resp = processExchangeWiseData(beftnModelList, dataList, "3",  sl, totalAmount);
+        sl = (Integer) resp.get("sl");
+        totalAmount = (Double)  resp.get("totalAmount");
+        dataList = (List<Map<String, Object>>) resp.get("dataList");
+        List<CocModel> cocModelList = cocModelService.findCocModelByExchangeCodeAndUploadDateTime(exchangeCode, starDate, enDateTime);
+        resp = processExchangeWiseData(cocModelList, dataList, "4",  sl, totalAmount);
+        sl = (Integer) resp.get("sl");
+        totalAmount = (Double)  resp.get("totalAmount");
+        dataList = (List<Map<String, Object>>) resp.get("dataList");
+        Map<String, Object> totalMap = new HashMap<>();
+        String[] fields = {"sl","transactionNo","exchangeCode","branchName","beneficiaryName","bankName","branchCode","remitterName","processedDate","remType"};
+        for(String field: fields)   totalMap.put(field, "");
+        String totalAmountStr = CommonService.convertNumberFormat(totalAmount, 2);
+        totalMap.put("amount", CommonService.generateClassForText(totalAmountStr,"fw-bold"));
+        totalMap.put("beneficiaryAccountNo", CommonService.generateClassForText("Total","fw-bold"));
+        dataList.add(totalMap);
+        resp.put("data", dataList);
+        return resp;
+    }
+
+    public <T> Map<String, Object> processExchangeWiseData(List<T> modelList,List<Map<String, Object>> dataList, String type, int sl, Double totalAmount){
+        Map<String, Object> resp = new HashMap<>();
+        Map<String, Object> remType = CommonService.getRemittanceTypes();
+        if(modelList != null && !modelList.isEmpty()){
+            for(T model: modelList){
+                Map<String, Object> row = new HashMap<>();
+                try{
+                    String branchMethod = (("3").equals(type)) ? "getRoutingNo":"getBranchCode";
+                    Double amount = (Double) CommonService.getPropertyValue(model, "getAmount");
+                    totalAmount += amount;
+                    LocalDateTime downloadDateTime = (LocalDateTime) CommonService.getPropertyValue(model, "getDownloadDateTime");
+                    row.put("transactionNo", (String) CommonService.getPropertyValue(model, "getTransactionNo"));
+                    row.put("exchangeCode", (String) CommonService.getPropertyValue(model, "getExchangeCode"));
+                    row.put("beneficiaryAccountNo", (String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
+                    row.put("beneficiaryName", (String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
+                    row.put("bankName", (String) CommonService.getPropertyValue(model, "getBankName"));
+                    row.put("branchName", (String) CommonService.getPropertyValue(model, "getBranchName"));
+                    row.put("branchCode", (String) CommonService.getPropertyValue(model, branchMethod));
+                    row.put("amount", amount);
+                    row.put("remitterName", (String) CommonService.getPropertyValue(model, "getRemitterName"));
+                    row.put("processedDate", (String) CommonService.convertDateToString(downloadDateTime));
+                    row.put("remType", remType.get(type));
+                    row.put("sl", ++sl);
+                    dataList.add(row);
+                }catch(Exception e){
+                    
+                }
+            }
+        }
+        resp.put("sl", sl);
+        resp.put("totalAmount", totalAmount);
+        resp.put("dataList", dataList);
         return resp;
     }
 
