@@ -99,6 +99,10 @@ public class ReportController {
                 columnData = new String[] {"routing_no","bank_name", "branch_name", "dist_name"};
                 columnTitles = new String[] {"Routing No", "Bank Name", "Branch Name", "District",};
                 break;
+            case "13":
+                columnData = new String[] {"transactionNo", "reportDate", "amount", "beneficiaryAccountNo", "beneficiaryName"};
+                columnTitles = new String[] {"Transaction No", "Report Date", "Amount", "Account No",  "Beneficiary Name"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
@@ -362,14 +366,6 @@ public class ReportController {
         
         resp.put("data", dataList);
         return resp;
-        /*
-        model.addAttribute("summaryReportContent", exchangeReport);
-        model.addAttribute("grandTotalAmount", commaFormattedGrandTotalAmount);
-        model.addAttribute("grandTotalRemittances", grandTotalRemittances);
-        model.addAttribute("date", date);
-        System.out.println(model);
-        return "report/summaryOfDailyRemittance";
-        */
     }
 
     public Map<String, Object> calculateTotalSummaryOfDailyStatemen(String totalAmount, String totalRemittance){
@@ -805,6 +801,19 @@ public class ReportController {
         int userId = (int) userData.get("userid");
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
         resp = reportService.getExchangeWiseData(formData, userId);
+        return ResponseEntity.ok(resp);
+    }
+    @GetMapping(value="/getMonthlyData", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getExchangeWiseMonthlyData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam Map<String, String> formData){
+        Map<String, Object> resp = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        int userId = (int) userData.get("userid");
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
+        resp = reportService.getExchangeWiseMonthlyData(formData, userId);
         return ResponseEntity.ok(resp);
     }
 

@@ -9,7 +9,8 @@ $(document).ready(function(){
     var date = getParameterByName("date");
     $('#row_report_date').hide();
     var load_data = 1;
-    if(type == 11 || type == 12)    load_data = 0;
+    const hTypes = ["11","12","13"];
+    if(hTypes.includes(type))   load_data = 0;  
     if(type == 11){
         $(".page-header").html('');
         $('#routing_div').show();
@@ -18,7 +19,7 @@ $(document).ready(function(){
         var params = {'tdiv': '#bank_code', 'key':'bank_code','value': 'bank_name'};
         get_ajax(url,"",show_bank_list,fail_func,"get","json",params);
     }
-    if(type == 12){
+    if(type == 12 || type == 13){
         $(".page-header").html('');
         $('#exchange_div').show();
         $('#exchange_code').select2({ width: '100%' });
@@ -88,8 +89,10 @@ $(document).ready(function(){
                 page_header = "Routing Number Search";
                 break;
             case '12':
-                var url = "/getExchangeData" + params;
-                page_header = "Exchange House Wise Report";
+            case '13':
+                var url = "/getMonthlyData" + params;
+                if(type == '12')    page_header = "Exchange House Wise Report";
+                else page_header = "Exchange House Wise Monthly Report";
                 break;
         }
         return {'url': url, 'page_header': page_header};
