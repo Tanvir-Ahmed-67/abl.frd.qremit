@@ -1086,10 +1086,20 @@ public class ReportService {
     public <T> Map<String, Object> processExchangeWiseData(List<T> modelList,List<Map<String, Object>> dataList, String type, int sl, Double totalAmount){
         Map<String, Object> resp = new HashMap<>();
         Map<String, Object> remType = CommonService.getRemittanceTypes();
+        String types = type;
         if(modelList != null && !modelList.isEmpty()){
             for(T model: modelList){
                 Map<String, Object> row = new HashMap<>();
                 try{
+                    String reportDateStr = "";
+                    if(("").equals(type)){
+                        types = (String) CommonService.getPropertyValue(model, "getType");
+                        LocalDate reportDate = (LocalDate) CommonService.getPropertyValue(model, "getReportDate");
+                        reportDateStr = CommonService.convertLocalDateToString(reportDate);
+                    }else{
+                        LocalDateTime reportDate = (LocalDateTime) CommonService.getPropertyValue(model, "getReportDate");
+                        reportDateStr = CommonService.convertDateToString(reportDate, "yyyy-MM-dd");
+                    }
                     String branchMethod = (("3").equals(type)) ? "getRoutingNo":"getBranchCode";
                     Double amount = (Double) CommonService.getPropertyValue(model, "getAmount");
                     totalAmount += amount;
@@ -1104,7 +1114,8 @@ public class ReportService {
                     row.put("amount", amount);
                     row.put("remitterName", (String) CommonService.getPropertyValue(model, "getRemitterName"));
                     row.put("processedDate", (String) CommonService.convertDateToString(downloadDateTime));
-                    row.put("remType", remType.get(type));
+                    row.put("reportDate", reportDateStr);
+                    row.put("remType", remType.get(types));
                     row.put("sl", ++sl);
                     dataList.add(row);
                 }catch(Exception e){
@@ -1115,6 +1126,19 @@ public class ReportService {
         resp.put("sl", sl);
         resp.put("totalAmount", totalAmount);
         resp.put("dataList", dataList);
+        return resp;
+    }
+
+    public Map<String, Object> getExchangeWiseMonthlyData(Map<String, String> formData, int userId){
+        Map<String, Object> resp = new HashMap<>();
+        LocalDate starDate = CommonService.convertStringToLocalDate(formData.get("startDate"),"yyyy-MM-dd");
+        LocalDate enDateTime = CommonService.convertStringToLocalDate(formData.get("endDate"), "yyyy-MM-dd");
+        String exchangeCode = formData.get("exchangeCode");
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        List<ReportModel> reportModelList = reportModelRepository.getReportModelByExchangeCodeAndReportDate(exchangeCode, starDate, enDateTime);
+        resp = processExchangeWiseData(reportModelList, dataList, "",  0, 0.0);
+        resp.put("data", resp.get("dataList"));
+        resp.remove("dataList");
         return resp;
     }
 
