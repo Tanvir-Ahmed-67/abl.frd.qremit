@@ -161,10 +161,6 @@ public class AlBiladModelService {
         String remittanceType = line.substring(160, 195).trim();
         String branchName = line.substring(230, 265).trim();
         String branchCode = line.substring(265, 300).trim();
-        if("0000".equals(branchCode)){
-            branchCode = "4006";
-            branchName = "Principal Branch";
-        }
         branchCode = CommonService.fixRoutingNo(branchCode);
         String bankStr = line.substring(300,335).trim();
         String branch2 = line.substring(580, 615).trim();
