@@ -162,6 +162,10 @@ public class AlBiladModelService {
         String branchName = line.substring(230, 265).trim();
         String branchCode = line.substring(265, 300).trim();
         branchCode = CommonService.fixRoutingNo(branchCode);
+        if(branchCode.equals("0000")){
+            branchCode = "4006";
+            branchName = "Principal";
+        }
         String bankStr = line.substring(300,335).trim();
         String branch2 = line.substring(580, 615).trim();
         Map<String, Object> bank = getBankDetails(bankStr,branchName, branchCode, branch2);

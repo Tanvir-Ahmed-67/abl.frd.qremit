@@ -570,7 +570,7 @@ public class CommonService {
         fileInfoModel.setOnlineModelList(onlineModelList);
         Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
         Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
-
+        String branchCode = "";
         List<Map<String, Object>> routingData = new ArrayList<>();
         if(!accountPayeeModelList.isEmpty() || !onlineModelList.isEmpty()){
             routingData = customQueryService.getRoutingDetailsByBankCode("010");
@@ -605,13 +605,17 @@ public class CommonService {
             for (OnlineModel onlineModel : onlineModelList) {
                 onlineModel.setFileInfoModel(fileInfoModel);
                 onlineModel.setUserModel(user);
+                branchCode = onlineModel.getBranchCode();
+                if(branchCode.isEmpty()){
+                    onlineModel.setBranchCode("4006");
+                    onlineModel.setBranchName("Principal");
+                }
                 if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
-                Map<String, Object> rdata = convertAblRoutingToBranchCode(onlineModel.getBranchCode(), routingData);
+                Map<String, Object> rdata = convertAblRoutingToBranchCode(branchCode, routingData);
                 if(!rdata.isEmpty() && isProcessed == 0){
                     onlineModel.setBranchCode(rdata.get("branchCode").toString());
                     onlineModel.setBranchName(rdata.get("branchName").toString());
                 }
-                
                 totalAmount += onlineModel.getAmount();
             }
         }
@@ -1304,7 +1308,7 @@ public class CommonService {
             " TOURS", " NETWORK", " FARM "," ASSETS", " ASSET", " SOLUTIONS", " FUND", " ELECTRON", " SECURITIES", " EQUIPMENT", " COMPENSATION", "DEATH ", " GALLERY", " HOUSE", "M/S ", " BANGLADESH", 
             " BD", " LIMITED", " OVERSEAS", " DAIRY", " COLLECTION", " RICE", " AGENCY", " TEXTILE", " VARAITY", " MEDICAL", " HALL", " PHARMA", " OPTICAL", "PRIZE", " FAIR ",
             " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", " FURNITURE", " PURBACHAL", 
-            "PURBACHAL ","PROBASHI", " PALLI", " GLOBAL", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION"
+            "PURBACHAL ","PROBASHI", " PALLI", " GLOBAL", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION","KHAMAR"
         };
         return keywords;
     }
