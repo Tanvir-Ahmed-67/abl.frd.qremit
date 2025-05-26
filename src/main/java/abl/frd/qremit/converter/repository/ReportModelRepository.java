@@ -47,6 +47,8 @@ public interface ReportModelRepository  extends JpaRepository<ReportModel, Integ
     int updateMoNumberForAllApi(@Param("moNumber") String moNumber, @Param("reportDate") LocalDate reportDate);
     @Query("SELECT r.type, r.isApi, COUNT(r), SUM(r.amount) FROM ReportModel r WHERE r.reportDate = :reportDate GROUP BY r.type,r.isApi")
     Object[] getAllSummaryForMo(@Param("reportDate")LocalDate reportDate);
+    @Query("SELECT n FROM ReportModel n WHERE n.exchangeCode = :exchangeCode AND n.reportDate BETWEEN :startDate AND :endDate")
+    List<ReportModel> getReportModelByExchangeCodeAndReportDate(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
 /*
 Mo Generating Logic For Type. There is a method in commonservice.
