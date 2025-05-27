@@ -68,3 +68,4 @@ SELECT DISTINCT exchange_code FROM `qremit_archive_2024` exchange_code where exc
 
 UPDATE `ex_house_list` set is_settlement = 1 where exchange_code = '7010260';
 UPDATE `ex_house_list` set is_settlement = 1 where exchange_code = '7010228';
+UPDATE ex_house_list set `repository_name` = 'arhMalaysiaModelRepository', class_name = 'ArhMalaysiaModel' WHERE exchange_code = '7010228';

@@ -1,7 +1,7 @@
 package abl.frd.qremit.converter.controller;
 import abl.frd.qremit.converter.helper.MyUserDetails;
 import abl.frd.qremit.converter.model.User;
-import abl.frd.qremit.converter.service.AgraniMalaysiaModelService;
+import abl.frd.qremit.converter.service.ArhMalaysiaModelService;
 import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,20 +15,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import abl.frd.qremit.converter.service.InfinityMalaysiaModelService;
 import java.util.*;
 
 @Controller
-public class AgraniMalaysiaModelController {
+public class ArhMalaysiaModelController {
     private final MyUserDetailsService myUserDetailsService;
     @Autowired
     //InfinityMalaysiaModelService agraniMalaysiaModelService;
-    AgraniMalaysiaModelService agraniMalaysiaModelService;
+    ArhMalaysiaModelService agraniMalaysiaModelService;
     @Autowired
     CommonService commonService;
     
     @Autowired
-    public AgraniMalaysiaModelController(MyUserDetailsService myUserDetailsService){
+    public ArhMalaysiaModelController(MyUserDetailsService myUserDetailsService){
         this.myUserDetailsService = myUserDetailsService;
     }
     
