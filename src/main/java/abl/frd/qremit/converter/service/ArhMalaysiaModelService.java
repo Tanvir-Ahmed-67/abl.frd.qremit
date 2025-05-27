@@ -2,11 +2,11 @@ package abl.frd.qremit.converter.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import abl.frd.qremit.converter.model.AgraniMalaysiaModel;
+import abl.frd.qremit.converter.model.ArhMalaysiaModel;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
-import abl.frd.qremit.converter.repository.AgraniMalaysiaModelRepository;
+import abl.frd.qremit.converter.repository.ArhMalaysiaModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 
@@ -16,9 +16,9 @@ import java.time.*;
 import java.util.*;
 @SuppressWarnings("unchecked")
 @Service
-public class AgraniMalaysiaModelService {
+public class ArhMalaysiaModelService {
     @Autowired
-    AgraniMalaysiaModelRepository agraniMalaysiaModelRepository;
+    ArhMalaysiaModelRepository arhMalaysiaModelRepository;
     @Autowired
     FileInfoModelService fileInfoModelService;
     @Autowired
@@ -47,7 +47,7 @@ public class AgraniMalaysiaModelService {
             int type = 0;
             if(fileType.equalsIgnoreCase("API")) type = 1;
             Map<String, Object> agraniMalaysiaData = csvToAgraniMalaysiaModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
-            List<AgraniMalaysiaModel> agraniMalaysiaModels = (List<AgraniMalaysiaModel>) agraniMalaysiaData.get("agraniMalaysiaModelList");
+            List<ArhMalaysiaModel> agraniMalaysiaModels = (List<ArhMalaysiaModel>) agraniMalaysiaData.get("agraniMalaysiaModelList");
 
             if(agraniMalaysiaData.containsKey("errorMessage")){
                 resp.put("errorMessage", agraniMalaysiaData.get("errorMessage"));
@@ -60,7 +60,7 @@ public class AgraniMalaysiaModelService {
             }
 
             if(agraniMalaysiaModels.size()!=0) {
-                for(AgraniMalaysiaModel agraniMalaysiaModel: agraniMalaysiaModels){
+                for(ArhMalaysiaModel agraniMalaysiaModel: agraniMalaysiaModels){
                     agraniMalaysiaModel.setFileInfoModel(fileInfoModel);
                     agraniMalaysiaModel.setUserModel(user);
                 }
@@ -90,11 +90,11 @@ public class AgraniMalaysiaModelService {
     public Map<String, Object> csvToAgraniMalaysiaModels(InputStream is, int type, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, 
         LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AgraniMalaysiaModel> duplicateData = Optional.empty();
+        Optional<ArhMalaysiaModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())){
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            List<AgraniMalaysiaModel> agraniMalaysiaModelList = new ArrayList<>();
+            List<ArhMalaysiaModel> agraniMalaysiaModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             String duplicateMessage = "";
             int i = 0;
@@ -108,7 +108,7 @@ public class AgraniMalaysiaModelService {
                 i++;
                 int length = csvRecord.size();
                 if(i == 1){
-                    Map<String, Object> apiCheckResp = checkAgraniMalaysiaApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode);
+                    Map<String, Object> apiCheckResp = checkAgraniMalaysiaApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode, exchangeCode);
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
@@ -116,6 +116,13 @@ public class AgraniMalaysiaModelService {
                     }
                 }
                 Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode);
+                if(type == 1){
+                    String errorMessage = checkArhMalaysiaApiTransactionStatus(csvRecord.get(12).toLowerCase());
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }
                 String transactionNo = data.get("transactionNo").toString();
                 String amount = data.get("amount").toString();
                 data.put("nrtaCode", nrtaCode);
@@ -126,8 +133,8 @@ public class AgraniMalaysiaModelService {
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-                modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
-                agraniMalaysiaModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
+                modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ArhMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                agraniMalaysiaModelList = (List<ArhMalaysiaModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
                 duplicateCount = (int) modelResp.get("duplicateCount");
@@ -156,32 +163,23 @@ public class AgraniMalaysiaModelService {
     }
 
     public Map<String, Object> getCsvData(int type, CSVRecord csvRecord, String exchangeCode){
-        String transactionNo = (type == 1)  ?   csvRecord.get(0):csvRecord.get(1);
         String amount = csvRecord.get(3).trim();
-        String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
-        String bankName = (type == 1) ? "Agrani Bank": csvRecord.get(9).trim();
+        String bankCode = (type == 1) ? csvRecord.get(9).trim(): csvRecord.get(8).trim();
+        String bankName = (type == 1) ? csvRecord.get(8).trim(): csvRecord.get(9).trim();
         String branchName = (type == 1) ? "Principal": csvRecord.get(10).trim();
         String branchCode = (type == 1) ? "4006": CommonService.fixRoutingNo(csvRecord.get(11).trim());
-        String currrency = (type == 1) ? "BDT": csvRecord.get(2);
-        String remiterName = (type == 1) ? csvRecord.get(2) : csvRecord.get(5);
-        String beneficiaryName = (type == 1) ? csvRecord.get(5):csvRecord.get(6);
-        String beneficiaryAccount = (type == 1) ? csvRecord.get(6): csvRecord.get(7);
-
-        //String format = (type == 1) ? "yyyy-MM-dd HH:mm:ss Z":"yyyy-MM-dd'T'HH:mm:ss.SSS";
-        String enteredDate = (type == 1) ? csvRecord.get(2): csvRecord.get(4);
-        //LocalDate date = CommonService.convertStringToLocalDate(enteredDate,format);
-        LocalDateTime date = CommonService.convertStringToDate(enteredDate);
+        LocalDateTime date = CommonService.convertStringToDate(csvRecord.get(4).trim());
 
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
-        data.put("transactionNo", transactionNo.trim());
-        data.put("currency", currrency);
+        data.put("transactionNo", csvRecord.get(1).trim());
+        data.put("currency", csvRecord.get(2).trim());
         data.put("amount", amount);
         data.put("enteredDate", date.toLocalDate().toString());
-        data.put("remitterName", remiterName.trim());
+        data.put("remitterName", csvRecord.get(5).trim());
         data.put("remitterMobile", "");
-        data.put("beneficiaryName", beneficiaryName.trim());
-        data.put("beneficiaryAccount", beneficiaryAccount.trim());
+        data.put("beneficiaryName", csvRecord.get(6).trim());
+        data.put("beneficiaryAccount", csvRecord.get(7).trim());
         data.put("bankName", bankName);
         data.put("bankCode", bankCode);
         data.put("branchName", branchName);
@@ -191,11 +189,17 @@ public class AgraniMalaysiaModelService {
         return data;
     }
 
-    public Map<String, Object> checkAgraniMalaysiaApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode){
+    public Map<String, Object> checkAgraniMalaysiaApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode, String exchangeCode){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
-        if(type == 1 && length != 15)    resp = CommonService.getResp(1, msg, null);
-        else if(type == 0 && length != 12 && !firstColumn.equals(nrtaCode))  resp = CommonService.getResp(1, msg, null);
+        if(type == 1 && (length != 13 || !firstColumn.equals(exchangeCode)))    resp = CommonService.getResp(1, msg, null);
+        else if(type == 0 && (length != 12 || !firstColumn.equals(nrtaCode)))  resp = CommonService.getResp(1, msg, null);
         return resp;
+    }
+
+    public static String checkArhMalaysiaApiTransactionStatus(String status){
+        String errorMessage = "";
+        if(status.startsWith("status"))  errorMessage = "A/C Not Credited from API";
+        return errorMessage;
     }
 }

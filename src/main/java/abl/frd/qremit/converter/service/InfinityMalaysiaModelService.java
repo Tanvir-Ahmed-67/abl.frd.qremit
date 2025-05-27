@@ -12,13 +12,13 @@ import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import abl.frd.qremit.converter.model.AgraniMalaysiaModel;
+import abl.frd.qremit.converter.model.ArhMalaysiaModel;
 import abl.frd.qremit.converter.repository.AccountPayeeModelRepository;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.repository.CocModelRepository;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
-import abl.frd.qremit.converter.repository.AgraniMalaysiaModelRepository;
+import abl.frd.qremit.converter.repository.ArhMalaysiaModelRepository;
 import abl.frd.qremit.converter.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import java.util.*;
@@ -26,7 +26,7 @@ import java.util.*;
 @Service
 public class InfinityMalaysiaModelService {
     @Autowired
-    AgraniMalaysiaModelRepository agraniMalaysiaModelRepository;
+    ArhMalaysiaModelRepository agraniMalaysiaModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -69,7 +69,7 @@ public class InfinityMalaysiaModelService {
             if(type == 1)   agraniMalaysiaData = csvToAgraniMalaysiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             else    agraniMalaysiaData = beftnToAgraniMalaysiaModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
 
-            List<AgraniMalaysiaModel> agraniMalaysiaModels = (List<AgraniMalaysiaModel>) agraniMalaysiaData.get("agraniMalaysiaDataModelList");
+            List<ArhMalaysiaModel> agraniMalaysiaModels = (List<ArhMalaysiaModel>) agraniMalaysiaData.get("agraniMalaysiaDataModelList");
 
             if(agraniMalaysiaData.containsKey("errorMessage")){
                 resp.put("errorMessage", agraniMalaysiaData.get("errorMessage"));
@@ -82,7 +82,7 @@ public class InfinityMalaysiaModelService {
             }
 
             if(agraniMalaysiaModels.size()!=0) {
-                for(AgraniMalaysiaModel agraniMalaysiaModel : agraniMalaysiaModels){
+                for(ArhMalaysiaModel agraniMalaysiaModel : agraniMalaysiaModels){
                     agraniMalaysiaModel.setFileInfoModel(fileInfoModel);
                     agraniMalaysiaModel.setUserModel(user);
                 }
@@ -112,7 +112,7 @@ public class InfinityMalaysiaModelService {
 
     public Map<String, Object> csvToAgraniMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<AgraniMalaysiaModel> duplicateData = Optional.empty();
+        Optional<ArhMalaysiaModel> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
@@ -138,8 +138,8 @@ public class InfinityMalaysiaModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
-            List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ArhMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            List<ArhMalaysiaModel> agraniMalaysiaDataModelList = (List<ArhMalaysiaModel>) modelResp.get("modelList");
             errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
             int duplicateCount = (int) modelResp.get("duplicateCount");
@@ -196,7 +196,7 @@ public class InfinityMalaysiaModelService {
 
     public Map<String, Object> beftnToAgraniMalaysiaModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
-        Optional<AgraniMalaysiaModel> duplicateData = Optional.empty();
+        Optional<ArhMalaysiaModel> duplicateData = Optional.empty();
         try{
             Workbook records = CommonService.getWorkbook(is);
             Row row;
@@ -257,8 +257,8 @@ public class InfinityMalaysiaModelService {
             */
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgraniMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, 3);
-            List<AgraniMalaysiaModel> agraniMalaysiaDataModelList = (List<AgraniMalaysiaModel>) modelResp.get("modelList");
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ArhMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, 3);
+            List<ArhMalaysiaModel> agraniMalaysiaDataModelList = (List<ArhMalaysiaModel>) modelResp.get("modelList");
             errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
             int duplicateCount = (int) modelResp.get("duplicateCount");
