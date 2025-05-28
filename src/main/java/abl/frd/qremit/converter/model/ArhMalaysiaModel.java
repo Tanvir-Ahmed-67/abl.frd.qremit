@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Table(name="base_data_table_agranimalaysia", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
     indexes = { @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id") }
 )
-public class AgraniMalaysiaModel {
+public class ArhMalaysiaModel {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -84,7 +84,7 @@ public class AgraniMalaysiaModel {
         this.fileInfoModel = fileInfoModel;
     }
 
-    public AgraniMalaysiaModel() {
+    public ArhMalaysiaModel() {
 
     }
 
@@ -281,7 +281,7 @@ public class AgraniMalaysiaModel {
     }
 
 
-    public AgraniMalaysiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
+    public ArhMalaysiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime uploadDateTime) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.currency = currency;
@@ -307,7 +307,7 @@ public class AgraniMalaysiaModel {
         this.uploadDateTime = uploadDateTime;
     }
 
-    public AgraniMalaysiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
+    public ArhMalaysiaModel(String exchangeCode, String transactionNo, String currency, Double amount, String enteredDate, String remitterName, String remitterMobile, String beneficiaryName, String beneficiaryAccount, String beneficiaryMobile, String bankName, String bankCode, String branchName, String branchCode, String draweeBranchName, String draweeBranchCode, String purposeOfRemittance, String sourceOfIncome, String processFlag, String typeFlag, String processedBy, String processedDate, LocalDateTime upLocalDateTime, FileInfoModel fileInfoModel, User user) {
         this(exchangeCode, transactionNo, currency, amount, enteredDate, remitterName, remitterMobile, beneficiaryName, beneficiaryAccount, beneficiaryMobile, bankName, bankCode, branchName, branchCode, draweeBranchName, draweeBranchCode, purposeOfRemittance, sourceOfIncome, processFlag, typeFlag, processedBy, processedDate, upLocalDateTime);
         this.fileInfoModel = fileInfoModel;
         this.userModel = user;

@@ -570,7 +570,7 @@ public class CommonService {
         fileInfoModel.setOnlineModelList(onlineModelList);
         Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
         Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
-
+        String branchCode = "";
         List<Map<String, Object>> routingData = new ArrayList<>();
         if(!accountPayeeModelList.isEmpty() || !onlineModelList.isEmpty()){
             routingData = customQueryService.getRoutingDetailsByBankCode("010");
@@ -605,13 +605,17 @@ public class CommonService {
             for (OnlineModel onlineModel : onlineModelList) {
                 onlineModel.setFileInfoModel(fileInfoModel);
                 onlineModel.setUserModel(user);
+                branchCode = onlineModel.getBranchCode();
+                if(branchCode.isEmpty()){
+                    onlineModel.setBranchCode("4006");
+                    onlineModel.setBranchName("Principal");
+                }
                 if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
-                Map<String, Object> rdata = convertAblRoutingToBranchCode(onlineModel.getBranchCode(), routingData);
+                Map<String, Object> rdata = convertAblRoutingToBranchCode(branchCode, routingData);
                 if(!rdata.isEmpty() && isProcessed == 0){
                     onlineModel.setBranchCode(rdata.get("branchCode").toString());
                     onlineModel.setBranchName(rdata.get("branchName").toString());
                 }
-                
                 totalAmount += onlineModel.getAmount();
             }
         }
@@ -1300,22 +1304,22 @@ public class CommonService {
 
     public static String[] beftnIncentiveNotProcessingKeywords(){
         String[] keywords = {
-            " PHONE", " CENTER", " LTD", " BANK", "BANK ", " TELECOM", " TRADERS", " STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", " TRAVELS", 
+            " PHONE", " CENTER", " LTD", " BANK", "BANK ", "TELECOM", "TRADERS", "STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", " TRAVELS", 
             " TOURS", " NETWORK", " FARM "," ASSETS", " ASSET", " SOLUTIONS", " FUND", " ELECTRON", " SECURITIES", " EQUIPMENT", " COMPENSATION", "DEATH ", " GALLERY", " HOUSE", "M/S ", " BANGLADESH", 
             " BD", " LIMITED", " OVERSEAS", " DAIRY", " COLLECTION", " RICE", " AGENCY", " TEXTILE", " VARAITY", " MEDICAL", " HALL", " PHARMA", " OPTICAL", "PRIZE", " FAIR ",
             " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", " FURNITURE", " PURBACHAL", 
             "PURBACHAL ","PROBASHI", " PALLI", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION", "VANDAR", "DOKAN", "BAZAR", "SAMITI", "MADINA",
             "ISLAMI", "AGRO", "PRESS", "PRINTING" , "DIGITAL", "SHIPPING", "STEEL", "PLASTIC", "CERAMICS", "WORKSHOP" , "DIAGNOSTIC", "CLINIC", "HEALTHCARE", "LABORATORY", "DRUGS", "INSTITUTE",
-            "COLLEGE", "UNIVERSITY", "SCHOOL", "TECHNICAL", "POLYTECHNIC", "CORNER", "VARIETY", "BOSTRALOY", "NGO"
+            "COLLEGE", "UNIVERSITY", "SCHOOL", "TECHNICAL", "POLYTECHNIC", "CORNER", "VARIETY", "BOSTRALOY", "NGO", "KHAMAR"
         };
         return keywords;
     }
 
     public static Map<String, Object> checkBeftnEditForSpecialExchange(String exchangeCode, String type){
         Map<String,Object> resp = getResp(0, "", null);
-        String[] exchangeCodeList = {"7010226","7010228","7010290","7010299","111111"};
+        String[] exchangeCodeList = {"7010226","7010228","7010290","7010299","111111","7010260"};
         if(exchangeCode.equals("444444")){
-            if(("3").equals(type))  return getResp(1, "BEFTN not allowed in swift", null);
+            //if(("3").equals(type))  return getResp(1, "BEFTN not allowed in swift", null);
         }
         for(String exCode: exchangeCodeList){
             if(exCode.equals(exchangeCode)){
@@ -1411,14 +1415,10 @@ public class CommonService {
             if(checkType == 1){
                 int allowedType = (type == 1) ? 1:3;  //for betn 3
                 if(!convertStringToInt(typeFlag).equals(allowedType)){
-                    if(exchangeCode.equals("7010228") && checkAccountToBeOpened(beneficiaryAccount)){
-                        //special case for ARH malaysia. A/C to be opened will be processed
-                    }else{
-                        msg = "Invalid Remittance Type for ";
-                        msg += (type == 1) ? "API": "BEFTN";
-                        addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
+                    msg = "Invalid Remittance Type for ";
+                    msg += (type == 1) ? "API": "BEFTN";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
                 }
             }
             try{

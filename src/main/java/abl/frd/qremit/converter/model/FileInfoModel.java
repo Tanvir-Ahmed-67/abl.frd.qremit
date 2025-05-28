@@ -79,7 +79,7 @@ public class FileInfoModel {
     private List<NecUkModel> necUkModel;
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
-    private List<AgraniMalaysiaModel> agraniMalaysiaModel;
+    private List<ArhMalaysiaModel> agraniMalaysiaModel;
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<SunmanModel> sunmanModel;
@@ -772,11 +772,11 @@ public class FileInfoModel {
         this.errorDataModelList = errorDataModelList;
     }
 
-    public List<AgraniMalaysiaModel> getAgraniMalaysiaModel() {
+    public List<ArhMalaysiaModel> getAgraniMalaysiaModel() {
         return this.agraniMalaysiaModel;
     }
 
-    public void setAgraniMalaysiaModel(List<AgraniMalaysiaModel> agraniMalaysiaModel) {
+    public void setAgraniMalaysiaModel(List<ArhMalaysiaModel> agraniMalaysiaModel) {
         this.agraniMalaysiaModel = agraniMalaysiaModel;
     }
 
