@@ -816,6 +816,19 @@ public class ReportController {
         resp = reportService.getExchangeWiseMonthlyData(formData, userId);
         return ResponseEntity.ok(resp);
     }
+    @GetMapping("/downloadMonthlyData")
+    public ResponseEntity<byte[]> downloadMonthlyData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam Map<String, String> formData) throws IOException{
+        Map<String, Object> resp = new HashMap<>();
+        ResponseEntity<Map<String, Object>> response = getExchangeWiseMonthlyData(userDetails, model, formData);
+        resp = response.getBody();
+        List<ReportModel> reportModelList = (List<ReportModel>) resp.get("data");
+        byte[] in = reportService.generateCsvForMonthlyData(reportModelList);
+        String fileName = CommonService.generateDynamicFileName("Monthly_data_", ".csv");
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+            .contentType(MediaType.parseMediaType("text/csv"))
+            .body(in);
+    }
 
     @GetMapping(value="/updateTotalAmountBulk", produces = "application/json")
     @ResponseBody
