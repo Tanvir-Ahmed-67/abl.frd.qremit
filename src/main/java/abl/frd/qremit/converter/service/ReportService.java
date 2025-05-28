@@ -1,5 +1,6 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,6 +17,10 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -1134,12 +1139,40 @@ public class ReportService {
         LocalDate starDate = CommonService.convertStringToLocalDate(formData.get("startDate"),"yyyy-MM-dd");
         LocalDate enDateTime = CommonService.convertStringToLocalDate(formData.get("endDate"), "yyyy-MM-dd");
         String exchangeCode = formData.get("exchangeCode");
+        String generateCsv = formData.get("generateCsv");
         List<Map<String, Object>> dataList = new ArrayList<>();
         List<ReportModel> reportModelList = reportModelRepository.getReportModelByExchangeCodeAndReportDate(exchangeCode, starDate, enDateTime);
-        resp = processExchangeWiseData(reportModelList, dataList, "",  0, 0.0);
-        resp.put("data", resp.get("dataList"));
-        resp.remove("dataList");
+        if(reportModelList.isEmpty())   resp = CommonService.getResp(1, "No data found", dataList);
+        resp = CommonService.getResp(0, "", null);
+        if(("1").equals(generateCsv)){
+            resp.put("data", reportModelList);
+        }else{
+            resp = processExchangeWiseData(reportModelList, dataList, "",  0, 0.0);
+            resp.put("data", resp.get("dataList"));
+            resp.remove("dataList");
+        }
         return resp;
+    }
+
+    public byte[] generateCsvForMonthlyData(List<ReportModel> reportModelList){
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(out);
+        try (CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT
+            .withHeader("Transaction No", "Report Date","Amount","Account No","Beneficiary Name")
+            .withQuoteMode(QuoteMode.ALL))){
+            for(ReportModel reportModel: reportModelList){
+                printer.printRecord(
+                    reportModel.getTransactionNo(),
+                    CommonService.convertLocalDateToString(reportModel.getReportDate(), "yyyy-MM-dd"),
+                    reportModel.getAmount(),
+                    reportModel.getBeneficiaryAccount(),
+                    reportModel.getBeneficiaryName()
+                );
+            }
+        }catch (IOException e){
+            throw new UncheckedIOException("Error writing CSV", e);
+        }
+        return out.toByteArray();
     }
 
    //------------------------- Below Methods for getting data from Report Table for generating MO and updating MO Number in each row-----------------------
