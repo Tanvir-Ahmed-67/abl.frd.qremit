@@ -64,7 +64,7 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
     @Transactional
     @Modifying
-    @Query("UPDATE BeftnModel n SET n.incentive=:incentive WHERE n.id in :ids")
+    @Query("UPDATE BeftnModel n SET n.incentive=:incentive, n.govtIncentive=:incentive,n.agraniIncentive=:incentive WHERE n.id in :ids")
     int updateNotProcessingIncentive(@Param("ids") List<Integer> ids, @Param("incentive") Double incentive);
     BeftnModel findByIdAndIsDownloaded(int id, int isDownloaded);
     @Query("SELECT n FROM BeftnModel n WHERE n.exchangeCode = :exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate")
