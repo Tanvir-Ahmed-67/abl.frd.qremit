@@ -33,7 +33,7 @@
                 </li> -->
                 <!--..........................User Section......................-->
                 <div>
-                    <li class="sidebar-item has-sub">
+                    <li class="sidebar-item has-sub" th:if="${not #maps.isEmpty(exchangeMap)}">
                         <a href="#" class='sidebar-link'>
                             <i class="fa-solid fa-upload"></i>
                             <span>Upload File</span>

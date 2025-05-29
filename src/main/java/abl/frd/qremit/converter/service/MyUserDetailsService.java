@@ -36,15 +36,14 @@ public class MyUserDetailsService implements UserDetailsService {
     
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
         Map<String, String> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
+        Map<String, String> exchangeMap =  new HashMap<String, String>();
+        if(exchangeNamesMap.isEmpty())  return exchangeMap;
         
         String exchangeCode = exchangeNamesMap.get("exchange_code");
         String exchangeShortNamesStr = exchangeNamesMap.get("exchange_short_name");
-        
         List<String> exchangeCodes = Arrays.asList(exchangeCode.split(","));
         List<String> exchangeShortNames = Arrays.asList(exchangeShortNamesStr.split(","));
        
-        Map<String, String> exchangeMap =  new HashMap<String, String>();
-     
         if (exchangeCodes.size() == exchangeShortNames.size()) {
             for (int i = 0; i < exchangeCodes.size(); i++) {
                 exchangeMap.put(exchangeShortNames.get(i), exchangeCodes.get(i));
