@@ -107,11 +107,13 @@ $(document).ready(function(){
         user_upload_report_ui(url,type,val);
     });
     
-    $(document).off('change', '#bank_code');
-    $(document).on('change', '#bank_code', function(e){
+    $(document).off('change', '.routing_search');
+    $(document).on('change', '.routing_search', function(e){
         e.preventDefault();
         var val = $(this).val();
-        var params = "?bankCode=" + val;
+        var bank_code = $('#bank_code').val();
+        var routing_no = $('#routing_no').val();
+        var params = "?bankCode=" + bank_code + "&routingNo=" + routing_no;
         user_upload_report_ui(url,type,"",params);
     });
 

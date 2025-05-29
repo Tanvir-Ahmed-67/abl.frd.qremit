@@ -998,7 +998,8 @@ public class ReportController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getRoutingDetails(@RequestParam(defaultValue = "") String routingNo, @RequestParam(defaultValue = "") String bankCode){
         Map<String, Object> resp = new HashMap<>();
-        if(routingNo.isEmpty() && bankCode.isEmpty())   return ResponseEntity.ok(CommonService.getResp(1, "Please select routing No or Bank code", null));
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if(routingNo.isEmpty() && bankCode.isEmpty())   return ResponseEntity.ok(CommonService.getResp(1, "Please select routing No or Bank code", dataList));
         resp = customQueryService.getRoutingDetails(routingNo, bankCode);
         return ResponseEntity.ok(resp);
     }
