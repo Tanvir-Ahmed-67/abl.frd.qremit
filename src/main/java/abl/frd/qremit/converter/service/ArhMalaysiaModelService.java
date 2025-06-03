@@ -117,7 +117,7 @@ public class ArhMalaysiaModelService {
                 }
                 Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode);
                 if(type == 1){
-                    String errorMessage = checkArhMalaysiaApiTransactionStatus(csvRecord.get(12).toLowerCase());
+                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(12).toLowerCase());
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
@@ -195,11 +195,5 @@ public class ArhMalaysiaModelService {
         if(type == 1 && (length != 13 || !firstColumn.equals(exchangeCode)))    resp = CommonService.getResp(1, msg, null);
         else if(type == 0 && (length != 12 || !firstColumn.equals(nrtaCode)))  resp = CommonService.getResp(1, msg, null);
         return resp;
-    }
-
-    public static String checkArhMalaysiaApiTransactionStatus(String status){
-        String errorMessage = "";
-        if(status.startsWith("status"))  errorMessage = "A/C Not Credited from API";
-        return errorMessage;
     }
 }

@@ -1507,7 +1507,7 @@ public class CommonService {
         String errorMessage = "";
         if(status.startsWith("error"))  errorMessage = "Error From API";
         if(status.startsWith("cancel")) errorMessage = "Cancel From API";
-        if(checkEmptyString(status) || status.equals("null"))   errorMessage = "A/C Not Credited from API";
+        if(checkEmptyString(status) || status.equals("null") || status.startsWith("status"))   errorMessage = "A/C Not Credited from API";
         return errorMessage;
     }
 
