@@ -821,7 +821,8 @@ public class ReportController {
         Map<String, Object> resp = new HashMap<>();
         ResponseEntity<Map<String, Object>> response = getExchangeWiseMonthlyData(userDetails, model, formData);
         resp = response.getBody();
-        List<ReportModel> reportModelList = (List<ReportModel>) resp.get("data");
+        List<ReportModel> reportModelList = new ArrayList<>();
+        if(resp != null && resp.get("data") != null)    reportModelList = (List<ReportModel>) resp.get("data");
         byte[] in = reportService.generateCsvForMonthlyData(reportModelList);
         String fileName = CommonService.generateDynamicFileName("Monthly_data_", ".csv");
         return ResponseEntity.ok()
