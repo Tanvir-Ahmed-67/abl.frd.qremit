@@ -188,4 +188,8 @@ public class BeftnModelService {
         }else return CommonService.getResp(1, "No data updated", null);
     }
 
+    public List<BeftnModel> findBeftnModelByExchangeCodeAndUploadDateTime(String exchangeCode, LocalDateTime startDate, LocalDateTime endDate){
+        return beftnModelRepository.findBeftnModelByExchangeCodeAndUploadDateTime(exchangeCode, startDate, endDate);
+    }
+
 }

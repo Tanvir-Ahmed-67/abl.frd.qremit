@@ -128,9 +128,8 @@ public class RiaModelService {
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
                 //check api error for ria special case
                 if(type == 1){
-                    String errorStatus = csvRecord.get(8).toLowerCase();
-                    if(errorStatus.startsWith("error") || errorStatus.startsWith("cancel")){
-                        String errorMessage = "Cancelled From API";
+                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
+                    if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
@@ -143,7 +142,7 @@ public class RiaModelService {
             if(isValidFile == 1){    
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, RiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, RiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
                 riaModelList = (List<RiaModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();

@@ -122,7 +122,7 @@ public class AlBiladModelService {
             }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AlBiladModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
+            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AlBiladModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
             List<AlBiladModel> alBiladModelList = (List<AlBiladModel>) modelResp.get("modelList");
             errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
             String duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -162,6 +162,10 @@ public class AlBiladModelService {
         String branchName = line.substring(230, 265).trim();
         String branchCode = line.substring(265, 300).trim();
         branchCode = CommonService.fixRoutingNo(branchCode);
+        if(branchCode.equals("0000")){
+            branchCode = "4006";
+            branchName = "Principal";
+        }
         String bankStr = line.substring(300,335).trim();
         String branch2 = line.substring(580, 615).trim();
         Map<String, Object> bank = getBankDetails(bankStr,branchName, branchCode, branch2);
@@ -221,7 +225,10 @@ public class AlBiladModelService {
     }
 
     public String getBeneficiaryAccountNo(String beneficiaryAccount, String remittanceType, String mobileNo){
-        if(remittanceType.toLowerCase().startsWith("cash")) beneficiaryAccount = "COC" + mobileNo;
+        if(remittanceType.toLowerCase().startsWith("cash")){
+            if(CommonService.isOnlineAccoutNumberFound(mobileNo))   beneficiaryAccount = "";
+            else beneficiaryAccount = "COC" + mobileNo;
+        } 
         return beneficiaryAccount;
     }
 

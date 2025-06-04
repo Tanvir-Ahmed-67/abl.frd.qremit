@@ -15,6 +15,7 @@ public class CustomQueryRepository {
     @PersistenceContext
     private EntityManager entityManager;
     private final DataSource dataSource;
+    private String routingTbl = "routing_no";
     public CustomQueryRepository(DataSource dataSource){
         this.dataSource = dataSource;
     }
@@ -87,7 +88,7 @@ public class CustomQueryRepository {
 
     public Map<String,Object> getRoutingDetails(String routingNo, String bankCode){
         Map<String, Object> params = new HashMap<>();
-        StringBuilder queryStr = new StringBuilder("SELECT * FROM routing_no");
+        StringBuilder queryStr = new StringBuilder("SELECT * FROM "+ this.routingTbl);
         boolean hasRoutingNo = routingNo != null && !routingNo.trim().isEmpty();
         boolean hasBankCode = bankCode != null && !bankCode.trim().isEmpty();
 
@@ -107,6 +108,24 @@ public class CustomQueryRepository {
         }
         return getData(queryStr.toString(),params);
     }
+
+    public Map<String, Object> getRoutingDetailsByAblBranchCode(String branchCode){
+        Map<String, Object> params = new HashMap<>();
+        String queryStr = "SELECT * FROM "+ this.routingTbl + " WHERE abl_branch_code= ?";
+        params.put("1", branchCode);
+        return getData(queryStr,params);
+    }
+
+    public Map<String, Object> getBankListFromRouting(String bankCode){
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryStr = new StringBuilder("SELECT bank_code, bank_name FROM "+ this.routingTbl);
+        if(!bankCode.isEmpty()){
+            queryStr.append(" WHERE bank_code = ?");
+            params.put("1", bankCode);
+        }
+        queryStr.append(" GROUP BY bank_code");
+        return getData(queryStr.toString(), params);
+    }
     
 
     public Map<String,Object> getBranchDetailsFromSwiftCode(String swiftCode){
@@ -118,7 +137,7 @@ public class CustomQueryRepository {
     
     public Map<String, Object> getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
         tbl = "base_data_table_" + tbl;
-        return generateUniqueTransactionSql(data, tbl, "CAST(amount AS CHAR)");
+        return generateUniqueTransactionSql(data, tbl, "amount");
         /*
         Map<String, Object> params = new HashMap<>();
         List<String> tuples = new ArrayList<>();

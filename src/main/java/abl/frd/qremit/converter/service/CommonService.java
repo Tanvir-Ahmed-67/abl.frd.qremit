@@ -370,15 +370,12 @@ public class CommonService {
     }
 
     public static Matcher checkOnlineAccountPattern(String accountNumber){
-        Pattern p = Pattern.compile("^.*020(\\d{10})$.*");
+        Pattern p = Pattern.compile("^020(\\d{10})$");
         Matcher m = p.matcher(accountNumber);
         return m;   
     }
 
     public static String getOnlineAccountNumber(String accountNumber){
-        //^.*02000(\d{8})$.*
-        //Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
-        //Matcher m = p.matcher(accountNumber);
         Matcher m = checkOnlineAccountPattern(accountNumber);
         String onlineAccountNumber=null;
         if (m.find())
@@ -397,15 +394,6 @@ public class CommonService {
     }
     
     public static boolean isOnlineAccoutNumberFound(String accountNumber){
-        /*
-        Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
-        Matcher m = p.matcher(accountNumber);
-        if (m.find())
-        {
-            return true;
-        }
-        return false;
-        */
         return isOnlineAccoutNumberFound(accountNumber, "");
     }
 
@@ -421,17 +409,6 @@ public class CommonService {
             return true;
         }
         return false;
-        /*
-        Pattern p = Pattern.compile("^.*02000(\\d{8})$.*");
-        Matcher m = p.matcher(accountNumber);
-        if(bankName.toLowerCase().contains("agrani") || bankName.toLowerCase().contains("abl")){
-            if (m.find())
-            {
-                return true;
-            }else return false;
-        }
-        return false;
-        */
     }
     public static boolean isBeftnFound(String bankName, String accountNumber, String routingNo){
         if(!checkAgraniBankName(bankName)){
@@ -535,7 +512,8 @@ public class CommonService {
     }
 
     public static boolean checkAccountToBeOpened(String accountNo){
-        if(accountNo.equalsIgnoreCase("Account to be opened"))  return true;
+        accountNo = accountNo.toLowerCase();
+        if(accountNo.equals("account to be opened") || accountNo.contains("a/c opened"))  return true;
         return false;
     }
 
@@ -568,6 +546,14 @@ public class CommonService {
                 data.put("branchName", rdata.get("branch_name").toString());
             }
         }
+        else{
+            for(Map<String, Object> rdata: routingData){
+                if(rdata.get("abl_branch_code").equals(data)){
+                    data.put("branchCode", rdata.get("abl_branch_code").toString());
+                    data.put("branchName", rdata.get("branch_name").toString());
+                }
+            }
+        }
         return data;
     }
 
@@ -584,7 +570,7 @@ public class CommonService {
         fileInfoModel.setOnlineModelList(onlineModelList);
         Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
         Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
-
+        String branchCode = "";
         List<Map<String, Object>> routingData = new ArrayList<>();
         if(!accountPayeeModelList.isEmpty() || !onlineModelList.isEmpty()){
             routingData = customQueryService.getRoutingDetailsByBankCode("010");
@@ -619,13 +605,17 @@ public class CommonService {
             for (OnlineModel onlineModel : onlineModelList) {
                 onlineModel.setFileInfoModel(fileInfoModel);
                 onlineModel.setUserModel(user);
+                branchCode = onlineModel.getBranchCode();
+                if(branchCode.isEmpty()){
+                    onlineModel.setBranchCode("4006");
+                    onlineModel.setBranchName("Principal");
+                }
                 if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
-                Map<String, Object> rdata = convertAblRoutingToBranchCode(onlineModel.getBranchCode(), routingData);
+                Map<String, Object> rdata = convertAblRoutingToBranchCode(branchCode, routingData);
                 if(!rdata.isEmpty() && isProcessed == 0){
                     onlineModel.setBranchCode(rdata.get("branchCode").toString());
                     onlineModel.setBranchName(rdata.get("branchName").toString());
                 }
-                
                 totalAmount += onlineModel.getAmount();
             }
         }
@@ -855,6 +845,22 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static String checkAmountOrBeneficiaryAccount(String beneficiaryAccount, String amount){
+        String errorMessage = "";
+        if( checkEmptyString(beneficiaryAccount) || checkEmptyString(amount)){
+            errorMessage = "A/C Number or Amount can not be empty";
+        }
+        return errorMessage;
+    }
+
+    public static String checkBeneficiaryName(String beneficiaryName){
+        String errorMessage = "";
+        if(checkEmptyString(beneficiaryName)){
+            errorMessage = "Beneficiary Name can not be empty";
+        }
+        return errorMessage;
+    }
+
     public static String fixRoutingNo(String routingNo){
         if(!routingNo.isEmpty() && routingNo.length() == 8){
             routingNo = "0" + routingNo;
@@ -942,8 +948,9 @@ public class CommonService {
 
     public static String getErrorMessage(String beneficiaryAccount, String beneficiaryName, String amount, String bankName, String branchCode){
         String errorMessage = "";
-        //a/c no, benficiary name, amount empty or null check
-        errorMessage = checkBeneficiaryNameOrAmountOrBeneficiaryAccount(beneficiaryAccount, beneficiaryName, amount);
+        //a/c no, amount empty or null check
+        errorMessage = checkAmountOrBeneficiaryAccount(beneficiaryAccount, amount);
+        int isOnline = 0;
         if(!errorMessage.isEmpty())  return errorMessage;
         if(isBeftnFound(bankName, beneficiaryAccount, branchCode)){
             errorMessage = validateBeftn(bankName, branchCode, beneficiaryAccount);
@@ -955,7 +962,11 @@ public class CommonService {
             errorMessage = validateAccountPayee(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
             if(!errorMessage.isEmpty())  return errorMessage;
         }else if(isOnlineAccoutNumberFound(beneficiaryAccount)){
-            
+            isOnline = 1;
+        }
+        if(isOnline == 0){
+            errorMessage = checkBeneficiaryName(beneficiaryName);
+            if(!errorMessage.isEmpty())  return errorMessage;
         }
         return errorMessage;
     }
@@ -982,7 +993,11 @@ public class CommonService {
         }
         if(checkAblIslamiBankingWindow(beneficiaryAccount) || checkAccountToBeOpened(beneficiaryAccount)){
             //only processed for a/c payee
-        }else   return "Legacy A/C won't be processed. Online A/C needed";
+        }else{
+            if(beneficiaryAccount.length() > 13)    return "A/C Payee length must be within 13 digits";
+            if(beneficiaryAccount.length() == 13 && beneficiaryAccount.startsWith("02"))    return "Invalid Agrani Bank Online A/C";
+            //return "Legacy A/C won't be processed. Online A/C needed";
+        }   
         return errorMessage;
     }
     //error message
@@ -1289,20 +1304,22 @@ public class CommonService {
 
     public static String[] beftnIncentiveNotProcessingKeywords(){
         String[] keywords = {
-            " PHONE", " CENTER", " LTD", " BANK", "BANK ", " TELECOM", " TRADERS", " STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", " TRAVELS", 
+            " PHONE", " CENTER", " LTD", " BANK", "BANK ", "TELECOM", "TRADERS", "STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", " TRAVELS", 
             " TOURS", " NETWORK", " FARM "," ASSETS", " ASSET", " SOLUTIONS", " FUND", " ELECTRON", " SECURITIES", " EQUIPMENT", " COMPENSATION", "DEATH ", " GALLERY", " HOUSE", "M/S ", " BANGLADESH", 
             " BD", " LIMITED", " OVERSEAS", " DAIRY", " COLLECTION", " RICE", " AGENCY", " TEXTILE", " VARAITY", " MEDICAL", " HALL", " PHARMA", " OPTICAL", "PRIZE", " FAIR ",
             " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", " FURNITURE", " PURBACHAL", 
-            "PURBACHAL ","PROBASHI", " PALLI", " GLOBAL", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION"
+            "PURBACHAL ","PROBASHI", " PALLI", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION", "VANDAR", "DOKAN", "BAZAR", "SAMITI", "MADINA",
+            "ISLAMI", "AGRO", "PRESS", "PRINTING" , "DIGITAL", "SHIPPING", "STEEL", "PLASTIC", "CERAMICS", "WORKSHOP" , "DIAGNOSTIC", "CLINIC", "HEALTHCARE", "LABORATORY", "DRUGS", "INSTITUTE",
+            "COLLEGE", "UNIVERSITY", "SCHOOL", "TECHNICAL", "POLYTECHNIC", "CORNER", "VARIETY", "BOSTRALOY", "NGO", "KHAMAR"
         };
         return keywords;
     }
 
     public static Map<String, Object> checkBeftnEditForSpecialExchange(String exchangeCode, String type){
         Map<String,Object> resp = getResp(0, "", null);
-        String[] exchangeCodeList = {"7010226","7010228","7010290","7010299","111111"};
+        String[] exchangeCodeList = {"7010226","7010228","7010290","7010299","111111","7010260"};
         if(exchangeCode.equals("444444")){
-            if(("3").equals(type))  return getResp(1, "BEFTN not allowed in swift", null);
+            //if(("3").equals(type))  return getResp(1, "BEFTN not allowed in swift", null);
         }
         for(String exCode: exchangeCodeList){
             if(exCode.equals(exchangeCode)){
@@ -1332,7 +1349,7 @@ public class CommonService {
         return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 
-    public static <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
+    public <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
         Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, List<ErrorDataModel> errorDataModelList, String fileExchangeCode, int checkType, int type){
         Map<String, Object> modelResp = new HashMap<>();
         List<String> transactionList = new ArrayList<>();
@@ -1346,6 +1363,7 @@ public class CommonService {
             String nrtaCode = data.get("nrtaCode").toString();
             String bankName = data.get("bankName").toString();
             if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
+            String msg = "";
             //check exchange code
             if(isValidFile == 0){
                 String exchangeMessage = checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
@@ -1382,13 +1400,22 @@ public class CommonService {
             }
             if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
             String typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
+            if(("2").equals(typeFlag)){
+                //validate branch code for a/c payee exists in routing table
+                Map<String, Object> routingMap = checkAblBranchCode(branchCode);
+                if((Integer) routingMap.get("err") == 1){
+                    msg = "Invalid Branch Code for A/C Payee";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+            }
             /*
              * need to modify
              */
             if(checkType == 1){
                 int allowedType = (type == 1) ? 1:3;  //for betn 3
                 if(!convertStringToInt(typeFlag).equals(allowedType)){
-                    String msg = "Invalid Remittence Type for ";
+                    msg = "Invalid Remittance Type for ";
                     msg += (type == 1) ? "API": "BEFTN";
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
@@ -1413,6 +1440,14 @@ public class CommonService {
         modelResp.put("duplicateCount", duplicateCount);
         modelResp.put("transactionList", transactionList);
         return modelResp;
+    }
+
+    public Map<String, Object> checkAblBranchCode(String branchCode){
+        Map<String, Object> routingMap = new HashMap<>();
+        if(checkAgraniRoutingNo(branchCode)){
+            routingMap = customQueryService.getRoutingDetails(branchCode, "");
+        }else   routingMap = customQueryService.getRoutingDetailsByAblBranchCode(branchCode);
+        return routingMap;
     }
 
     public static Double calculateIncentive(double govtIncentive, double agraniIncentive){
@@ -1454,7 +1489,6 @@ public class CommonService {
     public static Map<String, Object> validateIpRange(String clientIP, List<IpRange> ipRangeList){
         Map<String, Object> resp = new HashMap<>();
         String msg = "Access Denied: Invalid IP Address";
-        System.out.println(clientIP);
         if(ipRangeList.isEmpty())   return getResp(1, "IP Address Range Not Found in DB", null);
         for(IpRange ipRange: ipRangeList){
             String startIp = ipRange.getStartIp();
@@ -1467,6 +1501,14 @@ public class CommonService {
             }
         }
         return resp;
+    }
+
+    public static String checkApiTransactionStatus(String status){
+        String errorMessage = "";
+        if(status.startsWith("error"))  errorMessage = "Error From API";
+        if(status.startsWith("cancel")) errorMessage = "Cancel From API";
+        if(checkEmptyString(status) || status.equals("null") || status.startsWith("status"))   errorMessage = "A/C Not Credited from API";
+        return errorMessage;
     }
 
     

@@ -23,7 +23,7 @@
 
 	<title height="89" splitType="Stretch">
 		<element kind="staticText" x="180" y="0" width="200" height="40" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Agrani Bank PLC]]></text>
+			<text><![CDATA[Agrani Bank PLC.]]></text>
 		</element>
 		<element kind="staticText" x="180" y="31" width="200" height="30" fontSize="14.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Daily Remittance Summary]]></text>

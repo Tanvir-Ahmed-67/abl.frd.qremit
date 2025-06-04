@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>FRD Remittance</title>
+    <title>Agrani RMS</title>
 </head>
 <body>
 <div id="sidebar" class='active' th:fragment="sidebarAdmin"><!--sidebar-->
@@ -45,7 +45,7 @@
                                 <a th:href="@{/showDetailsOfDailyStatement}"><i class="fa-regular fa-circle sub-icon"></i>Details of Daily Remittances</a>
                                 <a th:href="@{/showIcashEntryForm}"><i class="fa-regular fa-circle sub-icon"></i>Generate MO</a>
                                 <a th:href="@{/showDailyReimbursement}"><i class="fa-regular fa-circle sub-icon"></i>Daily Reimbursement</a>
-                                <a th:href="@{/showDatePickerFormForCmoData}"><i class="fa-regular fa-circle sub-icon"></i>Generate CMO For CAD</a>
+                                <a th:href="@{/showDatePickerFormForCmoData}"><i class="fa-regular fa-circle sub-icon"></i>CMO Statement For CAD</a>
                                 <a th:href="@{/showDatePickerFormForCocOnlineAndAccountPayeeReportForBranch}"><i class="fa-regular fa-circle sub-icon"></i>Generate COC, Online & A/C Payee Report for Br.</a>
                             </li>
                         </ul>
@@ -109,8 +109,26 @@
                             </li>
                         </ul>
                     </li>
-                    
-                    
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="fa-solid fa-signal"></i>
+                            <span>Miscellaneous Reports</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/adminReport?type=12}"><i class="fa-regular fa-circle sub-icon"></i>Exchange House Wise Report</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/adminReport?type=13}"><i class="fa-regular fa-circle sub-icon"></i>Monthly Report</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item">
+                        <a th:href="@{/adminReport?type=11}" class='sidebar-link'>
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Routing Number Search</span>
+                        </a>
+                    </li>
                 </div>
             </ul>
         </div>

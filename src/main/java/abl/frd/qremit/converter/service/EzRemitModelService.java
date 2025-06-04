@@ -126,6 +126,13 @@ public class EzRemitModelService {
                 String beneficiaryAccount = (type == 1) ? csvRecord.get(4).trim(): csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                if(type == 1){
+                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = nrtaCode;   
                 dataList.add(data);
@@ -134,7 +141,7 @@ public class EzRemitModelService {
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-                modelResp = CommonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, EzRemitModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, EzRemitModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
                 ezRemitModelList = (List<EzRemitModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -242,7 +249,7 @@ public class EzRemitModelService {
     public Map<String, Object> checkEzRemitApiOrBeftnData(int length, int type){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
-        if(type == 1 && length != 8)    resp = CommonService.getResp(1, msg, null);
+        if(type == 1 && length != 9)    resp = CommonService.getResp(1, msg, null);
         else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
         return resp;
     }

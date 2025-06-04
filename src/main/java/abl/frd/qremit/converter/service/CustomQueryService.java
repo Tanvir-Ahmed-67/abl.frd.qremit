@@ -25,6 +25,14 @@ public class CustomQueryService {
         return customQueryRepository.getRoutingDetails(routingNo, bankCode);
     }
 
+    public Map<String, Object> getRoutingDetailsByAblBranchCode(String branchCode){
+        return customQueryRepository.getRoutingDetailsByAblBranchCode(branchCode);
+    }
+
+    public Map<String, Object> getBankListFromRouting(String bankCode){
+        return customQueryRepository.getBankListFromRouting(bankCode);
+    }
+
     public Map<String, Object> getRoutingDetailsByRoutingNo(String routingNo){
         Map<String, Object> resp = new HashMap<>();
         if(routingNo.isEmpty()) return CommonService.getResp(1, "Routing No is Empty", null);
@@ -100,15 +108,8 @@ public class CustomQueryService {
     }
 
     public Map<String, Object> processArchiveUniqueList(List<String[]> data){
-        Map<String, Object> archive_23 = getArchiveUniqueList(data, "2023");
-        if((Integer) archive_23.get("err") == 0)    return archive_23;
-        if (archive_23.containsKey("data") && archive_23.get("data") instanceof List){
-            List<Map<String, Object>> dataList = (List<Map<String, Object>>) archive_23.get("data");
-            if (dataList == null || dataList.isEmpty()){
-                return getArchiveUniqueList(data, "2024");
-            }
-        }
-        return archive_23;
+        Map<String, Object> archive_24 = getArchiveUniqueList(data, "2024");
+        return archive_24;
     }
 
 }

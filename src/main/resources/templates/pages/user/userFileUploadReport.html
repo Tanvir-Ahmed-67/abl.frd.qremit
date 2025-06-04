@@ -28,10 +28,46 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-2 form-group" id="row_report_date">
+                            <div class="mb-3 col-md-2 form-group" id="row_report_date">
                                 <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" placeholder="Date" readonly="true">
                             </div>
                         </div>
+                        <div id="routing_div" class="hdiv">
+                            <div class="row">
+                                <div class="mb-3 form-group col-md-2"><label for="bank_code" class="form-label">Bank Name</label></div>
+                                <div class="mb-3 form-group col-md-4" id="row_bank_code">
+                                    <select class="form-select routing_search"  name="bank_code" id="bank_code">
+                                        <option value="">Choose One</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 form-group col-md-1"><label for="routing_no" class="form-label">Routing No</label></div>
+                                <div class="mb-3 form-group col-md-2" id="row_routing_no">
+                                    <input class="form-control routing_search" type="text" name="routing_no" id="routing_no">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="exchange_div" class="hdiv">
+                            <div class="row">
+                                <div class="mb-3 form-group col-md-1"><label for="exchange_code" class="form-label">Exchange House Name</label></div>
+                                <div class="mb-3 form-group col-md-3" id="row_bank_code">
+                                    <select class="form-select"  name="exchange_code" id="exchange_code">
+                                        <option value="">Choose One</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 form-group col-md-1"><label for="start_date" class="form-label">Start Date</label></div>
+                                <div class="mb-3 col-md-2 form-group" id="row_start_date">
+                                    <input class="form-control dpicker" type="text" name="start_date" id="start_date" placeholder="Start Date" readonly="true">
+                                </div>
+                                <div class="mb-3 form-group col-md-1"><label for="end_date" class="form-label">End Date</label></div>
+                                <div class="mb-3 col-md-2 form-group" id="row_end_date">
+                                    <input class="form-control dpicker" type="text" name="end_date" id="end_date" placeholder="End Date" readonly="true">
+                                </div>
+                                <div class="mb-3 col-md-1 form-group" id="row_exchange_search">
+                                    <button type="button" class="btn btn-info" id="exchange_search">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="table-responsive">
                             <table class='table table-striped' id="user_upload_tbl" width="100%"></table>
                         </div>

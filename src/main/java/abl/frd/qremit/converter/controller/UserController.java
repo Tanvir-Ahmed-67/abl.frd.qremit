@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 @Controller
 public class UserController {
@@ -800,6 +801,40 @@ public class UserController {
         int rowsUpdated = myUserDetailsService.resetPassword(user.getId(), password);
         if(rowsUpdated > 0) resp = CommonService.getResp(0, "Password resetted successfully", null);
         else resp = CommonService.getResp(1, "Error updating for password reset", null);
+        return ResponseEntity.ok(resp);
+    }
+
+    @RequestMapping(value = "/getExchangeListByUserId", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getExchangeListByUserId(@AuthenticationPrincipal MyUserDetails userDetails){
+        Map<String, Object> resp = CommonService.getResp(1, "No data found", null);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Integer> role = myUserDetailsService.getLoggedInUserRole(authentication);
+        User user = myUserDetails.getUser();
+        List<ExchangeHouseModel> exchangeHouseModelList = new ArrayList<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if((Integer) role.get("isUser") == 1){
+            String userExchangeCode = user.getExchangeCode();
+            Set<String> exchangeCodeSet = Arrays.stream(userExchangeCode.split(",")).map(String::trim).collect(Collectors.toSet());
+            exchangeHouseModelList = exchangeHouseModelService.findAllByExchangeCodeIn(exchangeCodeSet);
+        }else{
+            if((Integer) role.get("isAdmin") == 1 || (Integer) role.get("isSuperAdmin") == 1){
+                exchangeHouseModelList = exchangeHouseModelService.loadAllActiveExchangeHouse();
+            }
+        }
+        if(exchangeHouseModelList.isEmpty())    return ResponseEntity.ok(resp);
+        String[] specialExCodes = {"111111", "222222", "333333", "444444"};
+        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+            Map<String, Object> data = new HashMap<>();
+            if(exchangeHouseModel.getActiveStatus() == 0)   continue;
+            String exchangeCode = exchangeHouseModel.getExchangeCode();
+            if(Arrays.asList(specialExCodes).contains(exchangeCode))    continue;
+            data.put("exchangeCode", exchangeCode);
+            data.put("exchangeName", exchangeHouseModel.getExchangeName());
+            dataList.add(data);
+        }
+        resp = CommonService.getResp(0, "", dataList);
         return ResponseEntity.ok(resp);
     }
 }

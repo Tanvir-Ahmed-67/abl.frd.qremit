@@ -19,6 +19,8 @@ public class ErrorDataModelService {
     LogModelRepository logModelRepository;
     @Autowired
     LogModelService logModelService;
+    @Autowired
+    CommonService commonService;
 
     //find errorDataModel by userID
     public List<ErrorDataModel> findUserModelListById(int userId){
@@ -99,14 +101,20 @@ public class ErrorDataModelService {
         }
         errorMessage = CommonService.getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
         if(!errorMessage.isEmpty()) return CommonService.getResp(1, errorMessage, null);
-
+        
+        String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
         errorDataModel.setBankCode(formData.get("bankCode"));
         errorDataModel.setBankName(bankName);
         errorDataModel.setBranchCode(branchCode);
         errorDataModel.setBranchName(formData.get("branchName"));
         errorDataModel.setBeneficiaryAccount(beneficiaryAccount);
         errorDataModel.setBeneficiaryName(beneficiaryName);
-        errorDataModel.setTypeFlag(CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode));
+        errorDataModel.setTypeFlag(typeFlag);
+
+        if(("2").equals(typeFlag)){
+            Map<String, Object> routingMap = commonService.checkAblBranchCode(branchCode);
+            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee", null);
+        }
         
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel);
         updatedData.put("userId", userId);

@@ -127,4 +127,8 @@ public class OnlineModelService {
         }else return onlineModelRepository.findOnlineModelByFileInfoModelIdAndIsDownloaded(fileInfoModelId, 1);
     }
 
+    public List<OnlineModel> findOnlineModelByExchangeCodeAndUploadDateTime(String exchangeCode, LocalDateTime startDate, LocalDateTime endDate){
+        return onlineModelRepository.findOnlineModelByExchangeCodeAndUploadDateTime(exchangeCode, startDate, endDate);
+    }
+
 }

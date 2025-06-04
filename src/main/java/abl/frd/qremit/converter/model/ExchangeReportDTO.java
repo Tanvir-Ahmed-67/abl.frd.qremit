@@ -38,6 +38,11 @@ public class ExchangeReportDTO {
     private String type;
 
     public DecimalFormat formattedAmount = new DecimalFormat("#,##,###.00");
+    public ExchangeReportDTO(String exchangeCode, Long totalCount, Double totalAmount) {
+        this.exchangeCode = exchangeCode;
+        this.totalRowCount = Math.toIntExact(totalCount);
+        this.sumOfAmount = totalAmount;
+    }
 
     public String getTotalAmountInWords() {
         return totalAmountInWords;

@@ -198,6 +198,29 @@ function checkDataTable(tbl){
     }
   }
 
+  function get_dropdown(resp,params){
+    var placeholder = (params.placeholder) ? params.placeholder: "Choose One";
+    if(resp.length == 0) placeholder = "No data found";
+    if((resp.err) && resp.err ==1 ){
+      alert(resp.msg);
+      $(params.tdiv).html('');
+      return false;
+    }
+    var ret = '<option value="">'+placeholder+'</option>';
+    if(resp.length != 0 ){ 
+      for(var i in resp){
+        var selected = '';
+        if(params.selected){
+          if(resp[i][params.key] == params.selected)  selected = "selected";
+        }
+	      //console.log(resp[i].data_obj);
+	      var data_obj = (resp[i].data_obj) ? "data-obj='" + JSON.stringify(resp[i].data_obj) + "'":'';
+        ret += '<option value="'+ resp[i][params.key]+'"'+ selected + data_obj +'>' + resp[i][params.value] + '</option>';
+      }
+    }
+    $(params.tdiv).html(ret);
+  }
+
   var ui = {
     modal: function(obj){
       var ret = '';

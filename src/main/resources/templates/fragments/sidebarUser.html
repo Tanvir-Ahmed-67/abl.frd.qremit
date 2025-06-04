@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>FRD Remittance</title>
+    <title>Agrani RMS</title>
 </head>
 <body>
 <div id="sidebar" class='active' th:fragment="sidebarUser"><!--sidebar-->
@@ -33,7 +33,7 @@
                 </li> -->
                 <!--..........................User Section......................-->
                 <div>
-                    <li class="sidebar-item has-sub">
+                    <li class="sidebar-item has-sub" th:if="${not #maps.isEmpty(exchangeMap)}">
                         <a href="#" class='sidebar-link'>
                             <i class="fa-solid fa-upload"></i>
                             <span>Upload File</span>
@@ -53,7 +53,26 @@
                             <span>Error Data List</span>
                         </a>
                     </li>
-                    
+                    <li class="sidebar-item">
+                        <a th:href="@{/user-home-page?type=11}" class='sidebar-link'>
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Routing Number Search</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="fa-solid fa-signal"></i>
+                            <span>Report Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/user-home-page?type=12}"><i class="fa-regular fa-circle sub-icon"></i>Exchange House Wise Report</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/user-home-page?type=13}"><i class="fa-regular fa-circle sub-icon"></i>Monthly Report</a>
+                            </li>
+                        </ul>
+                    </li>
                 </div>
             </ul>
         </div>

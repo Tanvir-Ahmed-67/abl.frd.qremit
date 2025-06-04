@@ -2,6 +2,7 @@ package abl.frd.qremit.converter.controller;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
@@ -71,6 +72,7 @@ public class ReportController {
                 columnTitles = new String[] {"SL", "Exchange Code", "File Name", "COC", "BEFTN", "Online", "Account Payee", "Total Processed", "Total Error", "Total Amount", "Upload Date", "Action"};
                 break;
             case "2":
+            case "12":
                 columnData = new String[] {"sl", "transactionNo", "exchangeCode", "beneficiaryName", "beneficiaryAccountNo", "bankName", "branchCode", "branchName","remitterName", "amount","processedDate","remType"};
                 columnTitles = new String[] {"SL", "Transaction No", "Exchange Code", "Beneficiary Name", "Account No",  "Bank Name", "Routing No/ Branch Code", "Branch Name","Remitter Name","Amount","Processed Date","Type"};
                 break;
@@ -92,6 +94,14 @@ public class ReportController {
             case "9":
                 columnData = new String[] {"sl", "exchangeCode", "exchangeName", "exchangeShortName", "nrtaCode", "status", "action"};
                 columnTitles = new String[] {"SL", "Exchange Code", "Exchange Name", "Exchange Short Name", "NRTA Code", "Status","Action"};
+                break;
+            case "11":
+                columnData = new String[] {"routing_no","bank_name", "branch_name", "dist_name"};
+                columnTitles = new String[] {"Routing No", "Bank Name", "Branch Name", "District",};
+                break;
+            case "13":
+                columnData = new String[] {"transactionNo", "reportDate", "amount", "beneficiaryAccountNo", "beneficiaryName"};
+                columnTitles = new String[] {"Transaction No", "Report Date", "Amount", "Account No",  "Beneficiary Name"};
                 break;
         }
         return CommonService.createColumns(columnData, columnTitles);
@@ -356,14 +366,6 @@ public class ReportController {
         
         resp.put("data", dataList);
         return resp;
-        /*
-        model.addAttribute("summaryReportContent", exchangeReport);
-        model.addAttribute("grandTotalAmount", commaFormattedGrandTotalAmount);
-        model.addAttribute("grandTotalRemittances", grandTotalRemittances);
-        model.addAttribute("date", date);
-        System.out.println(model);
-        return "report/summaryOfDailyRemittance";
-        */
     }
 
     public Map<String, Object> calculateTotalSummaryOfDailyStatemen(String totalAmount, String totalRemittance){
@@ -627,8 +629,8 @@ public class ReportController {
         String date = formData.get("reportDate");
         MoModel mo = new MoModel();
         mo.setMoDate(LocalDate.parse(date));
-        mo.setTotalNumberIcash(Long.valueOf(formData.get("totalNumberIcash")));
-        mo.setTotalAmountIcash(new BigDecimal(formData.get("totalAmountIcash")));
+        mo.setTotalNumberIcash(Long.valueOf(formData.get("totalNumberIcash").trim()));
+        mo.setTotalAmountIcash(new BigDecimal(formData.get("totalAmountIcash").trim()));
         MoModel moModel = moModelService.findMoByDate(date);
         if(moModel == null) moModel = moModelService.processAndGenerateMoData(mo);
         else    moModel = moModelService.updateMo(moModel, formData);
@@ -714,7 +716,7 @@ public class ReportController {
             }
             byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDateForGovtIncentive(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_Govt_Incentive_", ".csv");
-            MediaType mediaType = MediaType.TEXT_PLAIN;
+            MediaType mediaType = new MediaType("text", "csv", StandardCharsets.UTF_8);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .contentType(mediaType)
@@ -724,8 +726,8 @@ public class ReportController {
             return ResponseEntity.status(500).build();
         }
     }
-    @RequestMapping(value = "/downloadDailyReimbursementForIcash", method= RequestMethod.GET)
-    public ResponseEntity<byte[]> downloadDailyReimbursementForIcash(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
+    @RequestMapping(value = "/downloadClaimForCoc", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadClaimForCoc(@RequestParam(name="fromDate", defaultValue = "") String fromDate, @RequestParam(name="toDate", defaultValue = "") String toDate, @ModelAttribute MoModel moModel){
         try {
             if (fromDate.isEmpty()) {
                 fromDate = CommonService.getCurrentDate("yyyy-MM-dd");
@@ -733,9 +735,9 @@ public class ReportController {
             if (toDate.isEmpty()) {
                 toDate = CommonService.getCurrentDate("yyyy-MM-dd");
             }
-            byte[] contentStream  = reimbursementModelService.loadAllReimbursementForIcashByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
-            String fileName = CommonService.generateDynamicFileName("Reimbursement_COC_", ".csv");
-            MediaType mediaType = MediaType.TEXT_PLAIN;
+            byte[] contentStream  = reimbursementModelService.loadAllClaimDataForCocByDate(LocalDate.parse(fromDate), LocalDate.parse(toDate));
+            String fileName = CommonService.generateDynamicFileName("Claim_COC_", ".csv");
+            MediaType mediaType = new MediaType("text", "csv", StandardCharsets.UTF_8);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .contentType(mediaType)
@@ -756,7 +758,7 @@ public class ReportController {
             }
             byte[] contentStream  = reimbursementModelService.loadAllReimbursementByDateForAgraniIncentive(LocalDate.parse(fromDate), LocalDate.parse(toDate));
             String fileName = CommonService.generateDynamicFileName("Reimbursement_Agrani_Incentive_", ".csv");
-            MediaType mediaType = MediaType.TEXT_PLAIN;
+            MediaType mediaType = new MediaType("text", "csv", StandardCharsets.UTF_8);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .contentType(mediaType)
@@ -790,17 +792,43 @@ public class ReportController {
     //for getting live data exchange wise
     @GetMapping(value="/getExchangeData", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
+    public ResponseEntity<Map<String, Object>> getExchangeWiseData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam Map<String, String> formData){
         Map<String, Object> resp = new HashMap<>();
-        if(date.isEmpty())  date = CommonService.getCurrentDate("yyyy-MM-dd");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         int userId = (int) userData.get("userid");
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
-        resp = reportService.getExchangeWiseData(date, userId);
+        resp = reportService.getExchangeWiseData(formData, userId);
         return ResponseEntity.ok(resp);
+    }
+    @GetMapping(value="/getMonthlyData", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getExchangeWiseMonthlyData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam Map<String, String> formData){
+        Map<String, Object> resp = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        int userId = (int) userData.get("userid");
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
+        resp = reportService.getExchangeWiseMonthlyData(formData, userId);
+        return ResponseEntity.ok(resp);
+    }
+    @GetMapping("/downloadMonthlyData")
+    public ResponseEntity<byte[]> downloadMonthlyData(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam Map<String, String> formData) throws IOException{
+        Map<String, Object> resp = new HashMap<>();
+        ResponseEntity<Map<String, Object>> response = getExchangeWiseMonthlyData(userDetails, model, formData);
+        resp = response.getBody();
+        List<ReportModel> reportModelList = new ArrayList<>();
+        if(resp != null && resp.get("data") != null)    reportModelList = (List<ReportModel>) resp.get("data");
+        byte[] in = reportService.generateCsvForMonthlyData(reportModelList);
+        String fileName = CommonService.generateDynamicFileName("Monthly_data_", ".csv");
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+            .contentType(MediaType.parseMediaType("text/csv"))
+            .body(in);
     }
 
     @GetMapping(value="/updateTotalAmountBulk", produces = "application/json")
@@ -971,8 +999,17 @@ public class ReportController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getRoutingDetails(@RequestParam(defaultValue = "") String routingNo, @RequestParam(defaultValue = "") String bankCode){
         Map<String, Object> resp = new HashMap<>();
-        if(routingNo.isEmpty() && bankCode.isEmpty())   return ResponseEntity.ok(CommonService.getResp(1, "Please select routing No or Bank code", null));
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if(routingNo.isEmpty() && bankCode.isEmpty())   return ResponseEntity.ok(CommonService.getResp(1, "Please select routing No or Bank code", dataList));
         resp = customQueryService.getRoutingDetails(routingNo, bankCode);
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping(value="/getBankList", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getBankListFromRouting(@RequestParam(defaultValue = "") String bankCode){
+        Map<String, Object> resp = new HashMap<>();
+        resp = customQueryService.getBankListFromRouting(bankCode);
         return ResponseEntity.ok(resp);
     }
 
