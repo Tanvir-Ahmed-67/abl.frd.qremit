@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="converted_data_account_payee",
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
-        @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
+        @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"), @Index(name = "idx_download_date_time", columnList = "download_date_time"),
         @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account_no", columnList = "beneficiary_account_no"), @Index(name = "idx_govt_incentive", columnList = "govt_incentive"),@Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"),@Index(name = "idx_incentive", columnList = "incentive")
     }
 )

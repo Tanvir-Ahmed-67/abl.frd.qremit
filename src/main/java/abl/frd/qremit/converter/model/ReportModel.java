@@ -11,7 +11,7 @@ import javax.persistence.*;
         @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id"), @Index(name = "idx_upload_user_id", columnList = "upload_user_id"),
         @Index(name = "idx_branch_code", columnList = "branch_code"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account"), 
         @Index(name = "idx_govt_incentive", columnList = "govt_incentive"), @Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"),
-        @Index(name = "idx_incentive", columnList = "incentive")
+        @Index(name = "idx_incentive", columnList = "incentive"), @Index(name = "idx_download_date_time", columnList = "download_date_time"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time")
     }
 )
 
