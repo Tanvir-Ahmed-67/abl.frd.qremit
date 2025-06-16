@@ -155,7 +155,7 @@ public class AlZamanModelService {
 
     public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
         Map<String, Object> data = new HashMap<>();
-        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4), "dd/MM/yyyy");
+        LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4), "MM/dd/yyyy");
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));
