@@ -137,7 +137,7 @@ public class ReportService {
             reportDTO.setVoucherDate(LocalDate.parse(date));
         }
         // Sort by Exchange Code
-        report.sort(Comparator.comparing(ExchangeReportDTO::getExchangeCode));
+        report.sort(Comparator.comparing(ExchangeReportDTO::getNrtAccountNo));
         return report;
     }
     public List<ExchangeReportDTO> generateDetailsOfDailyRemittances(String fromDate, String toDate) {
