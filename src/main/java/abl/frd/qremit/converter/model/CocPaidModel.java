@@ -60,7 +60,18 @@ public class CocPaidModel {
     private String typeFlag;
     @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int tempStatus = 0;
-
+    @Column(name = "source_country", length = 64)
+    private String sourceCountry;
+    @Column(name = "source_foreign_currency", length = 10)
+    private String sourceForeignCurrency;
+    @Column(name = "conversion_rate", length = 10)
+    private String conversionRate;
+    @Column(name = "remitter_gender", length=10)
+    private String remitterGender;
+    @Column(name = "beneficiary_gender", length=10)
+    private String beneficiaryGender;
+    @Column(name = "beneficiary_district", length = 64)
+    private String beneficiaryDistrict;
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
     private User userModel;
@@ -285,6 +296,54 @@ public class CocPaidModel {
 
     public void setAgraniIncentive(Double agraniIncentive) {
         this.agraniIncentive = agraniIncentive;
+    }
+
+    public String getSourceCountry() {
+        return this.sourceCountry;
+    }
+
+    public void setSourceCountry(String sourceCountry) {
+        this.sourceCountry = sourceCountry;
+    }
+
+    public String getSourceForeignCurrency() {
+        return this.sourceForeignCurrency;
+    }
+
+    public void setSourceForeignCurrency(String sourceForeignCurrency) {
+        this.sourceForeignCurrency = sourceForeignCurrency;
+    }
+
+    public String getConversionRate() {
+        return this.conversionRate;
+    }
+
+    public void setConversionRate(String conversionRate) {
+        this.conversionRate = conversionRate;
+    }
+
+    public String getRemitterGender() {
+        return this.remitterGender;
+    }
+
+    public void setRemitterGender(String remitterGender) {
+        this.remitterGender = remitterGender;
+    }
+
+    public String getBeneficiaryGender() {
+        return this.beneficiaryGender;
+    }
+
+    public void setBeneficiaryGender(String beneficiaryGender) {
+        this.beneficiaryGender = beneficiaryGender;
+    }
+
+    public String getBeneficiaryDistrict() {
+        return this.beneficiaryDistrict;
+    }
+
+    public void setBeneficiaryDistrict(String beneficiaryDistrict) {
+        this.beneficiaryDistrict = beneficiaryDistrict;
     }
 
     public CocPaidModel(String exchangeCode, String transactionNo, Double amount, String enteredDate, LocalDateTime paidDate, String remitterName, 
