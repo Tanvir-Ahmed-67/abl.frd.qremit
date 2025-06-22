@@ -562,6 +562,12 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static String checkNrtaCode(String nrtaCode, String userNrtaCode){
+        String errorMessage = "";
+        if(!userNrtaCode.equals(nrtaCode))  errorMessage = "Please Upload the Correct File"; 
+        return errorMessage;
+    }
+
     public Map<String,Object> convertAblRoutingToBranchCode(String branchCode, List<Map<String, Object>> routingData){
         Map<String,Object> data = new HashMap<>();
         if(branchCode.startsWith("010")){

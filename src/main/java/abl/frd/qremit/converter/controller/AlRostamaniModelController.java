@@ -52,8 +52,6 @@ public class AlRostamaniModelController {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
                     //Map<String, Object> resp = alRostamaniModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
-                    List<AlRostamaniModel> alRostamaniModels = new ArrayList<>();
-                    //Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, AlRostamaniModel.class, alRostamaniModels);
                     Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, AlRostamaniModel.class);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;

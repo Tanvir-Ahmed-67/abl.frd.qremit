@@ -101,12 +101,16 @@ public class GenericModelService {
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            String duplicateMessage = "";
             int i = 0;
+            int duplicateCount = 0;
+            List<T> genericDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
             Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
+            int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
@@ -116,19 +120,26 @@ public class GenericModelService {
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
                 data.put("nrtaCode", nrtaCode);
-                fileExchangeCode = csvRecord.get(0).trim(); 
+                fileExchangeCode = csvRecord.get(0).trim();
+                String errorMessage = CommonService.checkNrtaCode(nrtaCode, fileExchangeCode);
+                if(!errorMessage.isEmpty()){
+                    isValidFile = 0;
+                    resp.put("errorMessage", errorMessage);
+                    break;
+                }
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-
-            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
-            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, modelClass, resp, errorDataModelList, fileExchangeCode, 0, 0);
-            List<T> genericDataModelList = (List<T>) modelResp.get("modelList");
-            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
-            String duplicateMessage = modelResp.get("duplicateMessage").toString();
-            int duplicateCount = (int) modelResp.get("duplicateCount");
-
+            if(isValidFile == 1){
+                Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, modelClass, resp, errorDataModelList, fileExchangeCode, 0, 0);
+                genericDataModelList = (List<T>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
+            }
+            
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
