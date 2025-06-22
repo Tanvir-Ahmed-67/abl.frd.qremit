@@ -162,7 +162,13 @@ public class ErrorDataModelService {
         resp.put("uploadDateTime", uploadDateTime);
         resp.put("typeFlag", errorDataModel.getTypeFlag());
         resp.put("userId", errorDataModel.getUserModel().getId());
-        resp.put("fileInfoId", errorDataModel.getFileInfoModel().getId());
+        resp.put("fileInfoModelId", errorDataModel.getFileInfoModel().getId());
+        resp.put("sourceCountry", errorDataModel.getSourceCountry());
+        resp.put("sourceForeignCurrency", errorDataModel.getSourceForeignCurrency());
+        resp.put("conversionRate", errorDataModel.getConversionRate());
+        resp.put("remitterGender", errorDataModel.getRemitterGender());
+        resp.put("beneficiaryGender", errorDataModel.getBeneficiaryGender());
+        resp.put("beneficiaryDistrict", errorDataModel.getBeneficiaryDistrict());
         return resp;
     }
 

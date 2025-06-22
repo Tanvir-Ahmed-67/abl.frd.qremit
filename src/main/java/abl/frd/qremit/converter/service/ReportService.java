@@ -539,6 +539,13 @@ public class ReportService {
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
                     reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
+                    reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
+                    reportModel.setSourceCountry((String) CommonService.getPropertyValue(model, "getSourceCountry"));
+                    reportModel.setSourceForeignCurrency((String) CommonService.getPropertyValue(model, "getSourceForeignCurrency"));
+                    reportModel.setConversionRate((String) CommonService.getPropertyValue(model, "getConversionRate"));
+                    reportModel.setRemitterGender((String) CommonService.getPropertyValue(model, "getRemitterGender"));
+                    reportModel.setBeneficiaryGender((String) CommonService.getPropertyValue(model, "getBeneficiaryGender"));
+                    reportModel.setBeneficiaryDistrict((String) CommonService.getPropertyValue(model, "getBeneficiaryDistrict"));
                     if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":

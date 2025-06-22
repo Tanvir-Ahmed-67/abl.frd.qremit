@@ -2,6 +2,7 @@ package abl.frd.qremit.converter.controller;
 import java.util.*;
 
 import abl.frd.qremit.converter.helper.MyUserDetails;
+import abl.frd.qremit.converter.model.GenericModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.MyUserDetailsService;
@@ -45,7 +46,7 @@ public class GenericModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
+                    Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, GenericModel.class);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {

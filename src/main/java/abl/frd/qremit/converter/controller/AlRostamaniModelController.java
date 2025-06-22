@@ -3,8 +3,10 @@ package abl.frd.qremit.converter.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import abl.frd.qremit.converter.service.AlRostamaniModelService;
 import abl.frd.qremit.converter.service.CommonService;
+import abl.frd.qremit.converter.service.GenericModelService;
 import abl.frd.qremit.converter.service.MyUserDetailsService;
 import abl.frd.qremit.converter.helper.MyUserDetails;
+import abl.frd.qremit.converter.model.AlRostamaniModel;
 import abl.frd.qremit.converter.model.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,8 @@ public class AlRostamaniModelController {
     private final CommonService commonService;
     @Autowired
     AlRostamaniModelService alRostamaniModelService;
+    @Autowired
+    GenericModelService genericModelService;
 
     @Autowired
     public AlRostamaniModelController(MyUserDetailsService myUserDetailsService, CommonService commonService){
@@ -47,7 +51,10 @@ public class AlRostamaniModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = alRostamaniModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
+                    //Map<String, Object> resp = alRostamaniModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
+                    List<AlRostamaniModel> alRostamaniModels = new ArrayList<>();
+                    //Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, AlRostamaniModel.class, alRostamaniModels);
+                    Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, AlRostamaniModel.class);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {
