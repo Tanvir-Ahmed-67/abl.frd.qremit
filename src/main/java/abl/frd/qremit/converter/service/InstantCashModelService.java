@@ -113,7 +113,7 @@ public class InstantCashModelService {
                 String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
                 int length = csvRecord.size();
                 if(i == 1){
-                    Map<String, Object> apiCheckResp = checkInstantCashApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode);
+                    Map<String, Object> apiCheckResp = checkInstantCashApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode, csvRecord.get(8).trim());
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
@@ -123,6 +123,13 @@ public class InstantCashModelService {
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = (type == 1) ? csvRecord.get(6).trim() : csvRecord.get(3).trim();
                 Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode, bankCode, transactionNo, amount);
+                if(type == 1){
+                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(11).toLowerCase());
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = csvRecord.get(0).trim();
                 dataList.add(data);
@@ -193,12 +200,14 @@ public class InstantCashModelService {
         return data;
     }
 
-    public Map<String, Object> checkInstantCashApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode){
+    public Map<String, Object> checkInstantCashApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode, String bank){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
         if(!firstColumn.equals(nrtaCode))   return CommonService.getResp(1, msg, null);
-        if(type == 1 && length != 11)    resp = CommonService.getResp(1, msg, null);
-        else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
+        //if(type == 1 && length != 11)    resp = CommonService.getResp(1, msg, null);
+        //else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
+        if(type == 1 && !bank.toLowerCase().startsWith("agrani"))    resp = CommonService.getResp(1, msg, null);
+        if(type == 0 && !bank.isEmpty()) resp = CommonService.getResp(1, msg, null);
         return resp;
     }
 

@@ -89,6 +89,12 @@ public class TemporaryReportService {
                     temporaryReportModel.setType(type);
                     temporaryReportModel.setDataModelId(id);
                     temporaryReportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
+                    temporaryReportModel.setSourceCountry((String) CommonService.getPropertyValue(model, "getSourceCountry"));
+                    temporaryReportModel.setSourceForeignCurrency((String) CommonService.getPropertyValue(model, "getSourceForeignCurrency"));
+                    temporaryReportModel.setConversionRate((String) CommonService.getPropertyValue(model, "getConversionRate"));
+                    temporaryReportModel.setRemitterGender((String) CommonService.getPropertyValue(model, "getRemitterGender"));
+                    temporaryReportModel.setBeneficiaryGender((String) CommonService.getPropertyValue(model, "getBeneficiaryGender"));
+                    temporaryReportModel.setBeneficiaryDistrict((String) CommonService.getPropertyValue(model, "getBeneficiaryDistrict"));
                     //added api for online model
                     if(("1").equals(type))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     tempInsertList.add(temporaryReportModel);

@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
-import abl.frd.qremit.converter.model.GenericModel;
 import abl.frd.qremit.converter.model.User;
 import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +15,11 @@ import abl.frd.qremit.converter.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.repository.CocModelRepository;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
-import abl.frd.qremit.converter.repository.GenericModelRepository;
 import abl.frd.qremit.converter.repository.OnlineModelRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 @SuppressWarnings("unchecked")
 @Service
 public class GenericModelService {
-    @Autowired
-    GenericModelRepository genericModelRepository;
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
@@ -46,11 +42,10 @@ public class GenericModelService {
     CommonService commonService;
     @Autowired
     CustomQueryService customQueryService;
-    public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl) {
+    public <T> Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String tbl, Class<T> modelClass) {
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
-        try
-        {
+        try{
             FileInfoModel fileInfoModel = new FileInfoModel();
             fileInfoModel.setUserModel(userModelRepository.findByUserId(userId));
             User user = userModelRepository.findByUserId(userId);
@@ -58,10 +53,8 @@ public class GenericModelService {
             fileInfoModel.setFileName(file.getOriginalFilename());
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
-
-            Map<String, Object> genericData = csvToGenericModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
-            List<GenericModel> genericModels = (List<GenericModel>) genericData.get("genericDataModelList");
-
+            Map<String, Object> genericData = csvToGenericModels(file.getInputStream(), user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl, modelClass);
+            List<T> genericModels = (List<T>) genericData.get("genericDataModelList");
             if(genericData.containsKey("errorMessage")){
                 resp.put("errorMessage", genericData.get("errorMessage"));
             }
@@ -71,18 +64,20 @@ public class GenericModelService {
                 resp.put("fileInfoModel", fileInfoModel);
                 fileInfoModelRepository.save(fileInfoModel);
             }
-
-            if(genericModels.size()!=0) {
-                for(GenericModel genericModel : genericModels){
-                    genericModel.setFileInfoModel(fileInfoModel);
-                    genericModel.setUserModel(user);
+            if (genericModels != null && !genericModels.isEmpty()) {
+                for(T genericModel : genericModels){
+                    try{
+                        CommonService.addFileInfoModelAndUserInModelInstance(genericModel, fileInfoModel, user);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
                 Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(genericModels, fileInfoModel, user, currentDateTime, 0);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(genericModels.size()));
                 fileInfoModel.setIsSettlement(0);
-                fileInfoModel.setGenericModel(genericModels);
+                CommonService.setModelListOnFileInfoModel(fileInfoModel, modelClass, genericModels);
    
                 // SAVING TO MySql Data Table
                 try{
@@ -92,7 +87,7 @@ public class GenericModelService {
                     resp.put("errorMessage", e.getMessage());
                 }
             }
-        } catch (IOException e) {
+        }catch (IOException e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);
             throw new RuntimeException(message);
@@ -100,18 +95,22 @@ public class GenericModelService {
         return resp;
     }
 
-    public Map<String, Object> csvToGenericModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl) {
+    public <T> Map<String, Object> csvToGenericModels(InputStream is, User user, FileInfoModel fileInfoModel, String exchangeCode, String nrtaCode, LocalDateTime currentDateTime, String tbl, Class<T> modelClass) {
         Map<String, Object> resp = new HashMap<>();
-        Optional<GenericModel> duplicateData = Optional.empty();
+        Optional<T> duplicateData = Optional.empty();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.newFormat('|').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            String duplicateMessage = "";
             int i = 0;
+            int duplicateCount = 0;
+            List<T> genericDataModelList = new ArrayList<>();
             List<ErrorDataModel> errorDataModelList = new ArrayList<>();
             List<String[]> uniqueKeys = new ArrayList<>();
             List<Map<String, Object>> dataList = new ArrayList<>();
             Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
+            int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
@@ -121,19 +120,26 @@ public class GenericModelService {
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
                 data.put("nrtaCode", nrtaCode);
-                fileExchangeCode = csvRecord.get(0).trim(); 
+                fileExchangeCode = csvRecord.get(0).trim();
+                String errorMessage = CommonService.checkNrtaCode(nrtaCode, fileExchangeCode);
+                if(!errorMessage.isEmpty()){
+                    isValidFile = 0;
+                    resp.put("errorMessage", errorMessage);
+                    break;
+                }
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-
-            Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
-            Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
-            modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, GenericModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
-            List<GenericModel> genericDataModelList = (List<GenericModel>) modelResp.get("modelList");
-            errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
-            String duplicateMessage = modelResp.get("duplicateMessage").toString();
-            int duplicateCount = (int) modelResp.get("duplicateCount");
-
+            if(isValidFile == 1){
+                Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
+                Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
+                modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, modelClass, resp, errorDataModelList, fileExchangeCode, 0, 0);
+                genericDataModelList = (List<T>) modelResp.get("modelList");
+                errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
+                duplicateMessage = modelResp.get("duplicateMessage").toString();
+                duplicateCount = (int) modelResp.get("duplicateCount");
+            }
+            
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
             if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
@@ -181,6 +187,12 @@ public class GenericModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", csvRecord.get(18).trim());
+        data.put("sourceForeignCurrency", csvRecord.get(19).trim());
+        data.put("conversionRate", csvRecord.get(20).trim());
+        data.put("remitterGender", csvRecord.get(21).trim());
+        data.put("beneficiaryGender", csvRecord.get(22).trim());
+        data.put("beneficiaryDistrict", csvRecord.get(23).trim());
         return data;
     }
 }
