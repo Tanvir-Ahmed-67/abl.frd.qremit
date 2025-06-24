@@ -153,29 +153,6 @@ public class BBReportController {
             dataList.add(data);
         }
         resp.put("data", dataList);
-        /*
-        String sql = "SELECT sum(CAST(amount AS DECIMAL(10,2))) as total FROM " + tbl3;
-        Object result = entityManager.createNativeQuery(sql).getSingleResult();
-        Double total = CommonService.convertStringToDouble(result.toString());
-        sql = "SELECT *, sum(CAST(amount AS DECIMAL(10,2))) AS totalAmount, MAX(STR_TO_DATE(month_week, '%d-%M-%Y')) AS latestDate FROM " + tbl3 + " GROUP BY bank_code ORDER BY totalAmount DESC LIMIT 0,10";
-        List<Object[]> resultList = entityManager.createNativeQuery(sql).getResultList();
-        List<Map<String, Object>> dataList = new ArrayList<>();
-        int i = 1;
-        for(Object[] row: resultList){
-            Map<String, Object> data = new HashMap<>();
-            String totalAmount = String.valueOf(row[9]);
-            Double marketShare = (CommonService.convertStringToDouble(totalAmount)/ total) * 100;
-            data.put("sl", i++);
-            data.put("year", String.valueOf(row[4]));
-            data.put("bankName", String.valueOf(row[2]));
-            data.put("totalAmount", totalAmount);
-            data.put("month", String.valueOf(row[5]));
-            data.put("share", CommonService.convertNumberFormat(marketShare,2)+"%");
-            data.put("date", String.valueOf(row[10]));
-            dataList.add(data);
-        }
-        resp.put("data", dataList);
-        */
         return resp;
     }
 

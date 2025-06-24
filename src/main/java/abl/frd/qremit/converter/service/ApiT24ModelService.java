@@ -43,7 +43,6 @@ public class ApiT24ModelService {
             fileInfoModel.setUploadDateTime(currentDateTime);
             fileInfoModelRepository.save(fileInfoModel);
 
-            //List<ApiT24Model> apiT24Models = csvToApiT24Models(file.getInputStream());
             Map<String, Object> apiT24Data= csvToApiT24Models(file.getInputStream(), user, fileInfoModel, currentDateTime, tbl);
             List<ApiT24Model> apiT24Models = (List<ApiT24Model>) apiT24Data.get("apiT24ModelList");
             if(apiT24Data.containsKey("errorMessage")){
@@ -119,6 +118,12 @@ public class ApiT24ModelService {
                 
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName);
+                
+                String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(12).toLowerCase());
+                if(!errorMessage.isEmpty()){
+                    CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
                 data.put("nrtaCode", nrtaCode);
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
