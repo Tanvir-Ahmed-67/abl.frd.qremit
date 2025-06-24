@@ -51,8 +51,8 @@ public class AlRostamaniModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    //Map<String, Object> resp = alRostamaniModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
-                    Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, AlRostamaniModel.class);
+                    Map<String, Object> resp = alRostamaniModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
+                    //Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, AlRostamaniModel.class);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {
