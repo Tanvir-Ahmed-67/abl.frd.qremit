@@ -101,12 +101,19 @@ public class ApiT24ModelService {
             int isValidFile = 1;
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
-                String nrtaCode = csvRecord.get(0);
+                String nrtaCode = csvRecord.get(0).trim();
                 String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
                 String bankName = csvRecord.get(8);
                 String bankCode = csvRecord.get(9).trim();
+
+                if(nrtaCode.equals("7010226") || nrtaCode.equals("7010228")){
+                    isValidFile = 0;
+                    resp.put("errorMessage","You selected wrong file. Please select the correct file.");
+                    break;
+                }
+                
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 1);
                     if((Integer) apiCheckResp.get("err") == 1){

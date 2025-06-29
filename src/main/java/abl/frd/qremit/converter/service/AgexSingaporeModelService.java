@@ -121,6 +121,7 @@ public class AgexSingaporeModelService {
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = (type == 1) ?  "4006": CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 String branchName = (type == 1) ?  "Principal": csvRecord.get(10);
+                String errorMessage = "";
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
                     if((Integer) apiCheckResp.get("err") == 1){
@@ -131,11 +132,17 @@ public class AgexSingaporeModelService {
                 }
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode, branchName);
                 if(type == 1){
-                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(12).toLowerCase());
+                    errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(12).toLowerCase());
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
                     }
+                }
+                errorMessage = CommonService.checkNrtaCode(exchangeCode, csvRecord.get(0).trim());
+                if(!errorMessage.isEmpty()){
+                    isValidFile = 0;
+                    resp.put("errorMessage", errorMessage);
+                    break;
                 }
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = nrtaCode;   

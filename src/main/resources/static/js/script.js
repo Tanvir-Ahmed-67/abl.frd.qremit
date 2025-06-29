@@ -27,26 +27,16 @@ function get_cnt(url,tdiv){
         dataType: "json"
     }).done(function(resp){
         $(tdiv).text(resp.count);
-        window.open(resp.url,"_");
+        window.location.href = resp.url;
     }).fail(function(params){
         alert("Error getting from server");
     });
 }
 
 function downloadOnline() {
-    console.log("Button clicked");
     var url = "/downloadonline";
     get_cnt(url,"p.onlineCount");
 }
-/*
-$(document).off('click','.download_online');
-$(document).on('click','.download_online', function(e){
-    e.preventDefault();
-    console.log("Button clicked");
-    var url = "/downloadonline";
-    get_cnt(url,"p.onlineCount");
-});
-*/
     
 function downloadCoc() {
     var url = "/downloadcoc";
