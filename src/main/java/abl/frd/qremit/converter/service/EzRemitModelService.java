@@ -126,11 +126,20 @@ public class EzRemitModelService {
                 String beneficiaryAccount = (type == 1) ? csvRecord.get(4).trim(): csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                String errorMessage = "";
                 if(type == 1){
-                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
+                    errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
+                    }
+                }else if(type == 0){
+                    //check with nrta code
+                    errorMessage = CommonService.checkNrtaCode(nrtaCode, csvRecord.get(0).trim());
+                    if(!errorMessage.isEmpty()){
+                        isValidFile = 0;
+                        resp.put("errorMessage", errorMessage);
+                        break;
                     }
                 }
                 data.put("nrtaCode", nrtaCode);
