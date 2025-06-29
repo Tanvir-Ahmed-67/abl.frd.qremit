@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="converted_data_coc",
+@Table(name="converted_data_coc", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),@Index(name = "idx_download_date_time", columnList = "download_date_time"),
         @Index(name = "idx_is_downloaded", columnList = "is_downloaded"), @Index(name = "idx_temp_status", columnList = "temp_status"), 
