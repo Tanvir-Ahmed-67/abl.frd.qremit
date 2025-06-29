@@ -31,7 +31,6 @@ public class DailyMailToTresuryService {
         String[] recipients = {
                 "tanvir.ahmed@agranibank.org",
                 "agranidealers@gmail.com",
-                "treasury@agranibank.org",
                 "treasury@agranibank.org"
         };
         // Skipping sending mail if date is a Friday or Saturday
