@@ -15,7 +15,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import javax.transaction.Transactional;
 @SuppressWarnings({"unchecked","rawtypes"})
 @Service
@@ -212,17 +211,10 @@ public class DynamicOperationService {
             if (wrapper != null) {
                 JpaRepository repository = wrapper.getRepository();
                 Class<?> modelClass = wrapper.getModelClass();
-                Constructor<?> constructor = modelClass.getConstructor(String.class, String.class, String.class, Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class, LocalDateTime.class, FileInfoModel.class, User.class);
-                Double amount = updatedData.get("amount") != null ? CommonService.convertStringToDouble(updatedData.get("amount").toString()) : 0.0;
                 int fileInfoModelId = updatedData.get("fileInfoModelId") != null ? CommonService.convertStringToInt(updatedData.get("fileInfoModelId").toString()) : 0;
                 int userId = updatedData.get("userId") != null ? CommonService.convertStringToInt(updatedData.get("userId").toString()) : 0;
                 if(fileInfoModelId == 0 || userId == 0)    return CommonService.getResp(1, "Invalid File Id or User Id", null);
-                //LocalDateTime uploadDateTime = CommonService.convertStringToDate(updatedData.get("uploadDateTime").toString());
-                String beneficiaryAccount= String.valueOf(updatedData.get("beneficiaryAccount"));
-                String branchCode = String.valueOf(updatedData.get("branchCode"));
-                String bankName = String.valueOf(updatedData.get("bankName"));
                 String typeFlag = updatedData.get("typeFlag").toString();
-
                 int checkT24 = (("1").equals(typeFlag))  ? 1:0; 
                 int checkAccPayee = (("2").equals(typeFlag))  ? 1:0; 
                 int checkBeftn = (("3").equals(typeFlag))  ? 1:0;
@@ -230,14 +222,6 @@ public class DynamicOperationService {
                 FileInfoModel fileInfoModel = fileInfoModelRepository.findById(fileInfoModelId);
                 fileInfoModel = updateFileInfoCount(fileInfoModel, checkT24, checkAccPayee, checkBeftn, checkCoc, 1);
                 User user = userModelRepository.findByUserId(userId);      
-                /* 
-                Object modelInstance = constructor.newInstance(exchangeCode, updatedData.get("transactionNo"), updatedData.get("currency"), amount, 
-                    updatedData.get("enteredDate"), updatedData.get("remitterName"), updatedData.get("remitterMobile"), updatedData.get("beneficiaryName"), 
-                    beneficiaryAccount, updatedData.get("beneficiaryMobile"), bankName, updatedData.get("bankCode"), 
-                    updatedData.get("branchName"), branchCode, updatedData.get("draweeBranchName"), updatedData.get("draweeBranchCode"), 
-                    updatedData.get("purposeOfRemittance"), updatedData.get("sourceOfIncome"), updatedData.get("processFlag"), typeFlag, 
-                    updatedData.get("processedBy"), updatedData.get("processedDate"), currentDateTime, fileInfoModel, user);
-                */
                 List<String> ulist = Arrays.asList("id","errorMessage","fileInfoModelId", "userId");
                 for(String udata: ulist)    updatedData.remove(udata);
                 updatedData.put("uploadDateTime", currentDateTime);
@@ -564,7 +548,6 @@ public class DynamicOperationService {
         try{
             RepositoryModelWrapper<?> wrapper = repositoryModelMap.get(exchangeCode);
             if (wrapper != null) {
-                JpaRepository repository = wrapper.getRepository();
                 Class<?> modelClass = wrapper.getModelClass();
                 String entityName = modelClass.getSimpleName();
                 boolean isDeleted = deleteIndividualConvertedModel(type, dataId);
