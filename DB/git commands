@@ -34,6 +34,10 @@ git push git@github.com:bhaktear/frd-rms.git dev-qremit
 git pull git@github.com:Tanvir-Ahmed-67/abl.frd.qremit.git dev-spotcash
 git push git@github.com:bhaktear/frd-rms.git dev-spotcash
 
+//npsb
+git pull git@github.com:Tanvir-Ahmed-67/abl.frd.qremit.git dev-npsb
+git push git@github.com:bhaktear/frd-rms.git dev-npsb
+
 // Tanvir
 Step one - to pull the latest code from development branch
     git pull origin development
