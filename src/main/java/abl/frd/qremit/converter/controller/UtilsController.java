@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
-
 import abl.frd.qremit.converter.helper.MyUserDetails;
 
 @Controller
@@ -148,6 +147,4 @@ public class UtilsController {
         if(totalCount >= hasSettlementDailyCount)  resp.put("generateBtn", "1");
         return resp;
     }
-
-    
 }

@@ -95,7 +95,7 @@ public class BeftnModelServiceHelper {
             cell6.setCellValue(beftnModel.getOrgAccountType().trim());
 
             Cell cell7 = row.createCell(7);
-            cell7.setCellValue(beftnModel.getBeneficiaryName().trim());
+            cell7.setCellValue(beftnModel.getBeneficiaryName().replaceAll("[^a-zA-Z0-9]", " ").trim());
 
             Cell cell8 = row.createCell(8);
             cell8.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getBeneficiaryAccount().trim()));
@@ -195,7 +195,7 @@ public class BeftnModelServiceHelper {
             cell6.setCellValue(beftnModel.getOrgAccountType().trim());
 
             Cell cell7 = row.createCell(7);
-            cell7.setCellValue(beftnModel.getBeneficiaryName().trim());
+            cell7.setCellValue(beftnModel.getBeneficiaryName().replaceAll("[^a-zA-Z0-9]", " ").trim());
 
             Cell cell8 = row.createCell(8);
             cell8.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getBeneficiaryAccount().trim()));

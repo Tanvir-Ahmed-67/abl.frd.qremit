@@ -137,7 +137,7 @@ public class ReportService {
             reportDTO.setVoucherDate(LocalDate.parse(date));
         }
         // Sort by Exchange Code
-        report.sort(Comparator.comparing(ExchangeReportDTO::getExchangeCode));
+        report.sort(Comparator.comparing(ExchangeReportDTO::getNrtAccountNo));
         return report;
     }
     public List<ExchangeReportDTO> generateDetailsOfDailyRemittances(String fromDate, String toDate) {
@@ -539,6 +539,13 @@ public class ReportService {
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
                     reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
+                    reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
+                    reportModel.setSourceCountry((String) CommonService.getPropertyValue(model, "getSourceCountry"));
+                    reportModel.setSourceForeignCurrency((String) CommonService.getPropertyValue(model, "getSourceForeignCurrency"));
+                    reportModel.setConversionRate((String) CommonService.getPropertyValue(model, "getConversionRate"));
+                    reportModel.setRemitterGender((String) CommonService.getPropertyValue(model, "getRemitterGender"));
+                    reportModel.setBeneficiaryGender((String) CommonService.getPropertyValue(model, "getBeneficiaryGender"));
+                    reportModel.setBeneficiaryDistrict((String) CommonService.getPropertyValue(model, "getBeneficiaryDistrict"));
                     if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":
@@ -827,10 +834,13 @@ public class ReportService {
                         btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete",String.valueOf(id),"Delete");
                         action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
                     }
+                    String exchangeCode = (String) CommonService.getPropertyValue(model, "getExchangeCode");
+                    ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+                    String exchangeDetails = exchangeCode + "<br>" + exchangeHouseModel.getExchangeName();
                     
                     data.put("sl", i++);
                     data.put("transactionNo", (String) CommonService.getPropertyValue(model, "getTransactionNo"));
-                    data.put("exchangeCode", (String) CommonService.getPropertyValue(model, "getExchangeCode"));
+                    data.put("exchangeCode", exchangeDetails);
                     data.put("beneficiaryName", (String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
                     data.put("beneficiaryAccount", (String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
                     

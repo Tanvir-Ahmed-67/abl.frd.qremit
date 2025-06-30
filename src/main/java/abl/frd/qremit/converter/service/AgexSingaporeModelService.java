@@ -57,7 +57,6 @@ public class AgexSingaporeModelService {
 
             int type = 0;
             if(fileType.equalsIgnoreCase("API")) type = 1;
-            //List<AgexSingaporeModel> agexSingaporeModelList = csvToAgexSingaporeModels(file.getInputStream(),type);
             Map<String, Object> agexSingaporeData = csvToAgexSingaporeModels(file.getInputStream(), type, user, fileInfoModel, exchangeCode, nrtaCode, currentDateTime, tbl);
             List<AgexSingaporeModel> agexSingaporeModelList = (List<AgexSingaporeModel>) agexSingaporeData.get("agexSingaporeModelList");
             if(agexSingaporeData.containsKey("errorMessage")){
@@ -122,6 +121,7 @@ public class AgexSingaporeModelService {
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = (type == 1) ?  "4006": CommonService.fixRoutingNo(csvRecord.get(11).trim());
                 String branchName = (type == 1) ?  "Principal": csvRecord.get(10);
+                String errorMessage = "";
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, type);
                     if((Integer) apiCheckResp.get("err") == 1){
@@ -131,6 +131,19 @@ public class AgexSingaporeModelService {
                     }
                 }
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode, branchName);
+                if(type == 1){
+                    errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(12).toLowerCase());
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }
+                errorMessage = CommonService.checkNrtaCode(exchangeCode, csvRecord.get(0).trim());
+                if(!errorMessage.isEmpty()){
+                    isValidFile = 0;
+                    resp.put("errorMessage", errorMessage);
+                    break;
+                }
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = nrtaCode;   
                 dataList.add(data);
@@ -144,48 +157,6 @@ public class AgexSingaporeModelService {
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
                 duplicateCount = (int) modelResp.get("duplicateCount");
-                /*
-                for(Map<String, Object> data: dataList){
-                    String transactionNo = data.get("transactionNo").toString();
-                    String bankName = data.get("bankName").toString();
-                    String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                    String branchCode = data.get("branchCode").toString();
-                    Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
-                    if((Integer) dupResp.get("isDuplicate") == 1){
-                        duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
-                        duplicateCount++;
-                        continue;
-                    }
-
-                    Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
-                    if((Integer) errResp.get("err") == 1){
-                        errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                        continue;
-                    }
-                    if((Integer) errResp.get("err") == 2){
-                        resp.put("errorMessage", errResp.get("msg"));
-                        break;
-                    }
-                    if((Integer) errResp.get("err") == 4){
-                        duplicateMessage += errResp.get("msg");
-                        continue;
-                    }
-                    if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                    String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
-                    int allowedType = (type == 1) ? 1:3;  //for betn 3
-                    if(!CommonService.convertStringToInt(typeFlag).equals(allowedType)){
-                        String msg = "Invalid Remittence Type for ";
-                        msg += (type == 1) ? "API": "BEFTN"; 
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                    AgexSingaporeModel agexSingaporeModel = new AgexSingaporeModel();
-                    agexSingaporeModel = CommonService.createDataModel(agexSingaporeModel, data);
-                    agexSingaporeModel.setTypeFlag(typeFlag);
-                    agexSingaporeModel.setUploadDateTime(currentDateTime);
-                    agexSingaporeModelList.add(agexSingaporeModel);
-                }
-                */
             }
 
             //save error data

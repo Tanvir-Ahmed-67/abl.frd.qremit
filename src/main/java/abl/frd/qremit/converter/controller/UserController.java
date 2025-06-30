@@ -22,6 +22,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.persistence.EntityManager;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -90,7 +92,8 @@ public class UserController {
         return "layouts/dashboard";
     }
     @RequestMapping("/logout")
-    public String logoutSuccessPage(){
+    public String logoutSuccessPage(HttpServletRequest request, HttpServletResponse response) throws ServletException{
+        request.logout(); // Servlet logout
         return "auth-login";
     }
 

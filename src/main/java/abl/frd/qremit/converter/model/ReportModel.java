@@ -11,7 +11,7 @@ import javax.persistence.*;
         @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id"), @Index(name = "idx_upload_user_id", columnList = "upload_user_id"),
         @Index(name = "idx_branch_code", columnList = "branch_code"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account"), 
         @Index(name = "idx_govt_incentive", columnList = "govt_incentive"), @Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"),
-        @Index(name = "idx_incentive", columnList = "incentive")
+        @Index(name = "idx_incentive", columnList = "incentive"), @Index(name = "idx_download_date_time", columnList = "download_date_time"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time")
     }
 )
 
@@ -74,6 +74,18 @@ public class ReportModel {
     private int dataModelId = 0;
     @Column(name = "entered_date", length=30)
     private String enteredDate;
+    @Column(name = "source_country", length = 64)
+    private String sourceCountry;
+    @Column(name = "source_foreign_currency", length = 10)
+    private String sourceForeignCurrency;
+    @Column(name = "conversion_rate", length = 10)
+    private String conversionRate;
+    @Column(name = "remitter_gender", length=10)
+    private String remitterGender;
+    @Column(name = "beneficiary_gender", length=10)
+    private String beneficiaryGender;
+    @Column(name = "beneficiary_district", length = 64)
+    private String beneficiaryDistrict;
 
     public int getId() {
         return this.id;
@@ -302,6 +314,54 @@ public class ReportModel {
 
     public void setMoNumber(String moNumber) {
         this.moNumber = moNumber;
+    }
+
+    public String getSourceCountry() {
+        return this.sourceCountry;
+    }
+
+    public void setSourceCountry(String sourceCountry) {
+        this.sourceCountry = sourceCountry;
+    }
+
+    public String getSourceForeignCurrency() {
+        return this.sourceForeignCurrency;
+    }
+
+    public void setSourceForeignCurrency(String sourceForeignCurrency) {
+        this.sourceForeignCurrency = sourceForeignCurrency;
+    }
+
+    public String getConversionRate() {
+        return this.conversionRate;
+    }
+
+    public void setConversionRate(String conversionRate) {
+        this.conversionRate = conversionRate;
+    }
+
+    public String getRemitterGender() {
+        return this.remitterGender;
+    }
+
+    public void setRemitterGender(String remitterGender) {
+        this.remitterGender = remitterGender;
+    }
+
+    public String getBeneficiaryGender() {
+        return this.beneficiaryGender;
+    }
+
+    public void setBeneficiaryGender(String beneficiaryGender) {
+        this.beneficiaryGender = beneficiaryGender;
+    }
+
+    public String getBeneficiaryDistrict() {
+        return this.beneficiaryDistrict;
+    }
+
+    public void setBeneficiaryDistrict(String beneficiaryDistrict) {
+        this.beneficiaryDistrict = beneficiaryDistrict;
     }
 
     public ReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDate reportDate) {

@@ -26,6 +26,14 @@ git push git@github.com:bhaktear/frd-rms.git dev-bhaktear
 
 Step Four - Create a Pull request fromthe github websie to the main owners repository development branch
 
+//qremit 
+git pull git@github.com:Tanvir-Ahmed-67/abl.frd.qremit.git dev-qremit
+git push git@github.com:bhaktear/frd-rms.git dev-qremit
+
+//spotcash
+git pull git@github.com:Tanvir-Ahmed-67/abl.frd.qremit.git dev-spotcash
+git push git@github.com:bhaktear/frd-rms.git dev-spotcash
+
 // Tanvir
 Step one - to pull the latest code from development branch
     git pull origin development

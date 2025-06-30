@@ -126,11 +126,20 @@ public class EzRemitModelService {
                 String beneficiaryAccount = (type == 1) ? csvRecord.get(4).trim(): csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                String errorMessage = "";
                 if(type == 1){
-                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
+                    errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
+                    }
+                }else if(type == 0){
+                    //check with nrta code
+                    errorMessage = CommonService.checkNrtaCode(nrtaCode, csvRecord.get(0).trim());
+                    if(!errorMessage.isEmpty()){
+                        isValidFile = 0;
+                        resp.put("errorMessage", errorMessage);
+                        break;
                     }
                 }
                 data.put("nrtaCode", nrtaCode);
@@ -146,47 +155,6 @@ public class EzRemitModelService {
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
                 duplicateCount = (int) modelResp.get("duplicateCount");
-                /*
-                for(Map<String, Object> data: dataList){
-                    String transactionNo = data.get("transactionNo").toString();
-                    String bankName = data.get("bankName").toString();
-                    String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                    String branchCode = data.get("branchCode").toString();
-                    Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
-                    if((Integer) dupResp.get("isDuplicate") == 1){
-                        duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
-                        duplicateCount++;
-                        continue;
-                    }
-                    Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
-                    if((Integer) errResp.get("err") == 1){
-                        errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                        continue;
-                    }
-                    if((Integer) errResp.get("err") == 2){
-                        resp.put("errorMessage", errResp.get("msg"));
-                        break;
-                    }
-                    if((Integer) errResp.get("err") == 4){
-                        duplicateMessage += errResp.get("msg");
-                        continue;
-                    }
-                    if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                    String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
-                    int allowedType = (type == 1) ? 1:3;  //for betn 3
-                    if(!CommonService.convertStringToInt(typeFlag).equals(allowedType)){
-                        String msg = "Invalid Remittence Type for ";
-                        msg += (type == 1) ? "API": "BEFTN"; 
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                    EzRemitModel ezRemitModel = new EzRemitModel();
-                    ezRemitModel = CommonService.createDataModel(ezRemitModel, data);
-                    ezRemitModel.setTypeFlag(typeFlag);
-                    ezRemitModel.setUploadDateTime(currentDateTime);
-                    ezRemitModelList.add(ezRemitModel);
-                }
-                */
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);

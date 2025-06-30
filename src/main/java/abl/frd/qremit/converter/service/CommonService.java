@@ -16,6 +16,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -191,6 +192,12 @@ public class CommonService {
             }
             onlineModel.setDownloadUserId(9999);
             onlineModel.setUploadDateTime(uploadDateTime);
+            onlineModel.setSourceCountry((String) getPropertyValue(model, "getSourceCountry"));
+            onlineModel.setSourceForeignCurrency((String) getPropertyValue(model, "getSourceForeignCurrency"));
+            onlineModel.setConversionRate((String) getPropertyValue(model, "getConversionRate"));
+            onlineModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
+            onlineModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
+            onlineModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -244,6 +251,12 @@ public class CommonService {
             cocModel.setUploadDateTime(uploadDateTime);
             cocModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             cocModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            cocModel.setSourceCountry((String) getPropertyValue(model, "getSourceCountry"));
+            cocModel.setSourceForeignCurrency((String) getPropertyValue(model, "getSourceForeignCurrency"));
+            cocModel.setConversionRate((String) getPropertyValue(model, "getConversionRate"));
+            cocModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
+            cocModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
+            cocModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -286,6 +299,12 @@ public class CommonService {
             accountPayeeModel.setUploadDateTime(uploadDateTime);
             accountPayeeModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             accountPayeeModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            accountPayeeModel.setSourceCountry((String) getPropertyValue(model, "getSourceCountry"));
+            accountPayeeModel.setSourceForeignCurrency((String) getPropertyValue(model, "getSourceForeignCurrency"));
+            accountPayeeModel.setConversionRate((String) getPropertyValue(model, "getConversionRate"));
+            accountPayeeModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
+            accountPayeeModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
+            accountPayeeModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -331,6 +350,12 @@ public class CommonService {
             beftnModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             beftnModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
             beftnModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
+            beftnModel.setSourceCountry((String) getPropertyValue(model, "getSourceCountry"));
+            beftnModel.setSourceForeignCurrency((String) getPropertyValue(model, "getSourceForeignCurrency"));
+            beftnModel.setConversionRate((String) getPropertyValue(model, "getConversionRate"));
+            beftnModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
+            beftnModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
+            beftnModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -537,6 +562,12 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static String checkNrtaCode(String nrtaCode, String userNrtaCode){
+        String errorMessage = "";
+        if(!userNrtaCode.equals(nrtaCode))  errorMessage = "Please Upload the Correct File"; 
+        return errorMessage;
+    }
+
     public Map<String,Object> convertAblRoutingToBranchCode(String branchCode, List<Map<String, Object>> routingData){
         Map<String,Object> data = new HashMap<>();
         if(branchCode.startsWith("010")){
@@ -684,6 +715,16 @@ public class CommonService {
         ufield.set(modelInstance, user);
         return modelInstance;
     }
+
+    public static <T> void setModelListOnFileInfoModel(FileInfoModel fileInfoModel, Class<T> modelClass, List<T> modelList) {
+    try {
+        String setterName = "set" + modelClass.getSimpleName();
+        Method setter = fileInfoModel.getClass().getMethod(setterName, List.class);
+        setter.invoke(fileInfoModel, modelList);
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        throw new RuntimeException("Failed to call setter: " + e.getMessage(), e);
+    }
+}
 
     public static Map<String, Object> convertModelToObject(Object model){
         Map<String, Object> map = new HashMap<>();
