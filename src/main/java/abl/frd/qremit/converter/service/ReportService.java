@@ -834,10 +834,13 @@ public class ReportService {
                         btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete",String.valueOf(id),"Delete");
                         action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
                     }
+                    String exchangeCode = (String) CommonService.getPropertyValue(model, "getExchangeCode");
+                    ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+                    String exchangeDetails = exchangeCode + "<br>" + exchangeHouseModel.getExchangeName();
                     
                     data.put("sl", i++);
                     data.put("transactionNo", (String) CommonService.getPropertyValue(model, "getTransactionNo"));
-                    data.put("exchangeCode", (String) CommonService.getPropertyValue(model, "getExchangeCode"));
+                    data.put("exchangeCode", exchangeDetails);
                     data.put("beneficiaryName", (String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
                     data.put("beneficiaryAccount", (String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
                     

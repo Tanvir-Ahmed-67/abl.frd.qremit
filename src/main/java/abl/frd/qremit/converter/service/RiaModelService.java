@@ -112,7 +112,7 @@ public class RiaModelService {
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 if(i == 1){
-                    Map<String, Object> apiCheckResp = checkRiaApiOrBeftnData(csvRecord.get(0), type);
+                    Map<String, Object> apiCheckResp = checkRiaApiOrBeftnData(csvRecord.get(0), type, nrtaCode);
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
@@ -207,11 +207,11 @@ public class RiaModelService {
         return data;
     }
     
-    public Map<String, Object> checkRiaApiOrBeftnData(String firstColumn, int type){
+    public Map<String, Object> checkRiaApiOrBeftnData(String firstColumn, int type, String nrtaCode){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
-        if(type == 0 && !firstColumn.equals("7081")) resp = CommonService.getResp(1, msg, null);
-        else if(type == 1 && firstColumn.equals("7081"))   resp = CommonService.getResp(1, msg, null);
+        if(type == 0 && !firstColumn.equals(nrtaCode)) resp = CommonService.getResp(1, msg, null);
+        else if(type == 1 && firstColumn.equals(nrtaCode))   resp = CommonService.getResp(1, msg, null);
         return resp;
     }
 }
