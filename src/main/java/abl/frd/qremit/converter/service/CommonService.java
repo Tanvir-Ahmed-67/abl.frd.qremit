@@ -673,6 +673,26 @@ public class CommonService {
         return fileInfoModel;
     }
 
+    public static FileInfoModel setCountForFileInfoModel(FileInfoModel fileInfoModel, Map<String, Object> data){
+        int onlineCount = (data.containsKey("onlineCount")) ?   (int) data.get("onlineCount") : 0;
+        int accountPayeCount = (data.containsKey("accountPayeCount")) ?   (int) data.get("accountPayeCount") : 0;
+        int beftnCount = (data.containsKey("beftnCount")) ?   (int) data.get("beftnCount") : 0;
+        int cocCount = (data.containsKey("cocCount")) ?   (int) data.get("cocCount") : 0;
+        int npsbCount = (data.containsKey("npsbCount")) ?   (int) data.get("npsbCount") : 0;
+        int mfsCount = (data.containsKey("mfsCount")) ?   (int) data.get("mfsCount") : 0;
+        int spotCashCount = (data.containsKey("spotCashCount")) ?   (int) data.get("spotCashCount") : 0;
+        int totalCount = onlineCount + accountPayeCount + beftnCount + cocCount + npsbCount + mfsCount + spotCashCount;
+        fileInfoModel.setOnlineCount(CommonService.convertIntToString(onlineCount));
+        fileInfoModel.setAccountPayeeCount(CommonService.convertIntToString(accountPayeCount));
+        fileInfoModel.setBeftnCount(CommonService.convertIntToString(beftnCount));
+        fileInfoModel.setCocCount(CommonService.convertIntToString(cocCount));
+        fileInfoModel.setNpsbCount(CommonService.convertIntToString(npsbCount));
+        fileInfoModel.setMfsCount(CommonService.convertIntToString(mfsCount));
+        fileInfoModel.setSpotCashCount(CommonService.convertIntToString(spotCashCount));
+        fileInfoModel.setTotalCount(CommonService.convertIntToString(totalCount));
+        return fileInfoModel;
+    }
+
     public static <T> T createDataModel(T model, Map<String, Object> data){
         for(Map.Entry<String, Object> entry: data.entrySet()){
             String fieldName = entry.getKey();
@@ -951,9 +971,12 @@ public class CommonService {
         return errorMessage;
     }
     //check validation error message ends
-    //error checking
+    /*
+     * error checking
+     * typeFlag - "" call getErrorMessage method
+     */
     public static <T> Map<String, Object> checkError(Map<String, Object> data, List<ErrorDataModel> errorDataModelList, String nrtaCode, FileInfoModel fileInfoModel, 
-        User user, LocalDateTime currentDateTime, String userExCode, Optional<T> duplicateData, List<String> transactionList){
+        User user, LocalDateTime currentDateTime, String userExCode, Optional<T> duplicateData, List<String> transactionList, String typeFlag){
         //userExCode- csv file first column
         Map<String, Object> resp = new HashMap<>();
         resp.put("err", 0);
@@ -969,7 +992,7 @@ public class CommonService {
         if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
             return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }
-        errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
+        if(("").equals(typeFlag))   errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
         if(!errorMessage.isEmpty()){
             addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
             resp = getResp(1, errorMessage, null);
@@ -1135,6 +1158,9 @@ public class CommonService {
         resp.put("2", "Account Payee");
         resp.put("3", "BEFTN");
         resp.put("4", "COC");
+        resp.put("5", "Spot Cash");
+        resp.put("6", "NPSB");
+        resp.put("7", "MFS");
         return resp;
     }
 
@@ -1390,6 +1416,15 @@ public class CommonService {
         return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 
+    /*
+     * dataList - all data to be processed, 
+     * uniqueDataList - transactionNo, amount, exchangeCode in current base data model
+     * archiveDataList - transactionNo, amount, exchangeCode in old qremit database
+     * modelClass - current model class to be processed
+     * fileExchangeCode - nrta/exchange code in file
+     * checkType: 1- check file api or beftn data otherwise it will not check
+     * params type: 1- api, 0- beftn only when checkType = 1
+     */
     public <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
         Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, List<ErrorDataModel> errorDataModelList, String fileExchangeCode, int checkType, int type){
         Map<String, Object> modelResp = new HashMap<>();
@@ -1429,8 +1464,11 @@ public class CommonService {
                 duplicateCount++;
                 continue;
             }
-        
-            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
+            /*
+             * typeFlag - exists in data for spotcash, npsb, mfs otherwsie setTypeFlag function will call
+             */
+            String typeFlag = (data.containsKey("typeFlag")) ? data.get("typeFlag").toString() : "";
+            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList, typeFlag);
             if((Integer) errResp.get("err") == 1){
                 errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
                 continue;
@@ -1440,7 +1478,7 @@ public class CommonService {
                 continue;
             }
             if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-            String typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
+            if(("").equals(typeFlag))   typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
             if(("2").equals(typeFlag)){
                 //validate branch code for a/c payee exists in routing table
                 Map<String, Object> routingMap = checkAblBranchCode(branchCode);
@@ -1450,9 +1488,6 @@ public class CommonService {
                     continue;
                 }
             }
-            /*
-             * need to modify
-             */
             if(checkType == 1){
                 int allowedType = (type == 1) ? 1:3;  //for betn 3
                 if(!convertStringToInt(typeFlag).equals(allowedType)){
@@ -1465,8 +1500,10 @@ public class CommonService {
             try{
                 T modelInstance = modelClass.getDeclaredConstructor().newInstance();
                 modelInstance = createDataModel(modelInstance, data);
-                Method setTypeFlagMethod = modelClass.getMethod("setTypeFlag", String.class);
-                setTypeFlagMethod.invoke(modelInstance, typeFlag);
+                if(!data.containsKey("typeFlag")){
+                    Method setTypeFlagMethod = modelClass.getMethod("setTypeFlag", String.class);
+                    setTypeFlagMethod.invoke(modelInstance, typeFlag);
+                }
                 Method setUploadDateTimeMethod = modelClass.getMethod("setUploadDateTime", LocalDateTime.class);
                 setUploadDateTimeMethod.invoke(modelInstance, currentDateTime);
                 modelList.add(modelInstance);
