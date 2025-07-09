@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.model;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     indexes = { @Index(name = "idx_file_info_model_id", columnList = "file_info_model_id"), @Index(name="typeFlag", columnList = "typeFlag"), @Index(name = "idx_report_date", columnList = "report_date"), 
         @Index(name = "idx_is_processed", columnList = "is_processed"),@Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), 
         @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),@Index(name = "idx_download_date_time", columnList = "download_date_time"),
-        @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account"),
+        @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account_no"),
         @Index(name = "idx_govt_incentive", columnList = "govt_incentive"),@Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"), @Index(name = "idx_incentive", columnList = "incentive") }
 )
 public class NpsbMfsModel {
@@ -32,7 +31,7 @@ public class NpsbMfsModel {
     private String remitterMobile;
     @Column(name = "beneficiary_name", length=128)
     private String beneficiaryName;
-    @Column(name = "beneficiary_account", nullable = false, length=32)
+    @Column(name = "beneficiary_account_no", nullable = false, length=32)
     private String beneficiaryAccount;
     @Column(name = "beneficiary_mobile_no", length=20)
     private String beneficiaryMobile;
@@ -75,7 +74,7 @@ public class NpsbMfsModel {
     @Column(name = "temp_status", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int tempStatus = 0;
     @Column(name = "report_date", columnDefinition = "DATE")
-    private LocalDate reportDate;
+    private LocalDateTime reportDate;
     @Column(name="commission", length = 10)
     private String commission;
     @Column(name = "source_country", length = 64)
@@ -342,11 +341,11 @@ public class NpsbMfsModel {
         this.tempStatus = tempStatus;
     }
 
-    public LocalDate getReportDate() {
+    public LocalDateTime getReportDate() {
         return this.reportDate;
     }
 
-    public void setReportDate(LocalDate reportDate) {
+    public void setReportDate(LocalDateTime reportDate) {
         this.reportDate = reportDate;
     }
 
