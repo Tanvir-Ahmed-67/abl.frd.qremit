@@ -2,6 +2,7 @@ package abl.frd.qremit.converter.service;
 import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.ExchangeHouseModel;
@@ -10,6 +11,7 @@ import abl.frd.qremit.converter.model.NpsbMfsModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
+import abl.frd.qremit.converter.repository.NpsbMfsRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import java.io.*;
 import java.time.LocalDateTime;
@@ -28,6 +30,8 @@ public class NpsbMfsService {
     CustomQueryService customQueryService;
     @Autowired
     CommonService commonService;
+    @Autowired
+    NpsbMfsRepository npsbMfsRepository;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String tbl){
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -183,5 +187,29 @@ public class NpsbMfsService {
         String[] fields = {"remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance"};
         for(String field: fields)   data.put(field, "");
         return data;
+    }
+
+    public List<NpsbMfsModel> getDataByTransactionNoOrBenificiaryAccount(String type, String searchValue){
+        List<NpsbMfsModel> npsbMfsModelList = new ArrayList<>();
+        switch (type) {
+            case "1":
+                npsbMfsModelList = npsbMfsRepository.findNpsbMfsModelByTransactionNo(searchValue);
+                break;
+            case "2":    
+                npsbMfsModelList = npsbMfsRepository.findNpsbMfsModelByBeneficiaryAccount(searchValue);
+                break;
+        }
+        return npsbMfsModelList;
+    }
+
+    public List<NpsbMfsModel> getNpsbMfsModelByTransactionNoAndIsDownloaded(String transactionNo, int isDownloaded){
+        return npsbMfsRepository.findNpsbMfsModelByTransactionNoAndIsDownloaded(transactionNo, isDownloaded);
+    }
+    public List<NpsbMfsModel> getProcessedDataByFileId(int fileInfoModelId,int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return npsbMfsRepository.getProcessedDataByUploadDateAndFileId(fileInfoModelId, isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        npsbMfsRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
     }
 }
