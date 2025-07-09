@@ -1589,5 +1589,10 @@ public class CommonService {
         return errorMessage;
     }
 
-    
+    public static String getTypeMethod(String type){
+        String typeMethod = "";
+        if(("").equals(type))    typeMethod = "getType";
+        if(("6").equals(type))    typeMethod = "getTypeFlag";
+        return typeMethod;
+    }    
 }
