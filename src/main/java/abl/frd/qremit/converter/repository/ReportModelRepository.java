@@ -49,11 +49,6 @@ public interface ReportModelRepository  extends JpaRepository<ReportModel, Integ
     Object[] getAllSummaryForMo(@Param("reportDate")LocalDate reportDate);
     @Query("SELECT n FROM ReportModel n WHERE n.exchangeCode = :exchangeCode AND n.reportDate BETWEEN :startDate AND :endDate ORDER BY n.reportDate")
     List<ReportModel> getReportModelByExchangeCodeAndReportDate(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query("SELECT n FROM ReportModel n WHERE  n.reportDate BETWEEN :startDate AND :endDate and n.type in ('6','7') ORDER BY n.reportDate")
+    List<ReportModel> getAllNpsbMfsDataByReportDate(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
-/*
-Mo Generating Logic For Type. There is a method in commonservice.
-        resp.put("1", "Online");
-        resp.put("2", "Account Payee");
-        resp.put("3", "BEFTN");
-        resp.put("4", "COC");
-*/
