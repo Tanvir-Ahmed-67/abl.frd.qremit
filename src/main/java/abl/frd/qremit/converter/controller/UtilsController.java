@@ -132,17 +132,18 @@ public class UtilsController {
         int totalCount = 0;
         for(Map<String, Object> settlement: settlementList){
             Map<String, Object> dataMap = new HashMap<>();
-            int count = (int) settlement.get("count");
+            int count = ((int) settlement.get("count") > 0) ? 1:0;
+            int hasSettlementDaily = (int) settlement.get("hasSettlementDaily");
             if(count >= 1){
+                if(hasSettlementDaily == 1) totalCount++;
                 action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-success btn-sm", "","Processed");
-                totalCount++;
             }else action = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm", "","Not Processed");
             dataMap.put("sl", i++);
             dataMap.put("currentDate", currentDate);
             dataMap.put("exchangeName", settlement.get("exchangeName"));
             dataMap.put("action", action);
             dataList.add(dataMap);
-        } 
+        }
         resp = CommonService.getResp(0, "", dataList);
         if(totalCount >= hasSettlementDailyCount)  resp.put("generateBtn", "1");
         return resp;
