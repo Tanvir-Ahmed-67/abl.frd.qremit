@@ -68,6 +68,7 @@ public class SecurityConfiguration {
                 )
                 .logout(logout -> logout
                         .invalidateHttpSession(true)
+                        .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
                 );
 
