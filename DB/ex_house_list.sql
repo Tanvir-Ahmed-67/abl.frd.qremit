@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: May 12, 2025 at 08:06 AM
--- Server version: 8.0.42-0ubuntu0.24.04.1
--- PHP Version: 8.3.6
+-- Host: 127.0.0.1
+-- Generation Time: Jul 10, 2025 at 09:06 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,20 +28,20 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `ex_house_list` (
-  `id` int NOT NULL,
-  `exchange_code` varchar(20) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `exchange_name` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `exchange_short_name` varchar(30) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `nrta_code` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `country_code` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `country_name` varchar(128) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `base_table_name` varchar(20) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `class_name` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `repository_name` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `is_settlement` tinyint(1) DEFAULT '0',
-  `active_status` tinyint(1) DEFAULT '0',
-  `has_settlement_daily` tinyint(1) DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  `id` int(11) NOT NULL,
+  `exchange_code` varchar(20) NOT NULL,
+  `exchange_name` varchar(255) NOT NULL,
+  `exchange_short_name` varchar(30) NOT NULL,
+  `nrta_code` varchar(10) NOT NULL,
+  `country_code` varchar(10) NOT NULL,
+  `country_name` varchar(128) NOT NULL,
+  `base_table_name` varchar(20) NOT NULL,
+  `class_name` varchar(32) NOT NULL,
+  `repository_name` varchar(32) NOT NULL,
+  `is_settlement` tinyint(1) DEFAULT 0,
+  `active_status` tinyint(1) DEFAULT 0,
+  `has_settlement_daily` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `ex_house_list`
@@ -88,7 +88,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (140, '7010287', 'Gulf Overseas', '', '7069', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (141, '7010284', 'Hamdan Exchange', '', '7099', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (142, '7010223', 'Index Exchange Co. LLC', 'Index Exchange', '7024', '784', 'UNITED ARAB EMIRATES (UAE)', 'index', 'IndexModel', 'indexModelRepository', 0, 1, 0),
-(143, '7010260', 'Instant Cash', 'Instant Cash', '7080', '784', 'UNITED ARAB EMIRATES (UAE)', 'instantcash', 'InstantCashModel', 'instantCashModelRepository', 0, 1, 0),
+(143, '7010260', 'Instant Cash', 'Instant Cash', '7080', '784', 'UNITED ARAB EMIRATES (UAE)', 'instantcash', 'InstantCashModel', 'instantCashModelRepository', 1, 1, 0),
 (144, '7010298', 'Japan Remit Finance, Japan', '', '7108', '392', 'JAPAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (145, '7010255', 'Joyalukkas Ex Dubai,UAE', '', '7072', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (146, '7010258', 'Joyalukkas Ex Oman', '', '7078', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
@@ -127,14 +127,15 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (179, '7010303', 'Zamzam Money Exchange', '', '7111', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (180, '7010219', 'Zenj Exchange Co. Bahrain', '', '7003', '48', 'BAHRAIN', '', '', '', 0, 0, 0),
 (183, '7010289', 'FSIE Italy', 'FSIE', '7093', '380', 'ITALY', 'fsie', 'FsieModel', 'fsieModelRepository', 0, 1, 0),
-(184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', '458', 'MALAYSIA', 'agranimalaysia', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', 0, 1, 0),
+(184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'ARH Malaysia', '7035', '458', 'MALAYSIA', 'agranimalaysia', 'ArhMalaysiaModel', 'arhMalaysiaModelRepository', 1, 1, 1),
 (185, '7010304', 'Progoti Exchange Co.', 'Progoti Ex.', '7113', '784', 'UNITED ARAB EMIRATES (UAE)', 'progoti', 'ProgotiModel', 'progotiModelRepository', 0, 1, 0),
 (187, '7010297', 'NBL Money Transfer, Maldives', 'NBL Maldives', '7105', '462', 'Maldives', 'nblmaldives', 'NblMaldivesModel', 'nblMaldivesModelRepository', 0, 1, 0),
 (188, '7010300', 'Merchantrade Asia Sdn Bhd', 'Merchantrade', '7049', '458', 'MALAYSIA', 'merchantrade', 'MerchantradeModel', 'merchantradeModelRepository', 0, 1, 0),
 (189, '7010294', 'Shah Global', 'Shah Global', '7104', '826', 'UNITED KINGDOM (UK)', 'shah_global', 'ShahGlobalModel', 'shahGlobalModelRepository', 0, 1, 0),
 (190, '444444', 'SWIFT Message Extractions', 'SWIFT', '4000', '', '', 'swift', 'SwiftModel', 'swiftModelRepository', 0, 1, 0),
 (191, '7010235', 'Xpress Money', '', '7112', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(192, '7010305', 'Taptap Send UK Limited, UK', '', '7115', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0);
+(192, '7010305', 'Taptap Send UK Limited, UK', '', '7115', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(193, '555555', 'API NPSB', 'API NPSB', '1000', '', '', 'npsb_mfs', 'NpsbMfsModel', 'npsbMfsRepository', 1, 1, 0);
 
 --
 -- Indexes for dumped tables
@@ -158,7 +159,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=194;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
