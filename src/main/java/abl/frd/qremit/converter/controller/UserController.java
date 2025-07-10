@@ -94,9 +94,8 @@ public class UserController {
     @RequestMapping("/logout")
     public String logoutSuccessPage(HttpServletRequest request, HttpServletResponse response) throws ServletException{
         request.logout(); // Servlet logout
-        return "auth-login";
+        return "redirect:/login";
     }
-
     @GetMapping(value ="/getAllUsers", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getAllUsers(Model model, @RequestParam(defaultValue = "") String activeStatus){
