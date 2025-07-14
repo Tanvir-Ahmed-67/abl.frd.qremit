@@ -226,8 +226,20 @@ public class ReportController {
 
     @GetMapping(value="/errorReport", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, 
-        @RequestParam(defaultValue = "") String id){
+    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String id){
+        Map<String, Object> resp = new HashMap<>();
+        int fileInfoModelId = CommonService.convertStringToInt(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
+        int userId = (int) userData.get("userid");
+        String exchangeCode = myUserDetails.getUserExchangeCode();
+        Map<String, Object> role = (Map<String, Object>) userData.get("role");
+        List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode, role);
+            resp.put("data", dataList);
+        /*
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         Map<String, Object> resp = new HashMap<>();
         int fileInfoModelId = 0;
@@ -246,6 +258,7 @@ public class ReportController {
         }else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        */
         return ResponseEntity.ok(resp);
     }
 
