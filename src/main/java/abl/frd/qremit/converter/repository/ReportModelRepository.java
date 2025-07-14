@@ -13,7 +13,7 @@ public interface ReportModelRepository  extends JpaRepository<ReportModel, Integ
     Optional<ReportModel> findByExchangeCodeAndTransactionNoAndAmount(String exchangeCode, String transactionNo, Double amount);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate = :reportDate")
     List<ReportModel> getReportModelByReportDate(@Param("reportDate") LocalDate reportDate);
-    @Query("SELECT new abl.frd.qremit.converter.model.ExchangeReportDTO(n.exchangeCode, COUNT(n), SUM(n.amount)) " + "FROM ReportModel n WHERE n.reportDate = :reportDate " + "GROUP BY n.exchangeCode")
+    @Query("SELECT new abl.frd.qremit.converter.model.ExchangeReportDTO(n.exchangeCode, COUNT(n), SUM(n.amount)) " + "FROM ReportModel n WHERE n.reportDate = :reportDate and type in ('1','2','3','4')" + "GROUP BY n.exchangeCode")
     List<ExchangeReportDTO> getGroupedReportByReportDate(@Param("reportDate") LocalDate reportDate);
     @Query("SELECT n FROM ReportModel n WHERE n.reportDate BETWEEN :fromDate AND :toDate")
     List<ReportModel> getReportModelByReportDateRange(@Param("fromDate") LocalDate fromDate,@Param("toDate") LocalDate toDate);

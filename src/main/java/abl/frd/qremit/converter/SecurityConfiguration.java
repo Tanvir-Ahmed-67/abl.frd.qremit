@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter;
-
 import abl.frd.qremit.converter.service.CustomLoginRestrictionsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,29 +9,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.client.RestTemplate;
-
-
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true) // Enable method-level security annotations
 public class SecurityConfiguration {
-
-    private final UserDetailsService userDetailsService;
     private final LoginSuccessHandler loginSuccessHandler;
-
-    private final LoginFailureHandler loginFailureHandler;
     private final CustomLoginRestrictionsService customLoginRestrictionsService;
 
-    public SecurityConfiguration(UserDetailsService userDetailsService, LoginSuccessHandler loginSuccessHandler, LoginFailureHandler loginFailureHandler, CustomLoginRestrictionsService customLoginRestrictionsService) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfiguration(LoginSuccessHandler loginSuccessHandler, CustomLoginRestrictionsService customLoginRestrictionsService) {
         this.loginSuccessHandler = loginSuccessHandler;
-        this.loginFailureHandler = loginFailureHandler;
         this.customLoginRestrictionsService = customLoginRestrictionsService;
     }
 
@@ -68,6 +58,7 @@ public class SecurityConfiguration {
                 )
                 .logout(logout -> logout
                         .invalidateHttpSession(true)
+                        .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
                 );
 
