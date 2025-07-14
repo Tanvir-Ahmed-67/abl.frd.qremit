@@ -226,26 +226,19 @@ public class ReportController {
 
     @GetMapping(value="/errorReport", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, 
-        @RequestParam(defaultValue = "") String id){
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String id){
         Map<String, Object> resp = new HashMap<>();
-        int fileInfoModelId = 0;
-        if(!id.isEmpty())  fileInfoModelId = CommonService.convertStringToInt(id);
-
+        int fileInfoModelId = CommonService.convertStringToInt(id);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        int userId;
-        String exchangeCode;
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
-            User user = myUserDetails.getUser();
-            userId = user.getId();
-            exchangeCode = user.getExchangeCode();
-            List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode);
-            resp.put("data", dataList);
-        }else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
+        int userId = (int) userData.get("userid");
+        String exchangeCode = myUserDetails.getUserExchangeCode();
+        Map<String, Object> role = (Map<String, Object>) userData.get("role");
+        List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode, role);
+        resp.put("data", dataList);
         return ResponseEntity.ok(resp);
     }
 

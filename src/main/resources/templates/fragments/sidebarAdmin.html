@@ -50,11 +50,17 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="sidebar-item">
-                        <a th:href="@{/adminReport?type=4}" class='sidebar-link'>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
                             <i class="fa-solid fa-exclamation exclamation_padding"></i>
                             <span>Error Data Report</span>
                         </a>
+                        <ul class="submenu ">
+                            <li>
+                               <a th:href="@{/adminReport?type=4}"><i class="fa-regular fa-circle sub-icon"></i><span>Approve Error</span></a>
+                               <a th:href="@{/adminReport?type=3}"><i class="fa-regular fa-circle sub-icon"></i><span>Pending Error List</span></a>
+                            </li>
+                        </ul>
                     </li>
                     <!--
                     <li class="sidebar-item">
