@@ -1594,5 +1594,10 @@ public class CommonService {
         if(("").equals(type))    typeMethod = "getType";
         if(("6").equals(type))    typeMethod = "getTypeFlag";
         return typeMethod;
-    }    
+    }
+    public static boolean checkNpsb(String trMode){
+        if(trMode.equals("18") || trMode.toLowerCase().equals("itcl")){
+            return true;
+        }else return false;
+    }
 }
