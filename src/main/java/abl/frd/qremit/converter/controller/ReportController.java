@@ -103,6 +103,10 @@ public class ReportController {
                 columnData = new String[] {"transactionNo", "reportDate", "amount", "beneficiaryAccountNo", "beneficiaryName"};
                 columnTitles = new String[] {"Transaction No", "Report Date", "Amount", "Account No",  "Beneficiary Name"};
                 break;
+            case "14":
+                columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};
+                columnTitles = new String[] {"SL", "Exchange Name", "Exchange Code", "NRTA Code", "Total Remittances","Total Amount"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
@@ -367,6 +371,81 @@ public class ReportController {
         resp.put("data", dataList);
         return resp;
     }
+    @RequestMapping(value="/summaryOfDailyStatementNPSB", method= RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> generateSummaryOfDailyStatementNPSB(Model model, @RequestParam(defaultValue = "") String date) {
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if(date.isEmpty()){
+            date = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyNpsbStatement(date);
+        Double grandTotalAmount = 0.00;
+        String commaFormattedGrandTotalAmount="";
+        int grandTotalRemittances=0;
+        int i = 1;
+        for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
+            Map<String, Object> dataMap = new HashMap<>();
+            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+            grandTotalAmount = grandTotalAmount+exchangeReportDTO.getTotalAmountCount();
+            grandTotalRemittances = grandTotalRemittances+exchangeReportDTO.getTotalRowCount();
+            commaFormattedGrandTotalAmount = exchangeReportDTO.formattedAmount.format(grandTotalAmount);
+            dataMap.put("sl", i++);
+            dataMap.put("exchangeCode", exchangeReportDTO.getExchangeCode());
+            dataMap.put("nrtaCode", exchangeReportDTO.getNrtAccountNo());
+            dataMap.put("exchangeName", exchangeReportDTO.getExchangeName());
+            dataMap.put("totalRemittance", exchangeReportDTO.getTotalRowCount());
+            dataMap.put("totalAmount", exchangeReportDTO.doFormatAmount(exchangeReportDTO.getTotalAmountCount()));
+            dataList.add(dataMap);
+        }
+        if(!dataList.isEmpty()){
+            Map<String, Object> totalData = calculateTotalSummaryOfDailyStatemen(commaFormattedGrandTotalAmount, String.valueOf(grandTotalRemittances));
+            dataList.add(totalData);
+            resp.put("dailyStatementUrl","/downloadSummaryOfDailyNpsbStatementInPdfFormat?fromDate=" + date);
+            resp.put("dailyStatementTitle","Download NPSB Summary in PDF");
+            resp.put("dailyVoucherUrl","/downloaDailyNpsbVoucherInPdfFormat?fromDate=" + date);
+            resp.put("dailyVoucherTitle", "Download NPSB Voucher in PDF");
+        }
+
+        resp.put("data", dataList);
+        return resp;
+    }
+    @RequestMapping(value="/downloadSummaryOfDailyNpsbStatementInPdfFormat", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadSummaryOfDailyNpsbStatementInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
+        if(date.isEmpty()){
+            date = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyNpsbStatement(date);
+        if(data.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date, "(NPSB)");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        String fileName = commonService.generateFileName("NPSB_summary_report_", date, ".pdf");
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"" );
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
+    }
+    @RequestMapping(value="/downloaDailyNpsbVoucherInPdfFormat", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloaDailyNpsbVoucherInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
+        if(date.isEmpty()){
+            date = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyNpsbStatement(date);
+        for(int i=0; i<data.size();i++){
+            data.get(i).setTotalAmountInWords(NumberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
+        }
+        String fileName = commonService.generateFileName("NPSB_daily_voucher_", date, ".pdf");
+        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date, "DailyVoucherNPSB.jrxml");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
+    }
 
     public Map<String, Object> calculateTotalSummaryOfDailyStatemen(String totalAmount, String totalRemittance){
         Map<String, Object> totalData = new HashMap<>();
@@ -513,7 +592,7 @@ public class ReportController {
         if(data.isEmpty()){
             return ResponseEntity.noContent().build();
         }
-        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date);
+        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date, "");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         String fileName = commonService.generateFileName("summary_report_", date, ".pdf");
@@ -553,7 +632,7 @@ public class ReportController {
             data.get(i).setTotalAmountInWords(NumberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
         }
         String fileName = commonService.generateFileName("daily_voucher_", date, ".pdf");
-        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date);
+        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date, "dailyVoucher.jrxml");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");

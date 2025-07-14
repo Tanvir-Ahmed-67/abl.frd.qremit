@@ -80,9 +80,10 @@ public class ReportService {
         }
     }
 
-    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
+    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList, String date, String reportType) throws Exception {
         for(ExchangeReportDTO exchangeReportDTO: dataList){
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+            exchangeReportDTO.setReportType(reportType);
         }
         JasperReport jasperReport = loadJasperReport("dailyStatementSummary.jrxml");
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
@@ -99,7 +100,7 @@ public class ReportService {
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
-    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
+    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date, String jrxmlFileName) throws Exception {
         LocalDate currentDate = LocalDate.now();
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
@@ -113,7 +114,7 @@ public class ReportService {
             dataList.get(i).setEnteredDate(currentDate);
         }
         // Load File And Compile It.
-        JasperReport jasperReport = loadJasperReport("dailyVoucher.jrxml");
+        JasperReport jasperReport = loadJasperReport(jrxmlFileName);
         // Convert data into a JasperReports data source
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
         // Parameters map if needed
@@ -137,6 +138,19 @@ public class ReportService {
             reportDTO.setExchangeName(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getExchangeName());
             reportDTO.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getNrtaCode());
             reportDTO.setVoucherDate(LocalDate.parse(date));
+        }
+        // Sort by Exchange Code
+        report.sort(Comparator.comparing(ExchangeReportDTO::getNrtAccountNo));
+        return report;
+    }
+    public List<ExchangeReportDTO> getAllGroupedNpsbMfsDataByReportDate(String dateParam){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate date = LocalDate.parse(dateParam);
+        report = reportModelRepository.getAllGroupedNpsbMfsDataByReportDate(date);
+        for(ExchangeReportDTO reportDTO:report){
+            reportDTO.setExchangeName(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getExchangeName());
+            reportDTO.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getNrtaCode());
+            reportDTO.setVoucherDate(LocalDate.parse(dateParam));
         }
         // Sort by Exchange Code
         report.sort(Comparator.comparing(ExchangeReportDTO::getNrtAccountNo));
@@ -345,7 +359,10 @@ public class ReportService {
         List<ExchangeReportDTO> report = getGroupedReportByReportDate(date);
         return report;
     }
-
+    public List<ExchangeReportDTO> generateSummaryOfDailyNpsbStatement(String date) {
+        List<ExchangeReportDTO> report = getAllGroupedNpsbMfsDataByReportDate(date);
+        return report;
+    }
     // Utility method to check if a list is valid (not null, not empty, and size > 0)
     private boolean isListValid(List<?> list) {
         return list != null && !list.isEmpty() && list.size() > 0;

@@ -49,6 +49,6 @@ public interface ReportModelRepository  extends JpaRepository<ReportModel, Integ
     Object[] getAllSummaryForMo(@Param("reportDate")LocalDate reportDate);
     @Query("SELECT n FROM ReportModel n WHERE n.exchangeCode = :exchangeCode AND n.reportDate BETWEEN :startDate AND :endDate ORDER BY n.reportDate")
     List<ReportModel> getReportModelByExchangeCodeAndReportDate(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
-    @Query("SELECT n FROM ReportModel n WHERE  n.reportDate BETWEEN :startDate AND :endDate and n.type in ('6','7') ORDER BY n.reportDate")
-    List<ReportModel> getAllNpsbMfsDataByReportDate(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query("SELECT new abl.frd.qremit.converter.model.ExchangeReportDTO(n.exchangeCode, COUNT(n), SUM(n.amount)) " + "FROM ReportModel n WHERE n.reportDate = :reportDate and n.type = '6'" + "GROUP BY n.exchangeCode")
+    List<ExchangeReportDTO> getAllGroupedNpsbMfsDataByReportDate(@Param("reportDate") LocalDate reportDate);
 }
