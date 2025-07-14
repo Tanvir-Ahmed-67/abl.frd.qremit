@@ -238,27 +238,7 @@ public class ReportController {
         String exchangeCode = myUserDetails.getUserExchangeCode();
         Map<String, Object> role = (Map<String, Object>) userData.get("role");
         List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode, role);
-            resp.put("data", dataList);
-        /*
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
-        Map<String, Object> resp = new HashMap<>();
-        int fileInfoModelId = 0;
-        if(!id.isEmpty())  fileInfoModelId = CommonService.convertStringToInt(id);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        int userId;
-        String exchangeCode;
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
-            User user = myUserDetails.getUser();
-            userId = user.getId();
-            exchangeCode = user.getExchangeCode();
-            List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode);
-            resp.put("data", dataList);
-        }else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        */
+        resp.put("data", dataList);
         return ResponseEntity.ok(resp);
     }
 
