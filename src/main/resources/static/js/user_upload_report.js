@@ -154,7 +154,7 @@ $(document).ready(function(){
         edit_error_data(tbl);
         delete_error(tbl,csrf_token,csrf_header);
         var btn = "";
-        if(type == '7' ){
+        if(type == '7' || type == '14'){
             btn = '<div class="btn-group">';
             if(resp.dailyStatementUrl)  btn +='<a href="'+ resp.dailyStatementUrl + '" class="btn btn-info text-white">' + resp.dailyStatementTitle + '</a>';
             if(resp.dailyVoucherUrl)  btn +='<a href="'+ resp.dailyVoucherUrl + '" class="btn btn-danger text-white">' + resp.dailyVoucherTitle + '</a>';
@@ -167,13 +167,6 @@ $(document).ready(function(){
             var end_date = $('#end_date').val();
             var url = "/downloadMonthlyData?exchangeCode=" + exchange_code + "&startDate=" + start_date + "&endDate=" + end_date + "&generateCsv=1";
             btn = '<a href="'+ url + '" class="btn btn-danger text-white">Download Monthly Data</a>'
-            $('#download_btn').html(btn);
-        }
-        if(type == 14){
-            btn = '<div class="btn-group">';
-            if(resp.dailyStatementUrl)  btn +='<a href="'+ resp.dailyStatementUrl + '" class="btn btn-info text-white">' + resp.dailyStatementTitle + '</a>';
-            if(resp.dailyVoucherUrl)  btn +='<a href="'+ resp.dailyVoucherUrl + '" class="btn btn-danger text-white">' + resp.dailyVoucherTitle + '</a>';
-            btn += '</div>';
             $('#download_btn').html(btn);
         }
     }
