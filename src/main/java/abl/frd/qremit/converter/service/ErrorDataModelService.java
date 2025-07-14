@@ -43,7 +43,12 @@ public class ErrorDataModelService {
         List<String> exchangeCodeList = Arrays.asList(exchangeCode.split(","));
         if(fileInfoModelId != 0){
             return errorDataModelRepository.findErrorByExchangeCodeAndFileId(exchangeCodeList, updateStatus, fileInfoModelId);
-        }else return errorDataModelRepository.findErrorByExchangeCode(exchangeCodeList, updateStatus);
+        }else{
+            if(exchangeCode.isEmpty()){
+                return errorDataModelRepository.findByUpdateStatus(updateStatus);
+            }
+            return errorDataModelRepository.findErrorByExchangeCode(exchangeCodeList, updateStatus);
+        }
     }
 
     //find errorDataModel 
@@ -172,8 +177,9 @@ public class ErrorDataModelService {
         return resp;
     }
 
-    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId, String exchangeCode){
-        //List<ErrorDataModel> errorDataModel = findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
+    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId, String exchangeCode, Map<String, Object> role){
+        int isAdmin = (int) role.get("isAdmin");
+        if(isAdmin == 1)    exchangeCode = "";  //admin can view all data
         List<ErrorDataModel> errorDataModel = findUserModelListByExchangeCodeAndUpdateStatus(exchangeCode, 0, fileInfoModelId);
         int sl = 1;
         String action = "";
@@ -181,10 +187,15 @@ public class ErrorDataModelService {
         List<Map<String, Object>> dataList = new ArrayList<>();
         for(ErrorDataModel emodel: errorDataModel){
             Map<String, Object> dataMap = new HashMap<>();
-            btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit_error",String.valueOf(emodel.getId()),"Edit");
-            btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete_error",String.valueOf(emodel.getId()),"Delete");
-            action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
-
+            if(isAdmin != 1){
+                btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit_error",String.valueOf(emodel.getId()),"Edit");
+                btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete_error",String.valueOf(emodel.getId()),"Delete");
+                action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
+            }
+            String errorMessage = emodel.getErrorMessage();
+            if(errorMessage.toLowerCase().contains("api")){
+                errorMessage = CommonService.generateClassForText(errorMessage, "text-danger fw-bold");
+            }
             dataMap.put("sl", sl++);
             dataMap.put("bankName", emodel.getBankName());
             dataMap.put("branchName", emodel.getBranchName());
@@ -195,7 +206,7 @@ public class ErrorDataModelService {
             dataMap.put("amount", emodel.getAmount());
             dataMap.put("uploadDateTime", CommonService.convertDateToString(emodel.getUploadDateTime()));
             dataMap.put("exchangeCode", emodel.getExchangeCode());
-            dataMap.put("errorMessage", emodel.getErrorMessage());
+            dataMap.put("errorMessage", errorMessage);
             dataMap.put("action", action);
             dataList.add(dataMap);
         }
