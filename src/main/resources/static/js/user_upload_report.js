@@ -94,6 +94,11 @@ $(document).ready(function(){
                 if(type == '12')    page_header = "Exchange House Wise Report";
                 else page_header = "Exchange House Wise Monthly Report";
                 break;
+            case '14':
+                var url = "/summaryOfDailyStatementNPSB?date=" + date;
+                $('#row_report_date').show();
+                page_header = "Summary Of Daily NPSB Remittances";
+                break;
         }
         return {'url': url, 'page_header': page_header};
     }
@@ -162,6 +167,13 @@ $(document).ready(function(){
             var end_date = $('#end_date').val();
             var url = "/downloadMonthlyData?exchangeCode=" + exchange_code + "&startDate=" + start_date + "&endDate=" + end_date + "&generateCsv=1";
             btn = '<a href="'+ url + '" class="btn btn-danger text-white">Download Monthly Data</a>'
+            $('#download_btn').html(btn);
+        }
+        if(type == 14){
+            btn = '<div class="btn-group">';
+            if(resp.dailyStatementUrl)  btn +='<a href="'+ resp.dailyStatementUrl + '" class="btn btn-info text-white">' + resp.dailyStatementTitle + '</a>';
+            if(resp.dailyVoucherUrl)  btn +='<a href="'+ resp.dailyVoucherUrl + '" class="btn btn-danger text-white">' + resp.dailyVoucherTitle + '</a>';
+            btn += '</div>';
             $('#download_btn').html(btn);
         }
     }
