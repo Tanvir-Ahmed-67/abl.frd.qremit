@@ -667,6 +667,15 @@ public class ReportController {
         }
     }
 
+    @GetMapping(value="/processNpsbReport", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> generateNpsbReport(@AuthenticationPrincipal MyUserDetails userDetails){
+        Map<String, Object> resp = new HashMap<>();
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        resp = reportService.processNpsbReport(currentDate);
+        return ResponseEntity.ok(resp);
+    }
+
     @GetMapping(value="/processReport", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> generateReport(@AuthenticationPrincipal MyUserDetails userDetails){
@@ -1084,5 +1093,6 @@ public class ReportController {
         resp = customQueryService.getBankListFromRouting(bankCode);
         return ResponseEntity.ok(resp);
     }
+
 
 }
