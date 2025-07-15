@@ -394,9 +394,9 @@ public class ReportController {
         if(!dataList.isEmpty()){
             Map<String, Object> totalData = calculateTotalSummaryOfDailyStatemen(commaFormattedGrandTotalAmount, String.valueOf(grandTotalRemittances));
             dataList.add(totalData);
-            resp.put("dailyStatementUrl","/downloadSummaryOfDailyNpsbStatementInPdfFormat?fromDate=" + date);
+            resp.put("dailyStatementUrl","/downloadSummaryOfDailyNpsbStatementInPdfFormat?date=" + date);
             resp.put("dailyStatementTitle","Download NPSB Summary in PDF");
-            resp.put("dailyVoucherUrl","/downloaDailyNpsbVoucherInPdfFormat?fromDate=" + date);
+            resp.put("dailyVoucherUrl","/downloaDailyNpsbVoucherInPdfFormat?date=" + date);
             resp.put("dailyVoucherTitle", "Download NPSB Voucher in PDF");
         }
 
