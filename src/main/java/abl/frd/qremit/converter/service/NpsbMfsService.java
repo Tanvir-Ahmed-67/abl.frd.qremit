@@ -110,7 +110,8 @@ public class NpsbMfsService {
             int i= 0;
             for (CSVRecord csvRecord : csvRecords) {
                 String trMode = csvRecord.get(12).toString();
-                if(trMode.equals("18")){
+                if(CommonService.convertStringToInt(csvRecord.get(9).toString()) != 2) continue; //check data only status = 2
+                if(CommonService.checkNpsb(trMode)){
                     //for npsb
                     type = "6";
                 }else   continue;
