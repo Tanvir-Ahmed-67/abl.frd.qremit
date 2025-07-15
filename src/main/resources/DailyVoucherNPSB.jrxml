@@ -34,7 +34,7 @@
 				<text><![CDATA[Foreign Remittance Division]]></text>
 			</element>
 			<element kind="staticText" x="180" y="10" width="197" height="20" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-				<text><![CDATA[Agrani Bank PLC]]></text>
+				<text><![CDATA[Agrani Bank PLC.]]></text>
 			</element>
 			<element kind="staticText" x="0" y="292" width="561" height="21" bold="true">
 				<text><![CDATA[........................................................................................................................................................................................................]]></text>
@@ -173,7 +173,7 @@
 			<element kind="staticText" x="480" y="192" width="75" height="18" hTextAlign="Right" vTextAlign="Middle">
 				<text><![CDATA[CONTRA]]></text>
 			</element>
-			<element kind="staticText" x="455" y="205" width="100" height="18" hTextAlign="Right" vTextAlign="Middle">
+			<element kind="staticText" x="405" y="205" width="150" height="18" hTextAlign="Right" vTextAlign="Middle">
 				<text><![CDATA[Sundry Debtor Others]]></text>
 			</element>
 			<element kind="staticText" x="5" y="573" width="170" height="24" hTextAlign="Left" vTextAlign="Middle">
@@ -197,7 +197,7 @@
 				<text><![CDATA[Foreign Remittance Division]]></text>
 			</element>
 			<element kind="staticText" x="181" y="321" width="197" height="20" fontSize="12.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-				<text><![CDATA[Agrani Bank PLC]]></text>
+				<text><![CDATA[Agrani Bank PLC.]]></text>
 			</element>
 			<element kind="textField" mode="Opaque" x="313" y="421" width="121" height="20" backcolor="#CCCCCC" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA["NO. OF REMITTANCE"]]></expression>
