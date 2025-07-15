@@ -443,6 +443,34 @@ public class ReportService {
         return mergedList;
     }
 
+    public Map<String, Object> processNpsbReport(String currentDate){
+        Map<String, Object> resp = new HashMap<>();
+        List<String> exchangeCodes = new ArrayList<>();
+        exchangeCodes.add("555555");
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findByExchangeCodeIn(exchangeCodes);
+        List<Map<String, Object>> settlementList = fileInfoModelService.getSettlementList(exchangeHouseModelList, currentDate);
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
+        LocalDateTime starDateTime = (LocalDateTime) dateTime.get("startDateTime");
+        LocalDateTime endDateTime = (LocalDateTime) dateTime.get("endDateTime");
+        int count = 0;
+        for(Map<String, Object> settlement: settlementList){
+            //System.out.println(settlement);
+            List<FileInfoModel> fileInfoModelList = (List<FileInfoModel>) settlement.get("fileInfoModelList");
+            if(fileInfoModelList.isEmpty()) continue;
+            for(FileInfoModel fileInfoModel: fileInfoModelList){
+                int npsbCount = CommonService.convertStringToInt(fileInfoModel.getNpsbCount());
+                int mfsCount = CommonService.convertStringToInt(fileInfoModel.getMfsCount());
+                if(npsbCount >=1 || mfsCount >=1){
+                    List<NpsbMfsModel> npsbMfsModelList = npsbMfsService.getProcessedDataByFileId(fileInfoModel.getId(), 1, 0, starDateTime, endDateTime);
+                    resp = setReportModelData(npsbMfsModelList, "6");
+                    count += resp.size();
+                    if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+                }
+            }
+        }
+        return resp;
+    }
+
     public Map<String, Object> processReport(String currentDate){
         Map<String, Object> resp = new HashMap<>();
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsSettlementExchangeHouse(1);
