@@ -22,7 +22,7 @@ public interface ErrorDataModelRepository extends JpaRepository<ErrorDataModel, 
     @Query("SELECT n from ErrorDataModel n where n.updateStatus=:updateStatus AND n.fileInfoModel.id =:fileInfoModelId AND n.exchangeCode in :exchangeCode ORDER BY n.id desc")
     List<ErrorDataModel> findErrorByExchangeCodeAndFileId(@Param("exchangeCode") List<String> exchangeCode, @Param("updateStatus") int updateStatus, 
         @Param("fileInfoModelId") int fileInfoModelId);
-    List<ErrorDataModel> findByUpdateStatus(int updateStatus);
+    List<ErrorDataModel> findByUpdateStatusOrderByIdDesc(int updateStatus);
     ErrorDataModel findById(int id);
     @Transactional
     @Modifying

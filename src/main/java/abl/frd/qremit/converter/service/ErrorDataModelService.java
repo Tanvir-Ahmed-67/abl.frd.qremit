@@ -29,7 +29,7 @@ public class ErrorDataModelService {
 
     //find errorDataModel by updateStatus
     public List<ErrorDataModel> findUserModelListByUpdateStatus(int updateStatus){
-        return errorDataModelRepository.findByUpdateStatus(updateStatus);
+        return errorDataModelRepository.findByUpdateStatusOrderByIdDesc(updateStatus);
     }
 
     //find errorDataModel by using userId and updateStatus
@@ -45,7 +45,7 @@ public class ErrorDataModelService {
             return errorDataModelRepository.findErrorByExchangeCodeAndFileId(exchangeCodeList, updateStatus, fileInfoModelId);
         }else{
             if(exchangeCode.isEmpty()){
-                return errorDataModelRepository.findByUpdateStatus(updateStatus);
+                return errorDataModelRepository.findByUpdateStatusOrderByIdDesc(updateStatus);
             }
             return errorDataModelRepository.findErrorByExchangeCode(exchangeCodeList, updateStatus);
         }
