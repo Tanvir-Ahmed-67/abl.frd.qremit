@@ -168,6 +168,7 @@ public class NpsbMfsService {
         
         LocalDateTime enteredDate = CommonService.convertStringToDate(csvRecord.get(3).trim());
         LocalDateTime paidDate = CommonService.convertStringToDate(csvRecord.get(11).trim());
+        String incentive = csvRecord.get(13).toString();
         Map<String, Object> data = new HashMap<>();
         data.put("typeFlag", type);
         data.put("exchangeCode", exchangeCode);
@@ -185,6 +186,8 @@ public class NpsbMfsService {
         data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         data.put("currency", "BDT");
+        data.put("incentive", incentive);
+        data.put("govtIncentive", incentive);
         String[] fields = {"remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance"};
         for(String field: fields)   data.put(field, "");
         return data;
