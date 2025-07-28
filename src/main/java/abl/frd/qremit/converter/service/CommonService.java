@@ -1531,6 +1531,10 @@ public class CommonService {
         return bigInt;
     }
 
+    public static boolean isScientificNotation(String value) {
+        return value != null && value.toUpperCase().contains("E+");
+    }
+
     public static Map<String, Object> validateIpRange(String clientIP, List<IpRange> ipRangeList){
         Map<String, Object> resp = new HashMap<>();
         String msg = "Access Denied: Invalid IP Address";
@@ -1554,9 +1558,5 @@ public class CommonService {
         if(status.startsWith("cancel")) errorMessage = "Cancel From API";
         if(checkEmptyString(status) || status.equals("null") || status.startsWith("status"))   errorMessage = "A/C Not Credited from API";
         return errorMessage;
-    }
-
-    public static boolean isScientificNotation(String value) {
-        return value != null && value.toUpperCase().contains("E+");
     }
 }
