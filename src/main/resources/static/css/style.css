@@ -97,3 +97,9 @@ body.loading .lmodal {
     border-color: #007bff !important;
 }
 
+.alert-danger{
+    color: #993737 !important;
+    background-color: #ffdede !important;
+    border-color: #ffcece !important;
+    box-shadow: none !important;
+ }
