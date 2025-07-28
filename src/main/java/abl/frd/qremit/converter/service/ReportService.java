@@ -61,6 +61,8 @@ public class ReportService {
     LogModelService logModelService;
     @Autowired
     DynamicOperationService dynamicOperationService;
+    @Autowired
+    NpsbMfsService npsbMfsService;
 
     DateTimeFormatter yyMMddFormatter = DateTimeFormatter.ofPattern("yyMMdd");     // YYMMDD
     DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // YYYY/MM/DD
@@ -78,9 +80,10 @@ public class ReportService {
         }
     }
 
-    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
+    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList, String date, String reportType) throws Exception {
         for(ExchangeReportDTO exchangeReportDTO: dataList){
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+            exchangeReportDTO.setReportType(reportType);
         }
         JasperReport jasperReport = loadJasperReport("dailyStatementSummary.jrxml");
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
@@ -97,7 +100,7 @@ public class ReportService {
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
-    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
+    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date, String jrxmlFileName) throws Exception {
         LocalDate currentDate = LocalDate.now();
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
@@ -111,7 +114,7 @@ public class ReportService {
             dataList.get(i).setEnteredDate(currentDate);
         }
         // Load File And Compile It.
-        JasperReport jasperReport = loadJasperReport("dailyVoucher.jrxml");
+        JasperReport jasperReport = loadJasperReport(jrxmlFileName);
         // Convert data into a JasperReports data source
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
         // Parameters map if needed
@@ -135,6 +138,19 @@ public class ReportService {
             reportDTO.setExchangeName(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getExchangeName());
             reportDTO.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getNrtaCode());
             reportDTO.setVoucherDate(LocalDate.parse(date));
+        }
+        // Sort by Exchange Code
+        report.sort(Comparator.comparing(ExchangeReportDTO::getNrtAccountNo));
+        return report;
+    }
+    public List<ExchangeReportDTO> getAllGroupedNpsbMfsDataByReportDate(String dateParam){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate date = LocalDate.parse(dateParam);
+        report = reportModelRepository.getAllGroupedNpsbMfsDataByReportDate(date);
+        for(ExchangeReportDTO reportDTO:report){
+            reportDTO.setExchangeName(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getExchangeName());
+            reportDTO.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getNrtaCode());
+            reportDTO.setVoucherDate(LocalDate.parse(dateParam));
         }
         // Sort by Exchange Code
         report.sort(Comparator.comparing(ExchangeReportDTO::getNrtAccountNo));
@@ -343,7 +359,10 @@ public class ReportService {
         List<ExchangeReportDTO> report = getGroupedReportByReportDate(date);
         return report;
     }
-
+    public List<ExchangeReportDTO> generateSummaryOfDailyNpsbStatement(String date) {
+        List<ExchangeReportDTO> report = getAllGroupedNpsbMfsDataByReportDate(date);
+        return report;
+    }
     // Utility method to check if a list is valid (not null, not empty, and size > 0)
     private boolean isListValid(List<?> list) {
         return list != null && !list.isEmpty() && list.size() > 0;
@@ -423,7 +442,6 @@ public class ReportService {
         }
         return mergedList;
     }
-
     public Map<String, Object> processReport(String currentDate){
         Map<String, Object> resp = new HashMap<>();
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsSettlementExchangeHouse(1);
@@ -432,52 +450,50 @@ public class ReportService {
         //check all settlement file uploaded
         int hasSettlementDailyCount = exchangeHouseModelService.calculateSumOfHasSettlementDaily(exchangeHouseModelList);
         for(Map<String, Object> settlement: settlementList){
-            int count = (int) settlement.get("count");
-            if(count >= 1)  totalCount++;
+            int count = ((int) settlement.get("count") > 0) ? 1:0;
+            int hasSettlementDaily = (int) settlement.get("hasSettlementDaily");
+            if(count >= 1){
+                if(hasSettlementDaily == 1) totalCount++;
+            }
         }
         if(totalCount < hasSettlementDailyCount)  return CommonService.getResp(1, "Please upload all settlement file", null);
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
+        LocalDateTime starDateTime = (LocalDateTime) dateTime.get("startDateTime");
+        LocalDateTime endDateTime = (LocalDateTime) dateTime.get("endDateTime");
         //parse data
         int count = 0;
         for(Map<String, Object> settlement: settlementList){
-            FileInfoModel fileInfoModel = (FileInfoModel) settlement.get("fileInfoModel");
-            if(fileInfoModel == null)   continue;   //for empty fileinfo no data will be generated
-            int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
-            //int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
-            //int accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
-            if(onlineCount >= 1){
-                List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                resp = setReportModelData(onlineModelList, "1");
-                count += resp.size();
-                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+            //System.out.println(settlement);
+            List<FileInfoModel> fileInfoModelList = (List<FileInfoModel>) settlement.get("fileInfoModelList");
+            if(fileInfoModelList.isEmpty()) continue;
+            for(FileInfoModel fileInfoModel: fileInfoModelList){
+                int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
+                if(onlineCount >= 1){
+                    List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, starDateTime, endDateTime);
+                    resp = setReportModelData(onlineModelList, "1");
+                    count += resp.size();
+                    if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+                }
+                if(("333333").equals(fileInfoModel.getExchangeCode())){
+                    List<CocPaidModel> cocPaidModelList = cocPaidModelService.getProcessedDataByFileId(fileInfoModel.getId(), 0, starDateTime, endDateTime);
+                    resp = setReportModelData(cocPaidModelList, "4");
+                    count += resp.size();
+                    if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+                }
+                int npsbCount = CommonService.convertStringToInt(fileInfoModel.getNpsbCount());
+                int mfsCount = CommonService.convertStringToInt(fileInfoModel.getMfsCount());
+                if(npsbCount >=1 || mfsCount >=1){
+                    List<NpsbMfsModel> npsbMfsModelList = npsbMfsService.getProcessedDataByFileId(fileInfoModel.getId(), 1, 0, starDateTime, endDateTime);
+                    resp = setReportModelData(npsbMfsModelList, "6");
+                    count += resp.size();
+                    if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+                }
             }
-            /*
-            if(accPayeeCount >= 1){
-                List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                resp = setReportModelData(accountPayeeModelList, "2");
-                count += resp.size();
-                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
-            }
-            if(beftnCount >= 1){
-                List<BeftnModel> beftnModelList = beftnModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                resp = setReportModelData(beftnModelList, "3");
-                count += resp.size();
-                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
-            }
-            */
-            if(("333333").equals(fileInfoModel.getExchangeCode())){
-                List<CocPaidModel> cocPaidModelList = cocPaidModelService.getProcessedDataByFileId(fileInfoModel.getId(), 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                resp = setReportModelData(cocPaidModelList, "4");
-                count += resp.size();
-                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
-            }
-
-            //insert data from temporary table
-            List<TemporaryReportModel> temporaryReportModelList = temporaryReportRepository.findAll();
-            resp = setReportModelData(temporaryReportModelList, "");
-            count += resp.size();
-            if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
         }
+        List<TemporaryReportModel> temporaryReportModelList = temporaryReportRepository.findAll();
+        resp = setReportModelData(temporaryReportModelList, "");
+        count += resp.size();
+        if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
         if(count == 0)  return CommonService.getResp(0, this.pMsg, null);
         resp = CommonService.getResp(0, "Data Processed successfully", null);
         return resp;
@@ -493,6 +509,7 @@ public class ReportService {
         List<Integer> acPayeeInsertList = new ArrayList<>();
         List<Integer> beftnInsertList = new ArrayList<>();
         List<Integer> cocPaidInsertList = new ArrayList<>();
+        List<Integer> npsbMfsInsertList = new ArrayList<>();
         Map<String, List<Integer>> insertList = new HashMap<>();
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
@@ -506,8 +523,10 @@ public class ReportService {
                     if(report.isPresent()) continue;
                     
                     int id = (int) CommonService.getPropertyValue(model, "getId");
+                    String typeMethod = CommonService.getTypeMethod(type);
+                    if(!typeMethod.isEmpty())   types = (String) CommonService.getPropertyValue(model, typeMethod);
                     if(("").equals(type)){
-                        types = (String) CommonService.getPropertyValue(model, "getType");
+                        //types = (String) CommonService.getPropertyValue(model, "getType");
                         reportModel.setUploadUserId((int) CommonService.getPropertyValue(model, "getUploadUserId"));
                         reportModel.setFileInfoModelId((int) CommonService.getPropertyValue(model, "getFileInfoModelId"));
                         id = (int) CommonService.getPropertyValue(model, "getDataModelId");
@@ -564,6 +583,11 @@ public class ReportService {
                             cocPaidInsertList.add(id);
                             insertList.put(types, cocPaidInsertList);
                             break;
+                        case "6":
+                        case "7":
+                            npsbMfsInsertList.add(id);
+                            insertList.put(types, npsbMfsInsertList);
+                            break;
                     }
                     reportInsertList.add(reportModel);
                     count++;
@@ -605,6 +629,10 @@ public class ReportService {
                 beftnModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
             case "4":
                 cocPaidModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            case "6":
+            case "7":
+                npsbMfsService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
                 break;
             default:
                 break;
@@ -806,6 +834,12 @@ public class ReportService {
                 resp = CommonService.getResp(0, "", processSearchData(cocModelList, "4"));
                 return resp;
             }
+            List<NpsbMfsModel> npsbMfsModelList = npsbMfsService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
+            if(!npsbMfsModelList.isEmpty()){
+                resp = CommonService.getResp(0, "", processSearchData(npsbMfsModelList, "6"));
+                return resp;
+            }
+            //spot cash model will add in future
             return CommonService.getResp(1, "No data found", null);
         }
         resp = CommonService.getResp(0, "", processSearchData(reportModelList, ""));
@@ -827,7 +861,9 @@ public class ReportService {
                     Map<String, Object> data = new HashMap<>();
                     int id = (Integer) CommonService.getPropertyValue(model, "getId");
                     String action = "";
-                    String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
+                    String typeMethod = CommonService.getTypeMethod(type);
+                    //String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
+                    String typeFlag = (!typeMethod.isEmpty()) ? (String) CommonService.getPropertyValue(model, typeMethod) : type;
                     if(isEdit == 1){
                         String btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit",String.valueOf(id),"Edit");
                         btn += "<input type='hidden' id='type_" + id + "' value='" + typeFlag + "' />";

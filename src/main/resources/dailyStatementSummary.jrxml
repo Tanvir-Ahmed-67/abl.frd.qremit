@@ -6,6 +6,7 @@
 	<field name="exchangeName" class="java.lang.String"/>
 	<field name="totalRowCount" class="java.lang.Integer"/>
 	<field name="sumOfAmount" class="java.lang.Double"/>
+	<field name="reportType" class="java.lang.String"/>
 
 	<variable name="serialNumber" class="java.lang.Integer" resetType="Report" calculation="Nothing">
 		<initialValueExpression><![CDATA[1]]></initialValueExpression>
@@ -25,8 +26,8 @@
 		<element kind="staticText" x="180" y="0" width="200" height="40" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Agrani Bank PLC.]]></text>
 		</element>
-		<element kind="staticText" x="180" y="31" width="200" height="30" fontSize="14.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
-			<text><![CDATA[Daily Remittance Summary]]></text>
+		<element kind="textField" x="139" y="31" width="280" height="30" fontSize="14.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["Daily Remittance Summary "+$F{reportType}]]></expression>
 		</element>
 		<element kind="staticText" x="230" y="59" width="60" height="21" fontSize="11.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 			<text><![CDATA[Date:]]></text>

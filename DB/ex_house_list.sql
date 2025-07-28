@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 12, 2025 at 08:06 AM
+-- Generation Time: Jul 16, 2025 at 05:51 AM
 -- Server version: 8.0.42-0ubuntu0.24.04.1
 -- PHP Version: 8.3.6
 
@@ -88,7 +88,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (140, '7010287', 'Gulf Overseas', '', '7069', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (141, '7010284', 'Hamdan Exchange', '', '7099', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (142, '7010223', 'Index Exchange Co. LLC', 'Index Exchange', '7024', '784', 'UNITED ARAB EMIRATES (UAE)', 'index', 'IndexModel', 'indexModelRepository', 0, 1, 0),
-(143, '7010260', 'Instant Cash', 'Instant Cash', '7080', '784', 'UNITED ARAB EMIRATES (UAE)', 'instantcash', 'InstantCashModel', 'instantCashModelRepository', 0, 1, 0),
+(143, '7010260', 'Instant Cash', 'Instant Cash', '7080', '784', 'UNITED ARAB EMIRATES (UAE)', 'instantcash', 'InstantCashModel', 'instantCashModelRepository', 1, 1, 0),
 (144, '7010298', 'Japan Remit Finance, Japan', '', '7108', '392', 'JAPAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (145, '7010255', 'Joyalukkas Ex Dubai,UAE', '', '7072', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (146, '7010258', 'Joyalukkas Ex Oman', '', '7078', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
@@ -127,14 +127,15 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (179, '7010303', 'Zamzam Money Exchange', '', '7111', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (180, '7010219', 'Zenj Exchange Co. Bahrain', '', '7003', '48', 'BAHRAIN', '', '', '', 0, 0, 0),
 (183, '7010289', 'FSIE Italy', 'FSIE', '7093', '380', 'ITALY', 'fsie', 'FsieModel', 'fsieModelRepository', 0, 1, 0),
-(184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', '458', 'MALAYSIA', 'agranimalaysia', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', 0, 1, 0),
+(184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'ARH Malaysia', '7035', '458', 'MALAYSIA', 'agranimalaysia', 'ArhMalaysiaModel', 'arhMalaysiaModelRepository', 1, 1, 1),
 (185, '7010304', 'Progoti Exchange Co.', 'Progoti Ex.', '7113', '784', 'UNITED ARAB EMIRATES (UAE)', 'progoti', 'ProgotiModel', 'progotiModelRepository', 0, 1, 0),
 (187, '7010297', 'NBL Money Transfer, Maldives', 'NBL Maldives', '7105', '462', 'Maldives', 'nblmaldives', 'NblMaldivesModel', 'nblMaldivesModelRepository', 0, 1, 0),
 (188, '7010300', 'Merchantrade Asia Sdn Bhd', 'Merchantrade', '7049', '458', 'MALAYSIA', 'merchantrade', 'MerchantradeModel', 'merchantradeModelRepository', 0, 1, 0),
 (189, '7010294', 'Shah Global', 'Shah Global', '7104', '826', 'UNITED KINGDOM (UK)', 'shah_global', 'ShahGlobalModel', 'shahGlobalModelRepository', 0, 1, 0),
 (190, '444444', 'SWIFT Message Extractions', 'SWIFT', '4000', '', '', 'swift', 'SwiftModel', 'swiftModelRepository', 0, 1, 0),
 (191, '7010235', 'Xpress Money', '', '7112', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(192, '7010305', 'Taptap Send UK Limited, UK', '', '7115', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0);
+(192, '7010305', 'Taptap Send UK Limited, UK', '', '7115', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(193, '555555', 'NPSB', 'NPSB', '1000', '', '', 'npsb_mfs', 'NpsbMfsModel', 'npsbMfsRepository', 1, 1, 0);
 
 --
 -- Indexes for dumped tables
@@ -158,7 +159,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=194;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

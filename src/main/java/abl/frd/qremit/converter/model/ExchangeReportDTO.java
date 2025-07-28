@@ -36,6 +36,7 @@ public class ExchangeReportDTO {
     private String totalAmountInWords;
     private String moNumber;
     private String type;
+    private String reportType;
 
     public DecimalFormat formattedAmount = new DecimalFormat("#,##,###.00");
     public ExchangeReportDTO(String exchangeCode, Long totalCount, Double totalAmount) {
@@ -78,6 +79,14 @@ public class ExchangeReportDTO {
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryAccount = beneficiaryAccount;
         this.enteredDate = enteredDate;
+    }
+
+    public String getReportType() {
+        return reportType;
+    }
+
+    public void setReportType(String reportType) {
+        this.reportType = reportType;
     }
 
     public String getZoneCode() {

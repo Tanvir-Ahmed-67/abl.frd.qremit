@@ -94,6 +94,11 @@ $(document).ready(function(){
                 if(type == '12')    page_header = "Exchange House Wise Report";
                 else page_header = "Exchange House Wise Monthly Report";
                 break;
+            case '14':
+                var url = "/summaryOfDailyStatementNPSB?date=" + date;
+                $('#row_report_date').show();
+                page_header = "Summary Of Daily NPSB Remittances";
+                break;
         }
         return {'url': url, 'page_header': page_header};
     }
@@ -149,7 +154,7 @@ $(document).ready(function(){
         edit_error_data(tbl);
         delete_error(tbl,csrf_token,csrf_header);
         var btn = "";
-        if(type == '7' ){
+        if(type == '7' || type == '14'){
             btn = '<div class="btn-group">';
             if(resp.dailyStatementUrl)  btn +='<a href="'+ resp.dailyStatementUrl + '" class="btn btn-info text-white">' + resp.dailyStatementTitle + '</a>';
             if(resp.dailyVoucherUrl)  btn +='<a href="'+ resp.dailyVoucherUrl + '" class="btn btn-danger text-white">' + resp.dailyVoucherTitle + '</a>';
