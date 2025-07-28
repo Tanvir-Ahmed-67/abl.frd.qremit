@@ -1438,8 +1438,13 @@ public class CommonService {
             String exchangeCode = data.get("exchangeCode").toString();
             String nrtaCode = data.get("nrtaCode").toString();
             String bankName = data.get("bankName").toString();
+            String beneficiaryAccount = data.get("beneficiaryAccount").toString();
             if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
             String msg = "";
+            if(isScientificNotation(transactionNo) || isScientificNotation(beneficiaryAccount)){
+                resp.put("errorMessage", "Transaction No or Beneficiary Account is not supported");
+                break;
+            }
             //check exchange code
             if(isValidFile == 0){
                 String exchangeMessage = checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
@@ -1449,7 +1454,6 @@ public class CommonService {
                 }else isValidFile = 1;
             }
             
-            String beneficiaryAccount = data.get("beneficiaryAccount").toString();
             String branchCode = data.get("branchCode").toString();
             data.remove("nrtaCode");
             Map<String, Object> dupResp = getDuplicateTransactionNo(transactionNo, uniqueDataList);
@@ -1564,6 +1568,10 @@ public class CommonService {
         return bigInt;
     }
 
+    public static boolean isScientificNotation(String value) {
+        return value != null && value.toUpperCase().contains("E+");
+    }
+
     public static Map<String, Object> validateIpRange(String clientIP, List<IpRange> ipRangeList){
         Map<String, Object> resp = new HashMap<>();
         String msg = "Access Denied: Invalid IP Address";
@@ -1588,7 +1596,6 @@ public class CommonService {
         if(checkEmptyString(status) || status.equals("null") || status.startsWith("status"))   errorMessage = "A/C Not Credited from API";
         return errorMessage;
     }
-
     public static String getTypeMethod(String type){
         String typeMethod = "";
         if(("").equals(type))    typeMethod = "getType";
