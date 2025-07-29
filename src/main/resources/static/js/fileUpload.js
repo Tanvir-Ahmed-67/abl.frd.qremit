@@ -66,7 +66,7 @@ $(document).ready(function(){
         
         function process_api_url(url, id){
             var data = {'_csrf': csrf_token, '_csrf_header': csrf_header, id: id};
-            var params = {'success_alert': "", "success_redirect": "true"};
+            var params = {'success_alert': ""};
             get_ajax(url,data, success_alert, fail_func,'post','json',params, 1000000);
         }
 
