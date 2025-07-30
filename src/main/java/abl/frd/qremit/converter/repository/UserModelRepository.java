@@ -62,6 +62,6 @@ public interface UserModelRepository extends JpaRepository<User, Integer> {
             "  WHERE r.roleName IN ('ROLE_ADMIN', 'ROLE_SUPERADMIN')" +
             ")")
     */
-    @Query(value = "UPDATE User u SET u.start_time = :startTime, u.end_time = :endTime WHERE u.user_id IN (SELECT r.user_id FROM user_role r WHERE r.role_id = 1)", nativeQuery = true)
+    @Query(value = "UPDATE user u SET u.start_time = :startTime, u.end_time = :endTime WHERE u.user_id IN (SELECT r.user_id FROM user_role r WHERE r.role_id = 1)", nativeQuery = true)
     int setLoginTimeRestrictionsForAllUsers(@Param("startTime") String startTime, @Param("endTime") String endTime);
 }
