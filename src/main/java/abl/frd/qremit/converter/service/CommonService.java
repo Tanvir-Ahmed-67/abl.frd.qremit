@@ -329,6 +329,7 @@ public class CommonService {
     public static <T> BeftnModel generateBeftnModel(T model, LocalDateTime uploadDateTime) {
         BeftnModel beftnModel = new BeftnModel();
         try {
+            String transactionNo = (String) getPropertyValue(model, "getTransactionNo");
             beftnModel.setAmount((Double) getPropertyValue(model, "getAmount"));
             beftnModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
             beftnModel.setBeneficiaryAccountType("SA");
@@ -344,7 +345,7 @@ public class CommonService {
             beftnModel.setOrgName("FRD Remittance");
             beftnModel.setUploadDateTime(uploadDateTime);
             beftnModel.setRoutingNo((String) getPropertyValue(model, "getBranchCode"));
-            beftnModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            beftnModel.setTransactionNo(transactionNo);
             beftnModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             beftnModel.setBankName((String) getPropertyValue(model, "getBankName"));
             beftnModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
@@ -356,6 +357,7 @@ public class CommonService {
             beftnModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
             beftnModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
             beftnModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
+            beftnModel.setTxnModified(filterTxnNo(transactionNo));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -1374,7 +1376,7 @@ public class CommonService {
             " PHONE", " CENTER", " LTD", " BANK", "BANK ", "TELECOM", "TRADERS", "STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", " TRAVELS", 
             " TOURS", " NETWORK", " FARM "," ASSETS", " ASSET", " SOLUTIONS", " FUND", " ELECTRON", " SECURITIES", " EQUIPMENT", " COMPENSATION", "DEATH ", " GALLERY", " HOUSE", "M/S ", " BANGLADESH", 
             " BD", " LIMITED", " OVERSEAS", " DAIRY", " COLLECTION", " RICE", " AGENCY", " TEXTILE", " VARAITY", " MEDICAL", " HALL", " PHARMA", " OPTICAL", "PRIZE", " FAIR ",
-            " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", " FURNITURE", " PURBACHAL", 
+            " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", "MART ", " FURNITURE", " PURBACHAL", 
             "PURBACHAL ","PROBASHI", " PALLI", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION", "VANDAR", "DOKAN", "BAZAR", "SAMITI", "MADINA",
             "ISLAMI", "AGRO", "PRESS", "PRINTING" , "DIGITAL", "SHIPPING", "STEEL", "PLASTIC", "CERAMICS", "WORKSHOP" , "DIAGNOSTIC", "CLINIC", "HEALTHCARE", "LABORATORY", "DRUGS", "INSTITUTE",
             "COLLEGE", "UNIVERSITY", "SCHOOL", "TECHNICAL", "POLYTECHNIC", "CORNER", "VARIETY", "BOSTRALOY", "NGO", "KHAMAR","SYSTEM"
@@ -1414,6 +1416,12 @@ public class CommonService {
 
     public static String removeAllSpecialCharacterFromString(String str){
         return str.replaceAll("[^a-zA-Z0-9]", "");
+    }
+
+    public static String filterTxnNo(String str){
+        str = removeAllSpecialCharacterFromString(str);
+        if(str.length() > 17)   str = str.substring(0, 17);
+        return str;
     }
 
     /*
