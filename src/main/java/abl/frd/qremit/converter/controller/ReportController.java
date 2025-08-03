@@ -15,7 +15,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -1084,5 +1083,15 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
-
+    @GetMapping(value="/getDailyProcessedDataByDate", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getDailyProcessedDataByDate(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
+        Map<String, Object> resp = new HashMap<>();
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        if(date.isEmpty()){
+            date = currentDate;
+        }
+        resp = reportService.getDailyProcessedDataByDate(date);
+        return ResponseEntity.ok(resp);
+    }
 }

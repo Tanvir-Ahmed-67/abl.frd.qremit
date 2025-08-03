@@ -16,10 +16,7 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -1196,6 +1193,31 @@ public class ReportService {
             resp.put("data", resp.get("dataList"));
             resp.remove("dataList");
         }
+        return resp;
+    }
+
+    public Map<String, Object> getDailyProcessedDataByDate(String date){
+        Map<String, Object> data = new HashMap<>();
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
+        LocalDateTime startDateTime = dateTime.get("startDateTime");
+        LocalDateTime endDateTime = dateTime.get("endDateTime");
+        List<Object[]> onlineList = onlineModelService.getDailyProcessedDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> onlineMap = CommonService.getFormattedAmountAndCount(onlineList);
+        List<Object[]> accountPayeeList = accountPayeeModelService.getDailyProcessedDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> accountPayeeMap = CommonService.getFormattedAmountAndCount(accountPayeeList);
+        List<Object[]> cocList = cocModelService.getDailyProcessedDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> cocMap = CommonService.getFormattedAmountAndCount(cocList);
+        List<Object[]> beftnMainList = beftnModelService.getDailyProcessedMainDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> beftnMainMap = CommonService.getFormattedAmountAndCount(beftnMainList);
+        List<Object[]> beftnIncentiveList = beftnModelService.getDailyProcessedIncentiveDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> beftnIncentiveMap = CommonService.getFormattedAmountAndCount(beftnIncentiveList);
+        data.put("online", onlineMap);
+        data.put("accountPayee", accountPayeeMap);
+        data.put("beftnMain", beftnMainMap);
+        data.put("beftnIncentive", beftnIncentiveMap);
+        data.put("coc", cocMap);
+        Map<String, Object> resp = CommonService.getResp(0, "", null);
+        resp.put("data", data);
         return resp;
     }
 

@@ -192,4 +192,12 @@ public class BeftnModelService {
         return beftnModelRepository.findBeftnModelByExchangeCodeAndUploadDateTime(exchangeCode, startDate, endDate);
     }
 
+    public List<Object[]> getDailyProcessedMainDataByDate(LocalDateTime startDate, LocalDateTime endDate, int isProcessed){
+        return beftnModelRepository.getDailyProcessedMainDataByDate(startDate, endDate, isProcessed);
+    }
+
+    public List<Object[]> getDailyProcessedIncentiveDataByDate(LocalDateTime startDate, LocalDateTime endDate, int isProcessed){
+        return beftnModelRepository.getDailyProcessedIncentiveDataByDate(startDate, endDate, isProcessed);
+    }
+
 }
