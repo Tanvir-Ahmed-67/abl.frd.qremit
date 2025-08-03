@@ -1615,4 +1615,17 @@ public class CommonService {
             return true;
         }else return false;
     }
+    public static Map<String, Object> getFormattedAmountAndCount(List<Object[]> obj){
+        Map<String, Object> resp = new HashMap<>();
+        double amount = 0.0;
+        int count = 0;
+        for (Object[] row : obj){
+            amount = row[0] != null ? ((Number) row[0]).doubleValue() : 0.0;
+            count = row[1] != null ? ((Number) row[1]).intValue(): 0;
+        }
+        String amountStr = convertNumberFormat(amount, 2);
+        resp.put("amount", amountStr);
+        resp.put("count", count);
+        return resp;
+    }
 }

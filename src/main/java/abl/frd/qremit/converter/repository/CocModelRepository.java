@@ -35,4 +35,6 @@ public interface CocModelRepository extends JpaRepository<CocModel, Integer> {
     CocModel findByIdAndIsDownloaded(int id, int isDownloaded);
     @Query("SELECT n FROM CocModel n WHERE n.exchangeCode = :exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate")
     List<CocModel> findCocModelByExchangeCodeAndUploadDateTime(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT sum(amount) as amount, count(n) as cnt FROM CocModel n where  n.downloadDateTime BETWEEN :startDate AND :endDate and n.isDownloaded=:isProcessed")
+    List<Object[]> getDailyProcessedDataByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("isProcessed") int isProcessed);
 }
