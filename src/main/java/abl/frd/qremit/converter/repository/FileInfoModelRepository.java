@@ -15,6 +15,8 @@ public interface FileInfoModelRepository extends JpaRepository<FileInfoModel, In
     List<FileInfoModel> getUploadedFileDetails(@Param("userId") int userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     @Query("SELECT n FROM FileInfoModel n WHERE n.uploadDateTime BETWEEN :startDate AND :endDate ORDER BY n.exchangeCode, n.uploadDateTime")
     List<FileInfoModel> getUploadedFileDetails(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT n FROM FileInfoModel n WHERE n.exchangeCode=:exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate ORDER BY n.exchangeCode, n.uploadDateTime")
+    List<FileInfoModel> getUploadedFileDetailsByExchangeCode(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     FileInfoModel findByFileName(String fileName);
     FileInfoModel findById(int id);
     //@Query("UPDATE FileInfoModel n SET n.accountPayeeCount = :accountPayeeCount, n.beftnCount = :beftnCount, n.cocCount = :cocCount, n.onlineCount = :onlineCount, n.totalCount = :totalCount, n.isSettlement = :isSettlement, n.unprocessedCount = :unprocessedCount where n.id = :id")
@@ -37,5 +39,4 @@ public interface FileInfoModelRepository extends JpaRepository<FileInfoModel, In
     @Modifying
     @Query("DELETE FROM FileInfoModel n WHERE n.id=:id")
     int deleteFileInfoModelById(@Param("id") int id);
-
 }

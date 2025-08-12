@@ -728,7 +728,9 @@ public class ReportService {
                     }
                 }
             }
-
+            if(("6").equals(type)){
+                downloadDateTime = (LocalDateTime) fdata.get("download_date_time");
+            }
             String processedDate = CommonService.convertDateToString(downloadDateTime);
             if(processedDate.isEmpty()){
                 processedDate = CommonService.generateClassForText("Not Processed", "text-danger fw-bold");
@@ -1209,12 +1211,12 @@ public class ReportService {
         Map<String, Object> cocMap = CommonService.getFormattedAmountAndCount(cocList);
         List<Object[]> beftnMainList = beftnModelService.getDailyProcessedMainDataByDate(startDateTime, endDateTime, 1);
         Map<String, Object> beftnMainMap = CommonService.getFormattedAmountAndCount(beftnMainList);
-        List<Object[]> beftnIncentiveList = beftnModelService.getDailyProcessedIncentiveDataByDate(startDateTime, endDateTime, 1);
-        Map<String, Object> beftnIncentiveMap = CommonService.getFormattedAmountAndCount(beftnIncentiveList);
+        //List<Object[]> beftnIncentiveList = beftnModelService.getDailyProcessedIncentiveDataByDate(startDateTime, endDateTime, 1);
+        //Map<String, Object> beftnIncentiveMap = CommonService.getFormattedAmountAndCount(beftnIncentiveList);
         data.put("online", onlineMap);
         data.put("accountPayee", accountPayeeMap);
         data.put("beftnMain", beftnMainMap);
-        data.put("beftnIncentive", beftnIncentiveMap);
+        //data.put("beftnIncentive", beftnIncentiveMap);
         data.put("coc", cocMap);
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         resp.put("data", data);

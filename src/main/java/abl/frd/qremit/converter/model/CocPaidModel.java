@@ -14,7 +14,7 @@ public class CocPaidModel {
     private int  id;
     @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "transaction_no", unique = true, nullable = false, length=64)
+    @Column(name = "transaction_no", unique = true, nullable = false, length=30)
     private String transactionNo;
     @Column(name = "amount", length = 20, nullable = false)
     private Double amount;
@@ -26,11 +26,11 @@ public class CocPaidModel {
     private String remitterName;
     @Column(name = "beneficiary_name", length = 128)
     private String beneficiaryName;
-    @Column(name = "beneficiary_account_no", length = 20, nullable = false)
+    @Column(name = "beneficiary_account_no", length = 32, nullable = false)
     private String beneficiaryAccount;
     @Column(name = "beneficiary_mobile_no", length = 15)
     private String beneficiaryMobile;
-    @Column(name = "branch_code", length = 5)
+    @Column(name = "branch_code", length = 15)
     private String branchCode;
     @Column(name = "branch_name", length = 64)
     private String branchName;

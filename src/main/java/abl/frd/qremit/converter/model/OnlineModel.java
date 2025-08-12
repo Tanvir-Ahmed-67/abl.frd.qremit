@@ -18,13 +18,13 @@ public class OnlineModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    @Column(name = "transaction_no")
+    @Column(name = "transaction_no",length=30, nullable = false)
     private String transactionNo;
     @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
     @Column(name = "beneficiary_name", length=128)
     private String beneficiaryName;
-    @Column(name = "beneficiary_account")
+    @Column(name = "beneficiary_account", length = 32)
     private String beneficiaryAccount;
     @Column(name = "amount", length = 15)
     private Double amount;

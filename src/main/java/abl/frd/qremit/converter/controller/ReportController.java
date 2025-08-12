@@ -106,6 +106,15 @@ public class ReportController {
                 columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};
                 columnTitles = new String[] {"SL", "Exchange Name", "Exchange Code", "NRTA Code", "Total Remittances","Total Amount"};
                 break;
+            case "15":
+            case "17":
+                columnData = new String[] {"sl", "exchangeCode", "transactionNo","beneficiaryAccount", "beneficiaryName", "routingNo", "amount", "processedDate","remType", "returnCode","returnDate"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Transaction No", "Account No", "Beneficiary Name", "Routing No", "Amount", "Processed Date", "Type","Return Code","Return Date"};
+                break;
+            case "16":
+                columnData = new String[] {"sl", "exchangeCode", "fileName", "totalCount", "uploadDateTime", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "File Name", "Total Processed", "Upload Date", "Action"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
@@ -124,7 +133,8 @@ public class ReportController {
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         int userId = (int) userData.get("userid");
-        String baseUrl = (userId == 0) ? "/adminReport": "/user-home-page";
+        Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
+        String baseUrl = ((Integer) role.get("isUser") != 1) ? "/adminReport": "/user-home-page";
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
         List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId, date);
         List<Map<String, Object>> dataList = new ArrayList<>();
@@ -147,6 +157,7 @@ public class ReportController {
             Map<String, Object> dataMap = new HashMap<>();
             Map<String, Object> exchangeSummary = new HashMap<>();
             String currentExchangeCode = fModel.getExchangeCode();
+            if(("666666").equals(currentExchangeCode))  continue;
             if(previousExchangeCode != null && !previousExchangeCode.equals(currentExchangeCode)){
                 exchangeSummary = reportService.calculateExchangeWiseSummary(exchangeData, previousExchangeCode);
                 if(exchangeSummary.containsKey("totalAmount"))  dataList.add(exchangeSummary);
@@ -220,7 +231,8 @@ public class ReportController {
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
-        String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
+        int isPrefix = 1;
+        String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName(), isPrefix);
         Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
         if((Integer) fileInfo.get("err") == 1)  return ResponseEntity.ok(fileInfo);
         resp = reportService.getFileDetails(CommonService.convertStringToInt(id), fileInfo, columnData);

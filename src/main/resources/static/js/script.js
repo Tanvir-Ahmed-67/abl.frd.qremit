@@ -55,5 +55,5 @@ function get_loading(){
       ajaxStart: function() { $body.addClass("loading");    },
       ajaxStop: function() { $body.removeClass("loading"); }    
     });
-  }
+}
 
