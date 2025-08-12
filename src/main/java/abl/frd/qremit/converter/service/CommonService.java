@@ -715,10 +715,14 @@ public class CommonService {
                     field.set(model, doubleField);
                 }
                 if(field.getType().equals(Integer.class) || field.getType().equals(int.class)){
-                    field.set(model, convertStringToInt((String) fieldValue));
+                    field.set(model, convertStringToInt(String.valueOf(fieldValue)));
                 }
                 if(field.getType().equals(LocalDateTime.class)){
                     LocalDateTime dateField = convertStringToDate(fieldValue.toString());
+                    field.set(model, dateField);
+                }
+                if(field.getType().equals(LocalDate.class)){
+                    LocalDate dateField = convertStringToLocalDate(fieldValue.toString(), "yyyy-MM-dd");
                     field.set(model, dateField);
                 }
             }catch(NoSuchFieldException | IllegalAccessException e){
@@ -893,8 +897,10 @@ public class CommonService {
         return remoteAddr;
     }
 
-    public static String getBaseTableName(String baseTableName){
-        String tbl = "base_data_table_" + baseTableName;
+    public static String getBaseTableName(String baseTableName, int isPrefix){
+        String prefix = "";
+        if(isPrefix == 1)   prefix = "base_data_table_";
+        String tbl = prefix + baseTableName;
         return tbl;
     }
 
@@ -1627,5 +1633,14 @@ public class CommonService {
         resp.put("amount", amountStr);
         resp.put("count", count);
         return resp;
+    }
+
+    public static String parseStringByDelimeter(String str, String delimeter){
+        return str.replace(delimeter, "").trim();
+    }
+
+    public static String[] parseString(String str, String delimeter){
+        String[] parts = str.split(delimeter);
+        return parts;
     }
 }

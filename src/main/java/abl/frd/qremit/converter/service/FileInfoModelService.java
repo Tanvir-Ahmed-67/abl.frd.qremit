@@ -39,6 +39,10 @@ public class FileInfoModelService {
             return fileInfoModelRepository.getUploadedFileDetails(dateTime.get("startDateTime"), dateTime.get("endDateTime"));
         }
     }
+    public List<FileInfoModel> getUploadedFileDetailsByExchangeCode(String exchangeCode, String date){
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
+        return fileInfoModelRepository.getUploadedFileDetailsByExchangeCode(exchangeCode, dateTime.get("startDateTime"), dateTime.get("endDateTime"));
+    }
 
     public Map<String, Object> deleteFileInfoModelById(int id){
         Map<String, Object> resp = CommonService.getResp(1,"Data not deleted", null);
@@ -147,5 +151,4 @@ public class FileInfoModelService {
     public void updateErrorCountById(int id, int errorCount){
         fileInfoModelRepository.updateErrorCountById(id, errorCount);
     }
-
 }

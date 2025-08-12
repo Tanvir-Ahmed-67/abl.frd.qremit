@@ -32,13 +32,28 @@ public class MyUserDetailsService implements UserDetailsService {
         return user;
     }
 
-    
-    
+    public Map<String, Object> getLoggedInUserMenu(MyUserDetails userDetails){
+        Map<String, Object> resp = new HashMap<>();
+        List<Object[]> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
+        Map<String, String> exchangeMap =  new HashMap<>();
+        int isBeftnReturn = 0;
+        for(Object[] row: exchangeNamesMap){
+            String exchangeCode = (String) row[0];
+            String exchangeName = (String) row[1];
+            if(("666666").equals(exchangeCode)){
+                isBeftnReturn = 1;
+            }else   exchangeMap.put(exchangeName, exchangeCode);
+        }
+        resp.put("exchangeMap", exchangeMap);
+        resp.put("isBeftnReturn", isBeftnReturn);
+        //System.out.println(resp);
+        return resp;
+    }
+    /*
     public Map<String, String> getLoggedInUserMenu(MyUserDetails userDetails){
         Map<String, String> exchangeNamesMap = getExchangeNamesByUserId(userDetails.getUser().getId());
         Map<String, String> exchangeMap =  new HashMap<String, String>();
         if(exchangeNamesMap.isEmpty())  return exchangeMap;
-        
         String exchangeCode = exchangeNamesMap.get("exchange_code");
         String exchangeShortNamesStr = exchangeNamesMap.get("exchange_short_name");
         List<String> exchangeCodes = Arrays.asList(exchangeCode.split(","));
@@ -52,6 +67,7 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return exchangeMap;
     }
+    */
     
     /*
     //exchange house code map to seperate table using user id
@@ -126,8 +142,12 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return users;
     }
-
+    /*
     public Map<String, String> getExchangeNamesByUserId(int userId) {
+        return userModelRepository.findExchangeNamesByUserId(userId);
+    }
+    */
+    public List<Object[]> getExchangeNamesByUserId(int userId) {
         return userModelRepository.findExchangeNamesByUserId(userId);
     }
 

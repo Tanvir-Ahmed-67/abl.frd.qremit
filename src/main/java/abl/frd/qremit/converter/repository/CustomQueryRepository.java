@@ -302,4 +302,13 @@ public class CustomQueryRepository {
             return null;
         }
     }
+    public Map<String, Object> getBeftnReturnReason(String returnCode){
+        Map<String, Object> params = new HashMap<>();
+        String queryStr = "SELECT * FROM beftn_return_reason";
+        if(!returnCode.isEmpty()){
+            queryStr += " WHERE return_code=?1";
+            params.put("1",returnCode);
+        }
+        return getData(queryStr,params);
+    }
 }

@@ -1,16 +1,17 @@
 $(document).ready(function(){
     get_loading();
-    $('form').on('submit',function(e){
+    $('#beftnReturnUpload').on('submit', function(e){
         e.preventDefault();
         var data = new FormData($(this)[0]);
         $.ajax({
-            url: "/bbReport/uploadReport",
+            url: "/processBeftnReturnUpload",
             data: data,
             type: 'post',
             contentType: false,
             processData: false,
         }).done(function(resp){
             alert(resp.msg);
+            if(resp.err == 0)   $('form')[0].reset();
         });
     });
 });

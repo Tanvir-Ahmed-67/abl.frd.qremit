@@ -9,7 +9,7 @@ $(document).ready(function(){
     var date = getParameterByName("date");
     $('#row_report_date').hide();
     var load_data = 1;
-    const hTypes = ["11","12","13"];
+    const hTypes = ["11","12","13","15"];
     if(hTypes.includes(type))   load_data = 0;  
     if(type == 11){
         $(".page-header").html('');
@@ -19,7 +19,7 @@ $(document).ready(function(){
         var params = {'tdiv': '#bank_code', 'key':'bank_code','value': 'bank_name'};
         get_ajax(url,"",show_bank_list,fail_func,"get","json",params);
     }
-    if(type == 12 || type == 13){
+    if(type == 12 || type == 13 || type == 15){
         $(".page-header").html('');
         $('#exchange_div').show();
         $('#exchange_code').select2({ width: '100%' });
@@ -98,6 +98,17 @@ $(document).ready(function(){
                 var url = "/summaryOfDailyStatementNPSB?date=" + date;
                 $('#row_report_date').show();
                 page_header = "Summary Of Daily NPSB Remittances";
+                break;
+            case '15':
+                var url = "/getBeftnReturnReport" + params;
+                page_header = "Exchange House wise BEFTN Return Report";
+                break;
+            case '16':
+                var url = "/getBeftnReturnUploadedFile?date=" + date;
+                $('#row_report_date').show();
+                break;
+            case '17':
+                var url = "/viewBeftnReturnFile?id=" + pid;
                 break;
         }
         return {'url': url, 'page_header': page_header};

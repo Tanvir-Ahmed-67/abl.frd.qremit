@@ -21,7 +21,7 @@ public class BeftnModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    @Column(name = "transaction_no")
+    @Column(name = "transaction_no", length=30, nullable = false)
     private String transactionNo;
     @Column(name = "org_customer_no")
     private String orgCustomerNo;
@@ -35,13 +35,13 @@ public class BeftnModel {
     private Double amount;
     @Column(name = "beneficiary_name", length=128)
     private String beneficiaryName;
-    @Column(name = "beneficiary_account")
+    @Column(name = "beneficiary_account", length = 32)
     private String beneficiaryAccount;
     @Column(name = "beneficiary_account_type")
     private String beneficiaryAccountType;
     @Column(name = "exchange_code", length = 20)
     private String exchangeCode;
-    @Column(name = "routing_no")
+    @Column(name = "routing_no", length = 15)
     private String routingNo;
     @Column(name = "govt_incentive")
     private Double govtIncentive = 0.0;
@@ -91,7 +91,7 @@ public class BeftnModel {
     private String beneficiaryGender;
     @Column(name = "beneficiary_district", length = 64)
     private String beneficiaryDistrict;
-    @Column(name = "txn_modified")
+    @Column(name = "txn_modified", length = 30)
     private String txnModified;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})

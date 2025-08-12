@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.repository;
-
 import abl.frd.qremit.converter.model.BeftnModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -7,10 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer> {
@@ -74,5 +71,6 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     List<Object[]> getDailyProcessedMainDataByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("isProcessed") int isProcessed);
     @Query("SELECT sum(incentive) as amount, count(n) as cnt FROM BeftnModel n where n.downloadDateTime BETWEEN :startDate AND :endDate and n.isProcessedIncentive = :isProcessed")
     List<Object[]> getDailyProcessedIncentiveDataByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("isProcessed") int isProcessed);
+    List<BeftnModel> findByTxnModifiedIn(List<String> txnList);
 }
 

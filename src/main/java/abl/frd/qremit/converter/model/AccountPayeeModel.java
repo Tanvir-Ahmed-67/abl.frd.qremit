@@ -18,7 +18,7 @@ public class AccountPayeeModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    @Column(name = "transaction_no")
+    @Column(name = "transaction_no",length=30, nullable = false)
     private String transactionNo;
     @Column(name = "credit_mark")
     private String creditMark;

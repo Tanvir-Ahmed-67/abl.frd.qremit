@@ -12,8 +12,10 @@ import java.util.*;
 public interface UserModelRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.userName = :username")
     public User findByUserName(@Param("username") String username);
-    @Query(value = "SELECT GROUP_CONCAT(c.exchange_code) AS exchange_code, GROUP_CONCAT(c.exchange_short_name) AS exchange_short_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId and c.exchange_short_name != '' GROUP BY u.user_id ORDER BY c.exchange_short_name", nativeQuery = true)
-    Map<String, String> findExchangeNamesByUserId(@Param("userId") int userId);
+    //@Query(value = "SELECT GROUP_CONCAT(c.exchange_code) AS exchange_code, GROUP_CONCAT(c.exchange_short_name) AS exchange_short_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId and c.exchange_short_name != '' GROUP BY u.user_id ORDER BY c.exchange_short_name", nativeQuery = true)
+    //Map<String, String> findExchangeNamesByUserId(@Param("userId") int userId);
+    @Query(value = "SELECT c.exchange_code AS exchange_code, c.exchange_short_name AS exchange_short_name FROM user u JOIN ex_house_list c ON FIND_IN_SET(c.exchange_code, u.exchange_code) WHERE u.user_id = :userId and c.exchange_short_name != '' GROUP BY u.user_id, c.exchange_code ORDER BY c.exchange_short_name", nativeQuery = true)
+    List<Object[]> findExchangeNamesByUserId(@Param("userId") int userId);
     @Query("SELECT u FROM User u WHERE u.userEmail = :useremail")
     public User findByUserEmail(@Param("useremail") String useremail);
     @Query("SELECT u FROM User u WHERE u.id = :userid")
