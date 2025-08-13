@@ -236,7 +236,7 @@ public class BeftnModelService {
                 String[] refStr = CommonService.parseString(csvRecord.get(37),"-");
                 String txnNo = refStr[0].trim();
                 String remType = refStr[1].trim();
-                if(!remType.toLowerCase().contains("frd"))  continue;
+                if(!remType.toLowerCase().contains("frd") && !remType.toLowerCase().contains("frcd"))  continue;
                 Map<String, Object> data = parseBeftnReturnData(csvRecord, txnNo, remType);
                 txnLists.add(txnNo);
                 dataList.add(data);
@@ -311,7 +311,7 @@ public class BeftnModelService {
         LocalDate starDate = CommonService.convertStringToLocalDate(formData.get("startDate"),"yyyy-MM-dd");
         LocalDate enDateTime = CommonService.convertStringToLocalDate(formData.get("endDate"), "yyyy-MM-dd");
         String exchangeCode = formData.get("exchangeCode");
-        List<BeftnReturnModel> beftnReturnModelList = beftnReturnRepository.getBeftnReturnModelByExchangeCodeAndProcessedDate(exchangeCode, starDate, enDateTime);
+        List<BeftnReturnModel> beftnReturnModelList = beftnReturnRepository.getBeftnReturnModelByExchangeCodeAndReturnDate(exchangeCode, starDate, enDateTime);
         resp = proceessDataFromBeftnReturnModelList(beftnReturnModelList);
         return resp;
     }

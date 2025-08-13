@@ -11,6 +11,8 @@ import java.util.*;
 public interface BeftnReturnRepository extends JpaRepository<BeftnReturnModel, Integer>{
     @Query("SELECT n FROM BeftnReturnModel n WHERE n.exchangeCode = :exchangeCode AND n.processedDate BETWEEN :startDate AND :endDate ORDER BY n.processedDate")
     List<BeftnReturnModel> getBeftnReturnModelByExchangeCodeAndProcessedDate(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query("SELECT n FROM BeftnReturnModel n WHERE n.exchangeCode = :exchangeCode AND n.returnDate BETWEEN :startDate AND :endDate ORDER BY n.exchangeCode DESC")
+    List<BeftnReturnModel> getBeftnReturnModelByExchangeCodeAndReturnDate(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
     @Query("SELECT n FROM BeftnReturnModel n WHERE n.fileInfoModelId = :fileInfoModelId ORDER BY n.exchangeCode DESC")
     List<BeftnReturnModel> getBeftnReturnModelByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
 }

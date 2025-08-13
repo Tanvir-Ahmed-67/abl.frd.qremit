@@ -11,7 +11,7 @@ $(document).ready(function(){
             processData: false,
         }).done(function(resp){
             alert(resp.msg);
-            if(resp.err == 0)   $('form')[0].reset();
+            if(resp.err == 0)   window.location.href = "/user-home-page?type=16";
         });
     });
 });
