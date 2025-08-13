@@ -207,6 +207,7 @@ public class ReportController {
             Map<String, Object> exchangeSummary = reportService.calculateExchangeWiseSummary(exchangeData, previousExchangeCode);
             if(exchangeSummary.containsKey("totalAmount")) dataList.add(exchangeSummary);
         }
+        if(totalCount == 0) return ResponseEntity.ok(CommonService.getResp(1, "No data found", dataList));
         String totalAmountStr = CommonService.convertNumberFormat(totalAmount, 2);
         Map<String, Object> totalData = reportService.calculateTotalUploadFileInfo(totalCocCount, totalBeftnCount, totalOnlineCount, totalAccountPayeeCount, totalErrorCount, totalCount, totalAmountStr);
         dataList.add(totalData);
