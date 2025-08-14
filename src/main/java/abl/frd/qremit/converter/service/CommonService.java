@@ -1551,7 +1551,7 @@ public class CommonService {
     }
 
     public static boolean validatePassword(String password, int length){
-        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{" + length + ",}$";
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{" + length + ",}$";
         return password != null && password.matches(passwordPattern);
     }
 
