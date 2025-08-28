@@ -1,7 +1,9 @@
 package abl.frd.qremit.converter.controller;
 import abl.frd.qremit.converter.helper.MyUserDetails;
+import abl.frd.qremit.converter.model.IndexModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.service.CommonService;
+import abl.frd.qremit.converter.service.GenericModelService;
 import abl.frd.qremit.converter.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -25,6 +27,8 @@ public class IndexModelController {
     @Autowired
     IndexModelService indexModelService;
     @Autowired
+    GenericModelService genericModelService;
+    @Autowired
     public IndexModelController(MyUserDetailsService myUserDetailsService, CommonService commonService) {
         this.myUserDetailsService = myUserDetailsService;
         this.commonService = commonService;
@@ -46,7 +50,8 @@ public class IndexModelController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try {
-                    Map<String, Object> resp = indexModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
+                    //Map<String, Object> resp = indexModelService.save(file, userId, exchangeCode, nrtaCode, tbl);
+                    Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, IndexModel.class);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
                 } catch (IllegalArgumentException e) {
