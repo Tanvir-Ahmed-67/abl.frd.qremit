@@ -112,4 +112,37 @@ public class CustomQueryService {
         return archive_24;
     }
 
+    public List<Map<String, Object>> getCountryList(){
+        List<Map<String, Object>> countryList = new ArrayList<>();
+        Map<String, Object> resp =  customQueryRepository.getCountry("", "", "", "");
+        if((Integer) resp.get("err") == 0){
+            countryList = (List<Map<String, Object>>) resp.get("data");
+        }
+        return countryList;
+    }
+
+    public Map<String, Object> getCountryFromList(List<Map<String, Object>> countryList, String key, String value){
+        Map<String, Object> resp = new HashMap<>();
+        if(countryList.isEmpty())   return resp;
+        for(Map<String, Object> country: countryList){
+            if(country.get(key).equals(value)){
+                return country;
+            }
+        }
+        return resp;
+    }
+
+    public String parseCountryCode(List<Map<String, Object>> countryList, String key, String value, String exchangeCode){
+        if(exchangeCode.equals("7010232") && ("BANGLADESH").equalsIgnoreCase(value))    return "414";
+        if(exchangeCode.equals("7010250") && ("BANGLADESH").equalsIgnoreCase(value))    return "512";
+        if(exchangeCode.equals("7010237") && ("BD").equalsIgnoreCase(value))    return "512";
+        if(exchangeCode.equals("7010296") && ("BD").equalsIgnoreCase(value))    return "702";
+        if(exchangeCode.equals("7010207") && ("KUWA").equalsIgnoreCase(value))    return "414";
+        if(("BD").equalsIgnoreCase(value) || ("BANGLADESH").equalsIgnoreCase(value))    return "";
+        Map<String, Object> country = getCountryFromList(countryList, key, value);
+        String countryCode = "";
+        if(country.size() > 0) countryCode =  country.get("country_code").toString();
+        return countryCode;
+    }
+
 }
