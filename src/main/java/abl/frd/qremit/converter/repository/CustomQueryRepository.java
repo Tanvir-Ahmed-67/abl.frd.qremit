@@ -311,4 +311,31 @@ public class CustomQueryRepository {
         }
         return getData(queryStr,params);
     }
+
+    public Map<String, Object> getCountry(String countryCode, String countryName, String twoDigit, String threeDigit){
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryStr = new StringBuilder("SELECT * FROM country WHERE published = 1");
+        int key = 0;
+        if(!countryCode.isEmpty()){
+            queryStr.append(" AND country_code=?");
+            String paramName = "p" + key++;
+            params.put(paramName, countryCode);
+        }
+        if(!countryName.isEmpty()){
+            String paramName = "p" + key++;
+            queryStr.append(" AND country_name=?");
+            params.put(paramName,countryCode);
+        }
+        if(!twoDigit.isEmpty()){
+            queryStr.append(" AND two_digit=?");
+            String paramName = "p" + key++;
+            params.put(paramName,twoDigit);
+        }
+        if(!threeDigit.isEmpty()){
+            queryStr.append(" AND three_digit=?");
+            String paramName = "p" + key++;
+            params.put(paramName,threeDigit);
+        }
+        return getData(queryStr.toString(),params);
+    }
 }

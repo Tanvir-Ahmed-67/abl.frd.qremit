@@ -99,6 +99,7 @@ public class ApiT24ModelService {
             List<Map<String, Object>> dataList = new ArrayList<>();
             Map<String, Object> modelResp = new HashMap<>();
             int isValidFile = 1;
+            List<Map<String, Object>> countryList = customQueryService.getCountryList();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String nrtaCode = csvRecord.get(0).trim();
@@ -107,7 +108,7 @@ public class ApiT24ModelService {
                 String amount = csvRecord.get(3).trim();
                 String bankName = csvRecord.get(8);
                 String bankCode = csvRecord.get(9).trim();
-
+                String sourceCountry = customQueryService.parseCountryCode(countryList, "two_digit", csvRecord.get(13).trim(), exchangeCode);
                 if(nrtaCode.equals("7010226") || nrtaCode.equals("7010228")){
                     isValidFile = 0;
                     resp.put("errorMessage","You selected wrong file. Please select the correct file.");
@@ -122,10 +123,8 @@ public class ApiT24ModelService {
                         break;
                     }
                 }
-                
                 String beneficiaryAccount = csvRecord.get(7).trim();
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName);
-                
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, sourceCountry);
                 String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(12).toLowerCase());
                 if(!errorMessage.isEmpty()){
                     CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
@@ -167,7 +166,7 @@ public class ApiT24ModelService {
         }
         return resp;
     }
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String sourceCountry){
         Map<String, Object> data = new HashMap<>();
         LocalDateTime enteredDate = CommonService.convertStringToDate(csvRecord.get(4));
         String branchCode = "4006";
@@ -193,6 +192,7 @@ public class ApiT24ModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", sourceCountry);
         return data;
     }
 }
