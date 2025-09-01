@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Dec 11, 2024 at 10:36 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Host: localhost
+-- Generation Time: Sep 01, 2025 at 09:52 AM
+-- Server version: 8.0.43-0ubuntu0.24.04.1
+-- PHP Version: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,18 +28,18 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `swift_code_to_branch_code` (
-  `id` int(255) NOT NULL,
+  `id` int NOT NULL,
   `branch_name` varchar(255) NOT NULL,
   `swift_code` varchar(255) NOT NULL,
   `branch_code` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `swift_code_to_branch_code`
 --
 
 INSERT INTO `swift_code_to_branch_code` (`id`, `branch_name`, `swift_code`, `branch_code`) VALUES
-(1, 'Agrani Bank Ltd.Head Office', 'AGBKBDDH000', '-4006'),
+(1, 'Agrani Bank Ltd.Head Office', 'AGBKBDDH000', '4006'),
 (2, 'Principal.Br.Motijheel,Dhaka', 'AGBKBDDH001', '4006'),
 (3, 'BangaBandhu Avenue Br. Dhaka', 'AGBKBDDH002', '1170'),
 (4, 'Moulvi Bazar Br.Dhaka', 'AGBKBDDH003', '2507'),
@@ -78,7 +78,11 @@ INSERT INTO `swift_code_to_branch_code` (`id`, `branch_name`, `swift_code`, `bra
 (37, 'Gulshan Corp.Br.Dhaka', 'AGBKBDDH042', '9787'),
 (38, 'Gazipur Corp. Br., Gazipur', 'AGBKBDDH038', '9787'),
 (39, 'Rangpur Branch, Rangpur', 'AGBKBDDH028', '2661'),
-(40, 'Kushtia Br., Kushtia', 'AGBKBDDH026', '2600');
+(40, 'Kushtia Br., Kushtia', 'AGBKBDDH026', '2600'),
+(41, 'MOHAKHALI Branch, Dhaka', 'AGBKBDDH043', '6659'),
+(42, 'TAMABIL Branch, Sylhet', 'AGBKBDDH044', '10819'),
+(43, 'UTTARA MODEL TOWN Branch, DHAKA', 'AGBKBDDH045', '8002'),
+(44, 'CHAWK BAZAR Branch, BARISHAL', 'AGBKBDDH025', '2412');
 
 --
 -- Indexes for dumped tables
@@ -88,7 +92,8 @@ INSERT INTO `swift_code_to_branch_code` (`id`, `branch_name`, `swift_code`, `bra
 -- Indexes for table `swift_code_to_branch_code`
 --
 ALTER TABLE `swift_code_to_branch_code`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `swift_code` (`swift_code`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -98,7 +103,7 @@ ALTER TABLE `swift_code_to_branch_code`
 -- AUTO_INCREMENT for table `swift_code_to_branch_code`
 --
 ALTER TABLE `swift_code_to_branch_code`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
