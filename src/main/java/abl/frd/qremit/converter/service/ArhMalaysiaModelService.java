@@ -184,6 +184,7 @@ public class ArhMalaysiaModelService {
         data.put("bankCode", bankCode);
         data.put("branchName", branchName);
         data.put("branchCode", branchCode);
+        data.put("sourceCountry", "458");
         String[] fields = {"remitterMobile","beneficiaryMobile","draweeBranchName","draweeBranchCode","sourceOfIncome","processFlag","processedBy","processedDate"};
         for(String field: fields)   data.put(field, "");
         return data;

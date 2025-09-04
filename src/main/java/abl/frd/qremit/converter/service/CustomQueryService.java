@@ -133,12 +133,18 @@ public class CustomQueryService {
     }
 
     public String parseCountryCode(List<Map<String, Object>> countryList, String key, String value, String exchangeCode){
-        if(exchangeCode.equals("7010232") && ("BANGLADESH").equalsIgnoreCase(value))    return "414";
-        if(exchangeCode.equals("7010250") && ("BANGLADESH").equalsIgnoreCase(value))    return "512";
-        if(exchangeCode.equals("7010237") && ("BD").equalsIgnoreCase(value))    return "512";
-        if(exchangeCode.equals("7010296") && ("BD").equalsIgnoreCase(value))    return "702";
-        if(exchangeCode.equals("7010207") && ("KUWA").equalsIgnoreCase(value))    return "414";
-        if(("BD").equalsIgnoreCase(value) || ("BANGLADESH").equalsIgnoreCase(value))    return "";
+        value = value.toUpperCase();
+        if(value.isEmpty()) return "";
+        if(exchangeCode.equals("7010232") && ("BANGLADESH").equals(value))  return "414";
+        if(exchangeCode.equals("7010207") && ("KUWA").equals(value))    return "414";
+        if(exchangeCode.equals("7010250") && ("BANGLADESH").equals(value))  return "512";
+        if(exchangeCode.equals("7010237") && ("BD").equals(value))  return "512";
+        if(exchangeCode.equals("7010296") && ("BD").equals(value))  return "702";
+        if(exchangeCode.equals("7010209") && ("BD").equals(value))  return "414";
+        if(("BD").equals(value) || ("BANGLADESH").equals(value))    return "";
+        if(("UAE").equals(value) || ("UNITED ARAB EMIRATES").equals(value) || ("DF").equals(value))   return "784";
+        if(("UK").equals(value) || ("UNITED KINGDOM").equals(value))   return "826";
+        if(("USA").equals(value) || ("UNITED STATES OF AMERICA").equals(value))   return "840";
         Map<String, Object> country = getCountryFromList(countryList, key, value);
         String countryCode = "";
         if(country.size() > 0) countryCode =  country.get("country_code").toString();

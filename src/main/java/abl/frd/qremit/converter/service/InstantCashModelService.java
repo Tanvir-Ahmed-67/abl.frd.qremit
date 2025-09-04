@@ -108,6 +108,7 @@ public class InstantCashModelService {
             Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
+            List<Map<String, Object>> countryList = customQueryService.getCountryList();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
@@ -122,7 +123,9 @@ public class InstantCashModelService {
                 }
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = (type == 1) ? csvRecord.get(6).trim() : csvRecord.get(3).trim();
-                Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode, bankCode, transactionNo, amount);
+                String remCountry = (type == 1) ? csvRecord.get(4):"";
+                String sourceCountry =  (!remCountry.isEmpty()) ? customQueryService.parseCountryCode(countryList, "two_digit", remCountry.trim(), exchangeCode): "";
+                Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode, bankCode, transactionNo, amount, sourceCountry);
                 if(type == 1){
                     String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(11).toLowerCase());
                     if(!errorMessage.isEmpty()){
@@ -168,7 +171,7 @@ public class InstantCashModelService {
         return resp;
     }
     
-    public Map<String, Object> getCsvData(int type, CSVRecord csvRecord, String exchangeCode, String bankCode, String transactionNo, String amount){
+    public Map<String, Object> getCsvData(int type, CSVRecord csvRecord, String exchangeCode, String bankCode, String transactionNo, String amount, String sourceCountry){
         String bankName = (type == 1) ? "Agrani Bank": csvRecord.get(9).trim();
         String branchName = (type == 1) ? "Principal": csvRecord.get(10).trim();
         String branchCode = (type == 1) ? "4006": CommonService.fixRoutingNo(csvRecord.get(11).trim());
@@ -195,6 +198,7 @@ public class InstantCashModelService {
         data.put("bankCode", bankCode);
         data.put("branchName", branchName);
         data.put("branchCode", branchCode);
+        data.put("sourceCountry", sourceCountry);
         String[] fields = {"remitterMobile","beneficiaryMobile","draweeBranchName","draweeBranchCode","sourceOfIncome","processFlag","processedBy","processedDate"};
         for(String field: fields)   data.put(field, "");
         return data;
