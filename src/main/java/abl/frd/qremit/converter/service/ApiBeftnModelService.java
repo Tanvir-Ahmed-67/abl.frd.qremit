@@ -100,6 +100,7 @@ public class ApiBeftnModelService {
             List<Map<String, Object>> dataList = new ArrayList<>();
             Map<String, Object> modelResp = new HashMap<>();
             int isValidFile = 1;
+            List<Map<String, Object>> countryList = customQueryService.getCountryList();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String nrtaCode = csvRecord.get(0);
@@ -107,6 +108,7 @@ public class ApiBeftnModelService {
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
                 String bankCode = csvRecord.get(8).trim();
+                String sourceCountry = customQueryService.parseCountryCode(countryList, "two_digit", csvRecord.get(12).trim(), exchangeCode);
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 0);
                     if((Integer) apiCheckResp.get("err") == 1){
@@ -119,7 +121,7 @@ public class ApiBeftnModelService {
                 String bankName = csvRecord.get(9);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, sourceCountry);
                 data.put("nrtaCode", nrtaCode);
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
@@ -157,7 +159,7 @@ public class ApiBeftnModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String sourceCountry){
         Map<String, Object> data = new HashMap<>();
         LocalDateTime enteredDate = CommonService.convertStringToDate(csvRecord.get(4));
         data.put("exchangeCode", exchangeCode);
@@ -181,6 +183,7 @@ public class ApiBeftnModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", sourceCountry);
         return data;
     }
 

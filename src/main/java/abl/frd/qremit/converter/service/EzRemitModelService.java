@@ -188,6 +188,8 @@ public class EzRemitModelService {
         String remiterName = (type == 1) ? csvRecord.get(1) : csvRecord.get(5);
         LocalDateTime date = CommonService.convertStringToDate(enteredDate);
         enteredDate = date.toLocalDate().toString();
+        String remCountry = (type == 1) ? csvRecord.get(3):"";
+        String sourceCountry = (!remCountry.isEmpty())  ?   getSourceCountry(remCountry) : "";   
 
         Map<String, Object> data = new HashMap<>();
         data.put("exchangeCode", exchangeCode);
@@ -211,6 +213,7 @@ public class EzRemitModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", sourceCountry);
         return data;
     }
 
@@ -220,5 +223,16 @@ public class EzRemitModelService {
         if(type == 1 && length != 9)    resp = CommonService.getResp(1, msg, null);
         else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
         return resp;
+    }
+
+    public String getSourceCountry(String remitterAddress){
+        remitterAddress = remitterAddress.toUpperCase();
+        String sourceCountry = "";
+        if(remitterAddress.contains("KUWAIT"))  sourceCountry = "414";
+        else if(remitterAddress.contains("UNITED ARAB EMIRATES") || remitterAddress.contains("UAE"))    sourceCountry = "784";
+        else if(remitterAddress.contains("OMAN"))   sourceCountry = "512";
+        else if(remitterAddress.contains("QATAR"))  sourceCountry = "634";
+        else if(remitterAddress.contains("JORDAN")) sourceCountry = "400";
+        return sourceCountry;
     }
 }

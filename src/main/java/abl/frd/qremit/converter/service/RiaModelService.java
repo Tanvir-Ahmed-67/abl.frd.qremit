@@ -109,6 +109,7 @@ public class RiaModelService {
             Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
+            List<Map<String, Object>> countryList = customQueryService.getCountryList();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 if(i == 1){
@@ -125,7 +126,9 @@ public class RiaModelService {
                 String transactionNo = (type == 1) ? csvRecord.get(0).trim(): csvRecord.get(1).trim();
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(1) : csvRecord.get(3);
-                Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                String remCountry = (type == 1) ? csvRecord.get(5) : csvRecord.get(12);
+                String sourceCountry =  (!remCountry.isEmpty()) ? customQueryService.parseCountryCode(countryList, "two_digit", remCountry.trim(), exchangeCode): "";
+                Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount, sourceCountry);
                 //check api error for ria special case
                 if(type == 1){
                     String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
@@ -172,7 +175,7 @@ public class RiaModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, int type, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, int type, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount, String sourceCountry){
         Map<String, Object> data = new HashMap<>();
         String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
         String branchName = (type == 1) ? "Principal": csvRecord.get(10).trim();
@@ -204,6 +207,7 @@ public class RiaModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", sourceCountry);
         return data;
     }
     

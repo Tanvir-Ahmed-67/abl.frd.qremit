@@ -206,6 +206,7 @@ public class AgexSingaporeModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", "702");
         return data;
     }
 }
