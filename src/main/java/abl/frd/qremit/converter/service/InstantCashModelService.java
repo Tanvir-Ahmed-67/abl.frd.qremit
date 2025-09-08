@@ -123,7 +123,7 @@ public class InstantCashModelService {
                 }
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = (type == 1) ? csvRecord.get(6).trim() : csvRecord.get(3).trim();
-                String remCountry = (type == 1) ? csvRecord.get(4):"";
+                String remCountry = (type == 1) ? csvRecord.get(4):csvRecord.get(12);
                 String sourceCountry =  (!remCountry.isEmpty()) ? customQueryService.parseCountryCode(countryList, "two_digit", remCountry.trim(), exchangeCode): "";
                 Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode, bankCode, transactionNo, amount, sourceCountry);
                 if(type == 1){
