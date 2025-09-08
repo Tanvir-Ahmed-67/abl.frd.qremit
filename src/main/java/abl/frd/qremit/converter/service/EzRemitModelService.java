@@ -112,7 +112,7 @@ public class EzRemitModelService {
                 i++;
                 int length = csvRecord.size();
                 if(i == 1){
-                    Map<String, Object> apiCheckResp = checkEzRemitApiOrBeftnData(length, type);
+                    Map<String, Object> apiCheckResp = checkEzRemitApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode);
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
@@ -188,7 +188,7 @@ public class EzRemitModelService {
         String remiterName = (type == 1) ? csvRecord.get(1) : csvRecord.get(5);
         LocalDateTime date = CommonService.convertStringToDate(enteredDate);
         enteredDate = date.toLocalDate().toString();
-        String remCountry = (type == 1) ? csvRecord.get(3):"";
+        String remCountry = (type == 1) ? csvRecord.get(3):csvRecord.get(12);
         String sourceCountry = (!remCountry.isEmpty())  ?   getSourceCountry(remCountry) : "";   
 
         Map<String, Object> data = new HashMap<>();
@@ -217,11 +217,11 @@ public class EzRemitModelService {
         return data;
     }
 
-    public Map<String, Object> checkEzRemitApiOrBeftnData(int length, int type){
+    public Map<String, Object> checkEzRemitApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
         if(type == 1 && length != 9)    resp = CommonService.getResp(1, msg, null);
-        else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
+        else if(type == 0 && !firstColumn.equals(nrtaCode))  resp = CommonService.getResp(1, msg, null);
         return resp;
     }
 
@@ -233,6 +233,7 @@ public class EzRemitModelService {
         else if(remitterAddress.contains("OMAN"))   sourceCountry = "512";
         else if(remitterAddress.contains("QATAR"))  sourceCountry = "634";
         else if(remitterAddress.contains("JORDAN")) sourceCountry = "400";
+        else if(remitterAddress.contains("UNITED KINGDOM") || remitterAddress.contains("UK")) sourceCountry = "826";
         return sourceCountry;
     }
 }
