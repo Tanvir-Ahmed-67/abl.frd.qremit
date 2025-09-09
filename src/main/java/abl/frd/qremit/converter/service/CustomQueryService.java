@@ -141,6 +141,8 @@ public class CustomQueryService {
         if(exchangeCode.equals("7010237") && ("BD").equals(value))  return "512";
         if(exchangeCode.equals("7010296") && ("BD").equals(value))  return "702";
         if(exchangeCode.equals("7010209") && ("BD").equals(value))  return "414";
+        if(exchangeCode.equals("7010228"))  return "458";
+        if(exchangeCode.equals("7010226"))  return "702";
         if(("BD").equals(value) || ("BANGLADESH").equals(value))    return "";
         if(("UAE").equals(value) || ("UNITED ARAB EMIRATES").equals(value) || ("DF").equals(value))   return "784";
         if(("UK").equals(value) || ("UNITED KINGDOM").equals(value))   return "826";

@@ -94,6 +94,7 @@ public class NpsbMfsService {
     public Map<String, Object> csvToNpsbMfsData(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime, String tbl){
         Map<String, Object> resp = new HashMap<>();
         Optional<NpsbMfsModel> duplicateData = Optional.empty();
+        List<Map<String, Object>> countryList = customQueryService.getCountryList();
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
@@ -117,7 +118,8 @@ public class NpsbMfsService {
                 }else   continue;
                 String nrtaCode = csvRecord.get(0).trim();
                 String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, nrtaCode, type);
+                String sourceCountry = customQueryService.parseCountryCode(countryList, "two_digit", csvRecord.get(14).trim(), exchangeCode);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, nrtaCode, type, sourceCountry);
                 dataList.add(data);
                 String transactionNo = data.get("transactionNo").toString();
                 String amount = data.get("amount").toString();
@@ -150,7 +152,7 @@ public class NpsbMfsService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String nrtaCode, String type){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String nrtaCode, String type, String sourceCountry){
         String branchCode = CommonService.fixRoutingNo(csvRecord.get(8).trim());
         String bankName = ""; 
         String bankCode = ""; 
@@ -188,6 +190,7 @@ public class NpsbMfsService {
         data.put("currency", "BDT");
         data.put("incentive", incentive);
         data.put("govtIncentive", incentive);
+        data.put("sourceCountry", sourceCountry);
         String[] fields = {"remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance"};
         for(String field: fields)   data.put(field, "");
         return data;
