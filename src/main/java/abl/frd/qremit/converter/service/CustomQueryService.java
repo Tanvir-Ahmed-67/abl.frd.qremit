@@ -132,7 +132,7 @@ public class CustomQueryService {
         return resp;
     }
 
-    public String parseCountryCode(List<Map<String, Object>> countryList, String key, String value, String exchangeCode){
+    public String parseCountryCode(List<Map<String, Object>> countryList, String value, String exchangeCode){
         value = value.toUpperCase();
         if(value.isEmpty()) return "";
         if(exchangeCode.equals("7010232") && ("BANGLADESH").equals(value))  return "414";
@@ -147,6 +147,10 @@ public class CustomQueryService {
         if(("UAE").equals(value) || ("UNITED ARAB EMIRATES").equals(value) || ("DF").equals(value))   return "784";
         if(("UK").equals(value) || ("UNITED KINGDOM").equals(value))   return "826";
         if(("USA").equals(value) || ("UNITED STATES OF AMERICA").equals(value))   return "840";
+        String key = "";
+        if(value.length() == 2) key = "two_digit";
+        else if(value.length() == 3) key = "three_digit";
+        else key = "country_name";
         Map<String, Object> country = getCountryFromList(countryList, key, value);
         String countryCode = "";
         if(country.size() > 0) countryCode =  country.get("country_code").toString();
