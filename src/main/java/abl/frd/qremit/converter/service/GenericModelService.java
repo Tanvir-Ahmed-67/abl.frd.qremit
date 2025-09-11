@@ -111,6 +111,7 @@ public class GenericModelService {
             Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
+            List<Map<String, Object>> countryList = customQueryService.getCountryList();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String transactionNo = csvRecord.get(1).trim();
@@ -118,7 +119,8 @@ public class GenericModelService {
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String bankName = csvRecord.get(8).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+                String sourceCountry =  customQueryService.parseCountryCode(countryList, csvRecord.get(18).trim(), exchangeCode);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, sourceCountry);
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = csvRecord.get(0).trim();
                 String errorMessage = CommonService.checkNrtaCode(nrtaCode, fileExchangeCode);
@@ -163,7 +165,7 @@ public class GenericModelService {
         return resp;
     }
     
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String sourceCountry){
         Map<String, Object> data = new HashMap<>();
         LocalDate date = CommonService.convertStringToLocalDate(csvRecord.get(4), "dd/MM/yyyy");
         data.put("exchangeCode", exchangeCode);
@@ -187,7 +189,7 @@ public class GenericModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
-        data.put("sourceCountry", csvRecord.get(18).trim());
+        data.put("sourceCountry", sourceCountry);
         data.put("sourceForeignCurrency", csvRecord.get(19).trim());
         data.put("conversionRate", csvRecord.get(20).trim());
         data.put("remitterGender", csvRecord.get(21).trim());

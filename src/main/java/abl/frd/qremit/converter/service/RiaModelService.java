@@ -127,7 +127,7 @@ public class RiaModelService {
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(1) : csvRecord.get(3);
                 String remCountry = (type == 1) ? csvRecord.get(5) : csvRecord.get(12);
-                String sourceCountry =  (!remCountry.isEmpty()) ? customQueryService.parseCountryCode(countryList, "two_digit", remCountry.trim(), exchangeCode): "";
+                String sourceCountry =  (!remCountry.isEmpty()) ? customQueryService.parseCountryCode(countryList, remCountry.trim(), exchangeCode): "";
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount, sourceCountry);
                 //check api error for ria special case
                 if(type == 1){

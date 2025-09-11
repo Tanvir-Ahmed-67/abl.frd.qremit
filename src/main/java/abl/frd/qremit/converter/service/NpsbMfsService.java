@@ -118,7 +118,7 @@ public class NpsbMfsService {
                 }else   continue;
                 String nrtaCode = csvRecord.get(0).trim();
                 String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
-                String sourceCountry = customQueryService.parseCountryCode(countryList, "two_digit", csvRecord.get(14).trim(), exchangeCode);
+                String sourceCountry = customQueryService.parseCountryCode(countryList, csvRecord.get(14).trim(), exchangeCode);
                 Map<String, Object> data = getCsvData(csvRecord, exchangeCode, nrtaCode, type, sourceCountry);
                 dataList.add(data);
                 String transactionNo = data.get("transactionNo").toString();

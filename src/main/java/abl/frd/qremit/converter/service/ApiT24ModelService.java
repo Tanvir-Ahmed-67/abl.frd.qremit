@@ -108,7 +108,7 @@ public class ApiT24ModelService {
                 String amount = csvRecord.get(3).trim();
                 String bankName = csvRecord.get(8);
                 String bankCode = csvRecord.get(9).trim();
-                String sourceCountry = customQueryService.parseCountryCode(countryList, "two_digit", csvRecord.get(13).trim(), exchangeCode);
+                String sourceCountry = customQueryService.parseCountryCode(countryList, csvRecord.get(13).trim(), exchangeCode);
                 if(nrtaCode.equals("7010226") || nrtaCode.equals("7010228")){
                     isValidFile = 0;
                     resp.put("errorMessage","You selected wrong file. Please select the correct file.");
