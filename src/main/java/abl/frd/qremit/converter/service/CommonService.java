@@ -1617,7 +1617,7 @@ public class CommonService {
         return typeMethod;
     }
     public static boolean checkNpsb(String trMode){
-        if(trMode.equals("18") || trMode.toLowerCase().equals("itcl")){
+        if(trMode.equals("18") || trMode.toLowerCase().equals("itcl") || trMode.toLowerCase().equals("npsb")){
             return true;
         }else return false;
     }
