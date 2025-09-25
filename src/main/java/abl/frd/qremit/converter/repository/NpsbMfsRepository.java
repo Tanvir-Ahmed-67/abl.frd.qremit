@@ -22,4 +22,11 @@ public interface NpsbMfsRepository extends JpaRepository<NpsbMfsModel, Integer> 
     @Modifying
     @Query("UPDATE NpsbMfsModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate, n.tempStatus = 1 WHERE n.id in :ids")
     int updateIsVoucherGeneratedBulk(@Param("ids") List<Integer> ids, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
+    @Query("SELECT n FROM NpsbMfsModel n WHERE n.isProcessed= :isProcessed and n.isVoucherGenerated= :isVoucherGenerated and n.downloadDateTime BETWEEN :startDate AND :endDate")
+    List<NpsbMfsModel> getProcessedDataByUploadDate(@Param("isProcessed") int isProcessed, @Param("isVoucherGenerated") int isVoucherGenerated, 
+        @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Transactional
+    @Modifying
+    @Query("UPDATE NpsbMfsModel n SET n.tempStatus=:tempStatus WHERE n.id in :ids")
+    int updateTempStatusBulk(@Param("ids") List<Integer> ids, @Param("tempStatus") int tempStatus);
 }

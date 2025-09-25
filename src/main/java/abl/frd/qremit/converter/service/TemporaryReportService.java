@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import abl.frd.qremit.converter.model.AccountPayeeModel;
 import abl.frd.qremit.converter.model.BeftnModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
+import abl.frd.qremit.converter.model.NpsbMfsModel;
 import abl.frd.qremit.converter.model.OnlineModel;
 import abl.frd.qremit.converter.model.TemporaryReportModel;
 import abl.frd.qremit.converter.model.User;
@@ -22,16 +23,20 @@ public class TemporaryReportService {
     BeftnModelService beftnModelService;
     @Autowired
     AccountPayeeModelService accountPayeeModelService;
+    @Autowired
+    NpsbMfsService npsbMfsService;
     protected String emsg = "No data found for processing temporary table";
     public Map<String, Object> processTemporaryReport(String currentDate){
         Map<String, Object> resp = new HashMap<>();
         //String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
-
-        List<OnlineModel> onlineModelList = onlineModelService.getTemopraryReportData(1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-        List<BeftnModel> beftnModelList = beftnModelService.getTemopraryReportData(1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-        List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getTemopraryReportData(1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-        if(onlineModelList.isEmpty() && beftnModelList.isEmpty() && accountPayeeModelList.isEmpty()){
+        LocalDateTime startDateTime = (LocalDateTime) dateTime.get("startDateTime");
+        LocalDateTime endDateTime = (LocalDateTime) dateTime.get("endDateTime");
+        List<OnlineModel> onlineModelList = onlineModelService.getTemopraryReportData(1, 0, startDateTime, endDateTime);
+        List<BeftnModel> beftnModelList = beftnModelService.getTemopraryReportData(1, 0, startDateTime, endDateTime);
+        List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getTemopraryReportData(1, 0, startDateTime, endDateTime);
+        List<NpsbMfsModel> npsbMfsModelList = npsbMfsService.getTemopraryReportData(1, 0, startDateTime, endDateTime);
+        if(onlineModelList.isEmpty() && beftnModelList.isEmpty() && accountPayeeModelList.isEmpty() && npsbMfsModelList.isEmpty()){
             return CommonService.getResp(0, this.emsg, null);
         }
         resp = setTemporaryModelData(onlineModelList, "1");
@@ -41,6 +46,9 @@ public class TemporaryReportService {
         count += resp.size();
         if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
         resp = setTemporaryModelData(beftnModelList, "3");
+        count += resp.size();
+        if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+        resp = setTemporaryModelData(npsbMfsModelList, "6");
         count += resp.size();
         if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
         if(count == 0)  return CommonService.getResp(0, "No data found for processing temporary table", null);
@@ -54,6 +62,7 @@ public class TemporaryReportService {
         Map<String, Object> resp = CommonService.getResp(0, this.emsg, null);;
         List<TemporaryReportModel> tempInsertList = new ArrayList<>();
         List<Integer> insertedIds = new ArrayList<>();
+        String types = type;
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
             for(T model: modelList){
@@ -63,6 +72,8 @@ public class TemporaryReportService {
                     String exchangeCode = (String) CommonService.getPropertyValue(model, "getExchangeCode");
                     Double amount = (Double) CommonService.getPropertyValue(model, "getAmount");
                     int id = (int) CommonService.getPropertyValue(model, "getId");
+                    String typeMethod = CommonService.getTypeMethod(type);
+                    if(!typeMethod.isEmpty())   types = (String) CommonService.getPropertyValue(model, typeMethod);
                     Optional<TemporaryReportModel> temporaryReport = temporaryReportRepository.findByExchangeCodeAndTransactionNoAndAmount(exchangeCode, transactionNo, amount);
                     if(temporaryReport.isPresent()) continue;
 
@@ -86,7 +97,7 @@ public class TemporaryReportService {
                     temporaryReportModel.setUploadUserId((int) user.getId());
                     FileInfoModel fileInfoModel= (FileInfoModel) CommonService.getPropertyValue(model, "getFileInfoModel");
                     temporaryReportModel.setFileInfoModelId((int) fileInfoModel.getId());
-                    temporaryReportModel.setType(type);
+                    temporaryReportModel.setType(types);
                     temporaryReportModel.setDataModelId(id);
                     temporaryReportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
                     temporaryReportModel.setSourceCountry((String) CommonService.getPropertyValue(model, "getSourceCountry"));
@@ -96,7 +107,7 @@ public class TemporaryReportService {
                     temporaryReportModel.setBeneficiaryGender((String) CommonService.getPropertyValue(model, "getBeneficiaryGender"));
                     temporaryReportModel.setBeneficiaryDistrict((String) CommonService.getPropertyValue(model, "getBeneficiaryDistrict"));
                     //added api for online model
-                    if(("1").equals(type))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
+                    if(("1").equals(types))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     tempInsertList.add(temporaryReportModel);
                     count++;
                 }catch(Exception e){
@@ -131,6 +142,10 @@ public class TemporaryReportService {
                 break;
             case "3":
                 beftnModelService.updateTempStatusBulk(ids,1);
+            case "6":
+            case "7":
+                npsbMfsService.updateTempStatusBulk(ids, 1);
+                break;
             default:
                 break;
         }
