@@ -523,7 +523,6 @@ public class ReportService {
                     String typeMethod = CommonService.getTypeMethod(type);
                     if(!typeMethod.isEmpty())   types = (String) CommonService.getPropertyValue(model, typeMethod);
                     if(("").equals(type)){
-                        //types = (String) CommonService.getPropertyValue(model, "getType");
                         reportModel.setUploadUserId((int) CommonService.getPropertyValue(model, "getUploadUserId"));
                         reportModel.setFileInfoModelId((int) CommonService.getPropertyValue(model, "getFileInfoModelId"));
                         id = (int) CommonService.getPropertyValue(model, "getDataModelId");

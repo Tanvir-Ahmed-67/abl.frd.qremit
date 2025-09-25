@@ -219,4 +219,12 @@ public class NpsbMfsService {
     public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
         npsbMfsRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
     }
+    public List<NpsbMfsModel> getTemopraryReportData(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return npsbMfsRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, starDateTime, enDateTime);
+    }
+
+    @Transactional
+    public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
+        npsbMfsRepository.updateTempStatusBulk(ids, tempStatus);
+    }
 }
