@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.1deb3
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Jul 16, 2025 at 05:51 AM
--- Server version: 8.0.42-0ubuntu0.24.04.1
+-- Host: localhost:3306
+-- Generation Time: Sep 28, 2025 at 04:59 AM
+-- Server version: 8.0.43-0ubuntu0.24.04.2
 -- PHP Version: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -109,7 +109,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (161, '7010272', 'NEC Money Transfer, UK', 'NEC UK', '7087', '826', 'UNITED KINGDOM (UK)', 'necuk', 'NecUkModel', 'necUkModelRepository', 0, 1, 0),
 (162, '7010208', 'Oman Exchange Co, Kuwait', 'Oman Exchange Kuwait', '7008', '414', 'KUWAIT', 'omankuwait', 'OmanKuwaitModel', 'omanKuwaitModelRepository', 0, 1, 0),
 (163, '7010215', 'Oman Intl Exchange Ltd. Oman', 'Oman Exchange Oman', '7021', '512', 'OMAN', 'oman', 'OmanModel', 'omanModelRepository', 0, 1, 0),
-(164, '7010286', 'Placid NK orp', '', '7065', '9997', 'OTHERS', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(164, '7010286', 'Placid NK orp', '', '7065', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (165, '7010238', 'Prabhu Group Inc. U S A', 'Prabhu USA', '7051', '840', 'UNITED STATES OF AMERICA (USA)', 'prabhu', 'PrabhuModel', 'prabhuModelRepository', 0, 1, 0),
 (166, '7010296', 'SG Quick Pay, PTE LTD, SNG', '', '7107', '702', 'Singapore', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (167, '7010256', 'SIGUE Global Sercice ', 'Sigue Global', '7074', '826', 'UNITED KINGDOM (UK)', 'sigue', 'SigueModel', 'sigueModelRepository', 0, 1, 0),
@@ -135,7 +135,9 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (190, '444444', 'SWIFT Message Extractions', 'SWIFT', '4000', '', '', 'swift', 'SwiftModel', 'swiftModelRepository', 0, 1, 0),
 (191, '7010235', 'Xpress Money', '', '7112', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (192, '7010305', 'Taptap Send UK Limited, UK', '', '7115', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(193, '555555', 'NPSB', 'NPSB', '1000', '', '', 'npsb_mfs', 'NpsbMfsModel', 'npsbMfsRepository', 1, 1, 0);
+(193, '555555', 'NPSB', 'NPSB', '1000', '', '', 'npsb_mfs', 'NpsbMfsModel', 'npsbMfsRepository', 1, 1, 0),
+(194, '666666', 'BEFTN Return', 'Beftn Return', '1000', '', '', 'beftn_return', '', '', 0, 1, 0),
+(195, '7010306', 'MASTERCARD TRANSACTION SERVICES', '', '7044', '840', 'UNITED STATES OF AMERICA (USA)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0);
 
 --
 -- Indexes for dumped tables
@@ -159,7 +161,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=194;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=196;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
