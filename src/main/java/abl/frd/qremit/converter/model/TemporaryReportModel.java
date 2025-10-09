@@ -56,8 +56,6 @@ public class TemporaryReportModel {
     private String zoneCode;
     @Column(name = "circle_code", length = 10)
     private String circleCode;
-    @Column(name = "country_code", length = 10)
-    private String countryCode;
     @Column(name = "district_code", length = 10)
     private String districtCode;
     @Column(name = "report_date", columnDefinition = "DATE")
@@ -249,14 +247,6 @@ public class TemporaryReportModel {
         this.circleCode = circleCode;
     }
 
-    public String getCountryCode() {
-        return this.countryCode;
-    }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
     public String getDistrictCode() {
         return this.districtCode;
     }
@@ -348,7 +338,7 @@ public class TemporaryReportModel {
         this.beneficiaryDistrict = beneficiaryDistrict;
     }
 
-    public TemporaryReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String countryCode, String districtCode, LocalDateTime reportDate, int dataModelId) {
+    public TemporaryReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String districtCode, LocalDateTime reportDate, int dataModelId) {
         this.exchangeCode = exchangeCode;
         this.transactionNo = transactionNo;
         this.bankCode = bankCode;
@@ -369,7 +359,6 @@ public class TemporaryReportModel {
         this.type = type;
         this.zoneCode = zoneCode;
         this.circleCode = circleCode;
-        this.countryCode = countryCode;
         this.districtCode = districtCode;
         this.reportDate = reportDate;
         this.dataModelId = dataModelId;
@@ -400,7 +389,6 @@ public class TemporaryReportModel {
             ", type='" + getType() + "'" +
             ", zoneCode='" + getZoneCode() + "'" +
             ", circleCode='" + getCircleCode() + "'" +
-            ", countryCode='" + getCountryCode() + "'" +
             ", districtCode='" + getDistrictCode() + "'" +
             ", reportDate='" + getReportDate() + "'" +
             "}";
