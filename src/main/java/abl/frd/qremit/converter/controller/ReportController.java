@@ -996,6 +996,9 @@ public class ReportController {
             model.addAttribute("errorMessage", "Invalid Attempt. You are not allowed to perform this operation");
             return "fragments/error";
         }
+        String pageTitle = "Search";
+        if(type.equals("3"))    pageTitle = "BEFTN Return Search";
+        model.addAttribute("pageTitle", pageTitle);
         return "pages/user/search";
     }
 
@@ -1006,6 +1009,8 @@ public class ReportController {
         Map<String, Object> resp = new HashMap<>();
         if(("2").equals(type)){
             resp = reportService.getCorrectionSearch(searchType, searchValue);
+        }else if(("3").equals(type)){
+            resp = reportService.getBeftnReturnSearch(searchType, searchValue);
         }else resp = reportService.getSearch(searchType, searchValue);;
         return ResponseEntity.ok(resp);
     }

@@ -2,11 +2,13 @@ package abl.frd.qremit.converter.service;
 import abl.frd.qremit.converter.helper.BeftnModelServiceHelper;
 import abl.frd.qremit.converter.model.BeftnModel;
 import abl.frd.qremit.converter.model.BeftnReturnModel;
+import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.repository.BeftnReturnRepository;
 import abl.frd.qremit.converter.repository.CustomQueryRepository;
+import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
 import org.apache.commons.csv.*;
@@ -33,6 +35,8 @@ public class BeftnModelService {
     UserModelRepository userModelRepository;
     @Autowired
     FileInfoModelRepository fileInfoModelRepository;
+    @Autowired
+    ExchangeHouseModelRepository exchangeHouseModelRepository;
     public ByteArrayInputStream load(String fileId, String fileType) {
         List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(beftnModels);
@@ -254,14 +258,19 @@ public class BeftnModelService {
             int i= 0;
             for(Map<String, Object> data: dataList){
                 String txnNo = data.get("txnModified").toString();
+                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+                Double amount = CommonService.convertStringToDouble(data.get("amount").toString());
                 BeftnModel matched = beftnMap.get(txnNo);
                 int status = 0;
                 String exchangeCode = "";
                 String transactionNo = "";
                 if(matched != null){
-                    exchangeCode = matched.getExchangeCode();        
-                    status = 1;
-                    transactionNo = matched.getTransactionNo();
+                    if(matched.getBeneficiaryAccount().equals(beneficiaryAccount) && (CommonService.isEqual(matched.getAmount(), amount) 
+                        || CommonService.isEqual(matched.getIncentive(), amount))){
+                        exchangeCode = matched.getExchangeCode();        
+                        status = 1;
+                        transactionNo = matched.getTransactionNo();
+                    }
                 }
                 data.put("exchangeCode", exchangeCode);
                 data.put("transactionNo", transactionNo);
@@ -355,5 +364,30 @@ public class BeftnModelService {
         }
         resp.put("data", dataList);
         return resp;
+    }
+
+    public List<Map<String, Object>> processBeftnReturnSearchData(List<BeftnReturnModel> beftnReturnModelList){
+        int i = 1;
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        for(BeftnReturnModel beftnReturnModel: beftnReturnModelList){
+            Map<String, Object> data = new HashMap<>();
+            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(beftnReturnModel.getExchangeCode());
+            String exchangeDetails = beftnReturnModel.getExchangeCode() + "<br>" + exchangeHouseModel.getExchangeName();
+            Map<String, Object> reasonResp = customQueryRepository.getBeftnReturnReason(beftnReturnModel.getReturnCode());
+            List<Map<String, Object>> reasonList = (List<Map<String, Object>>)  reasonResp.get("data");
+            String returnReason = (!reasonList.isEmpty())   ?   reasonList.get(0).get("return_name").toString(): "";
+            data.put("sl", i++);
+            data.put("transactionNo", beftnReturnModel.getTransactionNo());
+            data.put("amount", beftnReturnModel.getAmount());
+            data.put("beneficiaryAccount", beftnReturnModel.getBeneficiaryAccount());
+            data.put("beneficiaryName", beftnReturnModel.getBeneficiaryName());
+            data.put("routingNo", beftnReturnModel.getRoutingNo());
+            data.put("exchangeCode", exchangeDetails);
+            data.put("processedDate", beftnReturnModel.getProcessedDate());
+            data.put("returnDate", beftnReturnModel.getReturnDate());
+            data.put("returnCode", beftnReturnModel.getReturnCode() + "-" + returnReason);
+            dataList.add(data);
+        }
+        return dataList;
     }
 }

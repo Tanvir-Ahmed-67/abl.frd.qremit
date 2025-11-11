@@ -58,7 +58,7 @@ public class DailyMailToTresuryService {
                 "Best Regards,\n\n" +
                 "Tanvir Ahmed\n" +
                 "Principal Officer\n" +
-                "Information Technology & MIS Division.\n" +
+                "Foreign Remittance Division.\n" +
                 "Agrani Bank PLC (Head Office)\n" +
                 "Contact: 01714785866";
     }

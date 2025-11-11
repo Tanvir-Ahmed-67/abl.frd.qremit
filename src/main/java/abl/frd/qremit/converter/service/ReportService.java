@@ -60,6 +60,8 @@ public class ReportService {
     DynamicOperationService dynamicOperationService;
     @Autowired
     NpsbMfsService npsbMfsService;
+    @Autowired
+    BeftnReturnRepository beftnReturnRepository;
 
     DateTimeFormatter yyMMddFormatter = DateTimeFormatter.ofPattern("yyMMdd");     // YYMMDD
     DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // YYYY/MM/DD
@@ -989,6 +991,22 @@ public class ReportService {
             return CommonService.getResp(0, "", processSearchData(cocModelList, "4", 1));
         }
         return CommonService.getResp(1, "No data found for edit", null);
+    }
+
+    public Map<String, Object> getBeftnReturnSearch(String searchType, String searchValue){
+        if(searchType.isEmpty() || searchValue.isEmpty())     return CommonService.getResp(1, "Please Select Search Type or Value", null);
+        List<BeftnReturnModel> beftnReturnModelList = new ArrayList<>();
+        switch(searchType){
+            case "1":
+                beftnReturnModelList = beftnReturnRepository.findByTransactionNo(searchValue);
+                break;
+            case "2":
+                beftnReturnModelList = beftnReturnRepository.findByBeneficiaryAccount(searchValue);
+                break;
+        }
+        if(beftnReturnModelList.isEmpty())  return CommonService.getResp(1, "No data found", null);
+        List<Map<String, Object>> dataList = beftnModelService.processBeftnReturnSearchData(beftnReturnModelList);
+        return CommonService.getResp(0, "", dataList);
     }
 
     public Map<String, Object> getEditData(int id, String type, int convertObj){

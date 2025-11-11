@@ -1643,4 +1643,8 @@ public class CommonService {
         String[] parts = str.split(delimeter);
         return parts;
     }
+
+    public static boolean isEqual(double a, double b) {
+        return Math.abs(a - b) < 0.000001;
+    }
 }
