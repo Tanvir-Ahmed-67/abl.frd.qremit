@@ -648,7 +648,7 @@ public class UserController {
         user.setPasswordChangeRequired(true);
         user.setRoles(roleSet);
         user.setStartTime("10:00:00");
-        user.setEndTime("16:00:00");
+        user.setEndTime("18:00:00");
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
         return "redirect:/" + redirectUrl;
