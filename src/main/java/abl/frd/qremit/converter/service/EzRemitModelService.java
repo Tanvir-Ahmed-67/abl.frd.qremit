@@ -220,7 +220,7 @@ public class EzRemitModelService {
     public Map<String, Object> checkEzRemitApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
-        if(type == 1 && length != 9)    resp = CommonService.getResp(1, msg, null);
+        if(type == 1 && length != 10)    resp = CommonService.getResp(1, msg, null);
         else if(type == 0 && !firstColumn.equals(nrtaCode))  resp = CommonService.getResp(1, msg, null);
         return resp;
     }
