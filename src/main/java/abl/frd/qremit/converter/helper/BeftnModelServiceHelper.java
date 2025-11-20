@@ -89,7 +89,6 @@ public class BeftnModelServiceHelper {
             cell4.setCellValue(beftnModel.getOrgName().trim());
 
             Cell cell5 = row.createCell(5);
-            //cell5.setCellValue(beftnModel.getTransactionNo().replaceAll("[^a-zA-Z0-9]", "").trim());
             cell5.setCellValue(beftnModel.getTxnModified());
 
             Cell cell6 = row.createCell(6);
@@ -111,7 +110,6 @@ public class BeftnModelServiceHelper {
             cell11.setCellValue(beftnModel.getAmount());
 
             Cell cell12 = row.createCell(12);
-            //cell12.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getTransactionNo().trim()));
             cell12.setCellValue(beftnModel.getTxnModified());
 
             count++;
@@ -191,7 +189,6 @@ public class BeftnModelServiceHelper {
             cell4.setCellValue("FRD Incentive");
 
             Cell cell5 = row.createCell(5);
-            //cell5.setCellValue(beftnModel.getTransactionNo().replaceAll("[^a-zA-Z0-9]", "").trim());
             cell5.setCellValue(beftnModel.getTxnModified());
 
             Cell cell6 = row.createCell(6);
@@ -213,7 +210,6 @@ public class BeftnModelServiceHelper {
             cell11.setCellValue(beftnModel.getIncentive());
 
             Cell cell12 = row.createCell(12);
-            //cell12.setCellValue(CommonService.removeAllSpecialCharacterFromString(beftnModel.getTransactionNo().trim()));
             cell12.setCellValue(beftnModel.getTxnModified());
 
             count++;

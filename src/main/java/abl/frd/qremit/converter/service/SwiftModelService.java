@@ -286,6 +286,9 @@ public class SwiftModelService {
                 if(!branchDetails.isEmpty()){
                     branchCode = branchDetails.get("branch_code").toString();
                     branchName = branchDetails.get("branch_name").toString();
+                }else{
+                    branchCode = "4006";
+                    branchName = "Principal";
                 }
                 bankCode = "11";
             }   

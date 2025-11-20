@@ -193,7 +193,7 @@ public class ArhMalaysiaModelService {
     public Map<String, Object> checkAgraniMalaysiaApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode, String exchangeCode){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
-        if(type == 1 && (length != 13 || !firstColumn.equals(exchangeCode)))    resp = CommonService.getResp(1, msg, null);
+        if(type == 1 && (length != 14 || !firstColumn.equals(exchangeCode)))    resp = CommonService.getResp(1, msg, null);
         else if(type == 0 && (length != 12 || !firstColumn.equals(nrtaCode)))  resp = CommonService.getResp(1, msg, null);
         return resp;
     }

@@ -572,6 +572,14 @@ public class CommonService {
 
     public Map<String,Object> convertAblRoutingToBranchCode(String branchCode, List<Map<String, Object>> routingData){
         Map<String,Object> data = new HashMap<>();
+        branchCode = removeAllSpecialCharacterFromString(branchCode.trim());
+        String key = "routing_no";
+        if(!checkAgraniRoutingNo(branchCode)){
+            if(branchCode.length() == 4 && branchCode.startsWith("0"))    branchCode = "1" + branchCode;
+            key = "abl_branch_code";
+        }
+        data = customQueryService.generateRoutingDetailsByRoutingNo(routingData,branchCode, key);
+        /*
         if(branchCode.startsWith("010")){
             Map<String, Object> rdata = customQueryService.generateRoutingDetailsByRoutingNo(routingData, branchCode);
             if(!rdata.isEmpty()){
@@ -587,6 +595,7 @@ public class CommonService {
                 }
             }
         }
+        */
         return data;
     }
 
@@ -604,10 +613,12 @@ public class CommonService {
         Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
         Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
         String branchCode = "";
+        /*
         List<Map<String, Object>> routingData = new ArrayList<>();
         if(!accountPayeeModelList.isEmpty() || !onlineModelList.isEmpty()){
             routingData = customQueryService.getRoutingDetailsByBankCode("010");
         }
+        */
         if(cocModelList != null){
             for (CocModel cocModel : cocModelList) {
                 cocModel.setFileInfoModel(fileInfoModel);
@@ -619,11 +630,13 @@ public class CommonService {
             for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
                 accountPayeeModel.setUserModel(user);
+                /*
                 Map<String, Object> rdata = convertAblRoutingToBranchCode(accountPayeeModel.getBranchCode(), routingData);
                 if(!rdata.isEmpty()){
                     accountPayeeModel.setBranchCode(rdata.get("branchCode").toString());
                     accountPayeeModel.setBranchName(rdata.get("branchName").toString());
                 }
+                */
                 totalAmount += accountPayeeModel.getAmount();
             }
         }
@@ -638,17 +651,19 @@ public class CommonService {
             for (OnlineModel onlineModel : onlineModelList) {
                 onlineModel.setFileInfoModel(fileInfoModel);
                 onlineModel.setUserModel(user);
+                if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
+                /*
                 branchCode = onlineModel.getBranchCode();
                 if(branchCode.isEmpty()){
                     onlineModel.setBranchCode("4006");
                     onlineModel.setBranchName("Principal");
                 }
-                if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
                 Map<String, Object> rdata = convertAblRoutingToBranchCode(branchCode, routingData);
                 if(!rdata.isEmpty() && isProcessed == 0){
                     onlineModel.setBranchCode(rdata.get("branchCode").toString());
                     onlineModel.setBranchName(rdata.get("branchName").toString());
                 }
+                */
                 totalAmount += onlineModel.getAmount();
             }
         }
@@ -1447,6 +1462,9 @@ public class CommonService {
         int duplicateCount = 0;
         List<T> modelList = new ArrayList<>();
         int isValidFile = 0;
+        Map<String, Object> routingMap = customQueryService.getRoutingDetails("", "");
+        List<Map<String, Object>> routingData = new ArrayList<>();
+        if((Integer) routingMap.get("err") == 0)    routingData = (List<Map<String, Object>>) routingMap.get("data");
         for(Map<String, Object> data: dataList){
             String transactionNo = data.get("transactionNo").toString();
             String exchangeCode = data.get("exchangeCode").toString();
@@ -1497,11 +1515,49 @@ public class CommonService {
             }
             if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
             if(("").equals(typeFlag))   typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
-            if(("2").equals(typeFlag)){
-                //validate branch code for a/c payee exists in routing table
+            if(("1").equals(typeFlag) || ("2").equals(typeFlag)){
+                Map<String, Object> rdata = convertAblRoutingToBranchCode(branchCode, routingData);
+                if(!rdata.isEmpty()){
+                    data.put("branchName", rdata.get("branch_name"));
+                    data.put("branchCode", rdata.get("abl_branch_code"));
+                }else{
+                    //validate branch code for a/c payee exists in routing table
+                    if(("2").equals(typeFlag)){
+                        msg = "Invalid Branch Code for A/C Payee";
+                        addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }else{
+                        //for online
+                        data.put("branchName", "Principal");
+                        data.put("branchCode", "4006");
+                    }
+                }
+                /* 
+                String key = "routing_no";
+                if(!checkAgraniRoutingNo(branchCode))   key = "abl_branch_code";
+                Map<String, Object> rdata = customQueryService.generateRoutingDetailsByRoutingNo(routingData,branchCode, key);
+                if(rdata.isEmpty()){
+                    msg = "Invalid Branch Code for A/C Payee";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+                data.put("branchName", rdata.get("branch_name"));
+                data.put("branchName", rdata.get("abl_branch_code"));
+                */
+                /*
                 Map<String, Object> routingMap = checkAblBranchCode(branchCode);
                 if((Integer) routingMap.get("err") == 1){
                     msg = "Invalid Branch Code for A/C Payee";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+                */
+                    
+            }
+            if(("3").equals(typeFlag)){
+                Map<String, Object> rdata = customQueryService.generateRoutingDetailsByRoutingNo(routingData,branchCode);
+                if(rdata.isEmpty()){
+                    msg = "Invalid Routing Number for BEFTN Not Match";
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
                 }
