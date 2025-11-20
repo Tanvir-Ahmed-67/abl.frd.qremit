@@ -257,7 +257,7 @@ public class SwiftModelService {
         // Extract remitter name from `:50K:`
         String remitterBlock = extractField(rawData, ":50K:", "(?s).*?(?=:\\d{2}|\\z)");
         if (remitterBlock != null) {
-            String[] remitterDetails = remitterBlock.split("\\n");
+            String[] remitterDetails = remitterBlock.split("\\r?\\n");
             data.put("remitterName", remitterDetails.length > 1 ? remitterDetails[1].trim() : "");
         }
 
@@ -266,14 +266,16 @@ public class SwiftModelService {
         String branchCode = branchCodeStr != null ? branchCodeStr.replaceAll("\\s+", " ").trim() : "";
         
         // Extract bank name and branch name from `:57D:`
-        String bankDetails = extractField(rawData, ":57D:", "(?s).*?(?=:\\d{2}|$)");
+        //String bankDetails = extractField(rawData, ":57D:", "(?s).*?(?=:\\d{2}|$)");
+        String bankDetails = extractField(rawData, ":57D:", "(?s).*?(?=:\\d{2}|\\z)");
         String bankName = "";
         String branchName = "";
         String bankCode = "";
         if (bankDetails != null) {
-            String[] bankLines = bankDetails.trim().split("\\n", 2);
-            if (bankLines.length > 0 && bankLines[0].contains("-")) {
-                bankName =  bankLines[0].split("-", 2)[1].trim();
+            String[] bankLines = bankDetails.trim().split("\\r?\\n");
+            if (bankLines.length > 0) {
+                //bankName =  bankLines[0].split("-", 2)[1].trim();
+                 bankName = bankLines.length > 1 ? bankLines[0].trim() : "";
             }
             branchName = bankLines.length > 1 ? bankLines[1].trim() : "";
         }
@@ -299,7 +301,7 @@ public class SwiftModelService {
         String beneficiaryBlock = extractField(rawData, ":59:", "(?s).*?(?=:\\d{2}|$\\\\z)");
                 
         if (beneficiaryBlock != null) {
-            String[] beneficiaryDetails = beneficiaryBlock.replace("/", "").trim().split("\\n", 2);
+            String[] beneficiaryDetails = beneficiaryBlock.replace("/", "").trim().split("\\r?\\n");
             data.put("beneficiaryAccount", beneficiaryDetails[0].replaceAll("[^0-9]", "").trim());
             data.put("beneficiaryName", beneficiaryDetails.length > 1 ? beneficiaryDetails[1].trim() : "");
         }
