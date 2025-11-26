@@ -95,7 +95,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (147, '7010264', 'Joyalukkas Ex WLL,KUWAIT', '', '7085', '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (148, '7010271', 'K & H Remittance Services Brunai', 'K & H Brunai', '7092', '96', 'BRUNEI DARUSSALAM', 'kandh', 'KandHModel', 'kandHModelRepository', 0, 1, 0),
 (149, '7010207', 'Kuwait Bahrain Intl Ex. Kuwait', '', '7006', '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(150, '7010242', 'Lari Exchange \n Abu Dhabi, UAE', 'Lari Exchange', '7054', '784', 'UNITED ARAB EMIRATES (UAE)', 'lari', 'LariModel', 'lariModelRepository', 0, 1, 0),
+(150, '7010242', 'Lari Exchange Abu Dhabi, UAE', 'Lari Exchange', '7054', '784', 'UNITED ARAB EMIRATES (UAE)', 'lari', 'LariModel', 'lariModelRepository', 0, 1, 0),
 (151, '7010237', 'Lulu Exchange Co', '', '7050', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (152, '7010295', 'MaxMoney', '', '7094', '458', 'MALAYSIA', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (153, '7010265', 'Modern Ex. Co., Bahrain', '', '7083', '48', 'BAHRAIN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
