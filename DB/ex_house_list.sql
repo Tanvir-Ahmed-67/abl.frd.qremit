@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1deb3
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Sep 28, 2025 at 04:59 AM
--- Server version: 8.0.43-0ubuntu0.24.04.2
+-- Host: localhost
+-- Generation Time: Nov 26, 2025 at 05:39 AM
+-- Server version: 8.0.44-0ubuntu0.24.04.1
 -- PHP Version: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -49,7 +49,7 @@ CREATE TABLE `ex_house_list` (
 
 INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `country_code`, `country_name`, `base_table_name`, `class_name`, `repository_name`, `is_settlement`, `active_status`, `has_settlement_daily`) VALUES
 (1, '7010231', 'Al Muzaini Exchange Company Kuwait', 'Al Muzaini', '7038', '414', 'KUWAIT', 'muzaini', 'MuzainiModel', 'muzainiModelRepository', 0, 1, 0),
-(2, '7010209', 'Bahrain Exchange Co Kuwait', 'BEC', '7012', '414', 'KUWAIT', 'bec', 'BecModel', 'becModelRepository', 0, 1, 0),
+(2, '7010209', 'Bahrain Exchange Co Kuwait', 'BEC', '7012', '414', 'KUWAIT', '', 'BecModel', 'becModelRepository', 0, 1, 0),
 (3, '7010234', 'National Finance and Exch. Co.', 'NAFEX', '7046', '48', 'BAHRAIN', 'nafex', 'NafexEhMstModel', 'nafexModelRepository', 0, 1, 0),
 (4, '7010226', 'Agrani Exchange House Singapore', 'Singapore', '7025', '702', 'SINGAPORE', 'singapore', 'AgexSingaporeModel', 'agexSingaporeModelRepository', 1, 1, 1),
 (5, '7010299', 'IFast Global Bank LTD (Ezremit)', 'EZ Remit', '7102', '48', 'BAHRAIN', 'ezremit', 'EzRemitModel', 'ezRemitModelRepository', 1, 1, 0),
@@ -57,9 +57,9 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (7, '111111', 'API BEFTN', 'API BEFTN', '1000', '', '', 'api_beftn', 'ApiBeftnModel', 'apiBeftnModelRepository', 0, 1, 0),
 (8, '222222', 'API T24', 'API T24', '2000', '', '', 'api_t24', 'ApiT24Model', 'apiT24ModelRepository', 1, 1, 1),
 (9, '333333', 'COC Paid', 'COC Paid', '3000', '', '', 'coc_paid', 'CocPaidModel', 'cocPaidModelRepository', 1, 1, 1),
-(112, '7010291', 'Aftab Currency Exchange Ltd.UK', '', '7100', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(113, '7010221', 'Al Ahalia Money Ex. ', '', '7047', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(114, '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', '784', 'UNITED ARAB EMIRATES (UAE)', 'alansari', 'AlansariModel', 'alansariModelRepository', 0, 1, 0),
+(112, '7010291', 'ACE Money Transfer Ltd. (Aftab Currency)', '', '7100', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(113, '7010221', 'Al Ahalia Money Ex. ', 'Al Ahalia', '7047', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(114, '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', '784', 'UNITED ARAB EMIRATES (UAE)', '', 'AlansariModel', 'alansariModelRepository', 0, 1, 0),
 (115, '7010246', 'Al Jadeed Exchange. Oman', 'Al Jadeed', '7058', '784', 'UNITED ARAB EMIRATES (UAE)', 'alzadeed', 'AlzadeedModel', 'alzadeedModelRepository', 0, 1, 0),
 (116, '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (117, '7010240', 'Al Rostamani Intl Ex. Co. Abu Dhabi, UAE', 'Al Rostamani', '7052', '784', 'UNITED ARAB EMIRATES (UAE)', 'alrostamani', 'AlRostamaniModel', 'alRostamaniModelRepository', 0, 1, 0),
@@ -133,7 +133,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (188, '7010300', 'Merchantrade Asia Sdn Bhd', 'Merchantrade', '7049', '458', 'MALAYSIA', 'merchantrade', 'MerchantradeModel', 'merchantradeModelRepository', 0, 1, 0),
 (189, '7010294', 'Shah Global', 'Shah Global', '7104', '826', 'UNITED KINGDOM (UK)', 'shah_global', 'ShahGlobalModel', 'shahGlobalModelRepository', 0, 1, 0),
 (190, '444444', 'SWIFT Message Extractions', 'SWIFT', '4000', '', '', 'swift', 'SwiftModel', 'swiftModelRepository', 0, 1, 0),
-(191, '7010235', 'Xpress Money', '', '7112', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(191, '7010235', 'Xpress Money', '', '', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 0, 0),
 (192, '7010305', 'Taptap Send UK Limited, UK', '', '7115', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (193, '555555', 'NPSB', 'NPSB', '1000', '', '', 'npsb_mfs', 'NpsbMfsModel', 'npsbMfsRepository', 1, 1, 0),
 (194, '666666', 'BEFTN Return', 'Beftn Return', '1000', '', '', 'beftn_return', '', '', 0, 1, 0),
