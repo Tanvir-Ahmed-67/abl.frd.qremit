@@ -114,6 +114,10 @@ public class CocPaidModelService {
                 String amountStr = data.get("amount").toString();
                 Double amount = CommonService.convertStringToDouble(amountStr);
                 String exchangeCode = data.get("exchangeCode").toString();
+                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+                String trMode = data.get("trMode").toString();
+                if(!("5").equals(trMode))    continue;
+                if(!beneficiaryAccount.toLowerCase().startsWith("coc"))   continue;
                 Map<String, Object> nrtaMap = CommonService.getExchangeCodeVsNrtaCodeMap(exchangeCode, exchangeHouseModelList);
                 String nrtaCode = nrtaMap.get(exchangeCode).toString();
                 data.put("nrtaCode", nrtaCode);
@@ -182,12 +186,13 @@ public class CocPaidModelService {
         data.put("beneficiaryName", csvRecord.get(6));
         data.put("beneficiaryAccount", csvRecord.get(7));
         data.put("routingNo", routingNo);
-        data.put("beneficiaryMobile", csvRecord.get(10));
+        data.put("beneficiaryMobile", csvRecord.get(10).toLowerCase().replace("coc", ""));
         data.put("bankName", "Agrani Bank");
         data.put("bankCode", "11");
         data.put("branchName", branchName);
         data.put("branchCode", branchCode);
         data.put("trMode", csvRecord.get(12));
+        data.put("remitterMobile","");
         return data;
     }
 
