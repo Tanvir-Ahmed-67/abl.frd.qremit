@@ -72,6 +72,8 @@ public class CocPaidModel {
     private String beneficiaryGender;
     @Column(name = "beneficiary_district", length = 64)
     private String beneficiaryDistrict;
+    @Column(name = "remitter_mobile_no", length=30)
+    private String remitterMobile;
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
     private User userModel;
@@ -344,6 +346,14 @@ public class CocPaidModel {
 
     public void setBeneficiaryDistrict(String beneficiaryDistrict) {
         this.beneficiaryDistrict = beneficiaryDistrict;
+    }
+
+    public String getRemitterMobile() {
+        return this.remitterMobile;
+    }
+
+    public void setRemitterMobile(String remitterMobile) {
+        this.remitterMobile = remitterMobile;
     }
 
     public CocPaidModel(String exchangeCode, String transactionNo, Double amount, String enteredDate, LocalDateTime paidDate, String remitterName, 

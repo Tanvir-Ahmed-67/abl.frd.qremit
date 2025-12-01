@@ -84,6 +84,10 @@ public class ReportModel {
     private String beneficiaryGender;
     @Column(name = "beneficiary_district", length = 64)
     private String beneficiaryDistrict;
+    @Column(name = "remitter_mobile_no", length=30)
+    private String remitterMobile;
+    @Column(name = "beneficiary_mobile_no", length=20)
+    private String beneficiaryMobile;
 
     public int getId() {
         return this.id;
@@ -352,6 +356,22 @@ public class ReportModel {
 
     public void setBeneficiaryDistrict(String beneficiaryDistrict) {
         this.beneficiaryDistrict = beneficiaryDistrict;
+    }
+
+    public String getRemitterMobile() {
+        return this.remitterMobile;
+    }
+
+    public void setRemitterMobile(String remitterMobile) {
+        this.remitterMobile = remitterMobile;
+    }
+
+    public String getBeneficiaryMobile() {
+        return this.beneficiaryMobile;
+    }
+
+    public void setBeneficiaryMobile(String beneficiaryMobile) {
+        this.beneficiaryMobile = beneficiaryMobile;
     }
 
     public ReportModel(String exchangeCode, String transactionNo, String bankCode, String bankName, String branchName, String branchCode, Double amount, String beneficiaryName, String beneficiaryAccount, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime, int uploadUserId, int fileInfoModelId, String type, String zoneCode, String circleCode, String districtCode, LocalDate reportDate) {

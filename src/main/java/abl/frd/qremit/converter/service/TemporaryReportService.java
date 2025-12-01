@@ -106,6 +106,8 @@ public class TemporaryReportService {
                     temporaryReportModel.setRemitterGender((String) CommonService.getPropertyValue(model, "getRemitterGender"));
                     temporaryReportModel.setBeneficiaryGender((String) CommonService.getPropertyValue(model, "getBeneficiaryGender"));
                     temporaryReportModel.setBeneficiaryDistrict((String) CommonService.getPropertyValue(model, "getBeneficiaryDistrict"));
+                    temporaryReportModel.setBeneficiaryMobile((String) CommonService.getPropertyValue(model, "getBeneficiaryMobile"));
+                    temporaryReportModel.setRemitterMobile((String) CommonService.getPropertyValue(model, "getRemitterMobile"));
                     //added api for online model
                     if(("1").equals(types))   temporaryReportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     tempInsertList.add(temporaryReportModel);
