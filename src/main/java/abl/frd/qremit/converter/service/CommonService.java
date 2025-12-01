@@ -198,6 +198,8 @@ public class CommonService {
             onlineModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
             onlineModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
             onlineModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
+            onlineModel.setBeneficiaryMobile((String) getPropertyValue(model, "getBeneficiaryMobile"));
+            onlineModel.setRemitterMobile((String) getPropertyValue(model, "getRemitterMobile"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -257,6 +259,8 @@ public class CommonService {
             cocModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
             cocModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
             cocModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
+            cocModel.setBeneficiaryMobile((String) getPropertyValue(model, "getBeneficiaryMobile"));
+            cocModel.setRemitterMobile((String) getPropertyValue(model, "getRemitterMobile"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -305,6 +309,8 @@ public class CommonService {
             accountPayeeModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
             accountPayeeModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
             accountPayeeModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
+            accountPayeeModel.setBeneficiaryMobile((String) getPropertyValue(model, "getBeneficiaryMobile"));
+            accountPayeeModel.setRemitterMobile((String) getPropertyValue(model, "getRemitterMobile"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -358,6 +364,8 @@ public class CommonService {
             beftnModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
             beftnModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
             beftnModel.setTxnModified(filterTxnNo(transactionNo));
+            beftnModel.setBeneficiaryMobile((String) getPropertyValue(model, "getBeneficiaryMobile"));
+            beftnModel.setRemitterMobile((String) getPropertyValue(model, "getRemitterMobile"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -612,8 +620,8 @@ public class CommonService {
         fileInfoModel.setOnlineModelList(onlineModelList);
         Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
         Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
-        String branchCode = "";
         /*
+        String branchCode = "";
         List<Map<String, Object>> routingData = new ArrayList<>();
         if(!accountPayeeModelList.isEmpty() || !onlineModelList.isEmpty()){
             routingData = customQueryService.getRoutingDetailsByBankCode("010");

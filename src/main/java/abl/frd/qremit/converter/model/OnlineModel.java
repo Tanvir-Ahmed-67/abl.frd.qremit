@@ -76,6 +76,10 @@ public class OnlineModel {
     private String beneficiaryGender;
     @Column(name = "beneficiary_district", length = 64)
     private String beneficiaryDistrict;
+    @Column(name = "remitter_mobile_no", length=30)
+    private String remitterMobile;
+    @Column(name = "beneficiary_mobile_no", length=20)
+    private String beneficiaryMobile;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
@@ -347,6 +351,22 @@ public class OnlineModel {
 
     public void setBeneficiaryDistrict(String beneficiaryDistrict) {
         this.beneficiaryDistrict = beneficiaryDistrict;
+    }
+
+    public String getRemitterMobile() {
+        return this.remitterMobile;
+    }
+
+    public void setRemitterMobile(String remitterMobile) {
+        this.remitterMobile = remitterMobile;
+    }
+
+    public String getBeneficiaryMobile() {
+        return this.beneficiaryMobile;
+    }
+
+    public void setBeneficiaryMobile(String beneficiaryMobile) {
+        this.beneficiaryMobile = beneficiaryMobile;
     }
 
     public OnlineModel(int id, String transactionNo, String exchangeCode, String beneficiaryName, String beneficiaryAccount, Double amount, String remitterName, String bankName, String bankCode, String branchName, String branchCode, Double govtIncentive, Double agraniIncentive, Double incentive, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {

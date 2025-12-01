@@ -565,6 +565,8 @@ public class ReportService {
                     reportModel.setRemitterGender((String) CommonService.getPropertyValue(model, "getRemitterGender"));
                     reportModel.setBeneficiaryGender((String) CommonService.getPropertyValue(model, "getBeneficiaryGender"));
                     reportModel.setBeneficiaryDistrict((String) CommonService.getPropertyValue(model, "getBeneficiaryDistrict"));
+                    reportModel.setBeneficiaryMobile((String) CommonService.getPropertyValue(model, "getBeneficiaryMobile"));
+                    reportModel.setRemitterMobile((String) CommonService.getPropertyValue(model, "getRemitterMobile"));
                     if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":
