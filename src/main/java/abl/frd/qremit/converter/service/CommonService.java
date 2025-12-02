@@ -580,7 +580,6 @@ public class CommonService {
 
     public Map<String,Object> convertAblRoutingToBranchCode(String branchCode, List<Map<String, Object>> routingData){
         Map<String,Object> data = new HashMap<>();
-        branchCode = removeAllSpecialCharacterFromString(branchCode.trim());
         String key = "routing_no";
         if(!checkAgraniRoutingNo(branchCode)){
             if(branchCode.length() == 4 && branchCode.startsWith("0"))    branchCode = "1" + branchCode;
@@ -1479,6 +1478,8 @@ public class CommonService {
             String nrtaCode = data.get("nrtaCode").toString();
             String bankName = data.get("bankName").toString();
             String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+            beneficiaryAccount = removeAllSpecialCharacterFromString(beneficiaryAccount);
+            data.put("beneficiaryAccount", beneficiaryAccount);
             if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
             String msg = "";
             if(isScientificNotation(transactionNo) || isScientificNotation(beneficiaryAccount)){
