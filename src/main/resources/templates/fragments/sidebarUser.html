@@ -79,6 +79,9 @@
                             <span>BEFTN Return Management</span>
                         </a>
                         <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/search?type=3}"><i class="fa-regular fa-circle sub-icon"></i>BEFTN Return Search</a>
+                            </li>
                             <li th:if="${exchangeMap.isBeftnReturn == 1}">
                                 <a th:href="@{/uploadBeftnReturn}"><i class="fa-regular fa-circle sub-icon"></i>Upload BEFTN Return</a>
                             </li>
