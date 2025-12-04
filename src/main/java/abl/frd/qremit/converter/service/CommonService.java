@@ -1379,8 +1379,19 @@ public class CommonService {
 
     public static Map<String, Object> getSearchType(String type){
         Map<String, Object> resp = new HashMap<>();
-        resp.put("1", "Transaction No");
-        if(!type.equals("2"))    resp.put("2", "Beneficiary Account No");
+        switch(type){
+            case "1":
+            default:
+                resp.put("1", "Transaction No");
+                resp.put("2", "Beneficiary Account No");
+                break;
+            case "2":
+                resp.put("1", "Transaction No");
+                break;
+            case "3":
+                resp.put("2", "Beneficiary Account No");
+                break;
+        }
         return resp;
     }
 
