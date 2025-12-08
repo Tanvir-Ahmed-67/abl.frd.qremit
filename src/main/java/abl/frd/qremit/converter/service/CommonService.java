@@ -155,12 +155,17 @@ public class CommonService {
         return resp;
     }
 
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, LocalDateTime uploadDateTime, int isProcessed){
+    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, LocalDateTime uploadDateTime, int isProcessed, Map<String, Double> apiGovtIncentiveMap){
         List<OnlineModel> onlineList = new ArrayList<>();
         for (T singleModel : models) {
             try {
                 String typeFlag = (String) getPropertyValue(singleModel, "getTypeFlag");
-                if(("1").equals(typeFlag))  onlineList.add(generateOnlineModel(singleModel, uploadDateTime, isProcessed));
+                String transactionNo =  (String) getPropertyValue(singleModel, "getTransactionNo");
+                Double govtIncentive = 0.0;
+                if(("1").equals(typeFlag)){
+                    if(apiGovtIncentiveMap.containsKey(transactionNo)) govtIncentive = apiGovtIncentiveMap.get(transactionNo);
+                    onlineList.add(generateOnlineModel(singleModel, uploadDateTime, isProcessed, govtIncentive));
+                }  
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -168,13 +173,13 @@ public class CommonService {
         return onlineList;
     }
 
-    public static <T> OnlineModel generateOnlineModel(T model, LocalDateTime uploadDateTime, int flag) {
+    public static <T> OnlineModel generateOnlineModel(T model, LocalDateTime uploadDateTime, int flag, Double govtIncentive) {
         OnlineModel onlineModel = new OnlineModel();
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
-            onlineModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
-            onlineModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
-            onlineModel.setIncentive(onlineModel.getGovtIncentive()+onlineModel.getAgraniIncentive());
+            //onlineModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            //onlineModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            //onlineModel.setIncentive(onlineModel.getGovtIncentive()+onlineModel.getAgraniIncentive());
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
             onlineModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             onlineModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
@@ -189,6 +194,8 @@ public class CommonService {
             onlineModel.setIsDownloaded(flag);
             if(flag == 1){
                 onlineModel.setDownloadDateTime(uploadDateTime);
+                onlineModel.setGovtIncentive(govtIncentive);
+                onlineModel.setIncentive(govtIncentive);
             }
             onlineModel.setDownloadUserId(9999);
             onlineModel.setUploadDateTime(uploadDateTime);
@@ -607,8 +614,14 @@ public class CommonService {
     }
 
     public <T> Map<String, Object> generateFourConvertedDataModel(List<T> model, FileInfoModel fileInfoModel, User user, LocalDateTime currentDateTime, int isProcessed){
+        Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+        return generateFourConvertedDataModel(model, fileInfoModel, user, currentDateTime, isProcessed, apiGovtIncentiveMap);
+    }
+
+    public <T> Map<String, Object> generateFourConvertedDataModel(List<T> model, FileInfoModel fileInfoModel, User user, LocalDateTime currentDateTime, int isProcessed,
+        Map<String, Double> apiGovtIncentiveMap){
         Map<String, Object> resp = new HashMap<>();
-        List<OnlineModel> onlineModelList = generateOnlineModelList(model, currentDateTime, isProcessed);
+        List<OnlineModel> onlineModelList = generateOnlineModelList(model, currentDateTime, isProcessed, apiGovtIncentiveMap);
         List<CocModel> cocModelList = generateCocModelList(model, currentDateTime);
         List<AccountPayeeModel> accountPayeeModelList = generateAccountPayeeModelList(model, currentDateTime);
         List<BeftnModel> beftnModelList = generateBeftnModelList(model, currentDateTime);
@@ -829,6 +842,7 @@ public class CommonService {
     
     public static ErrorDataModel getErrorDataModel(Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
         ErrorDataModel errorDataModel = new ErrorDataModel();
+        if(data.containsKey("govtIncentive"))   data.remove("govtIncentive");
         errorDataModel = createDataModel(errorDataModel, data);
         errorDataModel.setErrorMessage(errorMessage);
         errorDataModel.setUploadDateTime(currentDateTime);
@@ -1479,6 +1493,7 @@ public class CommonService {
         String duplicateMessage = "";
         int duplicateCount = 0;
         List<T> modelList = new ArrayList<>();
+        Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
         int isValidFile = 0;
         Map<String, Object> routingMap = customQueryService.getRoutingDetails("", "");
         List<Map<String, Object>> routingData = new ArrayList<>();
@@ -1508,6 +1523,12 @@ public class CommonService {
             
             String branchCode = data.get("branchCode").toString();
             data.remove("nrtaCode");
+            Double govtIncentive = 0.0;
+            if(data.containsKey("govtIncentive")){
+                govtIncentive = convertStringToDouble(data.get("govtIncentive").toString());
+                data.remove("govtIncentive");
+            }
+                    
             Map<String, Object> dupResp = getDuplicateTransactionNo(transactionNo, uniqueDataList);
             if((Integer) dupResp.get("isDuplicate") == 1){
                 duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
@@ -1581,14 +1602,21 @@ public class CommonService {
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
                 }
+                data.put("branchName", rdata.get("branch_name"));
+                data.put("bankName", rdata.get("bank_name"));
+                data.put("bankCode", rdata.get("bank_code"));
             }
             if(checkType == 1){
+                //data from API System which is API or BEFTN 
                 int allowedType = (type == 1) ? 1:3;  //for betn 3
                 if(!convertStringToInt(typeFlag).equals(allowedType)){
                     msg = "Invalid Remittance Type for ";
                     msg += (type == 1) ? "API": "BEFTN";
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
+                }
+                if(type == 1){
+                    apiGovtIncentiveMap.put(transactionNo,govtIncentive);
                 }
             }
             try{
@@ -1611,6 +1639,7 @@ public class CommonService {
         modelResp.put("duplicateMessage", duplicateMessage);
         modelResp.put("duplicateCount", duplicateCount);
         modelResp.put("transactionList", transactionList);
+        modelResp.put("apiGovtIncentiveMap", apiGovtIncentiveMap);
         return modelResp;
     }
 

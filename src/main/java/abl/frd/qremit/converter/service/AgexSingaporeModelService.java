@@ -74,8 +74,10 @@ public class AgexSingaporeModelService {
                     agexSingaporeModel.setFileInfoModel(fileInfoModel);
                     agexSingaporeModel.setUserModel(user);
                 }
+                Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+                if(agexSingaporeData.containsKey("apiGovtIncentiveMap")) apiGovtIncentiveMap = (Map<String, Double>) agexSingaporeData.get("apiGovtIncentiveMap");
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(agexSingaporeModelList, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(agexSingaporeModelList, fileInfoModel, user, currentDateTime, type, apiGovtIncentiveMap);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(agexSingaporeModelList.size()));
                 fileInfoModel.setIsSettlement(type);
@@ -130,7 +132,7 @@ public class AgexSingaporeModelService {
                         break;
                     }
                 }
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode, branchName);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, bankCode, branchCode, branchName, type);
                 if(type == 1){
                     errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(12).toLowerCase());
                     if(!errorMessage.isEmpty()){
@@ -153,6 +155,7 @@ public class AgexSingaporeModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, AgexSingaporeModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                resp.put("apiGovtIncentiveMap", (Map<String, Double>) modelResp.get("apiGovtIncentiveMap"));
                 agexSingaporeModelList = (List<AgexSingaporeModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -182,9 +185,10 @@ public class AgexSingaporeModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String bankCode, String branchCode, String branchName){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String bankCode, String branchCode, String branchName, int type){
         Map<String, Object> data = new HashMap<>();
         LocalDateTime date = CommonService.convertStringToDate(csvRecord.get(4));
+        if(type == 1)   data.put("govtIncentive", csvRecord.get(13).trim());
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", csvRecord.get(2));

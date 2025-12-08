@@ -60,9 +60,11 @@ public class ApiT24ModelService {
                     apiT24Model.setFileInfoModel(fileInfoModel);
                     apiT24Model.setUserModel(user);
                 }
+                Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+                if(apiT24Data.containsKey("apiGovtIncentiveMap")) apiGovtIncentiveMap = (Map<String, Double>) apiT24Data.get("apiGovtIncentiveMap");
 
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(apiT24Models, fileInfoModel, user, currentDateTime, 1);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(apiT24Models, fileInfoModel, user, currentDateTime, 1,apiGovtIncentiveMap);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(apiT24Models.size()));
                 fileInfoModel.setIsSettlement(1);
@@ -138,6 +140,7 @@ public class ApiT24ModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ApiT24Model.class, resp, errorDataModelList, "", 1, 1);
+                resp.put("apiGovtIncentiveMap", (Map<String, Double>) modelResp.get("apiGovtIncentiveMap"));
                 apiT24ModelList = (List<ApiT24Model>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -193,6 +196,7 @@ public class ApiT24ModelService {
         data.put("processedBy", "");
         data.put("processedDate", "");
         data.put("sourceCountry", sourceCountry);
+        data.put("govtIncentive", csvRecord.get(14).trim());
         return data;
     }
 }

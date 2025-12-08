@@ -64,8 +64,10 @@ public class ArhMalaysiaModelService {
                     agraniMalaysiaModel.setFileInfoModel(fileInfoModel);
                     agraniMalaysiaModel.setUserModel(user);
                 }
+                Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+                if(agraniMalaysiaData.containsKey("apiGovtIncentiveMap")) apiGovtIncentiveMap = (Map<String, Double>) agraniMalaysiaData.get("apiGovtIncentiveMap");
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(agraniMalaysiaModels, fileInfoModel, user, currentDateTime, type, apiGovtIncentiveMap);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(agraniMalaysiaModels.size()));
                 fileInfoModel.setIsSettlement(type); 
@@ -134,6 +136,7 @@ public class ArhMalaysiaModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, ArhMalaysiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                resp.put("apiGovtIncentiveMap", (Map<String, Double>) modelResp.get("apiGovtIncentiveMap"));
                 agraniMalaysiaModelList = (List<ArhMalaysiaModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -171,6 +174,7 @@ public class ArhMalaysiaModelService {
         LocalDateTime date = CommonService.convertStringToDate(csvRecord.get(4).trim());
 
         Map<String, Object> data = new HashMap<>();
+        if(type == 1)   data.put("govtIncentive", csvRecord.get(13).trim());
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", csvRecord.get(1).trim());
         data.put("currency", csvRecord.get(2).trim());
