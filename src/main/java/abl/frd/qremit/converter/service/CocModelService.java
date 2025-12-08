@@ -86,4 +86,8 @@ public class CocModelService {
     public List<CocModel> findCocModelByExchangeCodeAndUploadDateTime(String exchangeCode, LocalDateTime startDate, LocalDateTime endDate){
         return cocModelRepository.findCocModelByExchangeCodeAndUploadDateTime(exchangeCode, startDate, endDate);
     }
+
+    public List<Object[]> getDailyProcessedDataByDate(LocalDateTime startDate, LocalDateTime endDate, int isProcessed){
+        return cocModelRepository.getDailyProcessedDataByDate(startDate, endDate, isProcessed);
+    }
 }

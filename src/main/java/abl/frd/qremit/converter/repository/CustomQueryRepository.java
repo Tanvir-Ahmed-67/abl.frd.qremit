@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@SuppressWarnings("unchecked")
 public class CustomQueryRepository {
     @PersistenceContext
     private EntityManager entityManager;
@@ -138,19 +139,6 @@ public class CustomQueryRepository {
     public Map<String, Object> getUniqueListByTransactionNoAndAmountAndExchangeCodeIn(List<String[]> data, String tbl){
         tbl = "base_data_table_" + tbl;
         return generateUniqueTransactionSql(data, tbl, "amount");
-        /*
-        Map<String, Object> params = new HashMap<>();
-        List<String> tuples = new ArrayList<>();
-        for(String[] record: data){
-            tuples.add(String.format("('%s', %s, '%s')", record[0], record[1], record[2]));
-        }
-        
-        String sql = "SELECT * FROM %s WHERE (transaction_no, CAST(amount AS CHAR), exchange_code) IN ( ";
-        String queryStr = String.format(sql, tbl);
-        StringBuilder queryBuilder = new StringBuilder(queryStr);
-        queryBuilder.append(String.join(", ", tuples)).append(")");
-        return getData(queryBuilder.toString(),params);
-        */ 
     }
 
     public Map<String, Object> getArchiveUniqueList(List<String[]> data, String year){
@@ -235,11 +223,119 @@ public class CustomQueryRepository {
         }
         return resp;
     }
-
-    public Map<String, Object> getIpRange(){
-        Map<String, Object> resp = new HashMap<>();
-        return resp;    
+    /*
+     * dynamic insert or update query using data Map
+     * isUpdate: 1- performs update, 0- performs insert query
+     */
+    public int dynamicInsertOrUpdate(String tbl, Map<String, Object> data, Map<String, Object> where, int isUpdate) {
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder sql = new StringBuilder();
+        if (isUpdate == 1) {
+            // UPDATE
+            sql.append("UPDATE ").append(tbl).append(" SET ");
+            Map<String, Object> fieldData = generateSqlWhere(data, ",", false);
+            params = (Map<String, Object>) fieldData.get("params");
+            sql.append(fieldData.get("whereClause").toString());
+            Map<String, Object> whereData = generateSqlWhere(where, "AND", true);
+            sql.append(whereData.get("whereClause").toString());
+            params.putAll((Map<String, Object>) whereData.get("params"));
+        }else {
+            // INSERT
+            List<String> keys = new ArrayList<>();
+            List<String> placeholders = new ArrayList<>();
+            for (Map.Entry<String, Object> entry : data.entrySet()) {
+                String key = entry.getKey();
+                keys.add("`" + key + "`");
+                placeholders.add(":" + key);
+                params.put(key, entry.getValue());
+            }
+            sql.append("INSERT INTO ").append(tbl)
+            .append(" (").append(String.join(", ", keys)).append(")")
+            .append(" VALUES (").append(String.join(", ", placeholders)).append(")");
+        }
+        Object result = runNativeQuery(sql.toString(), params, false, true);
+        int affectedRows = result != null ? (int) result : 0;
+        return affectedRows;
     }
-        
+    /*
+     * whereKeyWord: true will generate WHERE 
+     * delimeter - "AND","," or others
+     */
+    public Map<String, Object> generateSqlWhere(Map<String, Object> where, String delimeter, boolean whereKeyWord){
+        Map<String, Object> resp = new HashMap<>();
+        StringBuilder sql = new StringBuilder();
+        delimeter = " " + delimeter + " ";
+        Map<String, Object> params = new HashMap<>();
+        if(!where.isEmpty()){
+            List<String> whereClauses = new ArrayList<>();
+            for(Map.Entry<String, Object> entry : where.entrySet()){
+                String key = entry.getKey();
+                whereClauses.add("`" + key + "` = :where_" + key);
+                params.put("where_" + key, entry.getValue());
+            }
+            if(whereKeyWord)    sql.append(" WHERE ");
+            sql.append(String.join(delimeter, whereClauses));
+        }
+        resp.put("whereClause", sql);
+        resp.put("params", params);
+        return resp;
+    }
+    /*
+     * isUpdate - performs insert/ update/ delete operations
+     * singleResult: true will return single data, false will return lists
+     */
+    public Object runNativeQuery(String sql, Map<String, Object> params, boolean singleResult, boolean isUpdate){
+        try{
+            Query query = entityManager.createNativeQuery(sql);
+            if (params != null) {
+                for (Map.Entry<String, Object> entry : params.entrySet()) {
+                    query.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
+            if(isUpdate){
+                int affectedRows = query.executeUpdate();
+                return affectedRows;
+            }
+            return singleResult ? query.getSingleResult() : query.getResultList();
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public Map<String, Object> getBeftnReturnReason(String returnCode){
+        Map<String, Object> params = new HashMap<>();
+        String queryStr = "SELECT * FROM beftn_return_reason";
+        if(!returnCode.isEmpty()){
+            queryStr += " WHERE return_code=?";
+            params.put("1",returnCode);
+        }
+        return getData(queryStr,params);
+    }
 
+    public Map<String, Object> getCountry(String countryCode, String countryName, String twoDigit, String threeDigit){
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryStr = new StringBuilder("SELECT * FROM country WHERE published = 1");
+        int key = 0;
+        if(!countryCode.isEmpty()){
+            queryStr.append(" AND country_code=?");
+            String paramName = "p" + key++;
+            params.put(paramName, countryCode);
+        }
+        if(!countryName.isEmpty()){
+            String paramName = "p" + key++;
+            queryStr.append(" AND country_name=?");
+            params.put(paramName,countryCode);
+        }
+        if(!twoDigit.isEmpty()){
+            queryStr.append(" AND two_digit=?");
+            String paramName = "p" + key++;
+            params.put(paramName,twoDigit);
+        }
+        if(!threeDigit.isEmpty()){
+            queryStr.append(" AND three_digit=?");
+            String paramName = "p" + key++;
+            params.put(paramName,threeDigit);
+        }
+        return getData(queryStr.toString(),params);
+    }
 }

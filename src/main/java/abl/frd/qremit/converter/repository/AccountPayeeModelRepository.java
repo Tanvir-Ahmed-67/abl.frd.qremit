@@ -53,4 +53,6 @@ public interface AccountPayeeModelRepository extends JpaRepository<AccountPayeeM
     AccountPayeeModel findByIdAndIsDownloaded(int id, int isDownloaded);
     @Query("SELECT n FROM AccountPayeeModel n WHERE n.exchangeCode = :exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate")
     List<AccountPayeeModel> findAccountPayeeModelByExchangeCodeAndUploadDateTime(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT sum(amount) as amount, count(n) as cnt FROM AccountPayeeModel n where  n.downloadDateTime BETWEEN :startDate AND :endDate and n.isProcessed=:isProcessed")
+    List<Object[]> getDailyProcessedDataByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("isProcessed") int isProcessed);
 }

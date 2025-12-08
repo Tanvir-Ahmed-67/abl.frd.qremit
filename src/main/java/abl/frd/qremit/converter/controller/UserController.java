@@ -22,6 +22,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.persistence.EntityManager;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -90,10 +92,10 @@ public class UserController {
         return "layouts/dashboard";
     }
     @RequestMapping("/logout")
-    public String logoutSuccessPage(){
-        return "auth-login";
+    public String logoutSuccessPage(HttpServletRequest request, HttpServletResponse response) throws ServletException{
+        request.logout(); // Servlet logout
+        return "redirect:/login";
     }
-
     @GetMapping(value ="/getAllUsers", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getAllUsers(Model model, @RequestParam(defaultValue = "") String activeStatus){
@@ -646,7 +648,7 @@ public class UserController {
         user.setPasswordChangeRequired(true);
         user.setRoles(roleSet);
         user.setStartTime("10:00:00");
-        user.setEndTime("16:00:00");
+        user.setEndTime("18:00:00");
         myUserDetailsService.insertUser(user);
         ra.addFlashAttribute("message","New User has been created successfully");
         return "redirect:/" + redirectUrl;
@@ -824,7 +826,7 @@ public class UserController {
             }
         }
         if(exchangeHouseModelList.isEmpty())    return ResponseEntity.ok(resp);
-        String[] specialExCodes = {"111111", "222222", "333333", "444444"};
+        String[] specialExCodes = {"111111", "222222", "333333", "444444","555555","666666"};
         for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
             Map<String, Object> data = new HashMap<>();
             if(exchangeHouseModel.getActiveStatus() == 0)   continue;

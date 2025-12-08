@@ -13,3 +13,6 @@ type 1 - Online
 type 2 - Account Payee
 type 3 - BEFTN
 type 4 - COC
+type 5 - Spot Cash
+type 6 - NPSB
+type 7 - MFS

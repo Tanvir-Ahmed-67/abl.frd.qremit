@@ -68,8 +68,10 @@ public class InstantCashModelService {
                     instantCashModel.setFileInfoModel(fileInfoModel);
                     instantCashModel.setUserModel(user);
                 }
+                Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+                if(instantCashData.containsKey("apiGovtIncentiveMap")) apiGovtIncentiveMap = (Map<String, Double>) instantCashData.get("apiGovtIncentiveMap");
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(instantCashModels, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(instantCashModels, fileInfoModel, user, currentDateTime, type, apiGovtIncentiveMap);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(instantCashModels.size()));
                 fileInfoModel.setIsSettlement(type); 
@@ -108,12 +110,13 @@ public class InstantCashModelService {
             Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
+            List<Map<String, Object>> countryList = customQueryService.getCountryList();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
                 int length = csvRecord.size();
                 if(i == 1){
-                    Map<String, Object> apiCheckResp = checkInstantCashApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode);
+                    Map<String, Object> apiCheckResp = checkInstantCashApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode, csvRecord.get(8).trim());
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
@@ -122,7 +125,16 @@ public class InstantCashModelService {
                 }
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = (type == 1) ? csvRecord.get(6).trim() : csvRecord.get(3).trim();
-                Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode, bankCode, transactionNo, amount);
+                String remCountry = (type == 1) ? csvRecord.get(4):csvRecord.get(12);
+                String sourceCountry =  (!remCountry.isEmpty()) ? customQueryService.parseCountryCode(countryList, remCountry.trim(), exchangeCode): "";
+                Map<String, Object> data = getCsvData(type, csvRecord, exchangeCode, bankCode, transactionNo, amount, sourceCountry);
+                if(type == 1){
+                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(11).toLowerCase());
+                    if(!errorMessage.isEmpty()){
+                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }
+                }
                 data.put("nrtaCode", nrtaCode);
                 fileExchangeCode = csvRecord.get(0).trim();
                 dataList.add(data);
@@ -132,6 +144,7 @@ public class InstantCashModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, InstantCashModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                resp.put("apiGovtIncentiveMap", (Map<String, Double>) modelResp.get("apiGovtIncentiveMap"));
                 instantCashDataModelList = (List<InstantCashModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -161,7 +174,7 @@ public class InstantCashModelService {
         return resp;
     }
     
-    public Map<String, Object> getCsvData(int type, CSVRecord csvRecord, String exchangeCode, String bankCode, String transactionNo, String amount){
+    public Map<String, Object> getCsvData(int type, CSVRecord csvRecord, String exchangeCode, String bankCode, String transactionNo, String amount, String sourceCountry){
         String bankName = (type == 1) ? "Agrani Bank": csvRecord.get(9).trim();
         String branchName = (type == 1) ? "Principal": csvRecord.get(10).trim();
         String branchCode = (type == 1) ? "4006": CommonService.fixRoutingNo(csvRecord.get(11).trim());
@@ -175,6 +188,7 @@ public class InstantCashModelService {
         LocalDate date = CommonService.convertStringToLocalDate(enteredDate,format);
 
         Map<String, Object> data = new HashMap<>();
+        if(type == 1)   data.put("govtIncentive", csvRecord.get(12).trim());
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", currrency);
@@ -188,17 +202,18 @@ public class InstantCashModelService {
         data.put("bankCode", bankCode);
         data.put("branchName", branchName);
         data.put("branchCode", branchCode);
+        data.put("sourceCountry", sourceCountry);
         String[] fields = {"remitterMobile","beneficiaryMobile","draweeBranchName","draweeBranchCode","sourceOfIncome","processFlag","processedBy","processedDate"};
         for(String field: fields)   data.put(field, "");
         return data;
     }
 
-    public Map<String, Object> checkInstantCashApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode){
+    public Map<String, Object> checkInstantCashApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode, String bank){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
         if(!firstColumn.equals(nrtaCode))   return CommonService.getResp(1, msg, null);
-        if(type == 1 && length != 11)    resp = CommonService.getResp(1, msg, null);
-        else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
+        if(type == 1 && !bank.toLowerCase().startsWith("agrani"))    resp = CommonService.getResp(1, msg, null);
+        if(type == 0 && !bank.isEmpty()) resp = CommonService.getResp(1, msg, null);
         return resp;
     }
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
   <title>Agrani RMS</title>
 </head>
-<body>
+<body th:fragment="adminContent">
 <div class="main-content container-fluid" th:fragment="adminContent">
   <div class="page-title">
     <h3>Admin Dashboard</h3>
@@ -23,7 +23,7 @@
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round download_online" th:name="online" th:attr="onclick=|downloadOnline()|">Download Online</button>
+              <button type="submit" class="btn btn-success round downloadBtn" id="online" th:name="online">Download Online</button>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round" th:name="coc" th:attr="onclick=|downloadCoc()|">Download COC</button>
+              <button type="submit" class="btn btn-success round downloadBtn" id="coc" th:name="coc">Download COC</button>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round" th:name="accountpayee" th:attr="onclick=|downloadAccountPayee()|">Download A/C Payee</button>
+              <button type="submit" class="btn btn-success round downloadBtn" id="accountpayee" th:name="accountpayee" >Download A/C Payee</button>
             </div>
           </div>
         </div>
@@ -77,13 +77,96 @@
               </div>
             </div>
             <div class="buttons text-center">
-              <button type="submit" class="btn btn-success round" th:name="beftn" th:attr="onclick=|downloadBeftnMain()|">Main</button>
-              <button type="submit" class="btn btn-success round" th:name="beftn_incentive" th:attr="onclick=|downloadBeftnIncentive()|">Incentive</button>
+              <button type="submit" class="btn btn-success round downloadBtn" id="beftn" th:name="beftn">Main</button>
+              <button type="submit" class="btn btn-success round downloadBtn" id="beftn_incentive" th:name="beftn_incentive">Incentive</button>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="row mb-2">
+    <div class="col-12 col-md-3">
+      <div class="card bg-primary text-center">
+        <div class="card-body p-0">
+          <div class="px-3 py-3">
+            <h5 class="box-title">Online</h5>
+          </div>
+          <div class="d-flex flex-column">
+            <div class="px-3 d-flex justify-content-between mb-2">
+              <div class="box-right d-flex align-items-center">
+                <div class="" id="onlineProcessedCount"></div>
+              </div>
+              <div class="box-right d-flex align-items-center">
+                <div class="" id="onlineProcessedAmount"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <div class="card bg-danger text-center">
+        <div class="card-body p-0">
+          <div class="px-3 py-3">
+            <h5 class="box-title">COC</h5>
+          </div>
+          <div class="d-flex flex-column">
+            <div class="px-3 d-flex justify-content-between mb-2">
+              <div class="box-right d-flex align-items-center">
+                <div class="" id="cocProcessedCount"></div>
+              </div>
+              <div class="box-right d-flex align-items-center">
+                <div class="" id="cocProcessedAmount"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <div class="card bg-light text-center">
+        <div class="card-body p-0">
+          <div class="px-3 py-3">
+            <h5 class="box-title">A/C Payee</h5>
+          </div>
+          <div class="d-flex flex-column">
+            <div class="px-3 d-flex justify-content-between mb-2">
+              <div class="box-right d-flex align-items-center">
+                <div class="" id="accountPayeeProcessedCount"></div>
+              </div>
+              <div class="box-right d-flex align-items-center">
+                <div class="" id="accountPayeeProcessedAmount"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <div class="card bg-warning text-center">
+        <div class="card-body p-0">
+          <div class="px-3 py-3">
+            <h5 class="box-title">BEFTN</h5>
+          </div>
+          <div class="d-flex flex-column">
+            <div class="px-3 d-flex justify-content-between mb-2">
+              <div class="box-right d-flex align-items-center">
+                <div class="" id="beftnMainProcessedCount"></div>
+              </div>
+              <div class="box-right d-flex align-items-center">
+                <div class="" id="beftnMainProcessedAmount"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
   <!--
   <div class="row mb-4">
@@ -287,5 +370,16 @@
   </section>
   <div class="lmodal"></div>
 </div>
+  <script type="text/javascript">
+    var url = "/js/admin_dashboard.js";
+    
+    document.addEventListener('DOMContentLoaded', function(){
+        var id = document.getElementById(id);
+        var scriptElement = document.createElement('script');
+        scriptElement.type = 'text/javascript';
+        scriptElement.src = url;
+        document.querySelector('footer').appendChild(scriptElement);
+    });
+  </script
 </body>
 </html>

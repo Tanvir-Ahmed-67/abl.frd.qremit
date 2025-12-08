@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 12, 2025 at 08:06 AM
--- Server version: 8.0.42-0ubuntu0.24.04.1
+-- Generation Time: Nov 26, 2025 at 05:39 AM
+-- Server version: 8.0.44-0ubuntu0.24.04.1
 -- PHP Version: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -49,7 +49,7 @@ CREATE TABLE `ex_house_list` (
 
 INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `country_code`, `country_name`, `base_table_name`, `class_name`, `repository_name`, `is_settlement`, `active_status`, `has_settlement_daily`) VALUES
 (1, '7010231', 'Al Muzaini Exchange Company Kuwait', 'Al Muzaini', '7038', '414', 'KUWAIT', 'muzaini', 'MuzainiModel', 'muzainiModelRepository', 0, 1, 0),
-(2, '7010209', 'Bahrain Exchange Co Kuwait', 'BEC', '7012', '414', 'KUWAIT', 'bec', 'BecModel', 'becModelRepository', 0, 1, 0),
+(2, '7010209', 'Bahrain Exchange Co Kuwait', 'BEC', '7012', '414', 'KUWAIT', '', 'BecModel', 'becModelRepository', 0, 1, 0),
 (3, '7010234', 'National Finance and Exch. Co.', 'NAFEX', '7046', '48', 'BAHRAIN', 'nafex', 'NafexEhMstModel', 'nafexModelRepository', 0, 1, 0),
 (4, '7010226', 'Agrani Exchange House Singapore', 'Singapore', '7025', '702', 'SINGAPORE', 'singapore', 'AgexSingaporeModel', 'agexSingaporeModelRepository', 1, 1, 1),
 (5, '7010299', 'IFast Global Bank LTD (Ezremit)', 'EZ Remit', '7102', '48', 'BAHRAIN', 'ezremit', 'EzRemitModel', 'ezRemitModelRepository', 1, 1, 0),
@@ -57,9 +57,9 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (7, '111111', 'API BEFTN', 'API BEFTN', '1000', '', '', 'api_beftn', 'ApiBeftnModel', 'apiBeftnModelRepository', 0, 1, 0),
 (8, '222222', 'API T24', 'API T24', '2000', '', '', 'api_t24', 'ApiT24Model', 'apiT24ModelRepository', 1, 1, 1),
 (9, '333333', 'COC Paid', 'COC Paid', '3000', '', '', 'coc_paid', 'CocPaidModel', 'cocPaidModelRepository', 1, 1, 1),
-(112, '7010291', 'Aftab Currency Exchange Ltd.UK', '', '7100', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(113, '7010221', 'Al Ahalia Money Ex. ', '', '7047', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(114, '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', '784', 'UNITED ARAB EMIRATES (UAE)', 'alansari', 'AlansariModel', 'alansariModelRepository', 0, 1, 0),
+(112, '7010291', 'ACE Money Transfer Ltd. (Aftab Currency)', '', '7100', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(113, '7010221', 'Al Ahalia Money Ex. ', 'Al Ahalia', '7047', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(114, '7010239', 'Al Ansari Ex. Co, Abu Dhabi, UAE', 'Al Ansari Ex', '7053', '784', 'UNITED ARAB EMIRATES (UAE)', '', 'AlansariModel', 'alansariModelRepository', 0, 1, 0),
 (115, '7010246', 'Al Jadeed Exchange. Oman', 'Al Jadeed', '7058', '784', 'UNITED ARAB EMIRATES (UAE)', 'alzadeed', 'AlzadeedModel', 'alzadeedModelRepository', 0, 1, 0),
 (116, '7010232', 'Al Mulla Int. Ex. Co. Kuwait ', '', '7040', '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (117, '7010240', 'Al Rostamani Intl Ex. Co. Abu Dhabi, UAE', 'Al Rostamani', '7052', '784', 'UNITED ARAB EMIRATES (UAE)', 'alrostamani', 'AlRostamaniModel', 'alRostamaniModelRepository', 0, 1, 0),
@@ -88,14 +88,14 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (140, '7010287', 'Gulf Overseas', '', '7069', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (141, '7010284', 'Hamdan Exchange', '', '7099', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (142, '7010223', 'Index Exchange Co. LLC', 'Index Exchange', '7024', '784', 'UNITED ARAB EMIRATES (UAE)', 'index', 'IndexModel', 'indexModelRepository', 0, 1, 0),
-(143, '7010260', 'Instant Cash', 'Instant Cash', '7080', '784', 'UNITED ARAB EMIRATES (UAE)', 'instantcash', 'InstantCashModel', 'instantCashModelRepository', 0, 1, 0),
+(143, '7010260', 'Instant Cash', 'Instant Cash', '7080', '784', 'UNITED ARAB EMIRATES (UAE)', 'instantcash', 'InstantCashModel', 'instantCashModelRepository', 1, 1, 0),
 (144, '7010298', 'Japan Remit Finance, Japan', '', '7108', '392', 'JAPAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (145, '7010255', 'Joyalukkas Ex Dubai,UAE', '', '7072', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (146, '7010258', 'Joyalukkas Ex Oman', '', '7078', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (147, '7010264', 'Joyalukkas Ex WLL,KUWAIT', '', '7085', '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (148, '7010271', 'K & H Remittance Services Brunai', 'K & H Brunai', '7092', '96', 'BRUNEI DARUSSALAM', 'kandh', 'KandHModel', 'kandHModelRepository', 0, 1, 0),
 (149, '7010207', 'Kuwait Bahrain Intl Ex. Kuwait', '', '7006', '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(150, '7010242', 'Lari Exchange \n Abu Dhabi, UAE', 'Lari Exchange', '7054', '784', 'UNITED ARAB EMIRATES (UAE)', 'lari', 'LariModel', 'lariModelRepository', 0, 1, 0),
+(150, '7010242', 'Lari Exchange Abu Dhabi, UAE', 'Lari Exchange', '7054', '784', 'UNITED ARAB EMIRATES (UAE)', 'lari', 'LariModel', 'lariModelRepository', 0, 1, 0),
 (151, '7010237', 'Lulu Exchange Co', '', '7050', '512', 'OMAN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (152, '7010295', 'MaxMoney', '', '7094', '458', 'MALAYSIA', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (153, '7010265', 'Modern Ex. Co., Bahrain', '', '7083', '48', 'BAHRAIN', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
@@ -109,7 +109,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (161, '7010272', 'NEC Money Transfer, UK', 'NEC UK', '7087', '826', 'UNITED KINGDOM (UK)', 'necuk', 'NecUkModel', 'necUkModelRepository', 0, 1, 0),
 (162, '7010208', 'Oman Exchange Co, Kuwait', 'Oman Exchange Kuwait', '7008', '414', 'KUWAIT', 'omankuwait', 'OmanKuwaitModel', 'omanKuwaitModelRepository', 0, 1, 0),
 (163, '7010215', 'Oman Intl Exchange Ltd. Oman', 'Oman Exchange Oman', '7021', '512', 'OMAN', 'oman', 'OmanModel', 'omanModelRepository', 0, 1, 0),
-(164, '7010286', 'Placid NK orp', '', '7065', '9997', 'OTHERS', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(164, '7010286', 'Placid NK orp', '', '7065', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (165, '7010238', 'Prabhu Group Inc. U S A', 'Prabhu USA', '7051', '840', 'UNITED STATES OF AMERICA (USA)', 'prabhu', 'PrabhuModel', 'prabhuModelRepository', 0, 1, 0),
 (166, '7010296', 'SG Quick Pay, PTE LTD, SNG', '', '7107', '702', 'Singapore', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (167, '7010256', 'SIGUE Global Sercice ', 'Sigue Global', '7074', '826', 'UNITED KINGDOM (UK)', 'sigue', 'SigueModel', 'sigueModelRepository', 0, 1, 0),
@@ -127,14 +127,17 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (179, '7010303', 'Zamzam Money Exchange', '', '7111', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (180, '7010219', 'Zenj Exchange Co. Bahrain', '', '7003', '48', 'BAHRAIN', '', '', '', 0, 0, 0),
 (183, '7010289', 'FSIE Italy', 'FSIE', '7093', '380', 'ITALY', 'fsie', 'FsieModel', 'fsieModelRepository', 0, 1, 0),
-(184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'Agrani Ex. Malaysia', '7035', '458', 'MALAYSIA', 'agranimalaysia', 'AgraniMalaysiaModel', 'agraniMalaysiaModelRepository', 0, 1, 0),
+(184, '7010228', 'Agrani Remittance House Sdn. Bhd. Malaysia', 'ARH Malaysia', '7035', '458', 'MALAYSIA', 'agranimalaysia', 'ArhMalaysiaModel', 'arhMalaysiaModelRepository', 1, 1, 1),
 (185, '7010304', 'Progoti Exchange Co.', 'Progoti Ex.', '7113', '784', 'UNITED ARAB EMIRATES (UAE)', 'progoti', 'ProgotiModel', 'progotiModelRepository', 0, 1, 0),
 (187, '7010297', 'NBL Money Transfer, Maldives', 'NBL Maldives', '7105', '462', 'Maldives', 'nblmaldives', 'NblMaldivesModel', 'nblMaldivesModelRepository', 0, 1, 0),
 (188, '7010300', 'Merchantrade Asia Sdn Bhd', 'Merchantrade', '7049', '458', 'MALAYSIA', 'merchantrade', 'MerchantradeModel', 'merchantradeModelRepository', 0, 1, 0),
 (189, '7010294', 'Shah Global', 'Shah Global', '7104', '826', 'UNITED KINGDOM (UK)', 'shah_global', 'ShahGlobalModel', 'shahGlobalModelRepository', 0, 1, 0),
 (190, '444444', 'SWIFT Message Extractions', 'SWIFT', '4000', '', '', 'swift', 'SwiftModel', 'swiftModelRepository', 0, 1, 0),
-(191, '7010235', 'Xpress Money', '', '7112', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(192, '7010305', 'Taptap Send UK Limited, UK', '', '7115', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0);
+(191, '7010235', 'Xpress Money', '', '', '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 0, 0),
+(192, '7010305', 'Taptap Send UK Limited, UK', '', '7115', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(193, '555555', 'NPSB', 'NPSB', '1000', '', '', 'npsb_mfs', 'NpsbMfsModel', 'npsbMfsRepository', 1, 1, 0),
+(194, '666666', 'BEFTN Return', 'Beftn Return', '1000', '', '', 'beftn_return', '', '', 0, 1, 0),
+(195, '7010306', 'MASTERCARD TRANSACTION SERVICES', '', '7044', '840', 'UNITED STATES OF AMERICA (USA)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0);
 
 --
 -- Indexes for dumped tables
@@ -158,7 +161,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=196;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

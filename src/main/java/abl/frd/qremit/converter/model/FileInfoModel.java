@@ -40,6 +40,12 @@ public class FileInfoModel {
     private String unprocessedCount;
     @Column(name = "error_count", length = 10)
     private int errorCount = 0;
+    @Column(name = "npsb_count", length = 10)
+    private String npsbCount = "0";
+    @Column(name = "mfs_count", length = 10)
+    private String mfsCount = "0";
+    @Column(name = "spot_cash_count", length = 10)
+    private String spotCashCount = "0";
     @Column(name = "total_count", length = 10)
     private String totalCount = "0";
     @Column(name = "is_processed", columnDefinition = "TINYINT(1) DEFAULT 0")
@@ -225,6 +231,9 @@ public class FileInfoModel {
     @OneToMany(cascade= { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
     @JsonIgnore
     private List<OnlineModel> onlineModelList;
+    @OneToMany(cascade= { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
+    @JsonIgnore
+    private List<NpsbMfsModel> npsbMfsModelList;
 
     @OneToMany(cascade={ CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
@@ -826,5 +835,37 @@ public class FileInfoModel {
 
     public void setCocPaidModelList(List<CocPaidModel> cocPaidModelList) {
         this.cocPaidModelList = cocPaidModelList;
+    }
+
+    public String getNpsbCount() {
+        return this.npsbCount;
+    }
+
+    public void setNpsbCount(String npsbCount) {
+        this.npsbCount = npsbCount;
+    }
+
+    public String getMfsCount() {
+        return this.mfsCount;
+    }
+
+    public void setMfsCount(String mfsCount) {
+        this.mfsCount = mfsCount;
+    }
+
+    public String getSpotCashCount() {
+        return this.spotCashCount;
+    }
+
+    public void setSpotCashCount(String spotCashCount) {
+        this.spotCashCount = spotCashCount;
+    }
+
+    public List<NpsbMfsModel> getNpsbMfsModelList() {
+        return this.npsbMfsModelList;
+    }
+
+    public void setNpsbMfsModelList(List<NpsbMfsModel> npsbMfsModelList) {
+        this.npsbMfsModelList = npsbMfsModelList;
     }
 }

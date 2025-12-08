@@ -1,11 +1,22 @@
 package abl.frd.qremit.converter.service;
 import abl.frd.qremit.converter.helper.BeftnModelServiceHelper;
 import abl.frd.qremit.converter.model.BeftnModel;
+import abl.frd.qremit.converter.model.BeftnReturnModel;
+import abl.frd.qremit.converter.model.ExchangeHouseModel;
+import abl.frd.qremit.converter.model.FileInfoModel;
+import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
+import abl.frd.qremit.converter.repository.BeftnReturnRepository;
 import abl.frd.qremit.converter.repository.CustomQueryRepository;
+import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
+import abl.frd.qremit.converter.repository.FileInfoModelRepository;
+import abl.frd.qremit.converter.repository.UserModelRepository;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.io.ByteArrayInputStream;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import javax.transaction.Transactional;
@@ -18,6 +29,14 @@ public class BeftnModelService {
     MyUserDetailsService myUserDetailsService;
     @Autowired
     CustomQueryRepository customQueryRepository;
+    @Autowired
+    BeftnReturnRepository beftnReturnRepository;
+    @Autowired
+    UserModelRepository userModelRepository;
+    @Autowired
+    FileInfoModelRepository fileInfoModelRepository;
+    @Autowired
+    ExchangeHouseModelRepository exchangeHouseModelRepository;
     public ByteArrayInputStream load(String fileId, String fileType) {
         List<BeftnModel> beftnModels = beftnModelRepository.findAllBeftnModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
         ByteArrayInputStream in = BeftnModelServiceHelper.BeftnMainModelsToExcel(beftnModels);
@@ -192,4 +211,183 @@ public class BeftnModelService {
         return beftnModelRepository.findBeftnModelByExchangeCodeAndUploadDateTime(exchangeCode, startDate, endDate);
     }
 
+    public List<Object[]> getDailyProcessedMainDataByDate(LocalDateTime startDate, LocalDateTime endDate, int isProcessed){
+        return beftnModelRepository.getDailyProcessedMainDataByDate(startDate, endDate, isProcessed);
+    }
+
+    public List<Object[]> getDailyProcessedIncentiveDataByDate(LocalDateTime startDate, LocalDateTime endDate, int isProcessed){
+        return beftnModelRepository.getDailyProcessedIncentiveDataByDate(startDate, endDate, isProcessed);
+    }
+    @Transactional
+    public Map<String, Object> uploadBeftnReturn(MultipartFile file, int userId, String exCode){
+        Map<String, Object> resp = new HashMap<>();
+        LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
+        FileInfoModel fileInfoModel = new FileInfoModel();
+        fileInfoModel.setExchangeCode(exCode);
+        User user = userModelRepository.findByUserId(userId);
+        fileInfoModel.setUserModel(user);
+        fileInfoModel.setFileName(file.getOriginalFilename());
+        fileInfoModel.setUploadDateTime(currentDateTime);
+        fileInfoModelRepository.save(fileInfoModel);
+        int fileInfoModelId = fileInfoModel.getId();        
+        
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+            CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withIgnoreHeaderCase().withTrim())) {
+            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            List<String> txnLists = new ArrayList<>();
+            for(CSVRecord csvRecord: csvRecords){
+                String[] refStr = CommonService.parseString(csvRecord.get(37),"-");
+                String txnNo = refStr[0].trim();
+                String remType = refStr[1].trim();
+                if(!remType.toLowerCase().contains("frd") && !remType.toLowerCase().contains("frcd"))  continue;
+                Map<String, Object> data = parseBeftnReturnData(csvRecord, txnNo, remType);
+                txnLists.add(txnNo);
+                dataList.add(data);
+            }
+            if(dataList.isEmpty()){
+                fileInfoModelRepository.deleteById(fileInfoModelId);
+                return CommonService.getResp(1, "No data found for processing", null);
+            }
+            List<BeftnModel> beftnModelList = beftnModelRepository.findByTxnModifiedIn(txnLists);
+            Map<String, BeftnModel> beftnMap = new HashMap<>();
+            for (BeftnModel beftn : beftnModelList) {
+                beftnMap.put(beftn.getTxnModified(), beftn);
+            }
+            List<BeftnReturnModel> beftnReturnModelList = new ArrayList<>();
+            int i= 0;
+            for(Map<String, Object> data: dataList){
+                String txnNo = data.get("txnModified").toString();
+                String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+                Double amount = CommonService.convertStringToDouble(data.get("amount").toString());
+                BeftnModel matched = beftnMap.get(txnNo);
+                int status = 0;
+                String exchangeCode = "";
+                String transactionNo = "";
+                if(matched != null){
+                    if(matched.getBeneficiaryAccount().equals(beneficiaryAccount) && (CommonService.isEqual(matched.getAmount(), amount) 
+                        || CommonService.isEqual(matched.getIncentive(), amount))){
+                        exchangeCode = matched.getExchangeCode();        
+                        status = 1;
+                        transactionNo = matched.getTransactionNo();
+                    }
+                }
+                data.put("exchangeCode", exchangeCode);
+                data.put("transactionNo", transactionNo);
+                data.put("status", status);
+                data.put("fileInfoModelId", fileInfoModelId);
+                data.put("userId", user.getId());
+                BeftnReturnModel beftnReturnModel = new BeftnReturnModel();
+                beftnReturnModel = CommonService.createDataModel(beftnReturnModel, data);
+                beftnReturnModelList.add(beftnReturnModel);
+                i++;
+            } 
+            try{
+                fileInfoModel.setTotalCount(CommonService.convertIntToString(i));
+                beftnReturnRepository.saveAll(beftnReturnModelList);
+                resp = CommonService.getResp(0,"Data Uploaded Successfully", null);
+            }catch(Exception e){
+                e.printStackTrace();
+                resp =  CommonService.getResp(1, "Error Inserting data", null);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            resp =  CommonService.getResp(1, "fail to store csv data: " + e.getMessage(), null);
+        }
+        if(resp.containsKey("err") && (Integer) resp.get("err") == 1)   fileInfoModelRepository.deleteById(fileInfoModelId);
+        return resp;
+    }
+
+    public Map<String, Object> parseBeftnReturnData(CSVRecord csvRecord,String txnNo, String remType){
+        Map<String, Object> data = new HashMap<>();
+        data.put("txnModified", txnNo);
+        data.put("remType", remType);
+        String[] returnStr = CommonService.parseString(csvRecord.get(32),"-");
+        String[] routing = CommonService.parseString(csvRecord.get(34),"-");
+        String[] beneficiary = CommonService.parseString(csvRecord.get(36),"-");
+        data.put("beneficiaryAccount", beneficiary[0].trim());
+        data.put("beneficiaryName", beneficiary[1].trim());
+        data.put("routingNo", routing[0].trim());
+        data.put("returnCode", returnStr[0].trim());
+        data.put("processedDate", CommonService.parseStringByDelimeter(csvRecord.get(8),":"));
+        data.put("returnDate", CommonService.parseStringByDelimeter(csvRecord.get(42),":"));
+        data.put("amount", CommonService.parseStringByDelimeter(csvRecord.get(31), ","));
+        return data;
+    }
+
+    public Map<String, Object> getExchangeWiseBeftnReturnReport(Map<String, String> formData, int userId){
+        Map<String, Object> resp = new HashMap<>();
+        LocalDate starDate = CommonService.convertStringToLocalDate(formData.get("startDate"),"yyyy-MM-dd");
+        LocalDate enDateTime = CommonService.convertStringToLocalDate(formData.get("endDate"), "yyyy-MM-dd");
+        String exchangeCode = formData.get("exchangeCode");
+        List<BeftnReturnModel> beftnReturnModelList = beftnReturnRepository.getBeftnReturnModelByExchangeCodeAndReturnDate(exchangeCode, starDate, enDateTime);
+        resp = proceessDataFromBeftnReturnModelList(beftnReturnModelList);
+        return resp;
+    }
+
+    public Map<String, Object> getBeftnReturnReportByFileInfoModelId(int fileInfoModelId){
+        List<BeftnReturnModel> beftnReturnModelList = beftnReturnRepository.getBeftnReturnModelByFileInfoModelId(fileInfoModelId);
+        Map<String, Object> resp = proceessDataFromBeftnReturnModelList(beftnReturnModelList);
+        return resp;
+    }
+
+    public Map<String, Object> proceessDataFromBeftnReturnModelList(List<BeftnReturnModel> beftnReturnModelList){
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if(beftnReturnModelList.isEmpty())  return CommonService.getResp(1, "No data found", dataList);
+        Map<String, Object> reasonResp = customQueryRepository.getBeftnReturnReason("");
+        List<Map<String, Object>> reasonList = (List<Map<String, Object>>) reasonResp.get("data");
+        int i = 1;
+        for(BeftnReturnModel beftnReturnModel: beftnReturnModelList){
+            Map<String, Object> data = new HashMap<>();
+            String returnCode = beftnReturnModel.getReturnCode();
+            String returnReason = "";
+            for (Map<String, Object> reason : reasonList){
+                String reasonCode = reason.get("return_code").toString();
+                if(returnCode.equals(reasonCode)){
+                    returnReason = reason.get("return_name").toString();
+                    break;
+                }
+            }
+            data.put("sl", i++);
+            data.put("transactionNo", beftnReturnModel.getTransactionNo());
+            data.put("amount", beftnReturnModel.getAmount());
+            data.put("beneficiaryAccount", beftnReturnModel.getBeneficiaryAccount());
+            data.put("beneficiaryName", beftnReturnModel.getBeneficiaryName());
+            data.put("exchangeCode", beftnReturnModel.getExchangeCode());
+            data.put("routingNo", beftnReturnModel.getRoutingNo());
+            data.put("processedDate", beftnReturnModel.getProcessedDate());
+            data.put("remType", beftnReturnModel.getRemType());
+            data.put("returnCode", returnCode + " - " + returnReason);
+            data.put("returnDate", beftnReturnModel.getReturnDate());
+            dataList.add(data);
+        }
+        resp.put("data", dataList);
+        return resp;
+    }
+
+    public List<Map<String, Object>> processBeftnReturnSearchData(List<BeftnReturnModel> beftnReturnModelList){
+        int i = 1;
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        for(BeftnReturnModel beftnReturnModel: beftnReturnModelList){
+            Map<String, Object> data = new HashMap<>();
+            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(beftnReturnModel.getExchangeCode());
+            String exchangeDetails = beftnReturnModel.getExchangeCode() + "<br>" + exchangeHouseModel.getExchangeName();
+            Map<String, Object> reasonResp = customQueryRepository.getBeftnReturnReason(beftnReturnModel.getReturnCode());
+            List<Map<String, Object>> reasonList = (List<Map<String, Object>>)  reasonResp.get("data");
+            String returnReason = (!reasonList.isEmpty())   ?   reasonList.get(0).get("return_name").toString(): "";
+            data.put("sl", i++);
+            data.put("transactionNo", beftnReturnModel.getTransactionNo());
+            data.put("amount", beftnReturnModel.getAmount());
+            data.put("beneficiaryAccount", beftnReturnModel.getBeneficiaryAccount());
+            data.put("beneficiaryName", beftnReturnModel.getBeneficiaryName());
+            data.put("routingNo", beftnReturnModel.getRoutingNo());
+            data.put("exchangeCode", exchangeDetails);
+            data.put("processedDate", beftnReturnModel.getProcessedDate());
+            data.put("returnDate", beftnReturnModel.getReturnDate());
+            data.put("returnCode", beftnReturnModel.getReturnCode() + "-" + returnReason);
+            dataList.add(data);
+        }
+        return dataList;
+    }
 }

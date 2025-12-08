@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="converted_data_coc",
+@Table(name="converted_data_coc", uniqueConstraints = { @UniqueConstraint(columnNames = { "transaction_no", "amount", "exchange_code"})},
     indexes = { @Index(name = "idx_report_date", columnList = "report_date"), @Index(name = "idx_is_processed", columnList = "is_processed"),
-        @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),
+        @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),@Index(name = "idx_download_date_time", columnList = "download_date_time"),
         @Index(name = "idx_is_downloaded", columnList = "is_downloaded"), @Index(name = "idx_temp_status", columnList = "temp_status"), 
         @Index(name = "idx_beneficiary_account_no", columnList = "beneficiary_account_no"), @Index(name = "idx_govt_incentive", columnList = "govt_incentive"),@Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"), @Index(name = "idx_incentive", columnList = "incentive")
     }
@@ -19,7 +19,7 @@ public class CocModel {
     @Column(name = "id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    @Column(name = "transaction_no")
+    @Column(name = "transaction_no",length=30, nullable = false)
     private String transactionNo;
     @Column(name = "credit_mark")
     private String creditMark;
@@ -69,6 +69,22 @@ public class CocModel {
     private int isVoucherGenerated = 0;
     @Column(name = "report_date", columnDefinition = "DATETIME")
     private LocalDateTime reportDate;
+    @Column(name = "source_country", length = 64)
+    private String sourceCountry;
+    @Column(name = "source_foreign_currency", length = 10)
+    private String sourceForeignCurrency;
+    @Column(name = "conversion_rate", length = 10)
+    private String conversionRate;
+    @Column(name = "remitter_gender", length=10)
+    private String remitterGender;
+    @Column(name = "beneficiary_gender", length=10)
+    private String beneficiaryGender;
+    @Column(name = "beneficiary_district", length = 64)
+    private String beneficiaryDistrict;
+    @Column(name = "remitter_mobile_no", length=30)
+    private String remitterMobile;
+    @Column(name = "beneficiary_mobile_no", length=20)
+    private String beneficiaryMobile;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
@@ -310,6 +326,70 @@ public class CocModel {
 
     public void setIncentive(Double incentive) {
         this.incentive = incentive;
+    }
+
+    public String getSourceCountry() {
+        return this.sourceCountry;
+    }
+
+    public void setSourceCountry(String sourceCountry) {
+        this.sourceCountry = sourceCountry;
+    }
+
+    public String getSourceForeignCurrency() {
+        return this.sourceForeignCurrency;
+    }
+
+    public void setSourceForeignCurrency(String sourceForeignCurrency) {
+        this.sourceForeignCurrency = sourceForeignCurrency;
+    }
+
+    public String getConversionRate() {
+        return this.conversionRate;
+    }
+
+    public void setConversionRate(String conversionRate) {
+        this.conversionRate = conversionRate;
+    }
+
+    public String getRemitterGender() {
+        return this.remitterGender;
+    }
+
+    public void setRemitterGender(String remitterGender) {
+        this.remitterGender = remitterGender;
+    }
+
+    public String getBeneficiaryGender() {
+        return this.beneficiaryGender;
+    }
+
+    public void setBeneficiaryGender(String beneficiaryGender) {
+        this.beneficiaryGender = beneficiaryGender;
+    }
+
+    public String getBeneficiaryDistrict() {
+        return this.beneficiaryDistrict;
+    }
+
+    public void setBeneficiaryDistrict(String beneficiaryDistrict) {
+        this.beneficiaryDistrict = beneficiaryDistrict;
+    }
+
+    public String getRemitterMobile() {
+        return this.remitterMobile;
+    }
+
+    public void setRemitterMobile(String remitterMobile) {
+        this.remitterMobile = remitterMobile;
+    }
+
+    public String getBeneficiaryMobile() {
+        return this.beneficiaryMobile;
+    }
+
+    public void setBeneficiaryMobile(String beneficiaryMobile) {
+        this.beneficiaryMobile = beneficiaryMobile;
     }
 
     public CocModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double govtIncentive, Double agraniIncentive, Double incentive, String cocCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {

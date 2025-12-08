@@ -1,71 +1,3 @@
-$(document).ready(function(){
-  window.targetAchievementChart = null;
-    get_loading();
-    $.ajax({
-        type: "GET",
-        url: "/adminDashboard",
-        context: document.body,
-        success: function(count){
-            $("p.onlineCount").html(count[0]);    //in index.html add a div tag with class="show-part-view"
-            $("p.cocCount").html(count[1]);
-            $("p.accountPayeeCount").html(count[2]);
-            $("p.beftnMainCount").html(count[3])
-            $("p.beftnIncentiveCount").html(count[4]);
-        }
-    });
-
-
-
-});
-
-
-function get_cnt(url,tdiv){
-    $.ajax({
-        url: url,
-        type: "get",
-        timeout: "1000000",
-        dataType: "json"
-    }).done(function(resp){
-        $(tdiv).text(resp.count);
-        window.open(resp.url,"_");
-    }).fail(function(params){
-        alert("Error getting from server");
-    });
-}
-
-function downloadOnline() {
-    console.log("Button clicked");
-    var url = "/downloadonline";
-    get_cnt(url,"p.onlineCount");
-}
-/*
-$(document).off('click','.download_online');
-$(document).on('click','.download_online', function(e){
-    e.preventDefault();
-    console.log("Button clicked");
-    var url = "/downloadonline";
-    get_cnt(url,"p.onlineCount");
-});
-*/
-    
-function downloadCoc() {
-    var url = "/downloadcoc";
-    get_cnt(url,"p.cocCount");
-
-}
-function downloadAccountPayee() {
-    var url = "/downloadaccountpayee";
-    get_cnt(url,"p.accountPayeeCount");
-
-}
-function downloadBeftnMain() {
-    var url ="/downloadbeftnMain";
-    get_cnt(url,"p.beftnMainCount");
-}
-function  downloadBeftnIncentive(){
-    var url ="/downloadBeftnIncentive";
-    get_cnt(url,"p.beftnIncentiveCount");
-}
 function GenerateDetailsReport(format, date) {
     var url = '/downloadDetailsOfDailyStatement?type='+format + "&date=" + date;
     window.location.href = url;
@@ -123,5 +55,5 @@ function get_loading(){
       ajaxStart: function() { $body.addClass("loading");    },
       ajaxStop: function() { $body.removeClass("loading"); }    
     });
-  }
+}
 

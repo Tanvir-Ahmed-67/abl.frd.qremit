@@ -16,10 +16,7 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -61,6 +58,12 @@ public class ReportService {
     LogModelService logModelService;
     @Autowired
     DynamicOperationService dynamicOperationService;
+    @Autowired
+    NpsbMfsService npsbMfsService;
+    @Autowired
+    BeftnReturnRepository beftnReturnRepository;
+    @Autowired
+    CustomQueryService customQueryService;
 
     DateTimeFormatter yyMMddFormatter = DateTimeFormatter.ofPattern("yyMMdd");     // YYMMDD
     DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // YYYY/MM/DD
@@ -78,9 +81,10 @@ public class ReportService {
         }
     }
 
-    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
+    public byte[] generateDailyStatementInPdfFormat(List<ExchangeReportDTO> dataList, String date, String reportType) throws Exception {
         for(ExchangeReportDTO exchangeReportDTO: dataList){
             exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+            exchangeReportDTO.setReportType(reportType);
         }
         JasperReport jasperReport = loadJasperReport("dailyStatementSummary.jrxml");
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
@@ -97,7 +101,7 @@ public class ReportService {
         // Export to PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
-    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date) throws Exception {
+    public byte[] generateDailyVoucherInPdfFormat(List<ExchangeReportDTO> dataList, String date, String jrxmlFileName) throws Exception {
         LocalDate currentDate = LocalDate.now();
         // Collect all unique exchange codes from dataList
         Set<String> exchangeCodes = dataList.stream()
@@ -111,7 +115,7 @@ public class ReportService {
             dataList.get(i).setEnteredDate(currentDate);
         }
         // Load File And Compile It.
-        JasperReport jasperReport = loadJasperReport("dailyVoucher.jrxml");
+        JasperReport jasperReport = loadJasperReport(jrxmlFileName);
         // Convert data into a JasperReports data source
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataList);
         // Parameters map if needed
@@ -137,7 +141,20 @@ public class ReportService {
             reportDTO.setVoucherDate(LocalDate.parse(date));
         }
         // Sort by Exchange Code
-        report.sort(Comparator.comparing(ExchangeReportDTO::getExchangeCode));
+        report.sort(Comparator.comparing(ExchangeReportDTO::getNrtAccountNo));
+        return report;
+    }
+    public List<ExchangeReportDTO> getAllGroupedNpsbMfsDataByReportDate(String dateParam){
+        List<ExchangeReportDTO> report = new ArrayList<>();
+        LocalDate date = LocalDate.parse(dateParam);
+        report = reportModelRepository.getAllGroupedNpsbMfsDataByReportDate(date);
+        for(ExchangeReportDTO reportDTO:report){
+            reportDTO.setExchangeName(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getExchangeName());
+            reportDTO.setNrtAccountNo(exchangeHouseModelRepository.findByExchangeCode(reportDTO.getExchangeCode()).getNrtaCode());
+            reportDTO.setVoucherDate(LocalDate.parse(dateParam));
+        }
+        // Sort by Exchange Code
+        report.sort(Comparator.comparing(ExchangeReportDTO::getNrtAccountNo));
         return report;
     }
     public List<ExchangeReportDTO> generateDetailsOfDailyRemittances(String fromDate, String toDate) {
@@ -343,7 +360,10 @@ public class ReportService {
         List<ExchangeReportDTO> report = getGroupedReportByReportDate(date);
         return report;
     }
-
+    public List<ExchangeReportDTO> generateSummaryOfDailyNpsbStatement(String date) {
+        List<ExchangeReportDTO> report = getAllGroupedNpsbMfsDataByReportDate(date);
+        return report;
+    }
     // Utility method to check if a list is valid (not null, not empty, and size > 0)
     private boolean isListValid(List<?> list) {
         return list != null && !list.isEmpty() && list.size() > 0;
@@ -423,7 +443,6 @@ public class ReportService {
         }
         return mergedList;
     }
-
     public Map<String, Object> processReport(String currentDate){
         Map<String, Object> resp = new HashMap<>();
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.loadAllIsSettlementExchangeHouse(1);
@@ -432,52 +451,50 @@ public class ReportService {
         //check all settlement file uploaded
         int hasSettlementDailyCount = exchangeHouseModelService.calculateSumOfHasSettlementDaily(exchangeHouseModelList);
         for(Map<String, Object> settlement: settlementList){
-            int count = (int) settlement.get("count");
-            if(count >= 1)  totalCount++;
+            int count = ((int) settlement.get("count") > 0) ? 1:0;
+            int hasSettlementDaily = (int) settlement.get("hasSettlementDaily");
+            if(count >= 1){
+                if(hasSettlementDaily == 1) totalCount++;
+            }
         }
         if(totalCount < hasSettlementDailyCount)  return CommonService.getResp(1, "Please upload all settlement file", null);
         Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
+        LocalDateTime starDateTime = (LocalDateTime) dateTime.get("startDateTime");
+        LocalDateTime endDateTime = (LocalDateTime) dateTime.get("endDateTime");
         //parse data
         int count = 0;
         for(Map<String, Object> settlement: settlementList){
-            FileInfoModel fileInfoModel = (FileInfoModel) settlement.get("fileInfoModel");
-            if(fileInfoModel == null)   continue;   //for empty fileinfo no data will be generated
-            int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
-            //int beftnCount = CommonService.convertStringToInt(fileInfoModel.getBeftnCount());
-            //int accPayeeCount = CommonService.convertStringToInt(fileInfoModel.getAccountPayeeCount());
-            if(onlineCount >= 1){
-                List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                resp = setReportModelData(onlineModelList, "1");
-                count += resp.size();
-                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+            //System.out.println(settlement);
+            List<FileInfoModel> fileInfoModelList = (List<FileInfoModel>) settlement.get("fileInfoModelList");
+            if(fileInfoModelList.isEmpty()) continue;
+            for(FileInfoModel fileInfoModel: fileInfoModelList){
+                int onlineCount = CommonService.convertStringToInt(fileInfoModel.getOnlineCount());
+                if(onlineCount >= 1){
+                    List<OnlineModel> onlineModelList = onlineModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, starDateTime, endDateTime);
+                    resp = setReportModelData(onlineModelList, "1");
+                    count += resp.size();
+                    if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+                }
+                if(("333333").equals(fileInfoModel.getExchangeCode())){
+                    List<CocPaidModel> cocPaidModelList = cocPaidModelService.getProcessedDataByFileId(fileInfoModel.getId(), 0, starDateTime, endDateTime);
+                    resp = setReportModelData(cocPaidModelList, "4");
+                    count += resp.size();
+                    if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+                }
+                int npsbCount = CommonService.convertStringToInt(fileInfoModel.getNpsbCount());
+                int mfsCount = CommonService.convertStringToInt(fileInfoModel.getMfsCount());
+                if(npsbCount >=1 || mfsCount >=1){
+                    List<NpsbMfsModel> npsbMfsModelList = npsbMfsService.getProcessedDataByFileId(fileInfoModel.getId(), 1, 0, starDateTime, endDateTime);
+                    resp = setReportModelData(npsbMfsModelList, "6");
+                    count += resp.size();
+                    if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
+                }
             }
-            /*
-            if(accPayeeCount >= 1){
-                List<AccountPayeeModel> accountPayeeModelList = accountPayeeModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                resp = setReportModelData(accountPayeeModelList, "2");
-                count += resp.size();
-                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
-            }
-            if(beftnCount >= 1){
-                List<BeftnModel> beftnModelList = beftnModelService.getProcessedDataByFileId(fileInfoModel.getId(),1, 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                resp = setReportModelData(beftnModelList, "3");
-                count += resp.size();
-                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
-            }
-            */
-            if(("333333").equals(fileInfoModel.getExchangeCode())){
-                List<CocPaidModel> cocPaidModelList = cocPaidModelService.getProcessedDataByFileId(fileInfoModel.getId(), 0, (LocalDateTime) dateTime.get("startDateTime"),(LocalDateTime) dateTime.get("endDateTime"));
-                resp = setReportModelData(cocPaidModelList, "4");
-                count += resp.size();
-                if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
-            }
-
-            //insert data from temporary table
-            List<TemporaryReportModel> temporaryReportModelList = temporaryReportRepository.findAll();
-            resp = setReportModelData(temporaryReportModelList, "");
-            count += resp.size();
-            if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
         }
+        List<TemporaryReportModel> temporaryReportModelList = temporaryReportRepository.findAll();
+        resp = setReportModelData(temporaryReportModelList, "");
+        count += resp.size();
+        if(resp.get("err") != null && (int) resp.get("err") == 1) return resp;
         if(count == 0)  return CommonService.getResp(0, this.pMsg, null);
         resp = CommonService.getResp(0, "Data Processed successfully", null);
         return resp;
@@ -493,6 +510,7 @@ public class ReportService {
         List<Integer> acPayeeInsertList = new ArrayList<>();
         List<Integer> beftnInsertList = new ArrayList<>();
         List<Integer> cocPaidInsertList = new ArrayList<>();
+        List<Integer> npsbMfsInsertList = new ArrayList<>();
         Map<String, List<Integer>> insertList = new HashMap<>();
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
@@ -506,8 +524,9 @@ public class ReportService {
                     if(report.isPresent()) continue;
                     
                     int id = (int) CommonService.getPropertyValue(model, "getId");
+                    String typeMethod = CommonService.getTypeMethod(type);
+                    if(!typeMethod.isEmpty())   types = (String) CommonService.getPropertyValue(model, typeMethod);
                     if(("").equals(type)){
-                        types = (String) CommonService.getPropertyValue(model, "getType");
                         reportModel.setUploadUserId((int) CommonService.getPropertyValue(model, "getUploadUserId"));
                         reportModel.setFileInfoModelId((int) CommonService.getPropertyValue(model, "getFileInfoModelId"));
                         id = (int) CommonService.getPropertyValue(model, "getDataModelId");
@@ -539,6 +558,15 @@ public class ReportService {
                     reportModel.setType(types);
                     reportModel.setDataModelId(id);
                     reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
+                    reportModel.setEnteredDate((String) CommonService.getPropertyValue(model, "getEnteredDate"));
+                    reportModel.setSourceCountry((String) CommonService.getPropertyValue(model, "getSourceCountry"));
+                    reportModel.setSourceForeignCurrency((String) CommonService.getPropertyValue(model, "getSourceForeignCurrency"));
+                    reportModel.setConversionRate((String) CommonService.getPropertyValue(model, "getConversionRate"));
+                    reportModel.setRemitterGender((String) CommonService.getPropertyValue(model, "getRemitterGender"));
+                    reportModel.setBeneficiaryGender((String) CommonService.getPropertyValue(model, "getBeneficiaryGender"));
+                    reportModel.setBeneficiaryDistrict((String) CommonService.getPropertyValue(model, "getBeneficiaryDistrict"));
+                    reportModel.setBeneficiaryMobile((String) CommonService.getPropertyValue(model, "getBeneficiaryMobile"));
+                    reportModel.setRemitterMobile((String) CommonService.getPropertyValue(model, "getRemitterMobile"));
                     if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":
@@ -556,6 +584,11 @@ public class ReportService {
                         case "4":
                             cocPaidInsertList.add(id);
                             insertList.put(types, cocPaidInsertList);
+                            break;
+                        case "6":
+                        case "7":
+                            npsbMfsInsertList.add(id);
+                            insertList.put(types, npsbMfsInsertList);
                             break;
                     }
                     reportInsertList.add(reportModel);
@@ -598,6 +631,10 @@ public class ReportService {
                 beftnModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
             case "4":
                 cocPaidModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            case "6":
+            case "7":
+                npsbMfsService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
                 break;
             default:
                 break;
@@ -696,7 +733,9 @@ public class ReportService {
                     }
                 }
             }
-
+            if(("6").equals(type)){
+                downloadDateTime = (LocalDateTime) fdata.get("download_date_time");
+            }
             String processedDate = CommonService.convertDateToString(downloadDateTime);
             if(processedDate.isEmpty()){
                 processedDate = CommonService.generateClassForText("Not Processed", "text-danger fw-bold");
@@ -799,6 +838,12 @@ public class ReportService {
                 resp = CommonService.getResp(0, "", processSearchData(cocModelList, "4"));
                 return resp;
             }
+            List<NpsbMfsModel> npsbMfsModelList = npsbMfsService.getDataByTransactionNoOrBenificiaryAccount(searchType, searchValue);
+            if(!npsbMfsModelList.isEmpty()){
+                resp = CommonService.getResp(0, "", processSearchData(npsbMfsModelList, "6"));
+                return resp;
+            }
+            //spot cash model will add in future
             return CommonService.getResp(1, "No data found", null);
         }
         resp = CommonService.getResp(0, "", processSearchData(reportModelList, ""));
@@ -820,17 +865,22 @@ public class ReportService {
                     Map<String, Object> data = new HashMap<>();
                     int id = (Integer) CommonService.getPropertyValue(model, "getId");
                     String action = "";
-                    String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
+                    String typeMethod = CommonService.getTypeMethod(type);
+                    //String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
+                    String typeFlag = (!typeMethod.isEmpty()) ? (String) CommonService.getPropertyValue(model, typeMethod) : type;
                     if(isEdit == 1){
                         String btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit",String.valueOf(id),"Edit");
                         btn += "<input type='hidden' id='type_" + id + "' value='" + typeFlag + "' />";
                         btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete",String.valueOf(id),"Delete");
                         action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
                     }
+                    String exchangeCode = (String) CommonService.getPropertyValue(model, "getExchangeCode");
+                    ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+                    String exchangeDetails = exchangeCode + "<br>" + exchangeHouseModel.getExchangeName();
                     
                     data.put("sl", i++);
                     data.put("transactionNo", (String) CommonService.getPropertyValue(model, "getTransactionNo"));
-                    data.put("exchangeCode", (String) CommonService.getPropertyValue(model, "getExchangeCode"));
+                    data.put("exchangeCode", exchangeDetails);
                     data.put("beneficiaryName", (String) CommonService.getPropertyValue(model, "getBeneficiaryName"));
                     data.put("beneficiaryAccount", (String) CommonService.getPropertyValue(model, "getBeneficiaryAccount"));
                     
@@ -947,6 +997,22 @@ public class ReportService {
         return CommonService.getResp(1, "No data found for edit", null);
     }
 
+    public Map<String, Object> getBeftnReturnSearch(String searchType, String searchValue){
+        if(searchType.isEmpty() || searchValue.isEmpty())     return CommonService.getResp(1, "Please Select Search Type or Value", null);
+        List<BeftnReturnModel> beftnReturnModelList = new ArrayList<>();
+        switch(searchType){
+            case "1":
+                beftnReturnModelList = beftnReturnRepository.findByTransactionNo(searchValue);
+                break;
+            case "2":
+                beftnReturnModelList = beftnReturnRepository.findByBeneficiaryAccount(searchValue);
+                break;
+        }
+        if(beftnReturnModelList.isEmpty())  return CommonService.getResp(1, "No data found", null);
+        List<Map<String, Object>> dataList = beftnModelService.processBeftnReturnSearchData(beftnReturnModelList);
+        return CommonService.getResp(0, "", dataList);
+    }
+
     public Map<String, Object> getEditData(int id, String type, int convertObj){
         Map<String, Object> resp = new HashMap<>();
         if(id == 0 || ("").equals(type))    return CommonService.getResp(1, "Please select id or type", null);
@@ -1019,9 +1085,18 @@ public class ReportService {
             return CommonService.getResp(1, errorMessage, null);
         }
         String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
-        if(("2").equals(typeFlag)){
-            Map<String, Object> routingMap = commonService.checkAblBranchCode(branchCode);
-            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee", null);
+        Map<String, Object> routingMap = new HashMap<>();
+        if(("2").equals(typeFlag) || ("1").equals(typeFlag)){
+            routingMap = commonService.checkAblBranchCode(branchCode);
+            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee or Online", null);
+            List<Map<String, Object>> routingData = (List<Map<String, Object>>) routingMap.get("data");
+            formData.put("branchCode",routingData.get(0).get("abl_branch_code").toString());
+            formData.put("branchName",routingData.get(0).get("branch_name").toString());
+        }
+
+        if(("3").equals(typeFlag)){
+            routingMap = customQueryService.getRoutingDetails(branchCode, "");
+            if((Integer) routingMap.get("err") == 1)  return CommonService.getResp(1, "Invalid Routing No for BEFTN", null);
         }
         resp = dynamicOperationService.updateIndividualDataById(exchangeCode, fileInfoModel, user, transactionNo, formData, type, obj, typeFlag);
         if((Integer) resp.get("err") == 0){
@@ -1150,6 +1225,31 @@ public class ReportService {
             resp.put("data", resp.get("dataList"));
             resp.remove("dataList");
         }
+        return resp;
+    }
+
+    public Map<String, Object> getDailyProcessedDataByDate(String date){
+        Map<String, Object> data = new HashMap<>();
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
+        LocalDateTime startDateTime = dateTime.get("startDateTime");
+        LocalDateTime endDateTime = dateTime.get("endDateTime");
+        List<Object[]> onlineList = onlineModelService.getDailyProcessedDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> onlineMap = CommonService.getFormattedAmountAndCount(onlineList);
+        List<Object[]> accountPayeeList = accountPayeeModelService.getDailyProcessedDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> accountPayeeMap = CommonService.getFormattedAmountAndCount(accountPayeeList);
+        List<Object[]> cocList = cocModelService.getDailyProcessedDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> cocMap = CommonService.getFormattedAmountAndCount(cocList);
+        List<Object[]> beftnMainList = beftnModelService.getDailyProcessedMainDataByDate(startDateTime, endDateTime, 1);
+        Map<String, Object> beftnMainMap = CommonService.getFormattedAmountAndCount(beftnMainList);
+        //List<Object[]> beftnIncentiveList = beftnModelService.getDailyProcessedIncentiveDataByDate(startDateTime, endDateTime, 1);
+        //Map<String, Object> beftnIncentiveMap = CommonService.getFormattedAmountAndCount(beftnIncentiveList);
+        data.put("online", onlineMap);
+        data.put("accountPayee", accountPayeeMap);
+        data.put("beftnMain", beftnMainMap);
+        //data.put("beftnIncentive", beftnIncentiveMap);
+        data.put("coc", cocMap);
+        Map<String, Object> resp = CommonService.getResp(0, "", null);
+        resp.put("data", data);
         return resp;
     }
 

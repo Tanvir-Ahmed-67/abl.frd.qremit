@@ -15,7 +15,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -103,6 +102,19 @@ public class ReportController {
                 columnData = new String[] {"transactionNo", "reportDate", "amount", "beneficiaryAccountNo", "beneficiaryName"};
                 columnTitles = new String[] {"Transaction No", "Report Date", "Amount", "Account No",  "Beneficiary Name"};
                 break;
+            case "14":
+                columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};
+                columnTitles = new String[] {"SL", "Exchange Name", "Exchange Code", "NRTA Code", "Total Remittances","Total Amount"};
+                break;
+            case "15":
+            case "17":
+                columnData = new String[] {"sl", "exchangeCode", "transactionNo","beneficiaryAccount", "beneficiaryName", "routingNo", "amount", "processedDate","remType", "returnCode","returnDate"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Transaction No", "Account No", "Beneficiary Name", "Routing No", "Amount", "Processed Date", "Type","Return Code","Return Date"};
+                break;
+            case "16":
+                columnData = new String[] {"sl", "exchangeCode", "fileName", "totalCount", "uploadDateTime", "action"};
+                columnTitles = new String[] {"SL", "Exchange Code", "File Name", "Total Processed", "Upload Date", "Action"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
@@ -121,7 +133,8 @@ public class ReportController {
         Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         int userId = (int) userData.get("userid");
-        String baseUrl = (userId == 0) ? "/adminReport": "/user-home-page";
+        Map<String, Integer> role = (Map<String, Integer>) userData.get("role");
+        String baseUrl = ((Integer) role.get("isUser") != 1) ? "/adminReport": "/user-home-page";
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
         List<FileInfoModel> fileInfoModel = fileInfoModelService.getUploadedFileDetails(userId, date);
         List<Map<String, Object>> dataList = new ArrayList<>();
@@ -144,6 +157,7 @@ public class ReportController {
             Map<String, Object> dataMap = new HashMap<>();
             Map<String, Object> exchangeSummary = new HashMap<>();
             String currentExchangeCode = fModel.getExchangeCode();
+            if(("666666").equals(currentExchangeCode))  continue;
             if(previousExchangeCode != null && !previousExchangeCode.equals(currentExchangeCode)){
                 exchangeSummary = reportService.calculateExchangeWiseSummary(exchangeData, previousExchangeCode);
                 if(exchangeSummary.containsKey("totalAmount"))  dataList.add(exchangeSummary);
@@ -193,6 +207,7 @@ public class ReportController {
             Map<String, Object> exchangeSummary = reportService.calculateExchangeWiseSummary(exchangeData, previousExchangeCode);
             if(exchangeSummary.containsKey("totalAmount")) dataList.add(exchangeSummary);
         }
+        if(totalCount == 0) return ResponseEntity.ok(CommonService.getResp(1, "No data found", dataList));
         String totalAmountStr = CommonService.convertNumberFormat(totalAmount, 2);
         Map<String, Object> totalData = reportService.calculateTotalUploadFileInfo(totalCocCount, totalBeftnCount, totalOnlineCount, totalAccountPayeeCount, totalErrorCount, totalCount, totalAmountStr);
         dataList.add(totalData);
@@ -217,7 +232,8 @@ public class ReportController {
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
-        String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName());
+        int isPrefix = 1;
+        String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName(), isPrefix);
         Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
         if((Integer) fileInfo.get("err") == 1)  return ResponseEntity.ok(fileInfo);
         resp = reportService.getFileDetails(CommonService.convertStringToInt(id), fileInfo, columnData);
@@ -226,26 +242,19 @@ public class ReportController {
 
     @GetMapping(value="/errorReport", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, 
-        @RequestParam(defaultValue = "") String id){
-        model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+    public ResponseEntity<Map<String, Object>> getErrorReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String id){
         Map<String, Object> resp = new HashMap<>();
-        int fileInfoModelId = 0;
-        if(!id.isEmpty())  fileInfoModelId = CommonService.convertStringToInt(id);
-
+        int fileInfoModelId = CommonService.convertStringToInt(id);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        int userId;
-        String exchangeCode;
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
-            User user = myUserDetails.getUser();
-            userId = user.getId();
-            exchangeCode = user.getExchangeCode();
-            List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode);
-            resp.put("data", dataList);
-        }else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        MyUserDetails myUserDetails = (MyUserDetails)authentication.getPrincipal();
+        Map<String, Object> userData = myUserDetailsService.getLoggedInUserDetails(authentication, myUserDetails);
+        if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
+        int userId = (int) userData.get("userid");
+        String exchangeCode = myUserDetails.getUserExchangeCode();
+        Map<String, Object> role = (Map<String, Object>) userData.get("role");
+        List<Map<String, Object>> dataList = errorDataModelService.getErrorReport(userId, fileInfoModelId, exchangeCode, role);
+        resp.put("data", dataList);
         return ResponseEntity.ok(resp);
     }
 
@@ -366,6 +375,81 @@ public class ReportController {
         
         resp.put("data", dataList);
         return resp;
+    }
+    @RequestMapping(value="/summaryOfDailyStatementNPSB", method= RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> generateSummaryOfDailyStatementNPSB(Model model, @RequestParam(defaultValue = "") String date) {
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if(date.isEmpty()){
+            date = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        List<ExchangeReportDTO> exchangeReport = reportService.generateSummaryOfDailyNpsbStatement(date);
+        Double grandTotalAmount = 0.00;
+        String commaFormattedGrandTotalAmount="";
+        int grandTotalRemittances=0;
+        int i = 1;
+        for(ExchangeReportDTO exchangeReportDTO: exchangeReport){
+            Map<String, Object> dataMap = new HashMap<>();
+            exchangeReportDTO.setExchangeName(exchangeHouseModelService.findByExchangeCode(exchangeReportDTO.getExchangeCode()).getExchangeName());
+            grandTotalAmount = grandTotalAmount+exchangeReportDTO.getTotalAmountCount();
+            grandTotalRemittances = grandTotalRemittances+exchangeReportDTO.getTotalRowCount();
+            commaFormattedGrandTotalAmount = exchangeReportDTO.formattedAmount.format(grandTotalAmount);
+            dataMap.put("sl", i++);
+            dataMap.put("exchangeCode", exchangeReportDTO.getExchangeCode());
+            dataMap.put("nrtaCode", exchangeReportDTO.getNrtAccountNo());
+            dataMap.put("exchangeName", exchangeReportDTO.getExchangeName());
+            dataMap.put("totalRemittance", exchangeReportDTO.getTotalRowCount());
+            dataMap.put("totalAmount", exchangeReportDTO.doFormatAmount(exchangeReportDTO.getTotalAmountCount()));
+            dataList.add(dataMap);
+        }
+        if(!dataList.isEmpty()){
+            Map<String, Object> totalData = calculateTotalSummaryOfDailyStatemen(commaFormattedGrandTotalAmount, String.valueOf(grandTotalRemittances));
+            dataList.add(totalData);
+            resp.put("dailyStatementUrl","/downloadSummaryOfDailyNpsbStatementInPdfFormat?date=" + date);
+            resp.put("dailyStatementTitle","Download NPSB Summary in PDF");
+            resp.put("dailyVoucherUrl","/downloaDailyNpsbVoucherInPdfFormat?date=" + date);
+            resp.put("dailyVoucherTitle", "Download NPSB Voucher in PDF");
+        }
+
+        resp.put("data", dataList);
+        return resp;
+    }
+    @RequestMapping(value="/downloadSummaryOfDailyNpsbStatementInPdfFormat", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadSummaryOfDailyNpsbStatementInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
+        if(date.isEmpty()){
+            date = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyNpsbStatement(date);
+        if(data.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date, "(NPSB)");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        String fileName = commonService.generateFileName("NPSB_summary_report_", date, ".pdf");
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"" );
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
+    }
+    @RequestMapping(value="/downloaDailyNpsbVoucherInPdfFormat", method= RequestMethod.GET)
+    public ResponseEntity<byte[]> downloaDailyNpsbVoucherInPdfFormat(@RequestParam(defaultValue = "") String date) throws Exception {
+        if(date.isEmpty()){
+            date = CommonService.getCurrentDate("yyyy-MM-dd");
+        }
+        List<ExchangeReportDTO> data = reportService.generateSummaryOfDailyNpsbStatement(date);
+        for(int i=0; i<data.size();i++){
+            data.get(i).setTotalAmountInWords(NumberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
+        }
+        String fileName = commonService.generateFileName("NPSB_daily_voucher_", date, ".pdf");
+        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date, "DailyVoucherNPSB.jrxml");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfReport);
     }
 
     public Map<String, Object> calculateTotalSummaryOfDailyStatemen(String totalAmount, String totalRemittance){
@@ -513,7 +597,7 @@ public class ReportController {
         if(data.isEmpty()){
             return ResponseEntity.noContent().build();
         }
-        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date);
+        byte[] pdfReport = reportService.generateDailyStatementInPdfFormat(data, date, "");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         String fileName = commonService.generateFileName("summary_report_", date, ".pdf");
@@ -553,7 +637,7 @@ public class ReportController {
             data.get(i).setTotalAmountInWords(NumberToWords.convertDoubleToWords(data.get(i).getSumOfAmount()));
         }
         String fileName = commonService.generateFileName("daily_voucher_", date, ".pdf");
-        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date);
+        byte[] pdfReport = reportService.generateDailyVoucherInPdfFormat(data, date, "dailyVoucher.jrxml");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
@@ -594,7 +678,6 @@ public class ReportController {
                     .body("File not found.");
         }
     }
-
     @GetMapping(value="/processReport", produces = "application/json")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> generateReport(@AuthenticationPrincipal MyUserDetails userDetails){
@@ -913,6 +996,9 @@ public class ReportController {
             model.addAttribute("errorMessage", "Invalid Attempt. You are not allowed to perform this operation");
             return "fragments/error";
         }
+        String pageTitle = "Search";
+        if(type.equals("3"))    pageTitle = "BEFTN Return Search";
+        model.addAttribute("pageTitle", pageTitle);
         return "pages/user/search";
     }
 
@@ -923,6 +1009,8 @@ public class ReportController {
         Map<String, Object> resp = new HashMap<>();
         if(("2").equals(type)){
             resp = reportService.getCorrectionSearch(searchType, searchValue);
+        }else if(("3").equals(type)){
+            resp = reportService.getBeftnReturnSearch(searchType, searchValue);
         }else resp = reportService.getSearch(searchType, searchValue);;
         return ResponseEntity.ok(resp);
     }
@@ -1013,4 +1101,15 @@ public class ReportController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping(value="/getDailyProcessedDataByDate", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getDailyProcessedDataByDate(@AuthenticationPrincipal MyUserDetails userDetails,Model model,@RequestParam(defaultValue = "") String date){
+        Map<String, Object> resp = new HashMap<>();
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        if(date.isEmpty()){
+            date = currentDate;
+        }
+        resp = reportService.getDailyProcessedDataByDate(date);
+        return ResponseEntity.ok(resp);
+    }
 }

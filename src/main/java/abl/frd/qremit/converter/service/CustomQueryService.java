@@ -54,12 +54,15 @@ public class CustomQueryService {
         }
         return routingData;
     }
-
     public Map<String, Object> generateRoutingDetailsByRoutingNo(List<Map<String,Object>> routingData, String routingNo){
+        String key = "routing_no";
+        return generateRoutingDetailsByRoutingNo(routingData, routingNo, key);
+    }
+    public Map<String, Object> generateRoutingDetailsByRoutingNo(List<Map<String,Object>> routingData, String routingNo, String key){
         Map<String, Object> resp = new HashMap<>();
         if(!routingData.isEmpty()){
             for(Map<String, Object> rdata: routingData){
-                if(rdata.get("routing_no").equals(routingNo)){
+                if(rdata.get(key).equals(routingNo)){
                     return rdata;
                 }
             }
@@ -110,6 +113,51 @@ public class CustomQueryService {
     public Map<String, Object> processArchiveUniqueList(List<String[]> data){
         Map<String, Object> archive_24 = getArchiveUniqueList(data, "2024");
         return archive_24;
+    }
+
+    public List<Map<String, Object>> getCountryList(){
+        List<Map<String, Object>> countryList = new ArrayList<>();
+        Map<String, Object> resp =  customQueryRepository.getCountry("", "", "", "");
+        if((Integer) resp.get("err") == 0){
+            countryList = (List<Map<String, Object>>) resp.get("data");
+        }
+        return countryList;
+    }
+
+    public Map<String, Object> getCountryFromList(List<Map<String, Object>> countryList, String key, String value){
+        Map<String, Object> resp = new HashMap<>();
+        if(countryList.isEmpty())   return resp;
+        for(Map<String, Object> country: countryList){
+            if(country.get(key).equals(value)){
+                return country;
+            }
+        }
+        return resp;
+    }
+
+    public String parseCountryCode(List<Map<String, Object>> countryList, String value, String exchangeCode){
+        value = value.toUpperCase();
+        if(value.isEmpty()) return "";
+        if(exchangeCode.equals("7010232") && ("BANGLADESH").equals(value))  return "414";
+        if(exchangeCode.equals("7010207") && ("KUWA").equals(value))    return "414";
+        if(exchangeCode.equals("7010250") && ("BANGLADESH").equals(value))  return "512";
+        if(exchangeCode.equals("7010237") && ("BD").equals(value))  return "512";
+        if(exchangeCode.equals("7010296") && ("BD").equals(value))  return "702";
+        if(exchangeCode.equals("7010209") && ("BD").equals(value))  return "414";
+        if(exchangeCode.equals("7010228"))  return "458";
+        if(exchangeCode.equals("7010226"))  return "702";
+        if(("BD").equals(value) || ("BANGLADESH").equals(value))    return "";
+        if(("UAE").equals(value) || ("UNITED ARAB EMIRATES").equals(value) || ("DF").equals(value))   return "784";
+        if(("UK").equals(value) || ("UNITED KINGDOM").equals(value))   return "826";
+        if(("USA").equals(value) || ("UNITED STATES OF AMERICA").equals(value))   return "840";
+        String key = "";
+        if(value.length() == 2) key = "two_digit";
+        else if(value.length() == 3) key = "three_digit";
+        else key = "country_name";
+        Map<String, Object> country = getCountryFromList(countryList, key, value);
+        String countryCode = "";
+        if(country.size() > 0) countryCode =  country.get("country_code").toString();
+        return countryCode;
     }
 
 }

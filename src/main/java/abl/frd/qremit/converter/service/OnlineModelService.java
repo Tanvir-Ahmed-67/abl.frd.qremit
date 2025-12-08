@@ -130,5 +130,7 @@ public class OnlineModelService {
     public List<OnlineModel> findOnlineModelByExchangeCodeAndUploadDateTime(String exchangeCode, LocalDateTime startDate, LocalDateTime endDate){
         return onlineModelRepository.findOnlineModelByExchangeCodeAndUploadDateTime(exchangeCode, startDate, endDate);
     }
-
+    public List<Object[]> getDailyProcessedDataByDate(LocalDateTime startDate, LocalDateTime endDate, int isProcessed){
+        return onlineModelRepository.getDailyProcessedDataByDate(startDate, endDate, isProcessed);
+    }
 }

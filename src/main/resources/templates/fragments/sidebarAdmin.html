@@ -41,8 +41,9 @@
                         <ul class="submenu ">
                             <li>
                                 <a th:href="@{/utils/uploadApi}"><i class="fa-regular fa-circle sub-icon"></i>API Settlement File Upload</a>
-                                <a th:href="@{/adminReport?type=7}"><i class="fa-regular fa-circle sub-icon"></i>Summary of Daily Remittances</a>
-                                <a th:href="@{/showDetailsOfDailyStatement}"><i class="fa-regular fa-circle sub-icon"></i>Details of Daily Remittances</a>
+                                <a th:href="@{/adminReport?type=7}"><i class="fa-regular fa-circle sub-icon"></i>QRemit Voucher</a>
+                                <a th:href="@{/adminReport?type=14}"><i class="fa-regular fa-circle sub-icon"></i>NPSB Voucher</a>
+                                <a th:href="@{/showDetailsOfDailyStatement}"><i class="fa-regular fa-circle sub-icon"></i>Download Search File</a>
                                 <a th:href="@{/showIcashEntryForm}"><i class="fa-regular fa-circle sub-icon"></i>Generate MO</a>
                                 <a th:href="@{/showDailyReimbursement}"><i class="fa-regular fa-circle sub-icon"></i>Daily Reimbursement</a>
                                 <a th:href="@{/showDatePickerFormForCmoData}"><i class="fa-regular fa-circle sub-icon"></i>CMO Statement For CAD</a>
@@ -50,11 +51,17 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="sidebar-item">
-                        <a th:href="@{/adminReport?type=4}" class='sidebar-link'>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
                             <i class="fa-solid fa-exclamation exclamation_padding"></i>
                             <span>Error Data Report</span>
                         </a>
+                        <ul class="submenu ">
+                            <li>
+                               <a th:href="@{/adminReport?type=4}"><i class="fa-regular fa-circle sub-icon"></i><span>Approve Error</span></a>
+                               <a th:href="@{/adminReport?type=3}"><i class="fa-regular fa-circle sub-icon"></i><span>Pending Error List</span></a>
+                            </li>
+                        </ul>
                     </li>
                     <!--
                     <li class="sidebar-item">
@@ -128,6 +135,23 @@
                             <i class="fa-solid fa-magnifying-glass"></i>
                             <span>Routing Number Search</span>
                         </a>
+                    </li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            <span>BEFTN Return Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/search?type=3}"><i class="fa-regular fa-circle sub-icon"></i>BEFTN Return Search</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/adminReport?type=16}"><i class="fa-regular fa-circle sub-icon"></i>View Uploaded BEFTN Return</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/adminReport?type=15}"><i class="fa-regular fa-circle sub-icon"></i>BEFTN Return Report</a>
+                            </li>
+                        </ul>
                     </li>
                 </div>
             </ul>

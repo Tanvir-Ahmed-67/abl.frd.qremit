@@ -16,6 +16,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -154,12 +155,17 @@ public class CommonService {
         return resp;
     }
 
-    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, LocalDateTime uploadDateTime, int isProcessed){
+    public static <T> List<OnlineModel> generateOnlineModelList(List<T> models, LocalDateTime uploadDateTime, int isProcessed, Map<String, Double> apiGovtIncentiveMap){
         List<OnlineModel> onlineList = new ArrayList<>();
         for (T singleModel : models) {
             try {
                 String typeFlag = (String) getPropertyValue(singleModel, "getTypeFlag");
-                if(("1").equals(typeFlag))  onlineList.add(generateOnlineModel(singleModel, uploadDateTime, isProcessed));
+                String transactionNo =  (String) getPropertyValue(singleModel, "getTransactionNo");
+                Double govtIncentive = 0.0;
+                if(("1").equals(typeFlag)){
+                    if(apiGovtIncentiveMap.containsKey(transactionNo)) govtIncentive = apiGovtIncentiveMap.get(transactionNo);
+                    onlineList.add(generateOnlineModel(singleModel, uploadDateTime, isProcessed, govtIncentive));
+                }  
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -167,13 +173,13 @@ public class CommonService {
         return onlineList;
     }
 
-    public static <T> OnlineModel generateOnlineModel(T model, LocalDateTime uploadDateTime, int flag) {
+    public static <T> OnlineModel generateOnlineModel(T model, LocalDateTime uploadDateTime, int flag, Double govtIncentive) {
         OnlineModel onlineModel = new OnlineModel();
         try {
             onlineModel.setAmount((Double) getPropertyValue(model, "getAmount"));
-            onlineModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
-            onlineModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
-            onlineModel.setIncentive(onlineModel.getGovtIncentive()+onlineModel.getAgraniIncentive());
+            //onlineModel.setGovtIncentive(calculateGovtIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            //onlineModel.setAgraniIncentive(calculateAgraniIncentivePercentage((Double) getPropertyValue(model, "getAmount")));
+            //onlineModel.setIncentive(onlineModel.getGovtIncentive()+onlineModel.getAgraniIncentive());
             onlineModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
             onlineModel.setBeneficiaryName((String) getPropertyValue(model, "getBeneficiaryName"));
             onlineModel.setExchangeCode((String) getPropertyValue(model, "getExchangeCode"));
@@ -188,9 +194,19 @@ public class CommonService {
             onlineModel.setIsDownloaded(flag);
             if(flag == 1){
                 onlineModel.setDownloadDateTime(uploadDateTime);
+                onlineModel.setGovtIncentive(govtIncentive);
+                onlineModel.setIncentive(govtIncentive);
             }
             onlineModel.setDownloadUserId(9999);
             onlineModel.setUploadDateTime(uploadDateTime);
+            onlineModel.setSourceCountry((String) getPropertyValue(model, "getSourceCountry"));
+            onlineModel.setSourceForeignCurrency((String) getPropertyValue(model, "getSourceForeignCurrency"));
+            onlineModel.setConversionRate((String) getPropertyValue(model, "getConversionRate"));
+            onlineModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
+            onlineModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
+            onlineModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
+            onlineModel.setBeneficiaryMobile((String) getPropertyValue(model, "getBeneficiaryMobile"));
+            onlineModel.setRemitterMobile((String) getPropertyValue(model, "getRemitterMobile"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -244,6 +260,14 @@ public class CommonService {
             cocModel.setUploadDateTime(uploadDateTime);
             cocModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             cocModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            cocModel.setSourceCountry((String) getPropertyValue(model, "getSourceCountry"));
+            cocModel.setSourceForeignCurrency((String) getPropertyValue(model, "getSourceForeignCurrency"));
+            cocModel.setConversionRate((String) getPropertyValue(model, "getConversionRate"));
+            cocModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
+            cocModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
+            cocModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
+            cocModel.setBeneficiaryMobile((String) getPropertyValue(model, "getBeneficiaryMobile"));
+            cocModel.setRemitterMobile((String) getPropertyValue(model, "getRemitterMobile"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -286,6 +310,14 @@ public class CommonService {
             accountPayeeModel.setUploadDateTime(uploadDateTime);
             accountPayeeModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             accountPayeeModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            accountPayeeModel.setSourceCountry((String) getPropertyValue(model, "getSourceCountry"));
+            accountPayeeModel.setSourceForeignCurrency((String) getPropertyValue(model, "getSourceForeignCurrency"));
+            accountPayeeModel.setConversionRate((String) getPropertyValue(model, "getConversionRate"));
+            accountPayeeModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
+            accountPayeeModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
+            accountPayeeModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
+            accountPayeeModel.setBeneficiaryMobile((String) getPropertyValue(model, "getBeneficiaryMobile"));
+            accountPayeeModel.setRemitterMobile((String) getPropertyValue(model, "getRemitterMobile"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -310,6 +342,7 @@ public class CommonService {
     public static <T> BeftnModel generateBeftnModel(T model, LocalDateTime uploadDateTime) {
         BeftnModel beftnModel = new BeftnModel();
         try {
+            String transactionNo = (String) getPropertyValue(model, "getTransactionNo");
             beftnModel.setAmount((Double) getPropertyValue(model, "getAmount"));
             beftnModel.setBeneficiaryAccount((String) getPropertyValue(model, "getBeneficiaryAccount"));
             beftnModel.setBeneficiaryAccountType("SA");
@@ -325,12 +358,21 @@ public class CommonService {
             beftnModel.setOrgName("FRD Remittance");
             beftnModel.setUploadDateTime(uploadDateTime);
             beftnModel.setRoutingNo((String) getPropertyValue(model, "getBranchCode"));
-            beftnModel.setTransactionNo((String) getPropertyValue(model, "getTransactionNo"));
+            beftnModel.setTransactionNo(transactionNo);
             beftnModel.setRemitterName((String) getPropertyValue(model, "getRemitterName"));
             beftnModel.setBankName((String) getPropertyValue(model, "getBankName"));
             beftnModel.setBankCode((String) getPropertyValue(model, "getBankCode"));
             beftnModel.setBranchName((String) getPropertyValue(model, "getBranchName"));
             beftnModel.setEnteredDate((String) getPropertyValue(model, "getEnteredDate"));
+            beftnModel.setSourceCountry((String) getPropertyValue(model, "getSourceCountry"));
+            beftnModel.setSourceForeignCurrency((String) getPropertyValue(model, "getSourceForeignCurrency"));
+            beftnModel.setConversionRate((String) getPropertyValue(model, "getConversionRate"));
+            beftnModel.setRemitterGender((String) getPropertyValue(model, "getRemitterGender"));
+            beftnModel.setBeneficiaryGender((String) getPropertyValue(model, "getBeneficiaryGender"));
+            beftnModel.setBeneficiaryDistrict((String) getPropertyValue(model, "getBeneficiaryDistrict"));
+            beftnModel.setTxnModified(filterTxnNo(transactionNo));
+            beftnModel.setBeneficiaryMobile((String) getPropertyValue(model, "getBeneficiaryMobile"));
+            beftnModel.setRemitterMobile((String) getPropertyValue(model, "getRemitterMobile"));
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exception
@@ -537,8 +579,21 @@ public class CommonService {
         return errorMessage;
     }
 
+    public static String checkNrtaCode(String nrtaCode, String userNrtaCode){
+        String errorMessage = "";
+        if(!userNrtaCode.equals(nrtaCode))  errorMessage = "Please Upload the Correct File"; 
+        return errorMessage;
+    }
+
     public Map<String,Object> convertAblRoutingToBranchCode(String branchCode, List<Map<String, Object>> routingData){
         Map<String,Object> data = new HashMap<>();
+        String key = "routing_no";
+        if(!checkAgraniRoutingNo(branchCode)){
+            if(branchCode.length() == 4 && branchCode.startsWith("0"))    branchCode = "1" + branchCode;
+            key = "abl_branch_code";
+        }
+        data = customQueryService.generateRoutingDetailsByRoutingNo(routingData,branchCode, key);
+        /*
         if(branchCode.startsWith("010")){
             Map<String, Object> rdata = customQueryService.generateRoutingDetailsByRoutingNo(routingData, branchCode);
             if(!rdata.isEmpty()){
@@ -554,12 +609,19 @@ public class CommonService {
                 }
             }
         }
+        */
         return data;
     }
 
     public <T> Map<String, Object> generateFourConvertedDataModel(List<T> model, FileInfoModel fileInfoModel, User user, LocalDateTime currentDateTime, int isProcessed){
+        Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+        return generateFourConvertedDataModel(model, fileInfoModel, user, currentDateTime, isProcessed, apiGovtIncentiveMap);
+    }
+
+    public <T> Map<String, Object> generateFourConvertedDataModel(List<T> model, FileInfoModel fileInfoModel, User user, LocalDateTime currentDateTime, int isProcessed,
+        Map<String, Double> apiGovtIncentiveMap){
         Map<String, Object> resp = new HashMap<>();
-        List<OnlineModel> onlineModelList = generateOnlineModelList(model, currentDateTime, isProcessed);
+        List<OnlineModel> onlineModelList = generateOnlineModelList(model, currentDateTime, isProcessed, apiGovtIncentiveMap);
         List<CocModel> cocModelList = generateCocModelList(model, currentDateTime);
         List<AccountPayeeModel> accountPayeeModelList = generateAccountPayeeModelList(model, currentDateTime);
         List<BeftnModel> beftnModelList = generateBeftnModelList(model, currentDateTime);
@@ -570,11 +632,13 @@ public class CommonService {
         fileInfoModel.setOnlineModelList(onlineModelList);
         Double fileTotalAmount = convertStringToDouble(fileInfoModel.getTotalAmount());
         Double totalAmount = (fileTotalAmount != null && fileTotalAmount != 0.0) ? fileTotalAmount: 0.0;
+        /*
         String branchCode = "";
         List<Map<String, Object>> routingData = new ArrayList<>();
         if(!accountPayeeModelList.isEmpty() || !onlineModelList.isEmpty()){
             routingData = customQueryService.getRoutingDetailsByBankCode("010");
         }
+        */
         if(cocModelList != null){
             for (CocModel cocModel : cocModelList) {
                 cocModel.setFileInfoModel(fileInfoModel);
@@ -586,11 +650,13 @@ public class CommonService {
             for (AccountPayeeModel accountPayeeModel : accountPayeeModelList) {
                 accountPayeeModel.setFileInfoModel(fileInfoModel);
                 accountPayeeModel.setUserModel(user);
+                /*
                 Map<String, Object> rdata = convertAblRoutingToBranchCode(accountPayeeModel.getBranchCode(), routingData);
                 if(!rdata.isEmpty()){
                     accountPayeeModel.setBranchCode(rdata.get("branchCode").toString());
                     accountPayeeModel.setBranchName(rdata.get("branchName").toString());
                 }
+                */
                 totalAmount += accountPayeeModel.getAmount();
             }
         }
@@ -605,17 +671,19 @@ public class CommonService {
             for (OnlineModel onlineModel : onlineModelList) {
                 onlineModel.setFileInfoModel(fileInfoModel);
                 onlineModel.setUserModel(user);
+                if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
+                /*
                 branchCode = onlineModel.getBranchCode();
                 if(branchCode.isEmpty()){
                     onlineModel.setBranchCode("4006");
                     onlineModel.setBranchName("Principal");
                 }
-                if(isProcessed == 1)    onlineModel.setIsApi(1); //isProcessed =1 is for Api data
                 Map<String, Object> rdata = convertAblRoutingToBranchCode(branchCode, routingData);
                 if(!rdata.isEmpty() && isProcessed == 0){
                     onlineModel.setBranchCode(rdata.get("branchCode").toString());
                     onlineModel.setBranchName(rdata.get("branchName").toString());
                 }
+                */
                 totalAmount += onlineModel.getAmount();
             }
         }
@@ -642,6 +710,26 @@ public class CommonService {
         return fileInfoModel;
     }
 
+    public static FileInfoModel setCountForFileInfoModel(FileInfoModel fileInfoModel, Map<String, Object> data){
+        int onlineCount = (data.containsKey("onlineCount")) ?   (int) data.get("onlineCount") : 0;
+        int accountPayeCount = (data.containsKey("accountPayeCount")) ?   (int) data.get("accountPayeCount") : 0;
+        int beftnCount = (data.containsKey("beftnCount")) ?   (int) data.get("beftnCount") : 0;
+        int cocCount = (data.containsKey("cocCount")) ?   (int) data.get("cocCount") : 0;
+        int npsbCount = (data.containsKey("npsbCount")) ?   (int) data.get("npsbCount") : 0;
+        int mfsCount = (data.containsKey("mfsCount")) ?   (int) data.get("mfsCount") : 0;
+        int spotCashCount = (data.containsKey("spotCashCount")) ?   (int) data.get("spotCashCount") : 0;
+        int totalCount = onlineCount + accountPayeCount + beftnCount + cocCount + npsbCount + mfsCount + spotCashCount;
+        fileInfoModel.setOnlineCount(CommonService.convertIntToString(onlineCount));
+        fileInfoModel.setAccountPayeeCount(CommonService.convertIntToString(accountPayeCount));
+        fileInfoModel.setBeftnCount(CommonService.convertIntToString(beftnCount));
+        fileInfoModel.setCocCount(CommonService.convertIntToString(cocCount));
+        fileInfoModel.setNpsbCount(CommonService.convertIntToString(npsbCount));
+        fileInfoModel.setMfsCount(CommonService.convertIntToString(mfsCount));
+        fileInfoModel.setSpotCashCount(CommonService.convertIntToString(spotCashCount));
+        fileInfoModel.setTotalCount(CommonService.convertIntToString(totalCount));
+        return fileInfoModel;
+    }
+
     public static <T> T createDataModel(T model, Map<String, Object> data){
         for(Map.Entry<String, Object> entry: data.entrySet()){
             String fieldName = entry.getKey();
@@ -662,10 +750,14 @@ public class CommonService {
                     field.set(model, doubleField);
                 }
                 if(field.getType().equals(Integer.class) || field.getType().equals(int.class)){
-                    field.set(model, convertStringToInt((String) fieldValue));
+                    field.set(model, convertStringToInt(String.valueOf(fieldValue)));
                 }
                 if(field.getType().equals(LocalDateTime.class)){
                     LocalDateTime dateField = convertStringToDate(fieldValue.toString());
+                    field.set(model, dateField);
+                }
+                if(field.getType().equals(LocalDate.class)){
+                    LocalDate dateField = convertStringToLocalDate(fieldValue.toString(), "yyyy-MM-dd");
                     field.set(model, dateField);
                 }
             }catch(NoSuchFieldException | IllegalAccessException e){
@@ -684,6 +776,16 @@ public class CommonService {
         ufield.set(modelInstance, user);
         return modelInstance;
     }
+
+    public static <T> void setModelListOnFileInfoModel(FileInfoModel fileInfoModel, Class<T> modelClass, List<T> modelList) {
+    try {
+        String setterName = "set" + modelClass.getSimpleName();
+        Method setter = fileInfoModel.getClass().getMethod(setterName, List.class);
+        setter.invoke(fileInfoModel, modelList);
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        throw new RuntimeException("Failed to call setter: " + e.getMessage(), e);
+    }
+}
 
     public static Map<String, Object> convertModelToObject(Object model){
         Map<String, Object> map = new HashMap<>();
@@ -740,6 +842,7 @@ public class CommonService {
     
     public static ErrorDataModel getErrorDataModel(Map<String, Object> data, String exchangeCode, String errorMessage, LocalDateTime currentDateTime, User user, FileInfoModel fileInfoModel){
         ErrorDataModel errorDataModel = new ErrorDataModel();
+        if(data.containsKey("govtIncentive"))   data.remove("govtIncentive");
         errorDataModel = createDataModel(errorDataModel, data);
         errorDataModel.setErrorMessage(errorMessage);
         errorDataModel.setUploadDateTime(currentDateTime);
@@ -830,8 +933,10 @@ public class CommonService {
         return remoteAddr;
     }
 
-    public static String getBaseTableName(String baseTableName){
-        String tbl = "base_data_table_" + baseTableName;
+    public static String getBaseTableName(String baseTableName, int isPrefix){
+        String prefix = "";
+        if(isPrefix == 1)   prefix = "base_data_table_";
+        String tbl = prefix + baseTableName;
         return tbl;
     }
 
@@ -910,9 +1015,12 @@ public class CommonService {
         return errorMessage;
     }
     //check validation error message ends
-    //error checking
+    /*
+     * error checking
+     * typeFlag - "" call getErrorMessage method
+     */
     public static <T> Map<String, Object> checkError(Map<String, Object> data, List<ErrorDataModel> errorDataModelList, String nrtaCode, FileInfoModel fileInfoModel, 
-        User user, LocalDateTime currentDateTime, String userExCode, Optional<T> duplicateData, List<String> transactionList){
+        User user, LocalDateTime currentDateTime, String userExCode, Optional<T> duplicateData, List<String> transactionList, String typeFlag){
         //userExCode- csv file first column
         Map<String, Object> resp = new HashMap<>();
         resp.put("err", 0);
@@ -928,7 +1036,7 @@ public class CommonService {
         if(duplicateData.isPresent()){  // Checking Duplicate Transaction No in this block
             return getResp(3, "Duplicate Reference No " + transactionNo + " Found <br>", null);
         }
-        errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
+        if(("").equals(typeFlag))   errorMessage = getErrorMessage(beneficiaryAccount, beneficiaryName, amount, bankName, branchCode);
         if(!errorMessage.isEmpty()){
             addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
             resp = getResp(1, errorMessage, null);
@@ -1094,6 +1202,9 @@ public class CommonService {
         resp.put("2", "Account Payee");
         resp.put("3", "BEFTN");
         resp.put("4", "COC");
+        resp.put("5", "Spot Cash");
+        resp.put("6", "NPSB");
+        resp.put("7", "MFS");
         return resp;
     }
 
@@ -1282,8 +1393,19 @@ public class CommonService {
 
     public static Map<String, Object> getSearchType(String type){
         Map<String, Object> resp = new HashMap<>();
-        resp.put("1", "Transaction No");
-        if(!type.equals("2"))    resp.put("2", "Beneficiary Account No");
+        switch(type){
+            case "1":
+            default:
+                resp.put("1", "Transaction No");
+                resp.put("2", "Beneficiary Account No");
+                break;
+            case "2":
+                resp.put("1", "Transaction No");
+                break;
+            case "3":
+                resp.put("2", "Beneficiary Account No");
+                break;
+        }
         return resp;
     }
 
@@ -1304,13 +1426,13 @@ public class CommonService {
 
     public static String[] beftnIncentiveNotProcessingKeywords(){
         String[] keywords = {
-            " PHONE", " CENTER", " LTD", " BANK", "BANK ", "TELECOM", "TRADERS", "STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", " TRAVELS", 
-            " TOURS", " NETWORK", " FARM "," ASSETS", " ASSET", " SOLUTIONS", " FUND", " ELECTRON", " SECURITIES", " EQUIPMENT", " COMPENSATION", "DEATH ", " GALLERY", " HOUSE", "M/S ", " BANGLADESH", 
+            " PHONE", " CENTER", " LTD", " BANK", "BANK ", "TELECOM", "TRADERS", "STORE", " CLOTH"," BROTHERS", " ENTERPRIZE", " ENTERPRI", " COSMETICS", " MOBILE", "TRAVEL", 
+            "TOURS", " NETWORK", " FARM "," ASSETS", " ASSET", " SOLUTIONS", " FUND", " ELECTRON", " SECURITIES", " EQUIPMENT", " COMPENSATION", "DEATH ", " GALLERY", " HOUSE", "M/S ", " BANGLADESH", 
             " BD", " LIMITED", " OVERSEAS", " DAIRY", " COLLECTION", " RICE", " AGENCY", " TEXTILE", " VARAITY", " MEDICAL", " HALL", " PHARMA", " OPTICAL", "PRIZE", " FAIR ",
-            " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", " FURNITURE", " PURBACHAL", 
-            "PURBACHAL ","PROBASHI", " PALLI", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", " CORPORATE", " FOUNDATION", "VANDAR", "DOKAN", "BAZAR", "SAMITI", "MADINA",
+            " GENERAL", "GENERAL ", " HOSPITAL", "BITAN", " TRADING", " SONS", " Equipment", " WEDB", " MADRASA", " ACADEMY", " PHOTOSTAT", " MOSJID", " MART", "MART ", " FURNITURE", " PURBACHAL", 
+            "PURBACHAL ","PROBASHI", " PALLI", " EDUCATION", " BUSINESS", " CONSULTANCY", "WAGE ", " EARNER", " KALYAN", " TAHBIL", " ASULTANCY", "CORPORATE", " FOUNDATION", "VANDAR", "DOKAN", "BAZAR", "SAMITI", "MADINA",
             "ISLAMI", "AGRO", "PRESS", "PRINTING" , "DIGITAL", "SHIPPING", "STEEL", "PLASTIC", "CERAMICS", "WORKSHOP" , "DIAGNOSTIC", "CLINIC", "HEALTHCARE", "LABORATORY", "DRUGS", "INSTITUTE",
-            "COLLEGE", "UNIVERSITY", "SCHOOL", "TECHNICAL", "POLYTECHNIC", "CORNER", "VARIETY", "BOSTRALOY", "NGO", "KHAMAR"
+            "COLLEGE", "UNIVERSITY", "SCHOOL", "TECHNICAL", "POLYTECHNIC", "CORNER", "VARIETY", "BOSTRALOY", "NGO", "KHAMAR","SYSTEM", "PARTY", "NATIONAL","TRADE","CORPORATION"
         };
         return keywords;
     }
@@ -1349,6 +1471,21 @@ public class CommonService {
         return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 
+    public static String filterTxnNo(String str){
+        str = removeAllSpecialCharacterFromString(str);
+        if(str.length() > 17)   str = str.substring(0, 17);
+        return str;
+    }
+
+    /*
+     * dataList - all data to be processed, 
+     * uniqueDataList - transactionNo, amount, exchangeCode in current base data model
+     * archiveDataList - transactionNo, amount, exchangeCode in old qremit database
+     * modelClass - current model class to be processed
+     * fileExchangeCode - nrta/exchange code in file
+     * checkType: 1- check file api or beftn data otherwise it will not check
+     * params type: 1- api, 0- beftn only when checkType = 1
+     */
     public <T> Map<String, Object> processDataToModel(List<Map<String, Object>> dataList, FileInfoModel fileInfoModel, User user, Map<String, Object> uniqueDataList, 
         Map<String, Object> archiveDataList, LocalDateTime currentDateTime, Optional<T> duplicateData, Class<T> modelClass, Map<String, Object> resp, List<ErrorDataModel> errorDataModelList, String fileExchangeCode, int checkType, int type){
         Map<String, Object> modelResp = new HashMap<>();
@@ -1356,14 +1493,25 @@ public class CommonService {
         String duplicateMessage = "";
         int duplicateCount = 0;
         List<T> modelList = new ArrayList<>();
+        Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
         int isValidFile = 0;
+        Map<String, Object> routingMap = customQueryService.getRoutingDetails("", "");
+        List<Map<String, Object>> routingData = new ArrayList<>();
+        if((Integer) routingMap.get("err") == 0)    routingData = (List<Map<String, Object>>) routingMap.get("data");
         for(Map<String, Object> data: dataList){
             String transactionNo = data.get("transactionNo").toString();
             String exchangeCode = data.get("exchangeCode").toString();
             String nrtaCode = data.get("nrtaCode").toString();
             String bankName = data.get("bankName").toString();
+            String beneficiaryAccount = data.get("beneficiaryAccount").toString();
+            beneficiaryAccount = removeAllSpecialCharacterFromString(beneficiaryAccount);
+            data.put("beneficiaryAccount", beneficiaryAccount);
             if(fileExchangeCode.equals(""))    fileExchangeCode = nrtaCode;
             String msg = "";
+            if(isScientificNotation(transactionNo) || isScientificNotation(beneficiaryAccount)){
+                resp.put("errorMessage", "Transaction No or Beneficiary Account is not supported");
+                break;
+            }
             //check exchange code
             if(isValidFile == 0){
                 String exchangeMessage = checkExchangeCode(fileExchangeCode, exchangeCode, nrtaCode);
@@ -1373,9 +1521,14 @@ public class CommonService {
                 }else isValidFile = 1;
             }
             
-            String beneficiaryAccount = data.get("beneficiaryAccount").toString();
             String branchCode = data.get("branchCode").toString();
             data.remove("nrtaCode");
+            Double govtIncentive = 0.0;
+            if(data.containsKey("govtIncentive")){
+                govtIncentive = convertStringToDouble(data.get("govtIncentive").toString());
+                data.remove("govtIncentive");
+            }
+                    
             Map<String, Object> dupResp = getDuplicateTransactionNo(transactionNo, uniqueDataList);
             if((Integer) dupResp.get("isDuplicate") == 1){
                 duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
@@ -1388,8 +1541,11 @@ public class CommonService {
                 duplicateCount++;
                 continue;
             }
-        
-            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
+            /*
+             * typeFlag - exists in data for spotcash, npsb, mfs otherwsie setTypeFlag function will call
+             */
+            String typeFlag = (data.containsKey("typeFlag")) ? data.get("typeFlag").toString() : "";
+            Map<String, Object> errResp = checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList, typeFlag);
             if((Integer) errResp.get("err") == 1){
                 errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
                 continue;
@@ -1399,20 +1555,59 @@ public class CommonService {
                 continue;
             }
             if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-            String typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
-            if(("2").equals(typeFlag)){
-                //validate branch code for a/c payee exists in routing table
+            if(("").equals(typeFlag))   typeFlag = setTypeFlag(beneficiaryAccount, bankName, branchCode);
+            if(("1").equals(typeFlag) || ("2").equals(typeFlag)){
+                Map<String, Object> rdata = convertAblRoutingToBranchCode(branchCode, routingData);
+                if(!rdata.isEmpty()){
+                    data.put("branchName", rdata.get("branch_name"));
+                    data.put("branchCode", rdata.get("abl_branch_code"));
+                }else{
+                    //validate branch code for a/c payee exists in routing table
+                    if(("2").equals(typeFlag)){
+                        msg = "Invalid Branch Code for A/C Payee";
+                        addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                        continue;
+                    }else{
+                        //for online
+                        data.put("branchName", "Principal");
+                        data.put("branchCode", "4006");
+                    }
+                }
+                /* 
+                String key = "routing_no";
+                if(!checkAgraniRoutingNo(branchCode))   key = "abl_branch_code";
+                Map<String, Object> rdata = customQueryService.generateRoutingDetailsByRoutingNo(routingData,branchCode, key);
+                if(rdata.isEmpty()){
+                    msg = "Invalid Branch Code for A/C Payee";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+                data.put("branchName", rdata.get("branch_name"));
+                data.put("branchName", rdata.get("abl_branch_code"));
+                */
+                /*
                 Map<String, Object> routingMap = checkAblBranchCode(branchCode);
                 if((Integer) routingMap.get("err") == 1){
                     msg = "Invalid Branch Code for A/C Payee";
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
                 }
+                */
+                    
             }
-            /*
-             * need to modify
-             */
+            if(("3").equals(typeFlag)){
+                Map<String, Object> rdata = customQueryService.generateRoutingDetailsByRoutingNo(routingData,branchCode);
+                if(rdata.isEmpty()){
+                    msg = "Invalid Routing Number for BEFTN Not Match";
+                    addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
+                    continue;
+                }
+                data.put("branchName", rdata.get("branch_name"));
+                data.put("bankName", rdata.get("bank_name"));
+                data.put("bankCode", rdata.get("bank_code"));
+            }
             if(checkType == 1){
+                //data from API System which is API or BEFTN 
                 int allowedType = (type == 1) ? 1:3;  //for betn 3
                 if(!convertStringToInt(typeFlag).equals(allowedType)){
                     msg = "Invalid Remittance Type for ";
@@ -1420,12 +1615,17 @@ public class CommonService {
                     addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
                     continue;
                 }
+                if(type == 1){
+                    apiGovtIncentiveMap.put(transactionNo,govtIncentive);
+                }
             }
             try{
                 T modelInstance = modelClass.getDeclaredConstructor().newInstance();
                 modelInstance = createDataModel(modelInstance, data);
-                Method setTypeFlagMethod = modelClass.getMethod("setTypeFlag", String.class);
-                setTypeFlagMethod.invoke(modelInstance, typeFlag);
+                if(!data.containsKey("typeFlag")){
+                    Method setTypeFlagMethod = modelClass.getMethod("setTypeFlag", String.class);
+                    setTypeFlagMethod.invoke(modelInstance, typeFlag);
+                }
                 Method setUploadDateTimeMethod = modelClass.getMethod("setUploadDateTime", LocalDateTime.class);
                 setUploadDateTimeMethod.invoke(modelInstance, currentDateTime);
                 modelList.add(modelInstance);
@@ -1439,6 +1639,7 @@ public class CommonService {
         modelResp.put("duplicateMessage", duplicateMessage);
         modelResp.put("duplicateCount", duplicateCount);
         modelResp.put("transactionList", transactionList);
+        modelResp.put("apiGovtIncentiveMap", apiGovtIncentiveMap);
         return modelResp;
     }
 
@@ -1455,7 +1656,7 @@ public class CommonService {
     }
 
     public static boolean validatePassword(String password, int length){
-        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{" + length + ",}$";
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{" + length + ",}$";
         return password != null && password.matches(passwordPattern);
     }
 
@@ -1486,6 +1687,10 @@ public class CommonService {
         return bigInt;
     }
 
+    public static boolean isScientificNotation(String value) {
+        return value != null && value.toUpperCase().contains("E+");
+    }
+
     public static Map<String, Object> validateIpRange(String clientIP, List<IpRange> ipRangeList){
         Map<String, Object> resp = new HashMap<>();
         String msg = "Access Denied: Invalid IP Address";
@@ -1510,6 +1715,41 @@ public class CommonService {
         if(checkEmptyString(status) || status.equals("null") || status.startsWith("status"))   errorMessage = "A/C Not Credited from API";
         return errorMessage;
     }
+    public static String getTypeMethod(String type){
+        String typeMethod = "";
+        if(("").equals(type))    typeMethod = "getType";
+        if(("6").equals(type))    typeMethod = "getTypeFlag";
+        return typeMethod;
+    }
+    public static boolean checkNpsb(String trMode){
+        if(trMode.equals("18") || trMode.toLowerCase().equals("itcl") || trMode.toLowerCase().equals("npsb")){
+            return true;
+        }else return false;
+    }
+    public static Map<String, Object> getFormattedAmountAndCount(List<Object[]> obj){
+        Map<String, Object> resp = new HashMap<>();
+        double amount = 0.0;
+        int count = 0;
+        for (Object[] row : obj){
+            amount = row[0] != null ? ((Number) row[0]).doubleValue() : 0.0;
+            count = row[1] != null ? ((Number) row[1]).intValue(): 0;
+        }
+        String amountStr = convertNumberFormat(amount, 2);
+        resp.put("amount", amountStr);
+        resp.put("count", count);
+        return resp;
+    }
 
-    
+    public static String parseStringByDelimeter(String str, String delimeter){
+        return str.replace(delimeter, "").trim();
+    }
+
+    public static String[] parseString(String str, String delimeter){
+        String[] parts = str.split(delimeter);
+        return parts;
+    }
+
+    public static boolean isEqual(double a, double b) {
+        return Math.abs(a - b) < 0.000001;
+    }
 }

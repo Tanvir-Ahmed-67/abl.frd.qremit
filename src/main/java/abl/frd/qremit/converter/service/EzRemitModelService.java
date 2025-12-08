@@ -70,8 +70,10 @@ public class EzRemitModelService {
                     ezRemitModel.setFileInfoModel(fileInfoModel);
                     ezRemitModel.setUserModel(user);
                 }
+                Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+                if(ezRemitData.containsKey("apiGovtIncentiveMap")) apiGovtIncentiveMap = (Map<String, Double>) ezRemitData.get("apiGovtIncentiveMap");
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(ezRemitModelList, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(ezRemitModelList, fileInfoModel, user, currentDateTime, type, apiGovtIncentiveMap);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(ezRemitModelList.size()));
                 fileInfoModel.setIsSettlement(type);
@@ -112,7 +114,7 @@ public class EzRemitModelService {
                 i++;
                 int length = csvRecord.size();
                 if(i == 1){
-                    Map<String, Object> apiCheckResp = checkEzRemitApiOrBeftnData(length, type);
+                    Map<String, Object> apiCheckResp = checkEzRemitApiOrBeftnData(csvRecord.get(0), length, type, nrtaCode);
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
@@ -126,11 +128,20 @@ public class EzRemitModelService {
                 String beneficiaryAccount = (type == 1) ? csvRecord.get(4).trim(): csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(5) : csvRecord.get(3);
                 Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                String errorMessage = "";
                 if(type == 1){
-                    String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
+                    errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
                     if(!errorMessage.isEmpty()){
                         CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, errorMessage, currentDateTime, user, fileInfoModel);
                         continue;
+                    }
+                }else if(type == 0){
+                    //check with nrta code
+                    errorMessage = CommonService.checkNrtaCode(nrtaCode, csvRecord.get(0).trim());
+                    if(!errorMessage.isEmpty()){
+                        isValidFile = 0;
+                        resp.put("errorMessage", errorMessage);
+                        break;
                     }
                 }
                 data.put("nrtaCode", nrtaCode);
@@ -142,51 +153,11 @@ public class EzRemitModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, EzRemitModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                resp.put("apiGovtIncentiveMap", (Map<String, Double>) modelResp.get("apiGovtIncentiveMap"));
                 ezRemitModelList = (List<EzRemitModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
                 duplicateCount = (int) modelResp.get("duplicateCount");
-                /*
-                for(Map<String, Object> data: dataList){
-                    String transactionNo = data.get("transactionNo").toString();
-                    String bankName = data.get("bankName").toString();
-                    String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                    String branchCode = data.get("branchCode").toString();
-                    Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
-                    if((Integer) dupResp.get("isDuplicate") == 1){
-                        duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
-                        duplicateCount++;
-                        continue;
-                    }
-                    Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, fileExchangeCode, duplicateData, transactionList);
-                    if((Integer) errResp.get("err") == 1){
-                        errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                        continue;
-                    }
-                    if((Integer) errResp.get("err") == 2){
-                        resp.put("errorMessage", errResp.get("msg"));
-                        break;
-                    }
-                    if((Integer) errResp.get("err") == 4){
-                        duplicateMessage += errResp.get("msg");
-                        continue;
-                    }
-                    if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                    String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
-                    int allowedType = (type == 1) ? 1:3;  //for betn 3
-                    if(!CommonService.convertStringToInt(typeFlag).equals(allowedType)){
-                        String msg = "Invalid Remittence Type for ";
-                        msg += (type == 1) ? "API": "BEFTN"; 
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                    EzRemitModel ezRemitModel = new EzRemitModel();
-                    ezRemitModel = CommonService.createDataModel(ezRemitModel, data);
-                    ezRemitModel.setTypeFlag(typeFlag);
-                    ezRemitModel.setUploadDateTime(currentDateTime);
-                    ezRemitModelList.add(ezRemitModel);
-                }
-                */
             }
             //save error data
             Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
@@ -220,8 +191,11 @@ public class EzRemitModelService {
         String remiterName = (type == 1) ? csvRecord.get(1) : csvRecord.get(5);
         LocalDateTime date = CommonService.convertStringToDate(enteredDate);
         enteredDate = date.toLocalDate().toString();
+        String remCountry = (type == 1) ? csvRecord.get(3):csvRecord.get(12);
+        String sourceCountry = (!remCountry.isEmpty())  ?   getSourceCountry(remCountry) : "";   
 
         Map<String, Object> data = new HashMap<>();
+        if(type == 1)   data.put("govtIncentive", csvRecord.get(9).trim());
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", currrency);
@@ -243,14 +217,27 @@ public class EzRemitModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", sourceCountry);
         return data;
     }
 
-    public Map<String, Object> checkEzRemitApiOrBeftnData(int length, int type){
+    public Map<String, Object> checkEzRemitApiOrBeftnData(String firstColumn, int length, int type, String nrtaCode){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
-        if(type == 1 && length != 9)    resp = CommonService.getResp(1, msg, null);
-        else if(type == 0 && length != 12)  resp = CommonService.getResp(1, msg, null);
+        if(type == 1 && length != 10)    resp = CommonService.getResp(1, msg, null);
+        else if(type == 0 && !firstColumn.equals(nrtaCode))  resp = CommonService.getResp(1, msg, null);
         return resp;
+    }
+
+    public String getSourceCountry(String remitterAddress){
+        remitterAddress = remitterAddress.toUpperCase();
+        String sourceCountry = "";
+        if(remitterAddress.contains("KUWAIT"))  sourceCountry = "414";
+        else if(remitterAddress.contains("UNITED ARAB EMIRATES") || remitterAddress.contains("UAE"))    sourceCountry = "784";
+        else if(remitterAddress.contains("OMAN"))   sourceCountry = "512";
+        else if(remitterAddress.contains("QATAR"))  sourceCountry = "634";
+        else if(remitterAddress.contains("JORDAN")) sourceCountry = "400";
+        else if(remitterAddress.contains("UNITED KINGDOM") || remitterAddress.contains("UK")) sourceCountry = "826";
+        return sourceCountry;
     }
 }

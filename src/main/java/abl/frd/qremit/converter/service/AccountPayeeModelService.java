@@ -1,12 +1,10 @@
 package abl.frd.qremit.converter.service;
-
 import abl.frd.qremit.converter.model.AccountPayeeModel;
 import abl.frd.qremit.converter.helper.AccountPayeeModelServiceHelper;
 import abl.frd.qremit.converter.repository.AccountPayeeModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -113,5 +111,9 @@ public class AccountPayeeModelService {
 
     public List<AccountPayeeModel> findAccountPayeeModelByExchangeCodeAndUploadDateTime(String exchangeCode, LocalDateTime startDate, LocalDateTime endDate){
         return accountPayeeModelRepository.findAccountPayeeModelByExchangeCodeAndUploadDateTime(exchangeCode,startDate,endDate);
+    }
+
+    public List<Object[]> getDailyProcessedDataByDate(LocalDateTime startDate, LocalDateTime endDate, int isProcessed){
+        return accountPayeeModelRepository.getDailyProcessedDataByDate(startDate, endDate, isProcessed);
     }
 }

@@ -10,6 +10,7 @@ import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.repository.ErrorDataModelRepository;
 
 @Service
+@SuppressWarnings("unchecked")
 public class ErrorDataModelService {
     @Autowired
     ErrorDataModelRepository errorDataModelRepository;
@@ -21,7 +22,8 @@ public class ErrorDataModelService {
     LogModelService logModelService;
     @Autowired
     CommonService commonService;
-
+    @Autowired
+    CustomQueryService customQueryService;
     //find errorDataModel by userID
     public List<ErrorDataModel> findUserModelListById(int userId){
         return errorDataModelRepository.findByUserModelId(userId);
@@ -29,7 +31,7 @@ public class ErrorDataModelService {
 
     //find errorDataModel by updateStatus
     public List<ErrorDataModel> findUserModelListByUpdateStatus(int updateStatus){
-        return errorDataModelRepository.findByUpdateStatus(updateStatus);
+        return errorDataModelRepository.findByUpdateStatusOrderByIdDesc(updateStatus);
     }
 
     //find errorDataModel by using userId and updateStatus
@@ -43,7 +45,12 @@ public class ErrorDataModelService {
         List<String> exchangeCodeList = Arrays.asList(exchangeCode.split(","));
         if(fileInfoModelId != 0){
             return errorDataModelRepository.findErrorByExchangeCodeAndFileId(exchangeCodeList, updateStatus, fileInfoModelId);
-        }else return errorDataModelRepository.findErrorByExchangeCode(exchangeCodeList, updateStatus);
+        }else{
+            if(exchangeCode.isEmpty()){
+                return errorDataModelRepository.findByUpdateStatusOrderByIdDesc(updateStatus);
+            }
+            return errorDataModelRepository.findErrorByExchangeCode(exchangeCodeList, updateStatus);
+        }
     }
 
     //find errorDataModel 
@@ -82,7 +89,6 @@ public class ErrorDataModelService {
         if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
         if(errorDataModel.getUpdateStatus() != 0)   return CommonService.getResp(1, "Invalid Type for update data", null);  //for update status must be 0
         int fileInfoModelId = errorDataModel.getFileInfoModel().getId();
-
         Map<String, Object> errorDataMap = getErrorDataModelMap(errorDataModel); 
 
         Map<String, Object> info = new HashMap<>();
@@ -110,10 +116,18 @@ public class ErrorDataModelService {
         errorDataModel.setBeneficiaryAccount(beneficiaryAccount);
         errorDataModel.setBeneficiaryName(beneficiaryName);
         errorDataModel.setTypeFlag(typeFlag);
+        Map<String, Object> routingMap = new HashMap<>();
+        if(("2").equals(typeFlag) || ("1").equals(typeFlag)){
+            routingMap = commonService.checkAblBranchCode(branchCode);
+            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee or Online", null);
+            List<Map<String, Object>> routingData = (List<Map<String, Object>>) routingMap.get("data");
+            errorDataModel.setBranchCode(routingData.get(0).get("abl_branch_code").toString());
+            errorDataModel.setBranchName(routingData.get(0).get("branch_name").toString());
+        }
 
-        if(("2").equals(typeFlag)){
-            Map<String, Object> routingMap = commonService.checkAblBranchCode(branchCode);
-            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee", null);
+        if(("3").equals(typeFlag)){
+            routingMap = customQueryService.getRoutingDetails(branchCode, "");
+            if((Integer) routingMap.get("err") == 1)  return CommonService.getResp(1, "Invalid Routing No for BEFTN", null);
         }
         
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel);
@@ -162,12 +176,19 @@ public class ErrorDataModelService {
         resp.put("uploadDateTime", uploadDateTime);
         resp.put("typeFlag", errorDataModel.getTypeFlag());
         resp.put("userId", errorDataModel.getUserModel().getId());
-        resp.put("fileInfoId", errorDataModel.getFileInfoModel().getId());
+        resp.put("fileInfoModelId", errorDataModel.getFileInfoModel().getId());
+        resp.put("sourceCountry", errorDataModel.getSourceCountry());
+        resp.put("sourceForeignCurrency", errorDataModel.getSourceForeignCurrency());
+        resp.put("conversionRate", errorDataModel.getConversionRate());
+        resp.put("remitterGender", errorDataModel.getRemitterGender());
+        resp.put("beneficiaryGender", errorDataModel.getBeneficiaryGender());
+        resp.put("beneficiaryDistrict", errorDataModel.getBeneficiaryDistrict());
         return resp;
     }
 
-    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId, String exchangeCode){
-        //List<ErrorDataModel> errorDataModel = findUserModelListByIdAndUpdateStatus(userId, 0, fileInfoModelId);
+    public List<Map<String, Object>> getErrorReport(int userId, int fileInfoModelId, String exchangeCode, Map<String, Object> role){
+        int isAdmin = (int) role.get("isAdmin");
+        if(isAdmin == 1)    exchangeCode = "";  //admin can view all data
         List<ErrorDataModel> errorDataModel = findUserModelListByExchangeCodeAndUpdateStatus(exchangeCode, 0, fileInfoModelId);
         int sl = 1;
         String action = "";
@@ -175,10 +196,15 @@ public class ErrorDataModelService {
         List<Map<String, Object>> dataList = new ArrayList<>();
         for(ErrorDataModel emodel: errorDataModel){
             Map<String, Object> dataMap = new HashMap<>();
-            btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit_error",String.valueOf(emodel.getId()),"Edit");
-            btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete_error",String.valueOf(emodel.getId()),"Delete");
-            action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
-
+            if(isAdmin != 1){
+                btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit_error",String.valueOf(emodel.getId()),"Edit");
+                btn += CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-danger btn-sm delete_error",String.valueOf(emodel.getId()),"Delete");
+                action = CommonService.generateTemplateBtn("template-btngroup.txt", "#", "", "", btn);
+            }
+            String errorMessage = emodel.getErrorMessage();
+            if(errorMessage.toLowerCase().contains("api")){
+                errorMessage = CommonService.generateClassForText(errorMessage, "text-danger fw-bold");
+            }
             dataMap.put("sl", sl++);
             dataMap.put("bankName", emodel.getBankName());
             dataMap.put("branchName", emodel.getBranchName());
@@ -189,7 +215,7 @@ public class ErrorDataModelService {
             dataMap.put("amount", emodel.getAmount());
             dataMap.put("uploadDateTime", CommonService.convertDateToString(emodel.getUploadDateTime()));
             dataMap.put("exchangeCode", emodel.getExchangeCode());
-            dataMap.put("errorMessage", emodel.getErrorMessage());
+            dataMap.put("errorMessage", errorMessage);
             dataMap.put("action", action);
             dataList.add(dataMap);
         }

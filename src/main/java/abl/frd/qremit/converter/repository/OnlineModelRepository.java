@@ -57,4 +57,6 @@ public interface OnlineModelRepository extends JpaRepository<OnlineModel, Intege
     OnlineModel findByIdAndIsDownloaded(int id, int isDownloaded);
     @Query("SELECT n FROM OnlineModel n WHERE n.exchangeCode = :exchangeCode AND n.uploadDateTime BETWEEN :startDate AND :endDate")
     List<OnlineModel> findOnlineModelByExchangeCodeAndUploadDateTime(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT sum(amount) as amount, count(n) as cnt FROM OnlineModel n where  n.downloadDateTime BETWEEN :startDate AND :endDate and n.isProcessed=:isProcessed and n.isApi=0")
+    List<Object[]> getDailyProcessedDataByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("isProcessed") int isProcessed);
 }

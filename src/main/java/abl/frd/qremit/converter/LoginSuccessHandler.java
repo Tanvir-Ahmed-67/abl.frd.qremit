@@ -1,10 +1,8 @@
 package abl.frd.qremit.converter;
-
 import abl.frd.qremit.converter.helper.MyUserDetails;
 import abl.frd.qremit.converter.model.IpRange;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.IpRangeRepository;
-import abl.frd.qremit.converter.repository.UserModelRepository;
 import abl.frd.qremit.converter.service.CommonService;
 import abl.frd.qremit.converter.service.CustomLoginRestrictionsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,27 +11,22 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
-
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final CustomLoginRestrictionsService customLoginRestrictionsService;
-    private final UserModelRepository userModelRepository;
     @Autowired
     CommonService commonService;
     @Autowired
     IpRangeRepository ipRangeRepository;
 
     @Autowired
-    public LoginSuccessHandler(CustomLoginRestrictionsService customLoginRestrictionsService,
-                               UserModelRepository userModelRepository) {
+    public LoginSuccessHandler(CustomLoginRestrictionsService customLoginRestrictionsService) {
         this.customLoginRestrictionsService = customLoginRestrictionsService;
-        this.userModelRepository = userModelRepository;
     }
     SimpleUrlAuthenticationSuccessHandler superAdminSuccessHandler =
             new SimpleUrlAuthenticationSuccessHandler("/super-admin-home-page");

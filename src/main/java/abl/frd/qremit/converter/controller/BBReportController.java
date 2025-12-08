@@ -7,7 +7,11 @@ import java.util.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,21 +20,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import abl.frd.qremit.converter.helper.MyUserDetails;
+import abl.frd.qremit.converter.service.BBReportService;
 import abl.frd.qremit.converter.service.CommonService;
 @SuppressWarnings("unchecked")
 @Controller
 @RequestMapping("/bbReport")
 public class BBReportController {
+    @Autowired
+    BBReportService bbReportService;
     @PersistenceContext
     private EntityManager entityManager;
     protected String tbl = "analytics_abl_target_achievement";
     protected String tbl2 = "analytics_all_bank_remittance";
-    protected String tbl3 = "analytics_all_bank_remittance_current_year";
     protected String tbl4 = "analytics_abl_country_wise";
     protected String tbl5 = "analytics_abl_exchange_wise_remittance";
 
@@ -128,11 +132,11 @@ public class BBReportController {
     @ResponseBody
     public Map<String, Object> getBankWiseCurrentYear(){
         Map<String, Object> resp = new HashMap<>();
-        String sql = "SELECT sum(CAST(amount AS DECIMAL(10,2))) as total FROM " + tbl3;
-        Object result = entityManager.createNativeQuery(sql).getSingleResult();
+        Object result = bbReportService.getBankWiseRemittanceCurrentYear("sum(CAST(amount AS DECIMAL(10,2))) as total", resp, "", true);
         Double total = CommonService.convertStringToDouble(result.toString());
-        sql = "SELECT *, sum(CAST(amount AS DECIMAL(10,2))) AS totalAmount, MAX(STR_TO_DATE(month_week, '%d-%M-%Y')) AS latestDate FROM " + tbl3 + " GROUP BY bank_code ORDER BY totalAmount DESC LIMIT 0,10";
-        List<Object[]> resultList = entityManager.createNativeQuery(sql).getResultList();
+        String field = "*, sum(CAST(amount AS DECIMAL(10,2))) AS totalAmount, MAX(STR_TO_DATE(month_week, '%d-%M-%Y')) AS latestDate";
+        String extra = "GROUP BY bank_code ORDER BY totalAmount DESC LIMIT 0,10";
+        List<Object[]> resultList = (List<Object[]>) bbReportService.getBankWiseRemittanceCurrentYear(field, resp, extra, false);
         List<Map<String, Object>> dataList = new ArrayList<>();
         int i = 1;
         for(Object[] row: resultList){
@@ -190,18 +194,69 @@ public class BBReportController {
         return resp;
     }
     
-    @PostMapping(value="/uploadMonthly", produces = "application/json")
-    @ResponseBody
-    public Map<String, Object> uploadBbReport(@AuthenticationPrincipal MyUserDetails userDetails,@RequestParam("file") MultipartFile file, Model model){
+    @GetMapping("/upload")
+    public String uploadBbReportUi(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || !authentication.isAuthenticated() || (authentication instanceof AnonymousAuthenticationToken)){
+            return "redirect:/login";
+        }
+        Map<String, Object> dropdown = getBbReportDropdown();
+        model.addAttribute("dropdown", dropdown);
+        return "report/bb_report_upload";
+    }
+
+    public Map<String, Object> getBbReportDropdown(){
         Map<String, Object> resp = new HashMap<>();
+        resp.put("1","Bangladesh Bank Monthly Report");
+        return resp;
+    }
+    
+    @PostMapping(value="/uploadReport", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> uploadBbReport(@AuthenticationPrincipal MyUserDetails userDetails,@RequestParam("file") MultipartFile file,@RequestParam Map<String, String> formData, Model model){
+        Map<String, Object> resp = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || !authentication.isAuthenticated() || (authentication instanceof AnonymousAuthenticationToken)){
+            return CommonService.getResp(1, "Session Expired. Please Login again", null);
+        }
+        String uType = formData.get("uType");
+        if(uType.isEmpty())     return CommonService.getResp(1, "Please select Upload Type", null);
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
-         CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
+         CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
-            for(CSVRecord csvRecord:csvRecords){
-
-            }
+            if(uType.equals("1")){
+                resp = processBbMonthlyData(csvRecords);
+            }else CommonService.getResp(1, "Invalid Upload Type", null);
         }catch(IOException e){
+            e.printStackTrace();
+            resp = CommonService.getResp(1, e.getMessage(), null);
+        }
+        return resp;
+    }
+    
+    public Map<String, Object> processBbMonthlyData(Iterable<CSVRecord> csvRecords){
+        Map<String, Object> resp = new HashMap<>();
+        for(CSVRecord csvRecord:csvRecords){
+            String bankCode = csvRecord.get(1).trim();
+            String year= csvRecord.get(4).trim();
+            String month = csvRecord.get(5).trim();
+            if(bankCode.isEmpty() || year.isEmpty() || month.isEmpty()) return CommonService.getResp(1,"Year or month or bank is empty", null);
+            Map<String, Object> where = new HashMap<>();
+            where.put("year", year);
+            where.put("month", month);
+            where.put("bank_code", bankCode);
 
+            Map<String, Object> field = new HashMap<>();
+            field.put("year", year);
+            field.put("month", month);
+            field.put("bank_code", bankCode);
+            field.put("bank_name", csvRecord.get(2).trim());
+            field.put("bank_category", csvRecord.get(3).trim());
+            field.put("month_week", csvRecord.get(6).trim());
+            field.put("amount", csvRecord.get(7).trim());
+            field.put("market_share", csvRecord.get(8).trim());
+            
+            resp = bbReportService.addBankWiseRemittanceCurrentYear(field, where);
         }
         return resp;
     }

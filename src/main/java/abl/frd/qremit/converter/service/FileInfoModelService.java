@@ -3,7 +3,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
-import abl.frd.qremit.converter.model.FileInfoModelDTO;
 import abl.frd.qremit.converter.repository.AccountPayeeModelRepository;
 import abl.frd.qremit.converter.repository.BeftnModelRepository;
 import abl.frd.qremit.converter.repository.CocModelRepository;
@@ -39,6 +38,10 @@ public class FileInfoModelService {
         }else{
             return fileInfoModelRepository.getUploadedFileDetails(dateTime.get("startDateTime"), dateTime.get("endDateTime"));
         }
+    }
+    public List<FileInfoModel> getUploadedFileDetailsByExchangeCode(String exchangeCode, String date){
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(date);
+        return fileInfoModelRepository.getUploadedFileDetailsByExchangeCode(exchangeCode, dateTime.get("startDateTime"), dateTime.get("endDateTime"));
     }
 
     public Map<String, Object> deleteFileInfoModelById(int id){
@@ -106,7 +109,7 @@ public class FileInfoModelService {
         return fileInfoModelRepository.getFileDetailsBetweenUploadedDate(startDateTime, enDateTime);
     }
 
-    public FileInfoModelDTO getSettlementDataByExchangeCode(String date, String exchangeCode, int isSettlement){
+    public List<FileInfoModel> getSettlementDataByExchangeCode(String date, String exchangeCode, int isSettlement){
         String startDate = date + " 00:00:00";
         String endDate = date + " 23:59:59";
         LocalDateTime startDateTime = CommonService.convertStringToDate(startDate);
@@ -118,16 +121,13 @@ public class FileInfoModelService {
         List<Map<String, Object>> settlementList = new ArrayList<>();        
         for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
             String exchangeCode = exchangeHouseModel.getExchangeCode();
-            FileInfoModelDTO fileInfoModelDTO = getSettlementDataByExchangeCode(date, exchangeCode, 1);
+            List<FileInfoModel> fileInfoModelList = getSettlementDataByExchangeCode(date, exchangeCode, 1);
             Map<String, Object> resp = new HashMap<>();
             resp.put("exchangeCode", exchangeCode);
             resp.put("exchangeName", exchangeHouseModel.getExchangeName());
             resp.put("hasSettlementDaily", exchangeHouseModel.getHasSettlementDaily());
-            int count = 0;
-            if(fileInfoModelDTO != null){
-                count = fileInfoModelDTO.getCount();
-                resp.put("fileInfoModel", fileInfoModelDTO.getFileInfoModel());
-            }
+            int count = fileInfoModelList.size();
+            resp.put("fileInfoModelList", fileInfoModelList);
             resp.put("count", count);
             settlementList.add(resp);
         }
@@ -151,5 +151,4 @@ public class FileInfoModelService {
     public void updateErrorCountById(int id, int errorCount){
         fileInfoModelRepository.updateErrorCountById(id, errorCount);
     }
-
 }

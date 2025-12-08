@@ -100,6 +100,7 @@ public class ApiBeftnModelService {
             List<Map<String, Object>> dataList = new ArrayList<>();
             Map<String, Object> modelResp = new HashMap<>();
             int isValidFile = 1;
+            List<Map<String, Object>> countryList = customQueryService.getCountryList();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 String nrtaCode = csvRecord.get(0);
@@ -107,6 +108,7 @@ public class ApiBeftnModelService {
                 String transactionNo = csvRecord.get(1).trim();
                 String amount = csvRecord.get(3).trim();
                 String bankCode = csvRecord.get(8).trim();
+                String sourceCountry = customQueryService.parseCountryCode(countryList, csvRecord.get(12).trim(), exchangeCode);
                 if(i == 1){
                     Map<String, Object> apiCheckResp = CommonService.checkApiOrBeftnData(bankCode, 0);
                     if((Integer) apiCheckResp.get("err") == 1){
@@ -119,7 +121,7 @@ public class ApiBeftnModelService {
                 String bankName = csvRecord.get(9);
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String branchCode = CommonService.fixRoutingNo(csvRecord.get(11).trim());
-                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode);
+                Map<String, Object> data = getCsvData(csvRecord, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, sourceCountry);
                 data.put("nrtaCode", nrtaCode);
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
@@ -132,52 +134,6 @@ public class ApiBeftnModelService {
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
                 duplicateCount = (int) modelResp.get("duplicateCount");
-                /*
-                for(Map<String, Object> data: dataList){
-                    String transactionNo = data.get("transactionNo").toString();
-                    String exchangeCode = data.get("exchangeCode").toString();
-                    String nrtaCode = data.get("nrtaCode").toString();
-                    String bankName = data.get("bankName").toString();
-                    String beneficiaryAccount = data.get("beneficiaryAccount").toString();
-                    String branchCode = data.get("branchCode").toString();
-                    data.remove("nrtaCode");
-                    Map<String, Object> dupResp = CommonService.getDuplicateTransactionNo(transactionNo, uniqueDataList);
-                    if((Integer) dupResp.get("isDuplicate") == 1){
-                        duplicateMessage +=  "Duplicate Reference No " + transactionNo + " Found <br>";
-                        duplicateCount++;
-                        continue;
-                    }
-                    Map<String, Object> errResp = CommonService.checkError(data, errorDataModelList, nrtaCode, fileInfoModel, user, currentDateTime, exchangeCode, duplicateData, transactionList);
-                    if((Integer) errResp.get("err") == 1){
-                        errorDataModelList = (List<ErrorDataModel>) errResp.get("errorDataModelList");
-                        continue;
-                    }
-                    if((Integer) errResp.get("err") == 2){
-                        resp.put("errorMessage", errResp.get("msg"));
-                        break;
-                    }
-
-                    if((Integer) errResp.get("err") == 4){
-                        duplicateMessage += errResp.get("msg");
-                        continue;
-                    }
-                    if(errResp.containsKey("transactionList"))  transactionList = (List<String>) errResp.get("transactionList");
-                    String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
-                    if(!CommonService.convertStringToInt(typeFlag).equals(3)){
-                        String msg = "Invalid Remittence Type for BEFTN";
-                        CommonService.addErrorDataModelList(errorDataModelList, data, exchangeCode, msg, currentDateTime, user, fileInfoModel);
-                        continue;
-                    }
-                    ApiBeftnModel apiBeftnModel = new ApiBeftnModel();
-                    apiBeftnModel = CommonService.createDataModel(apiBeftnModel, data);
-                    apiBeftnModel.setTypeFlag(typeFlag);
-                    apiBeftnModel.setUploadDateTime(currentDateTime);
-                    apiBeftnModel.setFileInfoModel(fileInfoModel);
-                    apiBeftnModel.setUserModel(user);
-                    apiBeftnModelList.add(apiBeftnModel);
-
-                }
-                */
             }
 
             //save error data
@@ -203,7 +159,7 @@ public class ApiBeftnModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String sourceCountry){
         Map<String, Object> data = new HashMap<>();
         LocalDateTime enteredDate = CommonService.convertStringToDate(csvRecord.get(4));
         data.put("exchangeCode", exchangeCode);
@@ -227,6 +183,7 @@ public class ApiBeftnModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", sourceCountry);
         return data;
     }
 

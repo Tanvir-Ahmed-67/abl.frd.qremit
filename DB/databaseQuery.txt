@@ -69,3 +69,4 @@ SELECT DISTINCT exchange_code FROM `qremit_archive_2024` exchange_code where exc
 UPDATE `ex_house_list` set is_settlement = 1 where exchange_code = '7010260';
 UPDATE `ex_house_list` set is_settlement = 1 where exchange_code = '7010228';
 UPDATE ex_house_list set `repository_name` = 'arhMalaysiaModelRepository', class_name = 'ArhMalaysiaModel' WHERE exchange_code = '7010228';
+INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_short_name`, `nrta_code`, `country_code`, `country_name`, `base_table_name`, `class_name`, `repository_name`, `is_settlement`, `active_status`, `has_settlement_daily`) VALUES (NULL, '555555', 'API NPSB', 'API NPSB', '1000', '', '', 'npsb_mfs', 'NpsbMfsModel', 'npsbMfsRepository', '1', '1', '0');

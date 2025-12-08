@@ -71,8 +71,10 @@ public class RiaModelService {
                     riaModel.setFileInfoModel(fileInfoModel);
                     riaModel.setUserModel(user);
                 }
+                Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+                if(riaData.containsKey("apiGovtIncentiveMap")) apiGovtIncentiveMap = (Map<String, Double>) riaData.get("apiGovtIncentiveMap");
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(riaModelList, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(riaModelList, fileInfoModel, user, currentDateTime, type, apiGovtIncentiveMap);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(riaModelList.size()));
                 fileInfoModel.setIsSettlement(type);
@@ -109,10 +111,11 @@ public class RiaModelService {
             Map<String, Object> modelResp = new HashMap<>();
             String fileExchangeCode = "";
             int isValidFile = 1;
+            List<Map<String, Object>> countryList = customQueryService.getCountryList();
             for (CSVRecord csvRecord : csvRecords) {
                 i++;
                 if(i == 1){
-                    Map<String, Object> apiCheckResp = checkRiaApiOrBeftnData(csvRecord.get(0), type);
+                    Map<String, Object> apiCheckResp = checkRiaApiOrBeftnData(csvRecord.get(0), type, nrtaCode);
                     if((Integer) apiCheckResp.get("err") == 1){
                         resp.put("errorMessage", apiCheckResp.get("msg"));
                         isValidFile = 0;
@@ -125,7 +128,9 @@ public class RiaModelService {
                 String transactionNo = (type == 1) ? csvRecord.get(0).trim(): csvRecord.get(1).trim();
                 String beneficiaryAccount = csvRecord.get(7).trim();
                 String amount = (type == 1) ? csvRecord.get(1) : csvRecord.get(3);
-                Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount);
+                String remCountry = (type == 1) ? csvRecord.get(5) : csvRecord.get(12);
+                String sourceCountry =  (!remCountry.isEmpty()) ? customQueryService.parseCountryCode(countryList, remCountry.trim(), exchangeCode): "";
+                Map<String, Object> data = getCsvData(csvRecord, type, exchangeCode, transactionNo, beneficiaryAccount, bankName, branchCode, amount, sourceCountry);
                 //check api error for ria special case
                 if(type == 1){
                     String errorMessage = CommonService.checkApiTransactionStatus(csvRecord.get(8).toLowerCase());
@@ -143,6 +148,7 @@ public class RiaModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, RiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                resp.put("apiGovtIncentiveMap", (Map<String, Double>) modelResp.get("apiGovtIncentiveMap"));
                 riaModelList = (List<RiaModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -172,7 +178,7 @@ public class RiaModelService {
         return resp;
     }
 
-    public Map<String, Object> getCsvData(CSVRecord csvRecord, int type, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount){
+    public Map<String, Object> getCsvData(CSVRecord csvRecord, int type, String exchangeCode, String transactionNo, String beneficiaryAccount, String bankName, String branchCode, String amount, String sourceCountry){
         Map<String, Object> data = new HashMap<>();
         String bankCode = (type == 1) ? "11": csvRecord.get(8).trim();
         String branchName = (type == 1) ? "Principal": csvRecord.get(10).trim();
@@ -183,6 +189,7 @@ public class RiaModelService {
             LocalDateTime date = CommonService.convertStringToDate(enteredDate);
             enteredDate = date.toLocalDate().toString();
         }
+        if(type == 1)   data.put("govtIncentive", csvRecord.get(4).trim());
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", currrency);
@@ -204,14 +211,15 @@ public class RiaModelService {
         data.put("processFlag", "");
         data.put("processedBy", "");
         data.put("processedDate", "");
+        data.put("sourceCountry", sourceCountry);
         return data;
     }
     
-    public Map<String, Object> checkRiaApiOrBeftnData(String firstColumn, int type){
+    public Map<String, Object> checkRiaApiOrBeftnData(String firstColumn, int type, String nrtaCode){
         Map<String, Object> resp = CommonService.getResp(0, "", null);
         String msg = "You selected wrong file. Please select the correct file.";
-        if(type == 0 && !firstColumn.equals("7081")) resp = CommonService.getResp(1, msg, null);
-        else if(type == 1 && firstColumn.equals("7081"))   resp = CommonService.getResp(1, msg, null);
+        if(type == 0 && !firstColumn.equals(nrtaCode)) resp = CommonService.getResp(1, msg, null);
+        else if(type == 1 && firstColumn.equals(nrtaCode))   resp = CommonService.getResp(1, msg, null);
         return resp;
     }
 }

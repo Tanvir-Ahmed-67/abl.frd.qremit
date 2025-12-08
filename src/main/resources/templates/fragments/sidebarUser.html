@@ -33,13 +33,13 @@
                 </li> -->
                 <!--..........................User Section......................-->
                 <div>
-                    <li class="sidebar-item has-sub" th:if="${not #maps.isEmpty(exchangeMap)}">
+                    <li class="sidebar-item has-sub" th:if="${not #maps.isEmpty(exchangeMap.exchangeMap)}">
                         <a href="#" class='sidebar-link'>
                             <i class="fa-solid fa-upload"></i>
                             <span>Upload File</span>
                         </a>
                         <ul class="submenu">
-                            <li th:each="entry : ${exchangeMap.entrySet()}">
+                            <li th:each="entry : ${exchangeMap.exchangeMap.entrySet()}">
                                 <a th:href="@{'/utils/index?id=' + ${entry.value}}"  class="exCode">
                                     <i class="fa-regular fa-circle sub-icon"></i>
                                     <span th:text="${entry.key}"></span>
@@ -70,6 +70,26 @@
                             </li>
                             <li>
                                 <a th:href="@{/user-home-page?type=13}"><i class="fa-regular fa-circle sub-icon"></i>Monthly Report</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item has-sub">
+                        <a href="#" class='sidebar-link'>
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            <span>BEFTN Return Management</span>
+                        </a>
+                        <ul class="submenu ">
+                            <li>
+                                <a th:href="@{/search?type=3}"><i class="fa-regular fa-circle sub-icon"></i>BEFTN Return Search</a>
+                            </li>
+                            <li th:if="${exchangeMap.isBeftnReturn == 1}">
+                                <a th:href="@{/uploadBeftnReturn}"><i class="fa-regular fa-circle sub-icon"></i>Upload BEFTN Return</a>
+                            </li>
+                            <li th:if="${exchangeMap.isBeftnReturn == 1}">
+                                <a th:href="@{/user-home-page?type=16}"><i class="fa-regular fa-circle sub-icon"></i>View Uploaded BEFTN Return</a>
+                            </li>
+                            <li>
+                                <a th:href="@{/user-home-page?type=15}"><i class="fa-regular fa-circle sub-icon"></i>BEFTN Return Report</a>
                             </li>
                         </ul>
                     </li>
