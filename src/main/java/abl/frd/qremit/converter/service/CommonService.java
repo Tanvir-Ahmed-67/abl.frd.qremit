@@ -1726,6 +1726,13 @@ public class CommonService {
             return true;
         }else return false;
     }
+    public static boolean checkSpotCash(String trMode){
+        if(trMode.equals("5") || trMode.equals("15") || 
+            trMode.toLowerCase().equals("cash collection") || trMode.toLowerCase().equals("account") || 
+            trMode.toLowerCase().equals("cash payee") || trMode.toLowerCase().equals("account payee")){
+                return true;
+            }else return false;
+    }
     public static Map<String, Object> getFormattedAmountAndCount(List<Object[]> obj){
         Map<String, Object> resp = new HashMap<>();
         double amount = 0.0;

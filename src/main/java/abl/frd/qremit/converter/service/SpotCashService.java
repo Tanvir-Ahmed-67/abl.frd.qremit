@@ -32,6 +32,8 @@ public class SpotCashService {
     CustomQueryService customQueryService;
     @Autowired
     CommonService commonService;
+    @Autowired
+    ApiService apiService;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode){
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime currentDateTime = CommonService.getCurrentDateTime();
@@ -70,7 +72,7 @@ public class SpotCashService {
             Method dynamicMethod = this.getClass().getDeclaredMethod(methodName, Iterable.class, String.class, String.class,List.class);
             dynamicMethod.setAccessible(true);
             Map<String, Object> dataResp = (Map<String, Object>) dynamicMethod.invoke(this, csvRecords, exchangeCode, nrtaCode, countryList);
-            System.out.println(dataResp);
+            //System.out.println(dataResp);
         } catch (Exception e) {
             String message = "fail to store csv data: " + e.getMessage();
             resp.put("errorMessage", message);
@@ -155,11 +157,9 @@ public class SpotCashService {
     }
 
     public Map<String, Object> processApi(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
-        Map<String, Object> resp = new HashMap<>();
-        for (CSVRecord csvRecord : csvRecords) {
-            System.out.println(csvRecord);
-        }
-        return resp;
+        Map<String, Object> dataResp = apiService.processApiData("5", csvRecords, countryList);
+        //System.out.println(dataResp);
+        return dataResp;
     }
 
     public Map<String, Object> processCbl(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
