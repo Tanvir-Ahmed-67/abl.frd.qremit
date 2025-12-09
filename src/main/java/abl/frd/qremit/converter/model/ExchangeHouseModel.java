@@ -33,6 +33,8 @@ public class ExchangeHouseModel {
     private int isSettlement = 0;
     @Column(name = "has_settlement_daily", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int hasSettlementDaily = 0;
+    @Column(name="exchange_code_sc", length = 10)
+    private String exchangeCodeSc;
     @Column(name = "class_name", length = 32, nullable = false)
     private String className;
     @Column(name = "repository_name", length = 32, nullable = false)
@@ -84,6 +86,14 @@ public class ExchangeHouseModel {
 
     public void setExchangeName(String exchangeName) {
         this.exchangeName = exchangeName;
+    }
+
+    public String getExchangeCodeSc() {
+        return this.exchangeCodeSc;
+    }
+
+    public void setExchangeCodeSc(String exchangeCodeSc) {
+        this.exchangeCodeSc = exchangeCodeSc;
     }
 
     public String getNrtaCode() {

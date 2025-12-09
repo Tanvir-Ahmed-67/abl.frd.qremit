@@ -97,4 +97,8 @@ public class ExchangeHouseModelService {
         return exchangeHouseModels.stream()
                 .collect(Collectors.toMap(ExchangeHouseModel::getExchangeCode, ExchangeHouseModel::getExchangeName));
     }
+
+    public List<ExchangeHouseModel> getSpotCashExchangeList(){
+        return exchangeHouseModelRepository.getSpotCashExchangeList();
+    }
 }

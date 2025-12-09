@@ -1,0 +1,70 @@
+!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head-css"></head>
+<body th:fragment="fileUploadForm">
+    <div id="app"><!--main content-->
+        <span th:replace="fragments/sidebarUser :: sidebarUser"></span>
+        <div id="main"><!--content Id-->
+            <span th:replace="fragments/header :: header"></span>
+            <div class="main-content container-fluid">
+                <div class="page-title">
+                    <div class="row">
+                        <div class="col-12 col-md-6 order-md-1 order-last">
+                            <h3>Spot Cash File Upload</h3>
+                        </div>
+                        <div class="col-12 col-md-6 order-md-2 order-first">
+                            <nav aria-label="breadcrumb" class='breadcrumb-header'>
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#">Main Menu</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">File Upload</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>        
+    
+                <section id="input-style">
+                    <div class="row" style="min-height: 58vh">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-header">
+                                </div>
+                                <div class="card-body">
+                                    <div id="up-form">
+                                        <form id="sptCashUpload" method="POST" th:action="@{#}" enctype="multipart/form-data">
+                                            <div class="row">
+                                                <div class="mb-2 col-md-2 form-group"><label>Exchange House</label></div>
+                                                <div class="col-md-10 mb-2">
+                                                    <select id="exchangeCode" name="exchangeCode" class="form-select">
+                                                        <option value="">Choose One</option>
+                                                        <option th:each="house : ${exchangeHouseList}" 
+                                                            th:value="${house.exchangeCode}" 
+                                                            th:text="${house.exchangeName}">
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2 mb-2 form-group"><label>Upload File</label></div>
+                                                <div class="col-sm-8 form-group">
+                                                    <input type="file" id="file" class="form-control round" name="file" placeholder="Choose File" required>
+                                                </div>
+                                                <div class="col-sm-2 mb-2">
+                                                    <button type="submit" class="btn btn-info">Submit</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div id="modal_wrap"></div><div class="lmodal"></div>
+            </div>
+            <span th:replace="fragments/footer :: footer"></span>
+        </div>
+    </div>
+    <script src="/js/spot_cash.js"></script>
+</body>
+</html>
