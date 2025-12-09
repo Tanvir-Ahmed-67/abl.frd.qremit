@@ -65,14 +65,9 @@ public class SpotCashService {
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             String methodName = (String) config.get("method");
-            Method dynamicMethod = this.getClass().getDeclaredMethod(methodName, CSVRecord.class);
+            Method dynamicMethod = this.getClass().getDeclaredMethod(methodName, Iterable.class, String.class, String.class,List.class);
             dynamicMethod.setAccessible(true);
-            List<Map<String, Object>> dataList = new ArrayList<>();
-            int i = 0;
-            for(CSVRecord csvRecord: csvRecords){
-                Map<String, Object> data = (Map<String, Object>) dynamicMethod.invoke(this, csvRecord, exchangeCode, nrtaCode, countryList);
-                dataList.add(data);
-            }
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) dynamicMethod.invoke(this, csvRecords, exchangeCode, nrtaCode, countryList);
             System.out.println(dataList);
         } catch (Exception e) {
             String message = "fail to store csv data: " + e.getMessage();
@@ -157,33 +152,35 @@ public class SpotCashService {
         return resp;
     }
 
-    public Map<String, Object> processApi(CSVRecord csvRecord, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+    public Map<String, Object> processApi(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
-        System.out.println(csvRecord);
+        for (CSVRecord csvRecord : csvRecords) {
+            System.out.println(csvRecord);
+        }
         return resp;
     }
 
-    public Map<String, Object> processCbl(CSVRecord csvRecord, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+    public Map<String, Object> processCbl(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
-        System.out.println(csvRecord);
+        //System.out.println(csvRecord);
         return resp;
     }
 
-    public Map<String, Object> processEzRemit(CSVRecord csvRecord, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+    public Map<String, Object> processEzRemit(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
-        System.out.println(csvRecord);
+        //System.out.println(csvRecord);
         return resp;
     }
 
-    public Map<String, Object> processInstantCash(CSVRecord csvRecord, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+    public Map<String, Object> processInstantCash(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
-        System.out.println(csvRecord);
+        //System.out.println(csvRecord);
         return resp;
     }
 
-    public Map<String, Object> processRia(CSVRecord csvRecord, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+    public Map<String, Object> processRia(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
-        System.out.println(csvRecord);
+        //System.out.println(csvRecord);
         return resp;
     }
 }
