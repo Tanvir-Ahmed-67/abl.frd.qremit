@@ -65,7 +65,7 @@ public class SpotCashService {
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             String methodName = (String) config.get("method");
-            Method dynamicMethod = this.getClass().getDeclaredMethod(methodName, List.class);
+            Method dynamicMethod = this.getClass().getDeclaredMethod(methodName, Iterable.class, String.class, String.class,List.class);
             dynamicMethod.setAccessible(true);
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) dynamicMethod.invoke(this, csvRecords, exchangeCode, nrtaCode, countryList);
             System.out.println(dataList);
@@ -154,7 +154,9 @@ public class SpotCashService {
 
     public Map<String, Object> processApi(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
-        //System.out.println(csvRecord);
+        for (CSVRecord csvRecord : csvRecords) {
+            System.out.println(csvRecord);
+        }
         return resp;
     }
 
