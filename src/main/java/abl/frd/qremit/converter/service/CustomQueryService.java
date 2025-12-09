@@ -54,12 +54,15 @@ public class CustomQueryService {
         }
         return routingData;
     }
-
     public Map<String, Object> generateRoutingDetailsByRoutingNo(List<Map<String,Object>> routingData, String routingNo){
+        String key = "routing_no";
+        return generateRoutingDetailsByRoutingNo(routingData, routingNo, key);
+    }
+    public Map<String, Object> generateRoutingDetailsByRoutingNo(List<Map<String,Object>> routingData, String routingNo, String key){
         Map<String, Object> resp = new HashMap<>();
         if(!routingData.isEmpty()){
             for(Map<String, Object> rdata: routingData){
-                if(rdata.get("routing_no").equals(routingNo)){
+                if(rdata.get(key).equals(routingNo)){
                     return rdata;
                 }
             }

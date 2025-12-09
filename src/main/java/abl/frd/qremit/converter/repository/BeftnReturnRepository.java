@@ -15,4 +15,6 @@ public interface BeftnReturnRepository extends JpaRepository<BeftnReturnModel, I
     List<BeftnReturnModel> getBeftnReturnModelByExchangeCodeAndReturnDate(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
     @Query("SELECT n FROM BeftnReturnModel n WHERE n.fileInfoModelId = :fileInfoModelId ORDER BY n.exchangeCode DESC")
     List<BeftnReturnModel> getBeftnReturnModelByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
+    List<BeftnReturnModel> findByTransactionNo(String transactionNo);
+    List<BeftnReturnModel> findByBeneficiaryAccount(String beneficiaryAccount);
 }

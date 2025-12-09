@@ -306,7 +306,7 @@ public class CustomQueryRepository {
         Map<String, Object> params = new HashMap<>();
         String queryStr = "SELECT * FROM beftn_return_reason";
         if(!returnCode.isEmpty()){
-            queryStr += " WHERE return_code=?1";
+            queryStr += " WHERE return_code=?";
             params.put("1",returnCode);
         }
         return getData(queryStr,params);

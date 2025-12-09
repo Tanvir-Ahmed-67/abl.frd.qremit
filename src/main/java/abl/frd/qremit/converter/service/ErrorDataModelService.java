@@ -10,6 +10,7 @@ import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.repository.ErrorDataModelRepository;
 
 @Service
+@SuppressWarnings("unchecked")
 public class ErrorDataModelService {
     @Autowired
     ErrorDataModelRepository errorDataModelRepository;
@@ -21,7 +22,8 @@ public class ErrorDataModelService {
     LogModelService logModelService;
     @Autowired
     CommonService commonService;
-
+    @Autowired
+    CustomQueryService customQueryService;
     //find errorDataModel by userID
     public List<ErrorDataModel> findUserModelListById(int userId){
         return errorDataModelRepository.findByUserModelId(userId);
@@ -87,7 +89,6 @@ public class ErrorDataModelService {
         if(errorDataModel == null)  return CommonService.getResp(1, "No data found following Error Model", null);
         if(errorDataModel.getUpdateStatus() != 0)   return CommonService.getResp(1, "Invalid Type for update data", null);  //for update status must be 0
         int fileInfoModelId = errorDataModel.getFileInfoModel().getId();
-
         Map<String, Object> errorDataMap = getErrorDataModelMap(errorDataModel); 
 
         Map<String, Object> info = new HashMap<>();
@@ -115,10 +116,18 @@ public class ErrorDataModelService {
         errorDataModel.setBeneficiaryAccount(beneficiaryAccount);
         errorDataModel.setBeneficiaryName(beneficiaryName);
         errorDataModel.setTypeFlag(typeFlag);
+        Map<String, Object> routingMap = new HashMap<>();
+        if(("2").equals(typeFlag) || ("1").equals(typeFlag)){
+            routingMap = commonService.checkAblBranchCode(branchCode);
+            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee or Online", null);
+            List<Map<String, Object>> routingData = (List<Map<String, Object>>) routingMap.get("data");
+            errorDataModel.setBranchCode(routingData.get(0).get("abl_branch_code").toString());
+            errorDataModel.setBranchName(routingData.get(0).get("branch_name").toString());
+        }
 
-        if(("2").equals(typeFlag)){
-            Map<String, Object> routingMap = commonService.checkAblBranchCode(branchCode);
-            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee", null);
+        if(("3").equals(typeFlag)){
+            routingMap = customQueryService.getRoutingDetails(branchCode, "");
+            if((Integer) routingMap.get("err") == 1)  return CommonService.getResp(1, "Invalid Routing No for BEFTN", null);
         }
         
         Map<String, Object> updatedData = getErrorDataModelMap(errorDataModel);

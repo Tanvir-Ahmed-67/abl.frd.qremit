@@ -60,6 +60,10 @@ public class ReportService {
     DynamicOperationService dynamicOperationService;
     @Autowired
     NpsbMfsService npsbMfsService;
+    @Autowired
+    BeftnReturnRepository beftnReturnRepository;
+    @Autowired
+    CustomQueryService customQueryService;
 
     DateTimeFormatter yyMMddFormatter = DateTimeFormatter.ofPattern("yyMMdd");     // YYMMDD
     DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // YYYY/MM/DD
@@ -561,6 +565,8 @@ public class ReportService {
                     reportModel.setRemitterGender((String) CommonService.getPropertyValue(model, "getRemitterGender"));
                     reportModel.setBeneficiaryGender((String) CommonService.getPropertyValue(model, "getBeneficiaryGender"));
                     reportModel.setBeneficiaryDistrict((String) CommonService.getPropertyValue(model, "getBeneficiaryDistrict"));
+                    reportModel.setBeneficiaryMobile((String) CommonService.getPropertyValue(model, "getBeneficiaryMobile"));
+                    reportModel.setRemitterMobile((String) CommonService.getPropertyValue(model, "getRemitterMobile"));
                     if(("1").equals(types)) reportModel.setIsApi((Integer) CommonService.getPropertyValue(model, "getIsApi"));
                     switch (types){
                         case "1":
@@ -991,6 +997,22 @@ public class ReportService {
         return CommonService.getResp(1, "No data found for edit", null);
     }
 
+    public Map<String, Object> getBeftnReturnSearch(String searchType, String searchValue){
+        if(searchType.isEmpty() || searchValue.isEmpty())     return CommonService.getResp(1, "Please Select Search Type or Value", null);
+        List<BeftnReturnModel> beftnReturnModelList = new ArrayList<>();
+        switch(searchType){
+            case "1":
+                beftnReturnModelList = beftnReturnRepository.findByTransactionNo(searchValue);
+                break;
+            case "2":
+                beftnReturnModelList = beftnReturnRepository.findByBeneficiaryAccount(searchValue);
+                break;
+        }
+        if(beftnReturnModelList.isEmpty())  return CommonService.getResp(1, "No data found", null);
+        List<Map<String, Object>> dataList = beftnModelService.processBeftnReturnSearchData(beftnReturnModelList);
+        return CommonService.getResp(0, "", dataList);
+    }
+
     public Map<String, Object> getEditData(int id, String type, int convertObj){
         Map<String, Object> resp = new HashMap<>();
         if(id == 0 || ("").equals(type))    return CommonService.getResp(1, "Please select id or type", null);
@@ -1063,9 +1085,18 @@ public class ReportService {
             return CommonService.getResp(1, errorMessage, null);
         }
         String typeFlag = CommonService.setTypeFlag(beneficiaryAccount, bankName, branchCode);
-        if(("2").equals(typeFlag)){
-            Map<String, Object> routingMap = commonService.checkAblBranchCode(branchCode);
-            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee", null);
+        Map<String, Object> routingMap = new HashMap<>();
+        if(("2").equals(typeFlag) || ("1").equals(typeFlag)){
+            routingMap = commonService.checkAblBranchCode(branchCode);
+            if((Integer) routingMap.get("err") == 1)    return CommonService.getResp(1, "Invalid Branch Code for A/C Payee or Online", null);
+            List<Map<String, Object>> routingData = (List<Map<String, Object>>) routingMap.get("data");
+            formData.put("branchCode",routingData.get(0).get("abl_branch_code").toString());
+            formData.put("branchName",routingData.get(0).get("branch_name").toString());
+        }
+
+        if(("3").equals(typeFlag)){
+            routingMap = customQueryService.getRoutingDetails(branchCode, "");
+            if((Integer) routingMap.get("err") == 1)  return CommonService.getResp(1, "Invalid Routing No for BEFTN", null);
         }
         resp = dynamicOperationService.updateIndividualDataById(exchangeCode, fileInfoModel, user, transactionNo, formData, type, obj, typeFlag);
         if((Integer) resp.get("err") == 0){

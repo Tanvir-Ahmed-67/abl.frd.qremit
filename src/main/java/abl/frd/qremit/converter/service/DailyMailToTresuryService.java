@@ -19,7 +19,7 @@ public class DailyMailToTresuryService {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Scheduled(cron = "0 30 16 * * ?") // Every day at 4:30 PM
+    @Scheduled(cron = "0 0 15 * * ?") // Every day at 4:30 PM
     public void sendDailyAmountReport() {
         String sql = "SELECT SUM(amount + incentive) FROM converted_data_beftn WHERE DATE(download_date_time) = CURRENT_DATE";
         Double amount = jdbcTemplate.queryForObject(sql, Double.class);
@@ -58,7 +58,7 @@ public class DailyMailToTresuryService {
                 "Best Regards,\n\n" +
                 "Tanvir Ahmed\n" +
                 "Principal Officer\n" +
-                "Information Technology & MIS Division.\n" +
+                "Foreign Remittance Division.\n" +
                 "Agrani Bank PLC (Head Office)\n" +
                 "Contact: 01714785866";
     }

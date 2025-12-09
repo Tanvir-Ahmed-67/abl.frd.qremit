@@ -93,6 +93,10 @@ public class BeftnModel {
     private String beneficiaryDistrict;
     @Column(name = "txn_modified", length = 30)
     private String txnModified;
+    @Column(name = "remitter_mobile_no", length=30)
+    private String remitterMobile;
+    @Column(name = "beneficiary_mobile_no", length=20)
+    private String beneficiaryMobile;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     //@ManyToOne(cascade = CascadeType.ALL)
@@ -421,6 +425,22 @@ public class BeftnModel {
 
     public void setTxnModified(String txnModified) {
         this.txnModified = txnModified;
+    }
+
+    public String getRemitterMobile() {
+        return this.remitterMobile;
+    }
+
+    public void setRemitterMobile(String remitterMobile) {
+        this.remitterMobile = remitterMobile;
+    }
+
+    public String getBeneficiaryMobile() {
+        return this.beneficiaryMobile;
+    }
+
+    public void setBeneficiaryMobile(String beneficiaryMobile) {
+        this.beneficiaryMobile = beneficiaryMobile;
     }
 
     public BeftnModel(int id, String transactionNo, String orgCustomerNo, String orgName, String orgAccountNo, String orgAccountType, Double amount, String beneficiaryName, String beneficiaryAccount, String beneficiaryAccountType, String exchangeCode, String routingNo, Double govtIncentive, Double agraniIncentive, Double incentive, String remitterName, String bankName, String bankCode, String branchName, int extraA, int extraB, int downloadUserId, LocalDateTime downloadDateTime, LocalDateTime uploadDateTime) {

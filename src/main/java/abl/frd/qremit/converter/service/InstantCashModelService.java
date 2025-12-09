@@ -68,8 +68,10 @@ public class InstantCashModelService {
                     instantCashModel.setFileInfoModel(fileInfoModel);
                     instantCashModel.setUserModel(user);
                 }
+                Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+                if(instantCashData.containsKey("apiGovtIncentiveMap")) apiGovtIncentiveMap = (Map<String, Double>) instantCashData.get("apiGovtIncentiveMap");
                 // 4 DIFFERENTS DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(instantCashModels, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(instantCashModels, fileInfoModel, user, currentDateTime, type, apiGovtIncentiveMap);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(instantCashModels.size()));
                 fileInfoModel.setIsSettlement(type); 
@@ -142,6 +144,7 @@ public class InstantCashModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, InstantCashModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                resp.put("apiGovtIncentiveMap", (Map<String, Double>) modelResp.get("apiGovtIncentiveMap"));
                 instantCashDataModelList = (List<InstantCashModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -185,6 +188,7 @@ public class InstantCashModelService {
         LocalDate date = CommonService.convertStringToLocalDate(enteredDate,format);
 
         Map<String, Object> data = new HashMap<>();
+        if(type == 1)   data.put("govtIncentive", csvRecord.get(12).trim());
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", currrency);

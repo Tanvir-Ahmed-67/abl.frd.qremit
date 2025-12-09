@@ -14,7 +14,7 @@
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3 id="page-header">Search</h3>
+                            <h3 id="page-header"><span th:text="${pageTitle}"></span></h3>
                         </div>
                         <div class="col-12 col-md-6 order-md-2 order-first">
                             <nav aria-label="breadcrumb" class='breadcrumb-header'>
@@ -65,11 +65,11 @@
                                                         <th>Exchange Details</th>
                                                         <th>Beneficiary Name</th>
                                                         <th>Account No</th>
-                                                        <th>Bank Name<br>Routing No/ Branch Code<br>Branch Name</th>
+                                                        <th th:utext="${type == '3'} ? 'Routing No' : 'Bank Name<br>Routing No/ Branch Code<br>Branch Name'"></th>
                                                         <th>Amount</th>
                                                         <th>Processed Date</th>
-                                                        <th>Report Date</th>
-                                                        <th>Type</th>
+                                                        <th th:text="${type == '3'} ? 'Return Date' : 'Report Date'"></th>
+                                                        <th th:text="${type == '3'} ? 'Return Code' : 'Type'"></th>
                                                         <th th:if="${type == '2'}">Action</th>
                                                     </tr>
                                                 </thead>

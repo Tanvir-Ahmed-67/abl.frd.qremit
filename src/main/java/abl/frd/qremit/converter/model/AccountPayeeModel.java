@@ -79,6 +79,10 @@ public class AccountPayeeModel {
     private String beneficiaryGender;
     @Column(name = "beneficiary_district", length = 64)
     private String beneficiaryDistrict;
+    @Column(name = "remitter_mobile_no", length=30)
+    private String remitterMobile;
+    @Column(name = "beneficiary_mobile_no", length=20)
+    private String beneficiaryMobile;
 
     @Column(name = "download_user_id")
     private int downloadUserId;
@@ -371,6 +375,22 @@ public class AccountPayeeModel {
 
     public void setBeneficiaryDistrict(String beneficiaryDistrict) {
         this.beneficiaryDistrict = beneficiaryDistrict;
+    }
+
+    public String getRemitterMobile() {
+        return this.remitterMobile;
+    }
+
+    public void setRemitterMobile(String remitterMobile) {
+        this.remitterMobile = remitterMobile;
+    }
+
+    public String getBeneficiaryMobile() {
+        return this.beneficiaryMobile;
+    }
+
+    public void setBeneficiaryMobile(String beneficiaryMobile) {
+        this.beneficiaryMobile = beneficiaryMobile;
     }
 
     public AccountPayeeModel(int id, String transactionNo, String creditMark, String enteredDate, String currency, Double amount, String beneficiaryName, String exchangeCode, String bankName, String bankCode, String branchName, String branchCode, String beneficiaryAccount, String remitterName, Double govtIncentive, Double agraniIncentive, Double incentive, String accountPayeeCode, int extraA, int extraB, LocalDateTime downloadDateTime, int downloadUserId, LocalDateTime uploadDateTime) {

@@ -71,8 +71,10 @@ public class RiaModelService {
                     riaModel.setFileInfoModel(fileInfoModel);
                     riaModel.setUserModel(user);
                 }
+                Map<String, Double> apiGovtIncentiveMap = new HashMap<>();
+                if(riaData.containsKey("apiGovtIncentiveMap")) apiGovtIncentiveMap = (Map<String, Double>) riaData.get("apiGovtIncentiveMap");
                 // 4 DIFFERENT DATA TABLE GENERATION GOING ON HERE
-                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(riaModelList, fileInfoModel, user, currentDateTime, type);
+                Map<String, Object> convertedDataModels = commonService.generateFourConvertedDataModel(riaModelList, fileInfoModel, user, currentDateTime, type, apiGovtIncentiveMap);
                 fileInfoModel = CommonService.countFourConvertedDataModel(convertedDataModels);
                 fileInfoModel.setTotalCount(String.valueOf(riaModelList.size()));
                 fileInfoModel.setIsSettlement(type);
@@ -146,6 +148,7 @@ public class RiaModelService {
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
                 modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, RiaModel.class, resp, errorDataModelList, fileExchangeCode, 1, type);
+                resp.put("apiGovtIncentiveMap", (Map<String, Double>) modelResp.get("apiGovtIncentiveMap"));
                 riaModelList = (List<RiaModel>) modelResp.get("modelList");
                 errorDataModelList = (List<ErrorDataModel>) modelResp.get("errorDataModelList");
                 duplicateMessage = modelResp.get("duplicateMessage").toString();
@@ -186,6 +189,7 @@ public class RiaModelService {
             LocalDateTime date = CommonService.convertStringToDate(enteredDate);
             enteredDate = date.toLocalDate().toString();
         }
+        if(type == 1)   data.put("govtIncentive", csvRecord.get(4).trim());
         data.put("exchangeCode", exchangeCode);
         data.put("transactionNo", transactionNo);
         data.put("currency", currrency);
