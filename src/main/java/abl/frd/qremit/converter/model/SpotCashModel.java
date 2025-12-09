@@ -96,6 +96,10 @@ public class SpotCashModel {
     private String beneficiaryNid;
     @Column(name="remitter_passport", length = 32)
     private String remitterPassport;
+    @Column(name = "beneficiary_address")
+    private String beneficiaryAddress;
+    @Column(name = "remitter_address")
+    private String remitterAddress;
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
     @JsonIgnore
@@ -147,6 +151,22 @@ public class SpotCashModel {
 
     public String getEnteredDate() {
         return this.enteredDate;
+    }
+
+    public String getBeneficiaryAddress() {
+        return this.beneficiaryAddress;
+    }
+
+    public void setBeneficiaryAddress(String beneficiaryAddress) {
+        this.beneficiaryAddress = beneficiaryAddress;
+    }
+
+    public String getRemitterAddress() {
+        return this.remitterAddress;
+    }
+
+    public void setRemitterAddress(String remitterAddress) {
+        this.remitterAddress = remitterAddress;
     }
 
     public void setEnteredDate(String enteredDate) {
