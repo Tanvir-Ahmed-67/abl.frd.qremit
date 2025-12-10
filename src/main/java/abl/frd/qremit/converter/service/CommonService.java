@@ -18,6 +18,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.InetAddress;
@@ -1356,8 +1357,8 @@ public class CommonService {
                 if (DateUtil.isCellDateFormatted(cell)) {
                     str = cell.getDateCellValue().toString();
                 } else {
-                    str = String.valueOf(cell.getNumericCellValue());
-                    //str = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
+                    //str = String.valueOf(cell.getNumericCellValue());
+                    str = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
                 }
                 break;
             case BOOLEAN:

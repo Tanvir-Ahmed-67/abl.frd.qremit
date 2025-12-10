@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 09, 2025 at 07:17 AM
+-- Generation Time: Dec 10, 2025 at 08:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -121,7 +121,7 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (172, '7010267', 'U REMIT INTERNATIONAL, CANADA', 'U REMIT', '7088', 'm16', '124', 'CANADA', 'uremit', 'UremitModel', 'uremitModelRepository', 0, 1, 0),
 (173, '7010225', 'U.A.E. Exchange LLC, Abu Dhabi', '', '7028', NULL, '784', 'UNITED ARAB EMIRATES (UAE)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (174, '7010257', 'U.A.E. Exchange, Malaysia', '', '7075', NULL, '458', 'MALAYSIA', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
-(175, '7010213', 'UAE Exchange WLL,Kuwait', '', '7027', 'm30', '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
+(175, '7010213', 'UAE Exchange WLL,Kuwait', 'UAE Kuwait', '7027', 'm30', '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (176, '7010216', 'Unimoni Exchange', 'Unimoni Ex', '7034', NULL, '512', 'OMAN', 'unimoni', 'UnimoniModel', 'unimoniModelRepository', 0, 1, 0),
 (177, '7010268', 'Val You SDN BHD', '', '7090', NULL, '458', 'MALAYSIA', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0),
 (178, '7010224', 'Wall Street Exchange, Abu Dhabi, UAE', '', '7033', NULL, '784', 'UNITED ARAB EMIRATES (UAE)', '', '', '', 0, 0, 0),
