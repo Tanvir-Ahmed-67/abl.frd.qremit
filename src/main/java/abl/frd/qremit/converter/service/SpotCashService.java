@@ -1,8 +1,6 @@
 package abl.frd.qremit.converter.service;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.poi.sl.usermodel.Sheet;
+import org.apache.commons.csv.*;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,7 +47,7 @@ public class SpotCashService {
             System.out.println(config);
             int excel = (int) config.get("excel");
             if(excel == 1){
-                
+                spotCashData = processExcelData(file.getInputStream(), user, fileInfoModel, currentDateTime, exchangeCode, nrtaCode, config);
             }else{
                 spotCashData = processCsvData(file.getInputStream(), user, fileInfoModel, currentDateTime, exchangeCode, nrtaCode, config);
             }
@@ -74,8 +72,26 @@ public class SpotCashService {
             Map<String, Object> dataResp = (Map<String, Object>) dynamicMethod.invoke(this, csvRecords, exchangeCode, nrtaCode, countryList);
             //System.out.println(dataResp);
         } catch (Exception e) {
-            String message = "fail to store csv data: " + e.getMessage();
-            resp.put("errorMessage", message);
+            String msg = "fail to store csv data: " + e.getMessage();
+            return CommonService.getResp(1, msg, null);
+        }
+        return resp;
+    }
+
+    public Map<String, Object> processExcelData(InputStream is, User user, FileInfoModel fileInfoModel, LocalDateTime currentDateTime, String exchangeCode, 
+        String nrtaCode, Map<String, Object> config){
+        Map<String, Object> resp = new HashMap<>();
+        List<Map<String, Object>> countryList = customQueryService.getCountryList();
+        try{
+            Workbook records = CommonService.getWorkbook(is);
+            Sheet worksheet = records.getSheetAt(0);
+            String methodName = (String) config.get("method");
+            Method dynamicMethod = this.getClass().getDeclaredMethod(methodName, Sheet.class, String.class, String.class,List.class);
+            dynamicMethod.setAccessible(true);
+            Map<String, Object> dataResp = (Map<String, Object>) dynamicMethod.invoke(this, worksheet, exchangeCode, nrtaCode, countryList);
+        }catch(Exception e){
+            String msg = "fail to store csv data: " + e.getMessage();
+            return CommonService.getResp(1, msg, null);
         }
         return resp;
     }
@@ -147,7 +163,6 @@ public class SpotCashService {
                 break;
             case "7010267":
                 method = "proceessUremit";
-                excel = 1;
                 break;
         }
         resp.put("excel", excel);
@@ -251,6 +266,134 @@ public class SpotCashService {
     public Map<String, Object> processRia(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
         //System.out.println(csvRecord);
+        return resp;
+    }
+
+    public Map<String, Object> processWesternUnion(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        Row row;
+        for (int rowIndex = 1; rowIndex <= worksheet.getLastRowNum(); rowIndex++){
+            row = worksheet.getRow(rowIndex);
+            System.out.println(row.getCell(1));
+        }
+        return resp;
+    }
+
+    public Map<String, Object> processMoneyGram(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;
+    }
+
+    public Map<String, Object> processNecItaly(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;
+    }
+
+    public Map<String, Object> processNecUk(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;
+    }
+
+    public Map<String, Object> processTransfast(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;
+    }
+
+    public Map<String, Object> processMerchanTrade(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;
+    }
+
+    public Map<String, Object> processAlAnsary(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;
+    }
+
+    public Map<String, Object> processPrabhu(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        return resp;
+    }
+
+    public Map<String, Object> proceessAftab(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        Row row;
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        List<String[]> uniqueKeys = new ArrayList<>();
+        List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        for (int rowIndex = 2; rowIndex <= worksheet.getLastRowNum(); rowIndex++){
+            row = worksheet.getRow(rowIndex);
+            if(row == null) continue;
+            String transactionNo = CommonService.getCellValueAsString(row.getCell(0));
+            String amount = CommonService.getCellValueAsString(row.getCell(4));
+            String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(3)), exchangeCode);
+            String routingNo = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(8)).trim());
+            Map<String, Object> routingDetails = commonService.convertAblRoutingToBranchCode(routingNo, routingData);
+            LocalDateTime enteredDate = CommonService.convertStringToDate(CommonService.getCellValueAsString(row.getCell(7)),"yyyy-MM-dd HH:mm:ss Z");
+            Map<String, Object> data = new HashMap<>();
+            data.put("transactionNo", transactionNo);
+            data.put("amount", amount);
+            data.put("remitterName", CommonService.getCellValueAsString(row.getCell(1)));
+            data.put("remitterAddress", CommonService.getCellValueAsString(row.getCell(2)));
+            data.put("sourceCountry", sourceCountry);
+            data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(5)));
+            data.put("beneficiaryNid", row.getCell(6));  //should work later
+            data.put("enteredDate", enteredDate.toLocalDate().toString());
+            data.put("bankCode", routingDetails.get("bank_code"));
+            data.put("branchCode", routingDetails.get("abl_branch_code"));
+            data.put("branchName", routingDetails.get("branch_name"));
+            data.put("bankName", routingDetails.get("bank_name"));
+            data.put("exchangeCode", exchangeCode);
+            data.put("nrtaCode", nrtaCode);
+            data.put("typeFlag",5);
+            dataList.add(data);
+            uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+        }
+        System.out.println(dataList);
+        resp.put("dataList", dataList);
+        resp.put("uniqueKeys", uniqueKeys);
+        return resp;
+    }
+
+    public Map<String, Object> proceessPlacid(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        Row row;
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        List<String[]> uniqueKeys = new ArrayList<>();
+        //List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        for (int rowIndex = 1; rowIndex <= worksheet.getLastRowNum(); rowIndex++){
+            row = worksheet.getRow(rowIndex);
+            if(row == null) continue;
+            String transactionNo = CommonService.getCellValueAsString(row.getCell(3));
+            String amount = CommonService.getCellValueAsString(row.getCell(9));
+            String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(1)), exchangeCode);
+            String userId = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(13)).trim()); //generate this id to branch later
+            LocalDateTime enteredDate = CommonService.convertStringToDate(CommonService.getCellValueAsString(row.getCell(0)),"E MMM dd HH:mm:ss z yyyy");
+            System.out.println(CommonService.getCellValueAsString(row.getCell(0)));
+            System.out.println(enteredDate);
+            Map<String, Object> data = new HashMap<>();
+            data.put("transactionNo", transactionNo);
+            data.put("amount", amount);
+            data.put("remitterName", CommonService.getCellValueAsString(row.getCell(5)));
+            data.put("remitterAddress", "");
+            data.put("sourceCountry", sourceCountry);
+            data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(6)));
+            data.put("beneficiaryNid", "");  //should work later
+            data.put("enteredDate", enteredDate.toLocalDate().toString());
+            data.put("exchangeCode", exchangeCode);
+            data.put("nrtaCode", nrtaCode);
+            data.put("typeFlag",5);
+            data.put("branchCode", userId);
+            dataList.add(data);
+            uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+        }
+        System.out.println(dataList);
+        resp.put("dataList", dataList);
+        resp.put("uniqueKeys", uniqueKeys);
+        return resp;
+    }
+
+    public Map<String, Object> proceessHelloPaisa(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
         return resp;
     }
 }
