@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -1351,19 +1352,20 @@ public class CommonService {
         String str = "";
         switch (cell.getCellType()){
             case STRING:
-                str = cell.getStringCellValue().trim();
-                break;
+                return cell.getStringCellValue().trim();
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
-                    str = cell.getDateCellValue().toString();
+                    return cell.getDateCellValue().toString();
+                    //SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    //return sdf.format(cell.getDateCellValue());
+                    //LocalDate date = cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    //return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 } else {
                     //str = String.valueOf(cell.getNumericCellValue());
-                    str = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
+                    return BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
                 }
-                break;
             case BOOLEAN:
-                str = String.valueOf(cell.getBooleanCellValue());
-                break;
+                return String.valueOf(cell.getBooleanCellValue());
             default:
                 break;
         }
@@ -1759,5 +1761,16 @@ public class CommonService {
 
     public static boolean isEqual(double a, double b) {
         return Math.abs(a - b) < 0.000001;
+    }
+
+    public static Map<String, Object> parseNecDoc(String doc){
+        Map<String, Object> resp = new HashMap<>();
+        String nid = "";
+        String passport = "";
+        if(doc.contains("NID") || doc.contains("NATIONAL ID"))  nid =doc.replaceAll("\\D+", "");
+        if(doc.contains("PASSPORT"))  passport =  doc.replaceAll(".*PASSPORT#\\s*", "").trim();
+        resp.put("nid", nid);
+        resp.put("passport", passport);
+        return resp;
     }
 }
