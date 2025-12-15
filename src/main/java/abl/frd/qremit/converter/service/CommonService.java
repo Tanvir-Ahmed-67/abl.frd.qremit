@@ -1773,4 +1773,10 @@ public class CommonService {
         resp.put("passport", passport);
         return resp;
     }
+
+    public static String fixAblBranchCode(String branchCode){
+        //if(branchCode.length()
+        return "";
+
+    }
 }
