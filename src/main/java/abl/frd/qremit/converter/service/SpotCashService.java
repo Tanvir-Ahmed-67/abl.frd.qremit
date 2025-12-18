@@ -92,6 +92,7 @@ public class SpotCashService {
             dynamicMethod.setAccessible(true);
             Map<String, Object> dataResp = (Map<String, Object>) dynamicMethod.invoke(this, worksheet, exchangeCode, nrtaCode, countryList);
         }catch(Exception e){
+            e.printStackTrace();
             String msg = "fail to store csv data: " + e.getMessage();
             return CommonService.getResp(1, msg, null);
         }
@@ -183,7 +184,70 @@ public class SpotCashService {
 
     public Map<String, Object> processCbl(Iterable<CSVRecord> csvRecords, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
-        //System.out.println(csvRecord);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        List<String[]> uniqueKeys = new ArrayList<>();
+        //List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        for (CSVRecord csvRecord : csvRecords) {
+            String sourceCountry = "458";
+            //LocalDate paidDate = CommonService.convertStringToLocalDate(csvRecord.get(46).trim(),"dd-MMM-yy");
+            //LocalDate enteredDate = CommonService.convertStringToLocalDate(csvRecord.get(1).trim(),"dd-MMM-yy");
+            //System.out.println(csvRecord.get(46).trim());
+            //System.out.println(csvRecord.get(1).trim());
+            String rawDate = csvRecord.get(46);
+            for (int i = 0; i < rawDate.length(); i++) {
+    System.out.println(i + " : '" + rawDate.charAt(i) + "' -> " + (int)rawDate.charAt(i));
+}
+            if (rawDate != null && !rawDate.isBlank()) {
+                String dateStr = rawDate.trim().replace("\u00A0", " ").replace("\u200B", "").replace("’","'").toUpperCase();
+                //LocalDate paidDate = CommonService.convertStringToLocalDate(dateStr,"dd-MMM-yy");
+                //System.out.println(paidDate);
+                DateTimeFormatter formatter =DateTimeFormatter.ofPattern("dd-MMM-yy", Locale.ENGLISH);
+                try{
+                    LocalDate date = LocalDate.parse(dateStr, formatter);
+                    System.out.println(date);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+            
+            
+            
+
+            Map<String, Object> data = new HashMap<>();
+            //String routingNo = CommonService.fixRoutingNo(csvRecord.get(8).trim());
+            //Map<String, Object> routingDetails = commonService.convertAblRoutingToBranchCode(routingNo, routingData);
+            String transactionNo = csvRecord.get(0).trim();
+            String amount = csvRecord.get(8).trim();
+            String userId = csvRecord.get(42).trim();
+            data.put("transactionNo", transactionNo);
+            data.put("remitterName", csvRecord.get(12).trim());
+            data.put("remitterAddress", csvRecord.get(20).trim());
+            data.put("remitterPassport", csvRecord.get(13).trim());
+            data.put("sourceCountry", sourceCountry);
+            data.put("amount", amount);
+            data.put("beneficiaryName", csvRecord.get(10).trim());
+            data.put("beneficiaryMobile", csvRecord.get(17).trim());
+            data.put("beneficiaryNid", "");
+            //data.put("paidDate", paidDate.toString());
+            //data.put("enteredDate", enteredDate.toString());
+            data.put("userId", userId);
+            //data.put("bankCode", routingDetails.get("bank_code"));
+            //data.put("branchCode", routingDetails.get("abl_branch_code"));
+            //data.put("branchName", routingDetails.get("branch_name"));
+            //data.put("bankName", routingDetails.get("bank_name"));
+            data.put("purposeOfRemittance", csvRecord.get(25).trim());
+            data.put("exchangeCode", exchangeCode);
+            data.put("currency", "BDT");
+            data.put("nrtaCode", nrtaCode);
+            data.put("typeFlag",5);
+            String[] fields = {"remitterMobile","sourceOfIncome"};
+            for(String field: fields)   data.put(field, "");
+            dataList.add(data);
+            uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+        }
+        System.out.println(dataList);
+        resp.put("dataList", dataList);
+        resp.put("uniqueKeys", uniqueKeys);
         return resp;
     }
 
@@ -392,7 +456,7 @@ public class SpotCashService {
             data.put("amount", amount);
             data.put("sourceCountry", sourceCountry);
             data.put("beneficiaryMobile", CommonService.getCellValueAsString(row.getCell(7)));
-            //data.put("enteredDate", paidDate.toString());
+            data.put("enteredDate", paidDate.toString());
             data.put("paidDate", paidDate.toString());
             //data.put("bankCode", routingDetails.get("bank_code"));
             data.put("branchCode", userId);
@@ -416,6 +480,40 @@ public class SpotCashService {
 
     public Map<String, Object> processMoneyGram(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
+        Row row;
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        List<String[]> uniqueKeys = new ArrayList<>();
+        String legacyId= "";
+        for (int rowIndex = 6; rowIndex <= worksheet.getLastRowNum(); rowIndex++){
+            row = worksheet.getRow(rowIndex);
+            if(row == null) continue;
+            String cellB = CommonService.getCellValueAsString(row.getCell(1)).trim();
+            String cellC = CommonService.getCellValueAsString(row.getCell(2)).trim();
+            if(cellB.trim().isEmpty() && cellC.trim().isEmpty()) continue;
+            if(cellC.contains("Legacy ID :")) legacyId = CommonService.getCellValueAsString(row.getCell(6)).trim();
+            if(cellB.contains("Account Number :") || cellB.isEmpty() || cellB.contains("Settlement Currency :")) continue;
+            String amount = CommonService.getCellValueAsString(row.getCell(25)).trim();
+            if(amount.equals("0.0")) continue;
+            String transactionNo = CommonService.getCellValueAsString(row.getCell(8)).trim();
+            String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(14)), exchangeCode);
+            LocalDate paidDate = CommonService.convertStringToLocalDate(cellB, "MM/dd/yyyy");
+            Map<String, Object> data = new HashMap<>();
+            data.put("transactionNo", transactionNo);
+            data.put("amount", amount.replace("-", ""));
+            data.put("sourceCountry", sourceCountry);
+            data.put("userId", legacyId);
+            data.put("paidDate", paidDate.toString());
+            data.put("enteredDate", paidDate.toString());
+            data.put("exchangeCode", exchangeCode);
+            data.put("currency", "BDT");
+            data.put("nrtaCode", nrtaCode);
+            data.put("typeFlag",5);
+            dataList.add(data);
+        }
+        System.out.println(dataList);
+        System.out.println(dataList.size());
+        resp.put("dataList", dataList);
+        resp.put("uniqueKeys", uniqueKeys);
         return resp;
     }
 

@@ -1350,6 +1350,7 @@ public class CommonService {
 
     public static String getCellValueAsString(Cell cell){
         String str = "";
+        if (cell == null) return str;
         switch (cell.getCellType()){
             case STRING:
                 return cell.getStringCellValue().trim();
