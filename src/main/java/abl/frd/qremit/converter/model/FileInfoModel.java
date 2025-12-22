@@ -235,6 +235,10 @@ public class FileInfoModel {
     @JsonIgnore
     private List<NpsbMfsModel> npsbMfsModelList;
 
+    @OneToMany(cascade= { CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel")
+    @JsonIgnore
+    private List<SpotCashModel> spotCashModelList;
+
     @OneToMany(cascade={ CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "fileInfoModel", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<ErrorDataModel> errorDataModelList;
@@ -329,6 +333,14 @@ public class FileInfoModel {
 
     public List<AlBiladModel> getAlBiladModel() {
         return this.alBiladModel;
+    }
+
+    public List<SpotCashModel> getSpotCashModelList() {
+        return this.spotCashModelList;
+    }
+
+    public void setSpotCashModelList(List<SpotCashModel> spotCashModelList) {
+        this.spotCashModelList = spotCashModelList;
     }
 
     public void setAlBiladModel(List<AlBiladModel> alBiladModel) {
@@ -472,6 +484,9 @@ public class FileInfoModel {
                 ", cocCount='" + cocCount + '\'' +
                 ", beftnCount='" + beftnCount + '\'' +
                 ", onlineCount='" + onlineCount + '\'' +
+                ", nbpsbCount='" + npsbCount + '\'' +
+                ", mfsCount='" + mfsCount + '\'' +
+                ", spotCashCount='" + spotCashCount + '\'' +
                 ", accountPayeeCount='" + accountPayeeCount + '\'' +
                 ", unprocessedCount='" + unprocessedCount + '\'' +
                 ", errorCount='" + errorCount + '\'' +

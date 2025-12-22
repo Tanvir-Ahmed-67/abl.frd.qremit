@@ -1,5 +1,5 @@
 package abl.frd.qremit.converter.model;
-import java.time.LocalDateTime;
+import java.time.*;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -44,6 +44,8 @@ public class SpotCashModel {
     private String branchName;
     @Column(name = "branch_code", length=15)
     private String branchCode;
+    @Column(name = "paid_user_id", length=64)
+    private String paidUserId;
     @Column(name = "drawee_branch_name", length=32)
     private String draweeBranchName;
     @Column(name = "drawee_branch_code", length=10)
@@ -90,8 +92,8 @@ public class SpotCashModel {
     private String beneficiaryGender;
     @Column(name = "beneficiary_district", length = 64)
     private String beneficiaryDistrict;
-    @Column(name = "paid_date", columnDefinition = "DATETIME")
-    private LocalDateTime paidDate;
+    @Column(name = "paid_date", columnDefinition = "DATE")
+    private LocalDate paidDate;
     @Column(name="beneficiary_nid", length = 32)
     private String beneficiaryNid;
     @Column(name="remitter_passport", length = 32)
@@ -100,6 +102,14 @@ public class SpotCashModel {
     private String beneficiaryAddress;
     @Column(name = "remitter_address")
     private String remitterAddress;
+    @Column(name = "entry_active", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private int entryActive;
+    @Column(name = "entry_date", columnDefinition = "DATETIME")
+    private LocalDateTime entryTime;
+    @Column(name = "uip", length = 20)
+    private String uIp;
+    @Column(name = "uid", length = 10)
+    private String uId;
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
     @JsonIgnore
@@ -428,12 +438,11 @@ public class SpotCashModel {
     public void setBeneficiaryDistrict(String beneficiaryDistrict) {
         this.beneficiaryDistrict = beneficiaryDistrict;
     }
-
-    public LocalDateTime getPaidDate() {
+    public LocalDate getPaidDate() {
         return this.paidDate;
     }
 
-    public void setPaidDate(LocalDateTime paidDate) {
+    public void setPaidDate(LocalDate paidDate) {
         this.paidDate = paidDate;
     }
 
@@ -467,6 +476,46 @@ public class SpotCashModel {
 
     public void setFileInfoModel(FileInfoModel fileInfoModel) {
         this.fileInfoModel = fileInfoModel;
+    }
+
+    public String getPaidUserId() {
+        return this.paidUserId;
+    }
+
+    public void setPaidUserId(String paidUserId) {
+        this.paidUserId = paidUserId;
+    }
+
+    public int getEntryActive() {
+        return this.entryActive;
+    }
+
+    public void setEntryActive(int entryActive) {
+        this.entryActive = entryActive;
+    }
+
+    public LocalDateTime getEntryTime() {
+        return this.entryTime;
+    }
+
+    public void setEntryTime(LocalDateTime entryTime) {
+        this.entryTime = entryTime;
+    }
+
+    public String getUIp() {
+        return this.uIp;
+    }
+
+    public void setUIp(String uIp) {
+        this.uIp = uIp;
+    }
+
+    public String getUId() {
+        return this.uId;
+    }
+
+    public void setUId(String uId) {
+        this.uId = uId;
     }
 
     public SpotCashModel() {

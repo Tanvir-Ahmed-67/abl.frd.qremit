@@ -23,7 +23,6 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -1381,6 +1380,7 @@ public class CommonService {
     public static Map<String, Object> getDuplicateTransactionNo(String transactionNo, Map<String, Object> modelResp){
         Map<String, Object> resp = new HashMap<>();
         resp.put("isDuplicate", 0);
+        if(modelResp == null || modelResp.isEmpty())    return resp;
         if((Integer) modelResp.get("err") == 0){
             List<Map<String, Object>> data = (List<Map<String, Object>>) modelResp.get("data");
             if(data.isEmpty())  return resp;
