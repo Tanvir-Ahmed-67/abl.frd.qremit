@@ -289,7 +289,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             String[] fields = {"remitterMobile","sourceOfIncome"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -319,11 +319,13 @@ public class SpotCashService {
             String agentCode = csvRecord.get(6).trim();
             switch(agentCode){
                 case "060":
+                case "60":
                     nrtaCode = "7059";
                     exchangeCode = "7010276";
                     sourceCountry = "458";
                     break;
                 case "030":
+                case "30":
                     nrtaCode = "7076";
                     exchangeCode = "7010310";
                     sourceCountry = "300";
@@ -333,15 +335,19 @@ public class SpotCashService {
                     exchangeCode = "7010297";
                     sourceCountry = "462";
                     break;
+                default:
+                    exchangeCode = "";
+                    nrtaCode = "";
+                    break;
             }
             data.put("transactionNo", transactionNo);
             data.put("remitterName", csvRecord.get(5).trim());
             data.put("remitterAddress", "");
             data.put("sourceCountry", sourceCountry);
             data.put("amount", amount);
-            data.put("beneficiaryName", csvRecord.get(2).trim());
             data.put("beneficiaryNid", csvRecord.get(4).trim());
             data.put("beneficiaryMobile", "");
+            data.put("paidUserId", routingNo);
             data.put("enteredDate", paidDate.toLocalDate().toString());
             data.put("paidDate", paidDate.toLocalDate().toString());
             data.put("bankCode", routingDetails.get("bank_code"));
@@ -351,13 +357,12 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
             data.put("currency", "BDT");
-            data.put("typeFlag",5);
-            String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount"};
+            data.put("typeFlag","5");
+            String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount","beneficiaryName"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
-        System.out.println(dataList);
         resp.put("dataList", dataList);
         resp.put("uniqueKeys", uniqueKeys);
         return resp;
@@ -455,8 +460,8 @@ public class SpotCashService {
             LocalDate enteredDate = CommonService.convertStringToLocalDate(csvRecord.get(0).trim(),"MM/d/yyyy");
             LocalDate paidDate = CommonService.convertStringToLocalDate(csvRecord.get(1).trim(),"MM/d/yyyy");
             Map<String, Object> data = new HashMap<>();
-            String branchCode = csvRecord.get(10).trim();
-            //Map<String, Object> routingDetails = commonService.convertAblRoutingToBranchCode(routingNo, routingData);
+            String branchCode = CommonService.fixAblBranchCode(csvRecord.get(10).trim());
+            data = commonService.mapAblBranchDetails(data, branchCode, routingData);
             String transactionNo = csvRecord.get(11).trim();
             String amount = csvRecord.get(8).trim();
             data.put("transactionNo", transactionNo);
@@ -468,15 +473,10 @@ public class SpotCashService {
             data.put("beneficiaryAddress", "");
             data.put("enteredDate", enteredDate.toString());
             data.put("paidDate", paidDate.toString());
-            data.put("branchCode", branchCode);
-            //data.put("bankCode", routingDetails.get("bank_code"));
-            //data.put("branchCode", routingDetails.get("abl_branch_code"));
-            //data.put("branchName", routingDetails.get("branch_name"));
-            //data.put("bankName", routingDetails.get("bank_name"));
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             String[] fields = {"beneficiaryNid","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -484,7 +484,6 @@ public class SpotCashService {
         }
         resp.put("dataList", dataList);
         resp.put("uniqueKeys", uniqueKeys);
-        System.out.println(dataList);
         return resp;
     }
 
@@ -520,7 +519,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("sourceForeignCurrency", CommonService.getCellValueAsString(row.getCell(53)));
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             String[] fields = {"beneficiaryNid","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","remitterName","remitterPassport","beneficiaryName","beneficiaryAccount"};
@@ -561,7 +560,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             dataList.add(data);
         }
         System.out.println(dataList);
@@ -607,7 +606,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
@@ -657,7 +656,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
@@ -700,7 +699,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
@@ -743,7 +742,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
@@ -785,7 +784,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
             data.put("currency", "BDT");
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             data.put("branchCode", branchCode);
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
@@ -833,7 +832,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
             data.put("currency", "BDT");
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             data.put("branchCode", userId);
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
@@ -875,7 +874,7 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
             data.put("currency", "BDT");
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
@@ -912,7 +911,7 @@ public class SpotCashService {
             data.put("enteredDate", enteredDate.toLocalDate().toString());
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             data.put("branchCode", userId);
             data.put("currency", "BDT");
             dataList.add(data);
@@ -955,7 +954,7 @@ public class SpotCashService {
             data.put("paidDate", paidDate.toLocalDate());
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             data.put("branchCode", branchCode);
             data.put("currency", "BDT");
             dataList.add(data);
@@ -996,7 +995,7 @@ public class SpotCashService {
             data.put("bankName", routingDetails.get("bank_name"));
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
-            data.put("typeFlag",5);
+            data.put("typeFlag","5");
             data.put("currency", "BDT");
             String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance"};
             for(String field: fields)   data.put(field, "");

@@ -974,6 +974,12 @@ public class CommonService {
         return routingNo;
     }
 
+    public static String fixAblBranchCode(String branchCode){
+        int len = branchCode.length();
+        if(len == 5 && branchCode.startsWith("0"))  return branchCode.substring(1);
+        return branchCode;
+    }
+
     public static String checkBEFTNRouting(String routingNo){
         String errorMessage = "";
         String msg = "Invalid Routing Number for BEFTN";
@@ -1775,9 +1781,20 @@ public class CommonService {
         return resp;
     }
 
-    public static String fixAblBranchCode(String branchCode){
-        //if(branchCode.length()
-        return "";
-
+    public Map<String, Object> mapAblBranchDetails(Map<String, Object> data, String routingNo, List<Map<String, Object>> routingData){
+        String bankCode = "010";
+        String bankName = "AGRANI BANK LTD.";
+        String branchCode = "";
+        String branchName = "";
+        Map<String, Object> routingDetails = convertAblRoutingToBranchCode(routingNo, routingData);
+        if(routingDetails != null){
+            branchCode = routingDetails.get("abl_branch_code").toString();
+            branchName = routingDetails.get("branch_name").toString();
+        }
+        data.put("bankCode", bankCode);
+        data.put("bankName", bankName);
+        data.put("branchCode", branchCode);
+        data.put("branchName", branchName);
+        return data;
     }
 }
