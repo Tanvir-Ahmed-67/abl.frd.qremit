@@ -922,7 +922,7 @@ public class SpotCashService {
         Row row;
         List<Map<String, Object>> dataList = new ArrayList<>();
         List<String[]> uniqueKeys = new ArrayList<>();
-        //List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
         for (int rowIndex = 1; rowIndex <= worksheet.getLastRowNum(); rowIndex++){
             row = worksheet.getRow(rowIndex);
             if(row == null) continue;
@@ -930,11 +930,12 @@ public class SpotCashService {
             String transactionNo = CommonService.getCellValueAsString(row.getCell(4));
             String amount = CommonService.getCellValueAsString(row.getCell(16)).replace(",", "");
             String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(7)), exchangeCode);
-            String branchCode = CommonService.getCellValueAsString(row.getCell(2)).trim(); //generate this id to branch later
-            branchCode = branchCode.toLowerCase().replace("officer br","").replace("officer  br","");
+            String userId = CommonService.getCellValueAsString(row.getCell(2)).trim(); //generate this id to branch later
+            String branchCode = CommonService.fixAblBranchCode(userId.toLowerCase().replace("officer br","").replace("officer  br",""));
             LocalDateTime paidDate = CommonService.convertStringToDate(CommonService.getCellValueAsString(row.getCell(12)));
             LocalDateTime eneterdDate = CommonService.convertStringToDate(CommonService.getCellValueAsString(row.getCell(10)));
             Map<String, Object> data = new HashMap<>();
+            data = commonService.mapAblBranchDetails(data, branchCode, routingData);
             data.put("transactionNo", transactionNo);
             data.put("amount", amount);
             data.put("remitterName", CommonService.getCellValueAsString(row.getCell(5)));
@@ -949,8 +950,10 @@ public class SpotCashService {
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
-            data.put("branchCode", branchCode);
             data.put("currency", "BDT");
+            data.put("paidUserId", userId);
+            String[] fields = {"sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
+            for(String field: fields)   data.put(field, "");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
