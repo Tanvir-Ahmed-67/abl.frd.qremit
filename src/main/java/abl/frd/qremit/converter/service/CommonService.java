@@ -1526,7 +1526,6 @@ public class CommonService {
             Double govtIncentive = 0.0;
             if(data.containsKey("govtIncentive")){
                 govtIncentive = convertStringToDouble(data.get("govtIncentive").toString());
-                data.remove("govtIncentive");
             }
                     
             Map<String, Object> dupResp = getDuplicateTransactionNo(transactionNo, uniqueDataList);
@@ -1617,6 +1616,7 @@ public class CommonService {
                 }
                 if(type == 1){
                     apiGovtIncentiveMap.put(transactionNo,govtIncentive);
+                    data.remove("govtIncentive");
                 }
             }
             try{
