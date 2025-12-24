@@ -976,6 +976,7 @@ public class CommonService {
 
     public static String fixAblBranchCode(String branchCode){
         int len = branchCode.length();
+        if(len > 5 && len < 8)  branchCode = branchCode.substring(len - 5);
         if(len == 5 && branchCode.startsWith("0"))  return branchCode.substring(1);
         return branchCode;
     }
@@ -1787,7 +1788,7 @@ public class CommonService {
         String branchCode = "";
         String branchName = "";
         Map<String, Object> routingDetails = convertAblRoutingToBranchCode(routingNo, routingData);
-        if(routingDetails != null){
+        if(routingDetails != null && !routingDetails.isEmpty()){
             branchCode = routingDetails.get("abl_branch_code").toString();
             branchName = routingDetails.get("branch_name").toString();
         }
