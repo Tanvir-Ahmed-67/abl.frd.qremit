@@ -945,8 +945,8 @@ public class SpotCashService {
             data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(8)));
             data.put("beneficiaryMobile", CommonService.getCellValueAsString(row.getCell(9)));
             data.put("beneficiaryNid", "");  //should work later
-            data.put("enteredDate", eneterdDate.toLocalDate());
-            data.put("paidDate", paidDate.toLocalDate());
+            data.put("enteredDate", eneterdDate.toLocalDate().toString());
+            data.put("paidDate", paidDate.toLocalDate().toString());
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
@@ -957,7 +957,6 @@ public class SpotCashService {
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
-        System.out.println(dataList);
         resp.put("dataList", dataList);
         resp.put("uniqueKeys", uniqueKeys);
         return resp;
