@@ -63,7 +63,7 @@ public class SpotCashController {
         if (CommonService.hasCSVFormat(file)) {
             if(!commonService.ifFileExist(file.getOriginalFilename())){
                 try{
-                    return spotCashService.save(file, userId, exchangeCode, exchangeHouseModel.getNrtaCode());
+                    return spotCashService.save(file, userId, exchangeCode, exchangeHouseModel.getNrtaCode(), exchangeHouseModel.getExchangeCodeSc());
                 }catch(Exception e){
                     e.printStackTrace();
                     return CommonService.getResp(1, e.getMessage(), null);

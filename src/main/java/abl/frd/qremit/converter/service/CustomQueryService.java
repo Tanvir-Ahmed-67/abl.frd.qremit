@@ -160,4 +160,24 @@ public class CustomQueryService {
         return countryCode;
     }
 
+    public List<Map<String, Object>> getBranchUser(String branchCode){
+        Map<String, Object> branchUserDetails = customQueryRepository.getBranchUser(branchCode);
+        List<Map<String, Object>> branchUserList = new  ArrayList<>();
+        if((Integer) branchUserDetails.get("err") == 0){
+            branchUserList = (List<Map<String, Object>>) branchUserDetails.get("data");
+        }
+        return branchUserList;
+    }
+
+    public Map<String, Object> getBranchUserDetailsByUserId(List<Map<String,Object>> branchList, String exCodeSc, String userId){
+        Map<String, Object> resp = new HashMap<>();
+        String key = exCodeSc + "id";
+        if(!branchList.isEmpty()){
+            for(Map<String, Object> bList: branchList){
+                if(userId.equals(bList.get(key)))  return bList;
+            }
+        }
+        return resp;
+    }
+
 }
