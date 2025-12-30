@@ -1834,13 +1834,20 @@ public class CommonService {
     }
 
     public Map<String, Object> mapAblUserIdToBranchdetails(Map<String, Object> data, Map<String, Object> branchDetails, String userId, List<Map<String, Object>> routingData){
-        if(branchDetails.isEmpty()) return mapAblBranchDetails(data, userId, routingData);
+        data.put("bankCode", "010");
+        data.put("bankName", "AGRANI BANK LTD.");
+        if(branchDetails.isEmpty()){
+            if(!userId.isEmpty())   return mapAblBranchDetails(data, userId, routingData);
+            else{
+                data.put("branchCode", "");
+                data.put("branchName", "");
+                return data;
+            }
+        } 
         String branchCode = branchDetails.get("BrCode").toString();
         if(branchCode.equals("-4006")){
             data.put("branchCode", branchCode);
             data.put("branchName", branchDetails.get("BrName"));
-            data.put("bankCode", "010");
-            data.put("bankName", "AGRANI BANK LTD.");
         }
         else data = mapAblBranchDetails(data, branchCode, routingData);
         return data;
