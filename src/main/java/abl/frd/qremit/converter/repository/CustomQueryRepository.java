@@ -338,4 +338,14 @@ public class CustomQueryRepository {
         }
         return getData(queryStr.toString(),params);
     }
+
+    public Map<String,Object> getBranchUser(String branchCode){
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryStr = new StringBuilder("SELECT * FROM branch_user");
+        if(!branchCode.isEmpty()){
+            queryStr.append(" WHERE brCode=?");
+            params.put("1", branchCode);
+        }
+        return getData(queryStr.toString(),params);
+    }
 }

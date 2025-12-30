@@ -22,7 +22,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.InetAddress;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -1353,10 +1355,11 @@ public class CommonService {
             throw new IOException("Failed to open the Excel file. Please ensure it's in .xls or .xlsx format.", e);
         }
     }
-
+    /*
     public static String getCellValueAsString(Cell cell){
         String str = "";
         if (cell == null) return str;
+
         switch (cell.getCellType()){
             case STRING:
                 return cell.getStringCellValue().trim();
@@ -1369,6 +1372,8 @@ public class CommonService {
                     //return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 } else {
                     //str = String.valueOf(cell.getNumericCellValue());
+                    //DataFormatter formatter = new DataFormatter();
+                    //return formatter.formatCellValue(cell).trim();
                     return BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
                 }
             case BOOLEAN:
@@ -1377,6 +1382,35 @@ public class CommonService {
                 break;
         }
         return str;
+    }
+    */
+    public static String getCellValueAsString(Cell cell){
+        if (cell == null) return "";
+        try{
+            DataFormatter formatter = new DataFormatter();
+            switch(cell.getCellType()){
+                case STRING:
+                    return cell.getStringCellValue().trim();
+                case NUMERIC:
+                case FORMULA:
+                    
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        return formatter.formatCellValue(cell).trim(); 
+                    }else{
+                        return BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
+                    }
+                    
+                     
+                case BOOLEAN:
+                    return String.valueOf(cell.getBooleanCellValue());
+                case BLANK:
+                default:
+                    return "";
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public static List<String[]> setUniqueIndexList(String transactionNo, String amount, String exchangeCode, List<String[]> data){
@@ -1797,5 +1831,35 @@ public class CommonService {
         data.put("branchCode", branchCode);
         data.put("branchName", branchName);
         return data;
+    }
+
+    public Map<String, Object> mapAblUserIdToBranchdetails(Map<String, Object> data, Map<String, Object> branchDetails, String userId, List<Map<String, Object>> routingData){
+        data.put("bankCode", "010");
+        data.put("bankName", "AGRANI BANK LTD.");
+        if(branchDetails.isEmpty()){
+            if(!userId.isEmpty())   return mapAblBranchDetails(data, userId, routingData);
+            else{
+                data.put("branchCode", "");
+                data.put("branchName", "");
+                return data;
+            }
+        } 
+        String branchCode = branchDetails.get("BrCode").toString();
+        if(branchCode.equals("-4006")){
+            data.put("branchCode", branchCode);
+            data.put("branchName", branchDetails.get("BrName"));
+        }
+        else data = mapAblBranchDetails(data, branchCode, routingData);
+        return data;
+    }
+
+    public static String detectNecUKYearPattern(String dateStr){
+        if(dateStr.isEmpty())   return "";
+        String[] parts = dateStr.split("/");
+        if(parts.length < 3)    return "";
+        String yearPart = parts[2];
+        if(yearPart.length() == 2)  return "d/M/yy";
+        else if(yearPart.length() == 4)  return "d/M/yyyy";
+        return ""; 
     }
 }
