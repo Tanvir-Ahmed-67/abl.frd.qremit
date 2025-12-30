@@ -456,11 +456,13 @@ public class SpotCashService {
         List<String[]> uniqueKeys = new ArrayList<>();
         List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
         for (CSVRecord csvRecord : csvRecords) {
+            if(csvRecord.get(0).isEmpty())  continue;
             String sourceCountry = customQueryService.parseCountryCode(countryList, csvRecord.get(4).substring(0,2), exchangeCode);
-            LocalDate enteredDate = CommonService.convertStringToLocalDate(csvRecord.get(0).trim(),"MM/d/yyyy");
-            LocalDate paidDate = CommonService.convertStringToLocalDate(csvRecord.get(1).trim(),"MM/d/yyyy");
+            LocalDate enteredDate = CommonService.convertStringToLocalDate(csvRecord.get(6).trim(),"M/d/yyyy");
+            LocalDate paidDate = CommonService.convertStringToLocalDate(csvRecord.get(5).trim(),"M/d/yyyy");
             Map<String, Object> data = new HashMap<>();
-            String branchCode = CommonService.fixAblBranchCode(csvRecord.get(10).trim());
+            String userId = csvRecord.get(10).trim();
+            String branchCode = CommonService.fixAblBranchCode(userId);
             data = commonService.mapAblBranchDetails(data, branchCode, routingData);
             String transactionNo = csvRecord.get(11).trim();
             String amount = csvRecord.get(8).trim();
@@ -472,7 +474,7 @@ public class SpotCashService {
             data.put("beneficiaryName", "");
             data.put("beneficiaryAddress", "");
             data.put("enteredDate", enteredDate.toString());
-            data.put("paidUserId", branchCode);
+            data.put("paidUserId", userId);
             data.put("paidDate", paidDate.toString());
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
@@ -583,9 +585,10 @@ public class SpotCashService {
             if(row == null) continue;
             String transactionNo = CommonService.getCellValueAsString(row.getCell(8)).replace("NEC", "");
             String amount = CommonService.getCellValueAsString(row.getCell(12)).replace(",", "");
-            String userId = CommonService.removeAllSpecialCharacterFromString(CommonService.getCellValueAsString(row.getCell(5)));
+            String userId = CommonService.getCellValueAsString(row.getCell(5));
+            String branchCode = CommonService.removeAllSpecialCharacterFromString(userId);
             Map<String, Object> branchDetails = customQueryService.getBranchUserDetailsByUserId(branchUserDetails, exchangeCodeSc, userId);
-            String branchCode = CommonService.fixAblBranchCode(userId.toLowerCase().replace("br", ""));
+            branchCode = CommonService.fixAblBranchCode(branchCode.toLowerCase().replace("br", ""));
             LocalDate enteredDate = CommonService.convertStringToLocalDate(CommonService.getCellValueAsString(row.getCell(2)),"dd/MM/yyyy");
             LocalDate paidDate = CommonService.convertStringToLocalDate(CommonService.getCellValueAsString(row.getCell(3)),"dd/MM/yyyy");
             Map<String, Object> beneficiaryDoc = CommonService.parseNecDoc(CommonService.getCellValueAsString(row.getCell(7)));
@@ -622,22 +625,29 @@ public class SpotCashService {
         Row row;
         List<Map<String, Object>> dataList = new ArrayList<>();
         List<String[]> uniqueKeys = new ArrayList<>();
-        //List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        List<Map<String, Object>> branchUserDetails = customQueryService.getBranchUser("");
         for (int rowIndex = 1; rowIndex <= worksheet.getLastRowNum(); rowIndex++){
             row = worksheet.getRow(rowIndex);
             if(row == null) continue;
             String transactionNo = CommonService.getCellValueAsString(row.getCell(13));
             String amount = CommonService.getCellValueAsString(row.getCell(17));
             String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(4)), exchangeCode);
-            String branchCode = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(9)).trim());
-            //Map<String, Object> routingDetails = commonService.convertAblRoutingToBranchCode(routingNo, routingData);
-            //LocalDate enteredDate = CommonService.convertStringToLocalDate(row.getCell(2).toString(),"M/dd/yyyy");
-            //LocalDate paidDate = CommonService.convertStringToLocalDate(CommonService.getCellValueAsString(row.getCell(6)),"dd/MM/yyyy");
-            System.out.println(CommonService.getCellValueAsString(row.getCell(2)));
-            //System.out.println(row.getCell(2));
-            //System.out.println(enteredDate);
+            String userId = CommonService.getCellValueAsString(row.getCell(8));
+            String branchCode = CommonService.removeAllSpecialCharacterFromString(userId);
+            Map<String, Object> branchDetails = customQueryService.getBranchUserDetailsByUserId(branchUserDetails, exchangeCodeSc, userId);
+            branchCode = CommonService.fixAblBranchCode(branchCode.toLowerCase().replace("br", ""));
+            
+            String paidDateStr = CommonService.getCellValueAsString(row.getCell(6)).trim();
+            String paidDatePattern = CommonService.detectNecUKYearPattern(paidDateStr);
+            LocalDate paidDate = CommonService.convertStringToLocalDate(paidDateStr, paidDatePattern);
+            String enteredDateStr = CommonService.getCellValueAsString(row.getCell(2)).trim();
+            String enteredDatePattern = CommonService.detectNecUKYearPattern(enteredDateStr);
+            LocalDate enteredDate = CommonService.convertStringToLocalDate(enteredDateStr, enteredDatePattern);
+
             Map<String, Object> beneficiaryDoc = CommonService.parseNecDoc(CommonService.getCellValueAsString(row.getCell(12)));
             Map<String, Object> data = new HashMap<>();
+            data = commonService.mapAblUserIdToBranchdetails(data, branchDetails, branchCode, routingData);
             data.put("transactionNo", transactionNo);
             data.put("amount", amount);
             data.put("remitterName", CommonService.getCellValueAsString(row.getCell(3)));
@@ -648,17 +658,18 @@ public class SpotCashService {
             data.put("beneficiaryAddress", CommonService.getCellValueAsString(row.getCell(11)));
             data.put("beneficiaryNid", beneficiaryDoc.get("nid").toString());
             data.put("remitterPassport", beneficiaryDoc.get("passport").toString());
-            //data.put("paidUserId", userId);  
-            //data.put("enteredDate", enteredDate.toString());
-           // data.put("paidDate", paidDate.toString());
+            data.put("paidUserId", userId);  
+            data.put("enteredDate", enteredDate.toString());
+            data.put("paidDate", paidDate.toString());
             data.put("exchangeCode", exchangeCode);
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
+            for(String field: fields)   data.put(field, "");
             dataList.add(data);
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
         }
-        System.out.println(dataList);
         resp.put("dataList", dataList);
         resp.put("uniqueKeys", uniqueKeys);
         return resp;
@@ -934,11 +945,11 @@ public class SpotCashService {
             String transactionNo = CommonService.getCellValueAsString(row.getCell(3));
             String amount = CommonService.getCellValueAsString(row.getCell(9));
             String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(1)), exchangeCode);
-            String userId = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(13)).trim()); //generate this id to branch later
-            userId = userId.substring(1);
-            Map<String, Object> branchDetails = customQueryService.getBranchUserDetailsByUserId(branchUserDetails, exchangeCodeSc, userId);
-            userId = CommonService.fixAblBranchCode(userId.replace("ABL", ""));
-            String enteredDate = CommonService.getCellValueAsString(row.getCell(0));
+            String paidUserId = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(13)).trim()); //generate this id to branch later
+            paidUserId = paidUserId.substring(1);
+            Map<String, Object> branchDetails = customQueryService.getBranchUserDetailsByUserId(branchUserDetails, exchangeCodeSc, paidUserId);
+            String userId = CommonService.fixAblBranchCode(paidUserId.replace("ABL", ""));
+            LocalDate enteredDate = CommonService.convertStringToLocalDate(CommonService.getCellValueAsString(row.getCell(0)), "M/d/yy");
             
             Map<String, Object> data = new HashMap<>(); 
             data = commonService.mapAblUserIdToBranchdetails(data, branchDetails, userId, routingData);
@@ -949,12 +960,13 @@ public class SpotCashService {
             data.put("sourceCountry", sourceCountry);
             data.put("beneficiaryName", CommonService.getCellValueAsString(row.getCell(6)));
             data.put("beneficiaryNid", "");  //should work later
-            data.put("enteredDate", enteredDate);
-            data.put("paidDate", enteredDate);
+            data.put("enteredDate", enteredDate.toString());
+            data.put("paidDate", enteredDate.toString());
             data.put("exchangeCode", exchangeCode);
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
             data.put("currency", "BDT");
+            data.put("paidUserId", paidUserId);
             String[] fields = {"beneficiaryAddress","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);

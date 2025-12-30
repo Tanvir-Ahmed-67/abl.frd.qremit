@@ -1393,12 +1393,14 @@ public class CommonService {
                     return cell.getStringCellValue().trim();
                 case NUMERIC:
                 case FORMULA:
+                    
                     if (DateUtil.isCellDateFormatted(cell)) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        return sdf.format(cell.getDateCellValue());
+                        return formatter.formatCellValue(cell).trim(); 
                     }else{
                         return BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
-                    }   
+                    }
+                    
+                     
                 case BOOLEAN:
                     return String.valueOf(cell.getBooleanCellValue());
                 case BLANK:
@@ -1842,5 +1844,15 @@ public class CommonService {
         }
         else data = mapAblBranchDetails(data, branchCode, routingData);
         return data;
+    }
+
+    public static String detectNecUKYearPattern(String dateStr){
+        if(dateStr.isEmpty())   return "";
+        String[] parts = dateStr.split("/");
+        if(parts.length < 3)    return "";
+        String yearPart = parts[2];
+        if(yearPart.length() == 2)  return "d/M/yy";
+        else if(yearPart.length() == 4)  return "d/M/yyyy";
+        return ""; 
     }
 }
