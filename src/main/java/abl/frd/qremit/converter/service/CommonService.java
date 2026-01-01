@@ -1516,6 +1516,10 @@ public class CommonService {
         return str.replaceAll("[^a-zA-Z0-9]", "");
     }
 
+    public static String parseNumberFromString(String str){
+        return str.replaceAll("[^0-9]", "");
+    }
+
     public static String filterTxnNo(String str){
         str = removeAllSpecialCharacterFromString(str);
         if(str.length() > 17)   str = str.substring(0, 17);
@@ -1861,5 +1865,14 @@ public class CommonService {
         if(yearPart.length() == 2)  return "d/M/yy";
         else if(yearPart.length() == 4)  return "d/M/yyyy";
         return ""; 
+    }
+
+    public static String parseCblDate(String dateStr){
+        if(dateStr.isEmpty())   return "";
+        String[] parts = dateStr.split("-");
+        if(parts.length < 3)    return "";
+        String month = parts[1];
+        month = month.substring(0,1).toUpperCase() + month.substring(1).toLowerCase();
+        return parts[0] + "-" + month + "-" + parts[2];
     }
 }

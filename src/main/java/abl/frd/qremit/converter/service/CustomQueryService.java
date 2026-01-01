@@ -149,7 +149,7 @@ public class CustomQueryService {
         if(("BD").equals(value) || ("BANGLADESH").equals(value))    return "";
         if(("UAE").equals(value) || ("UNITED ARAB EMIRATES").equals(value) || ("DF").equals(value))   return "784";
         if(("UK").equals(value) || ("UNITED KINGDOM").equals(value))   return "826";
-        if(("USA").equals(value) || ("UNITED STATES OF AMERICA").equals(value))   return "840";
+        if(("USA").equals(value) || ("UNITED STATES OF AMERICA").equals(value) || ("UNITED STATES").equals(value))   return "840";
         String key = "";
         if(value.length() == 2) key = "two_digit";
         else if(value.length() == 3) key = "three_digit";
