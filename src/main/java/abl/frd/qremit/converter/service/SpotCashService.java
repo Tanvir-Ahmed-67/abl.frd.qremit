@@ -948,8 +948,7 @@ public class SpotCashService {
             String transactionNo = CommonService.getCellValueAsString(row.getCell(3));
             String amount = CommonService.getCellValueAsString(row.getCell(9));
             String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(1)), exchangeCode);
-            String paidUserId = CommonService.fixRoutingNo(CommonService.getCellValueAsString(row.getCell(13)).trim()); //generate this id to branch later
-            paidUserId = paidUserId.substring(1);
+            String paidUserId = CommonService.getCellValueAsString(row.getCell(13)).trim();
             Map<String, Object> branchDetails = customQueryService.getBranchUserDetailsByUserId(branchUserDetails, exchangeCodeSc, paidUserId);
             String userId = CommonService.fixAblBranchCode(paidUserId.replace("ABL", ""));
             LocalDate enteredDate = CommonService.convertStringToLocalDate(CommonService.getCellValueAsString(row.getCell(0)), "M/d/yy");
