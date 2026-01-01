@@ -171,10 +171,13 @@ public class CustomQueryService {
 
     public Map<String, Object> getBranchUserDetailsByUserId(List<Map<String,Object>> branchList, String exCodeSc, String userId){
         Map<String, Object> resp = new HashMap<>();
+        if(branchList.isEmpty() || userId == null)  return resp;
         String key = exCodeSc + "id";
-        if(!branchList.isEmpty()){
-            for(Map<String, Object> bList: branchList){
-                if(userId.equals(bList.get(key)))  return bList;
+        for(Map<String, Object> bList: branchList){
+            if(userId.equals(bList.get(key)))  return bList;
+            if(exCodeSc.equals("m01")){
+                if(userId.equals(bList.get(key + "1"))) return bList;
+                if(userId.equals(bList.get(key + "2"))) return bList;
             }
         }
         return resp;
