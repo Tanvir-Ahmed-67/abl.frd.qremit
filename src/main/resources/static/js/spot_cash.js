@@ -5,7 +5,7 @@ $(document).ready(function(){
     var tbl = "#spot_cash_tbl";
     $('form').on('submit', function(e){
         e.preventDefault();
-        $('#display').hide();
+        $('#alert_msg').hide();
         var data = new FormData($(this)[0]);
         $.ajax({
             url: "/spotcash/upload",

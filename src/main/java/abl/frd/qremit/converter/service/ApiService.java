@@ -20,7 +20,8 @@ public class ApiService {
         List<String[]> uniqueKeys = new ArrayList<>();
         List<Map<String, Object>> dataList = new ArrayList<>();
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
-        Map<String, String> nrtaCodeVsExchangeCodeMap = CommonService.getNrtaCodeVsExchangeCodeMap(exchangeHouseModelList);
+        //Map<String, String> nrtaCodeVsExchangeCodeMap = CommonService.getNrtaCodeVsExchangeCodeMap(exchangeHouseModelList);
+        Map<String, Object> nrtaCodeVsExchangeDetailsMap = CommonService.getNrtaCodeVsExchangeDetailsMap(exchangeHouseModelList);
         Map<String, Object> routingDetails = new HashMap<>();
         for (CSVRecord csvRecord : csvRecords) {
             String trMode = csvRecord.get(12).toString();
@@ -38,9 +39,12 @@ public class ApiService {
                 if(nrtaCode.length() > 4)   continue;
                 routingDetails = commonService.convertAblRoutingToBranchCode(branchCode, routingData);
             }else continue;
-            String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
+            //String exchangeCode = nrtaCodeVsExchangeCodeMap.get(nrtaCode);
+            ExchangeHouseModel exchangeHouseModel = (ExchangeHouseModel) nrtaCodeVsExchangeDetailsMap.get(nrtaCode);
+            String exchangeCode = exchangeHouseModel.getExchangeCode();
+            String exchangeCodeSc = exchangeHouseModel.getExchangeCodeSc();
             String sourceCountry = customQueryService.parseCountryCode(countryList, csvRecord.get(14).trim(), exchangeCode);
-            Map<String, Object> data = getData(csvRecord, exchangeCode, nrtaCode, type, sourceCountry, branchCode, beneficiaryAccount, routingDetails);
+            Map<String, Object> data = getData(csvRecord, exchangeCode, nrtaCode, type, sourceCountry, branchCode, beneficiaryAccount, routingDetails, exchangeCodeSc);
             dataList.add(data);
             String transactionNo = data.get("transactionNo").toString();
             String amount = data.get("amount").toString();
@@ -54,7 +58,7 @@ public class ApiService {
     }
 
     public Map<String, Object> getData(CSVRecord csvRecord, String exchangeCode, String nrtaCode, String type, String sourceCountry, String branchCode, String beneficiaryAccount,
-        Map<String, Object> routingDetails){
+        Map<String, Object> routingDetails, String exchangeCodeSc){
         String bankName = ""; 
         String bankCode = ""; 
         String branchName = "";
@@ -70,6 +74,7 @@ public class ApiService {
             branchCode = routingDetails.get("abl_branch_code").toString();
             beneficiaryAccount = "";
             incentive = "0";
+            data.put("exchangeCodeSc", exchangeCodeSc);
         }
         data.put("typeFlag", type);
         data.put("exchangeCode", exchangeCode);

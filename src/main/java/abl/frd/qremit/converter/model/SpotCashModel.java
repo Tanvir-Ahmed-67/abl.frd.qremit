@@ -110,6 +110,8 @@ public class SpotCashModel {
     private String uIp;
     @Column(name = "uid", length = 10)
     private String uId;
+    @Column(name = "exchange_code_sc", length = 20)
+    private String exchangeCodeSc;
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name="upload_user_id")
     @JsonIgnore
@@ -519,6 +521,14 @@ public class SpotCashModel {
     }
 
     public SpotCashModel() {
+    }
+
+    public String getExchangeCodeSc() {
+        return this.exchangeCodeSc;
+    }
+
+    public void setExchangeCodeSc(String exchangeCodeSc) {
+        this.exchangeCodeSc = exchangeCodeSc;
     }
 
     @Override

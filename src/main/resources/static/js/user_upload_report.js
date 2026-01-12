@@ -110,6 +110,14 @@ $(document).ready(function(){
             case '17':
                 var url = "/viewBeftnReturnFile?id=" + pid;
                 break;
+            case '18':
+                var url = "/spotcash/getExchangeWiseSummary?date=" + date;
+                page_header = "Exchange House wise Spot Cash Report";
+                $('#row_report_date').show();
+                break;
+            case '19':
+                var url = "/spotcash/get?date=" + date;
+                break;
         }
         return {'url': url, 'page_header': page_header};
     }

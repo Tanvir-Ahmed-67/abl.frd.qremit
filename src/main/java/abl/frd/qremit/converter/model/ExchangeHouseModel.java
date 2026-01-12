@@ -35,6 +35,8 @@ public class ExchangeHouseModel {
     private int hasSettlementDaily = 0;
     @Column(name="exchange_code_sc", length = 10)
     private String exchangeCodeSc;
+    @Column(name = "exchange_short_name_sc", nullable=false, length = 30)
+    private String exchangeShortNameSc;
     @Column(name = "class_name", length = 32, nullable = false)
     private String className;
     @Column(name = "repository_name", length = 32, nullable = false)
@@ -150,6 +152,14 @@ public class ExchangeHouseModel {
 
     public void setHasSettlementDaily(int hasSettlementDaily) {
         this.hasSettlementDaily = hasSettlementDaily;
+    }
+
+    public String getExchangeShortNameSc() {
+        return this.exchangeShortNameSc;
+    }
+
+    public void setExchangeShortNameSc(String exchangeShortNameSc) {
+        this.exchangeShortNameSc = exchangeShortNameSc;
     }
 
     @Override

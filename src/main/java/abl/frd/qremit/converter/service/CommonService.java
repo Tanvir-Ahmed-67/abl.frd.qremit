@@ -908,6 +908,19 @@ public class CommonService {
         return nrtaCodeVsExchangeCodeMap;
     }
 
+    public static Map<String, Object> getNrtaCodeVsExchangeDetailsMap(List<ExchangeHouseModel> exchangeHouseModelList){
+        Map<String, Object> resp = new HashMap<>();
+        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+            try{
+                String nrtaCode = exchangeHouseModel.getNrtaCode();
+                resp.put(nrtaCode, exchangeHouseModel);
+            }catch (Exception e) {
+                throw new RuntimeException("Failed to map NRTA Code Vs Exchange Code: " + e.getMessage());
+            }
+        }
+        return resp;
+    }
+
     public static Map<String, Object> getExchangeCodeVsNrtaCodeMap(String exchangeCode, List<ExchangeHouseModel> exchangeHouseModelList){
         Map<String, Object> resp = new HashMap<>();
         for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){

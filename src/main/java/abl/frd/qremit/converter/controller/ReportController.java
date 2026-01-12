@@ -115,6 +115,10 @@ public class ReportController {
                 columnData = new String[] {"sl", "exchangeCode", "fileName", "totalCount", "uploadDateTime", "action"};
                 columnTitles = new String[] {"SL", "Exchange Code", "File Name", "Total Processed", "Upload Date", "Action"};
                 break;
+            case "18":
+                columnData = new String[] {"sl", "exchangeCodeSc", "exchangeName", "totalCount", "totalAmount"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Exchange Name", "Total Processed", "Total Amount"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
