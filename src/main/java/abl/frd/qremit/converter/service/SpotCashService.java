@@ -1124,10 +1124,14 @@ public class SpotCashService {
         if(spotCashModelList.size() > 0){
             int i = 1;
             List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.getSpotCashExchangeList();
+            int totalCount = 0;
+            double totalAmount = 0;
             for(Object[] row: spotCashModelList){
                 String exchangeCodeSc = (String) row[0];
                 Double amount = (Double) row[1];
                 long cnt = (Long) row[2];
+                totalAmount += amount;
+                totalCount += (int) cnt;
                 String exchangeName = "";
                 for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
                     if(exchangeCodeSc.equals(exchangeHouseModel.getExchangeCodeSc())){
@@ -1143,6 +1147,13 @@ public class SpotCashService {
                 data.put("exchangeName", exchangeName);
                 dataList.add(data);
             }
+            Map<String, Object> totalData = new HashMap<>();
+            totalData.put("sl", "");
+            totalData.put("totalAmount", CommonService.convertNumberFormat(totalAmount, 2));
+            totalData.put("totalCount", totalCount);
+            totalData.put("exchangeCodeSc", "");
+            totalData.put("exchangeName", "Total Uploaded");
+            dataList.add(totalData);
         }
         resp.put("data", dataList);
         return resp;
