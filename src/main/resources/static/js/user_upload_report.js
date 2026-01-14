@@ -188,7 +188,28 @@ $(document).ready(function(){
             btn = '<a href="'+ url + '" class="btn btn-danger text-white">Download Monthly Data</a>'
             $('#download_btn').html(btn);
         }
+        if(type == 18){
+            var entryUrl = "http://203.188.255.210/rms-api/update_spotcash_entry_active.php";
+            var trandataUrl = "http://203.188.242.211/rms-api/update_trandata_api.php";
+            var processReportUrl = "/processSpotCashReport";
+
+            //var entryUrl = "http://localhost/rms-api/update_spotcash_entry_active.php";
+            //var trandataUrl = "http://localhost/rms-api/update_trandata_api.php";
+            var btn = '<div class="btn-group">';
+            //btn += '<button type="button" class="btn btn-info spotcash" id="' + entryUrl + '">Update From Trandata Manual Entry</button>';
+            btn += '<a href="'+ entryUrl + '" class="btn btn-info text-white" target="_blank">Update From Trandata manual Entry</a>';
+            btn += '<a href="'+ trandataUrl + '" class="btn btn-danger text-white" target="_blank">Update Trandata</a>';
+            btn += '<a href="'+ processReportUrl + '" class="btn btn-info text-white" target="_blank">Generate SpotCash Report</a>';
+            btn += '</div>';
+            $('#download_btn').html(btn);
+        }
     }
+
+    $(document).off('click','.spotcash');
+    $(document).on('click','.spotcash', function(e){
+        var id = $(this).attr(id);
+        console.log(id);
+    });
 
     $(document).off('click',".view_exchange");
     $(document).on('click',".view_exchange",function(e){

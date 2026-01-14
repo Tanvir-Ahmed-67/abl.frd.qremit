@@ -690,6 +690,15 @@ public class ReportController {
         resp = reportService.processReport(currentDate);
         return ResponseEntity.ok(resp);
     }
+    @GetMapping(value="/processSpotCashReport", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> generateSpotCashReport(@AuthenticationPrincipal MyUserDetails userDetails){
+        Map<String, Object> resp = new HashMap<>();
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        //String currentDate = "2026-01-11";
+        resp = reportService.processSpotCashReport(currentDate);
+        return ResponseEntity.ok(resp);
+    }
     @GetMapping("/showIcashEntryForm")
     public String showIcashEntryForm(Model model){
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");

@@ -64,6 +64,8 @@ public class ReportService {
     BeftnReturnRepository beftnReturnRepository;
     @Autowired
     CustomQueryService customQueryService;
+    @Autowired
+    SpotCashService spotCashService;
 
     DateTimeFormatter yyMMddFormatter = DateTimeFormatter.ofPattern("yyMMdd");     // YYMMDD
     DateTimeFormatter yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd"); // YYYY/MM/DD
@@ -499,6 +501,16 @@ public class ReportService {
         resp = CommonService.getResp(0, "Data Processed successfully", null);
         return resp;
     }
+    public Map<String, Object> processSpotCashReport(String currentDate){
+        Map<String, Object> resp = new HashMap<>();
+        Map<String, LocalDateTime> dateTime = CommonService.getStartAndEndDateTime(currentDate);
+        LocalDateTime starDateTime = (LocalDateTime) dateTime.get("startDateTime");
+        LocalDateTime endDateTime = (LocalDateTime) dateTime.get("endDateTime");
+        List<SpotCashModel> spotCashModelList = spotCashService.getProcessedDataByUploadDate(1, 0, starDateTime, endDateTime);
+        resp = setReportModelData(spotCashModelList, "5");
+        return resp;
+
+    }
     @Transactional
     public <T> Map<String, Object> setReportModelData(List<T> modelList, String type){
         Map<String, Object> resp = CommonService.getResp(0, this.pMsg, null);
@@ -511,6 +523,7 @@ public class ReportService {
         List<Integer> beftnInsertList = new ArrayList<>();
         List<Integer> cocPaidInsertList = new ArrayList<>();
         List<Integer> npsbMfsInsertList = new ArrayList<>();
+        List<Integer> spotCashInsertList = new ArrayList<>();
         Map<String, List<Integer>> insertList = new HashMap<>();
         if(modelList != null && !modelList.isEmpty()){
             int count = 0;
@@ -585,6 +598,10 @@ public class ReportService {
                             cocPaidInsertList.add(id);
                             insertList.put(types, cocPaidInsertList);
                             break;
+                        case "5":
+                            spotCashInsertList.add(id);
+                            insertList.put(types, spotCashInsertList);
+                            break;
                         case "6":
                         case "7":
                             npsbMfsInsertList.add(id);
@@ -629,8 +646,12 @@ public class ReportService {
                 break;
             case "3":
                 beftnModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
             case "4":
                 cocPaidModelService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
+                break;
+            case "5":
+                spotCashService.updateIsVoucherGeneratedBulk(ids, 1, reportDate);
                 break;
             case "6":
             case "7":

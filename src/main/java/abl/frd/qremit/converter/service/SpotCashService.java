@@ -3,10 +3,12 @@ import org.apache.commons.csv.*;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import abl.frd.qremit.converter.model.ErrorDataModel;
 import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
+import abl.frd.qremit.converter.model.OnlineModel;
 import abl.frd.qremit.converter.model.SpotCashModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
@@ -1144,5 +1146,14 @@ public class SpotCashService {
         }
         resp.put("data", dataList);
         return resp;
+    }
+
+    public List<SpotCashModel> getProcessedDataByUploadDate(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return spotCashRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, 1, starDateTime, enDateTime);
+    }
+
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        spotCashRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
     }
 }

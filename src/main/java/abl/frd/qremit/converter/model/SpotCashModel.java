@@ -92,8 +92,8 @@ public class SpotCashModel {
     private String beneficiaryGender;
     @Column(name = "beneficiary_district", length = 64)
     private String beneficiaryDistrict;
-    @Column(name = "paid_date", columnDefinition = "DATE")
-    private LocalDate paidDate;
+    @Column(name = "paid_date", length = 20)
+    private String paidDate;
     @Column(name="beneficiary_nid", length = 32)
     private String beneficiaryNid;
     @Column(name="remitter_passport", length = 32)
@@ -440,11 +440,12 @@ public class SpotCashModel {
     public void setBeneficiaryDistrict(String beneficiaryDistrict) {
         this.beneficiaryDistrict = beneficiaryDistrict;
     }
-    public LocalDate getPaidDate() {
+
+    public String getPaidDate() {
         return this.paidDate;
     }
 
-    public void setPaidDate(LocalDate paidDate) {
+    public void setPaidDate(String paidDate) {
         this.paidDate = paidDate;
     }
 
