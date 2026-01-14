@@ -101,4 +101,8 @@ public class ExchangeHouseModelService {
     public List<ExchangeHouseModel> getSpotCashExchangeList(){
         return exchangeHouseModelRepository.getSpotCashExchangeList();
     }
+
+    public List<ExchangeHouseModel> getSpotCashExchangeListWithShortName(){
+        return exchangeHouseModelRepository.getSpotCashExchangeListWithShortName();
+    }
 }

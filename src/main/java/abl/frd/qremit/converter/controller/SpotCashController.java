@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import abl.frd.qremit.converter.helper.MyUserDetails;
 import abl.frd.qremit.converter.model.ExchangeHouseModel;
@@ -41,7 +42,7 @@ public class SpotCashController {
         if(authentication == null || !authentication.isAuthenticated() || (authentication instanceof AnonymousAuthenticationToken)){
             return "redirect:/login";
         }
-        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.getSpotCashExchangeList();
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelService.getSpotCashExchangeListWithShortName();
         model.addAttribute("exchangeHouseList", exchangeHouseModelList);
         return "pages/user/spot_cash_upload";
     }
@@ -73,5 +74,14 @@ public class SpotCashController {
             return CommonService.getResp(1, msg, null);
         }
         return resp;
+    }
+
+    @GetMapping(value="/getExchangeWiseSummary", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> getExchangeWiseSummary(@AuthenticationPrincipal MyUserDetails userDetails,@RequestParam(defaultValue = "") String date,Model model){
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        if(date.isEmpty())  date = currentDate;
+        return spotCashService.getExchangeWiseSummary(date);
+
     }
 }

@@ -115,6 +115,10 @@ public class ReportController {
                 columnData = new String[] {"sl", "exchangeCode", "fileName", "totalCount", "uploadDateTime", "action"};
                 columnTitles = new String[] {"SL", "Exchange Code", "File Name", "Total Processed", "Upload Date", "Action"};
                 break;
+            case "18":
+                columnData = new String[] {"sl", "exchangeCodeSc", "exchangeName", "totalCount", "totalAmount"};
+                columnTitles = new String[] {"SL", "Exchange Code", "Exchange Name", "Total Processed", "Total Amount"};
+                break;
         }
         return CommonService.createColumns(columnData, columnTitles);
     }
@@ -684,6 +688,15 @@ public class ReportController {
         Map<String, Object> resp = new HashMap<>();
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         resp = reportService.processReport(currentDate);
+        return ResponseEntity.ok(resp);
+    }
+    @GetMapping(value="/processSpotCashReport", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> generateSpotCashReport(@AuthenticationPrincipal MyUserDetails userDetails){
+        Map<String, Object> resp = new HashMap<>();
+        String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
+        //String currentDate = "2026-01-11";
+        resp = reportService.processSpotCashReport(currentDate);
         return ResponseEntity.ok(resp);
     }
     @GetMapping("/showIcashEntryForm")

@@ -39,4 +39,8 @@ public interface FileInfoModelRepository extends JpaRepository<FileInfoModel, In
     @Modifying
     @Query("DELETE FROM FileInfoModel n WHERE n.id=:id")
     int deleteFileInfoModelById(@Param("id") int id);
+    /*
+    @Query("SELECT n from FileInfoModel n WHERE n.spotCashCount != 0 AND n.uploadDateTime BETWEEN :startDate AND :endDate")
+    List<FileInfoModel> getSpotCashList(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("spotCashCount") String spotCashCount);
+    */
 }

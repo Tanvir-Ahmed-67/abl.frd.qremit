@@ -3,20 +3,24 @@ import org.apache.commons.csv.*;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import abl.frd.qremit.converter.model.ErrorDataModel;
+import abl.frd.qremit.converter.model.ExchangeHouseModel;
 import abl.frd.qremit.converter.model.FileInfoModel;
+import abl.frd.qremit.converter.model.OnlineModel;
 import abl.frd.qremit.converter.model.SpotCashModel;
 import abl.frd.qremit.converter.model.User;
 import abl.frd.qremit.converter.repository.ExchangeHouseModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
+import abl.frd.qremit.converter.repository.SpotCashRepository;
 import abl.frd.qremit.converter.repository.UserModelRepository;
-
 import java.io.*;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -34,6 +38,8 @@ public class SpotCashService {
     CommonService commonService;
     @Autowired
     ApiService apiService;
+    @Autowired
+    SpotCashRepository spotCashRepository;
     private String exchangeCodeSc;
     public Map<String, Object> save(MultipartFile file, int userId, String exchangeCode, String nrtaCode, String exchangeCodeSc){
         Map<String, Object> resp = new HashMap<>();
@@ -88,6 +94,8 @@ public class SpotCashService {
                     spotCashModel.setIsDownloaded(1);
                     spotCashModel.setIsProcessed(1);
                     spotCashModel.setEntryActive(1);
+                    spotCashModel.setDownloadDateTime(currentDateTime);
+                    spotCashModel.setDownloadUserId(userId);
                 }
                 totalAmount += spotCashModel.getAmount();
                 spotCashCount += 1;
@@ -155,6 +163,7 @@ public class SpotCashService {
         switch(exchangeCode){
             case "7010226":
             case "7010228":
+            case "777777":
                 method = "processApi";
                 break;
             case "7010288":
@@ -216,7 +225,7 @@ public class SpotCashService {
             case "7010267":
                 method = "processUremit";
                 break;
-            case "7010276":
+            case "888888":
                 method = "processNblApi";
                 break;
         }
@@ -267,6 +276,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"remitterMobile","sourceOfIncome","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -282,11 +292,11 @@ public class SpotCashService {
         List<Map<String, Object>> dataList = new ArrayList<>();
         List<String[]> uniqueKeys = new ArrayList<>();
         List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
+        Map<String, Object> nrtaCodeVsExchangeDetailsMap = CommonService.getNrtaCodeVsExchangeDetailsMap(exchangeHouseModelList);
         for (CSVRecord csvRecord : csvRecords) {
             String sourceCountry = "";
             LocalDateTime paidDate = CommonService.convertStringToDate(csvRecord.get(11).trim(), "yyyy-MM-dd HH:mm:ss Z");
-            //System.out.println(csvRecord.get(11).trim());
-            //System.out.println(paidDate);
             Map<String, Object> data = new HashMap<>();
             String routingNo = CommonService.fixRoutingNo(csvRecord.get(10).trim());
             Map<String, Object> routingDetails = commonService.convertAblRoutingToBranchCode(routingNo, routingData);
@@ -297,25 +307,22 @@ public class SpotCashService {
                 case "060":
                 case "60":
                     nrtaCode = "7059";
-                    exchangeCode = "7010276";
-                    sourceCountry = "458";
                     break;
                 case "030":
                 case "30":
                     nrtaCode = "7076";
-                    exchangeCode = "7010310";
-                    sourceCountry = "300";
                     break;
                 case "960":
                     nrtaCode = "7105";
-                    exchangeCode = "7010297";
-                    sourceCountry = "462";
                     break;
                 default:
-                    exchangeCode = "";
                     nrtaCode = "";
                     break;
             }
+            ExchangeHouseModel exchangeHouseModel = (ExchangeHouseModel) nrtaCodeVsExchangeDetailsMap.get(nrtaCode);
+            exchangeCode = exchangeHouseModel.getExchangeCode();
+            sourceCountry = exchangeHouseModel.getCountryCode();
+            exchangeCodeSc = exchangeHouseModel.getExchangeCodeSc();
             data.put("transactionNo", transactionNo);
             data.put("remitterName", csvRecord.get(5).trim());
             data.put("remitterAddress", "");
@@ -334,6 +341,7 @@ public class SpotCashService {
             data.put("nrtaCode", nrtaCode);
             data.put("currency", "BDT");
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", exchangeCodeSc);
             String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount","beneficiaryName"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -375,6 +383,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -416,6 +425,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"beneficiaryNid","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -456,6 +466,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"beneficiaryNid","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -465,7 +476,7 @@ public class SpotCashService {
         resp.put("uniqueKeys", uniqueKeys);
         return resp;
     }
-
+    
     public Map<String, Object> processWesternUnion(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
         Row row;
@@ -497,6 +508,7 @@ public class SpotCashService {
             data.put("sourceForeignCurrency", CommonService.getCellValueAsString(row.getCell(53)));
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"beneficiaryNid","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","remitterName","remitterPassport","beneficiaryName","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -506,6 +518,50 @@ public class SpotCashService {
         resp.put("uniqueKeys", uniqueKeys);
         return resp;
     }
+    /*
+    public Map<String, Object> processWesternUnion(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
+        Map<String, Object> resp = new HashMap<>();
+        Row row;
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        List<String[]> uniqueKeys = new ArrayList<>();
+        List<Map<String, Object>> routingData = customQueryService.getRoutingDetailsByBankCode("010");
+        List<Map<String, Object>> branchUserDetails = customQueryService.getBranchUser("");
+        for (int rowIndex = 0; rowIndex <= worksheet.getLastRowNum(); rowIndex++){
+            row = worksheet.getRow(rowIndex);
+            if(row == null) continue;
+            String transactionNo = CommonService.getCellValueAsString(row.getCell(1));
+            String operatorId = CommonService.getCellValueAsString(row.getCell(2));
+            String userId = (!operatorId.isEmpty()) ? operatorId: CommonService.getCellValueAsString(row.getCell(134));
+            Map<String, Object> branchDetails = customQueryService.getBranchUserDetailsByUserId(branchUserDetails, exchangeCodeSc, userId);
+            String amount = CommonService.getCellValueAsString(row.getCell(3));
+            //String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(4)), exchangeCode);
+            String sourceCountry = "682";
+            LocalDate paidDate = CommonService.convertStringToLocalDate(CommonService.getCellValueAsString(row.getCell(0)),"MM/dd/yyyy");
+            Map<String, Object> data = new HashMap<>();
+            data = commonService.mapAblUserIdToBranchdetails(data, branchDetails, "", routingData);
+            data.put("transactionNo", transactionNo);
+            data.put("amount", amount);
+            data.put("sourceCountry", sourceCountry);
+            data.put("beneficiaryMobile", CommonService.getCellValueAsString(row.getCell(7)));
+            data.put("enteredDate", paidDate.toString());
+            data.put("paidDate", paidDate.toString());
+            data.put("paidUserId", userId);
+            data.put("exchangeCode", exchangeCode);
+            data.put("currency", "BDT");
+            data.put("sourceForeignCurrency", CommonService.getCellValueAsString(row.getCell(53)));
+            data.put("nrtaCode", nrtaCode);
+            data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
+            String[] fields = {"beneficiaryNid","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","remitterName","remitterPassport","beneficiaryName","beneficiaryAccount"};
+            for(String field: fields)   data.put(field, "");
+            dataList.add(data);
+            uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
+        }
+        resp.put("dataList", dataList);
+        resp.put("uniqueKeys", uniqueKeys);
+        return resp;
+    }
+        */
 
     public Map<String, Object> processMoneyGram(Sheet worksheet, String exchangeCode, String nrtaCode, List<Map<String, Object>> countryList){
         Map<String, Object> resp = new HashMap<>();
@@ -525,6 +581,7 @@ public class SpotCashService {
             if(cellB.contains("Account Number :") || cellB.isEmpty() || cellB.contains("Settlement Currency :")) continue;
             String amount = CommonService.getCellValueAsString(row.getCell(25)).trim();
             if(amount.equals("0.0")) continue;
+            amount = amount.replace("-", "");
             Map<String, Object> branchDetails = customQueryService.getBranchUserDetailsByUserId(branchUserDetails, exchangeCodeSc, legacyId);
             String transactionNo = CommonService.getCellValueAsString(row.getCell(8)).trim();
             String sourceCountry = customQueryService.parseCountryCode(countryList, CommonService.getCellValueAsString(row.getCell(14)), exchangeCode);
@@ -532,7 +589,7 @@ public class SpotCashService {
             Map<String, Object> data = new HashMap<>();
             data = commonService.mapAblUserIdToBranchdetails(data, branchDetails, "", routingData);
             data.put("transactionNo", transactionNo);
-            data.put("amount", amount.replace("-", ""));
+            data.put("amount", amount);
             data.put("sourceCountry", sourceCountry);
             data.put("paidUserId", legacyId);
             data.put("paidDate", paidDate.toString());
@@ -541,6 +598,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"beneficiaryNid","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount","beneficiaryName"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -588,6 +646,7 @@ public class SpotCashService {
             data.put("paidUserId", userId);
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -643,6 +702,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -689,6 +749,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -733,6 +794,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -778,6 +840,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("typeFlag","5");
             data.put("paidUserId", userId);
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -830,6 +893,7 @@ public class SpotCashService {
             data.put("sourceForeignCurrency", CommonService.getCellValueAsString(row.getCell(25)));
             data.put("typeFlag","5");
             data.put("paidUserId", userId);
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"sourceOfIncome","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -867,6 +931,7 @@ public class SpotCashService {
             data.put("currency", "BDT");
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"beneficiaryAddress","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -954,6 +1019,7 @@ public class SpotCashService {
             data.put("typeFlag","5");
             data.put("currency", "BDT");
             data.put("paidUserId", paidUserId);
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"beneficiaryAddress","remitterMobile","beneficiaryMobile","sourceOfIncome","purposeOfRemittance","beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -999,6 +1065,7 @@ public class SpotCashService {
             data.put("typeFlag","5");
             data.put("currency", "BDT");
             data.put("paidUserId", userId);
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             String[] fields = {"sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
             dataList.add(data);
@@ -1036,6 +1103,7 @@ public class SpotCashService {
             data.put("paidUserId", routingNo);
             data.put("nrtaCode", nrtaCode);
             data.put("typeFlag","5");
+            data.put("exchangeCodeSc", this.exchangeCodeSc);
             data.put("currency", "BDT");
             String[] fields = {"remitterMobile","sourceOfIncome","purposeOfRemittance", "beneficiaryAccount"};
             for(String field: fields)   data.put(field, "");
@@ -1045,5 +1113,58 @@ public class SpotCashService {
         resp.put("dataList", dataList);
         resp.put("uniqueKeys", uniqueKeys);
         return resp;
+    }
+
+    public Map<String, Object> getExchangeWiseSummary(String date){
+        Map<String, Object> resp = new HashMap<>();
+        LocalDateTime startDateTime = CommonService.convertStringToDate(date + " 00:00:00");
+        LocalDateTime endDateTime = CommonService.convertStringToDate(date+ " 23:59:59");
+        List<Object[]> spotCashModelList = spotCashRepository.getExchangeWiseDailyDataByDate(startDateTime, endDateTime);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        if(spotCashModelList.size() > 0){
+            int i = 1;
+            List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.getSpotCashExchangeList();
+            int totalCount = 0;
+            double totalAmount = 0;
+            for(Object[] row: spotCashModelList){
+                String exchangeCodeSc = (String) row[0];
+                Double amount = (Double) row[1];
+                long cnt = (Long) row[2];
+                totalAmount += amount;
+                totalCount += (int) cnt;
+                String exchangeName = "";
+                for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+                    if(exchangeCodeSc.equals(exchangeHouseModel.getExchangeCodeSc())){
+                        exchangeName = exchangeHouseModel.getExchangeName();
+                        break;
+                    }
+                }
+                Map<String, Object> data = new HashMap<>();
+                data.put("sl", i++);
+                data.put("totalAmount", CommonService.convertNumberFormat(amount, 2));
+                data.put("totalCount", cnt);
+                data.put("exchangeCodeSc", exchangeCodeSc);
+                data.put("exchangeName", exchangeName);
+                dataList.add(data);
+            }
+            Map<String, Object> totalData = new HashMap<>();
+            totalData.put("sl", "");
+            totalData.put("totalAmount", CommonService.convertNumberFormat(totalAmount, 2));
+            totalData.put("totalCount", totalCount);
+            totalData.put("exchangeCodeSc", "");
+            totalData.put("exchangeName", "Total Uploaded");
+            dataList.add(totalData);
+        }
+        resp.put("data", dataList);
+        return resp;
+    }
+
+    public List<SpotCashModel> getProcessedDataByUploadDate(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){
+        return spotCashRepository.getProcessedDataByUploadDate(isProcessed, isVoucherGenerated, 1, starDateTime, enDateTime);
+    }
+
+    @Transactional
+    public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
+        spotCashRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
     }
 }
