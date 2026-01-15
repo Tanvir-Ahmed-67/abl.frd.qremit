@@ -47,7 +47,8 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="sidebar-item">
+                    
+                    <li class="sidebar-item" th:if="${currentUserId == 9}">
                         <a th:href="@{/spotcash/index?id=}" class='sidebar-link'>
                             <i class="fa-solid fa-upload"></i>
                             <span>Spot Cash Upload</span>

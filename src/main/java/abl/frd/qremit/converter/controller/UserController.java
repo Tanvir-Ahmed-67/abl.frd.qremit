@@ -65,6 +65,7 @@ public class UserController {
     @RequestMapping("/user-home-page")
     public String loginSubmitUser(@AuthenticationPrincipal MyUserDetails userDetails, Model model){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        model.addAttribute("currentUserId", myUserDetailsService.getCurrentUser());
         return "layouts/dashboard"; 
     }
     @RequestMapping("/change-password")
