@@ -51,7 +51,6 @@ public class ApiService {
             uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             i++;
         }
-        System.out.println(dataList.size());
         resp.put("dataList", dataList);
         resp.put("uniqueKeys", uniqueKeys);
         return resp;
