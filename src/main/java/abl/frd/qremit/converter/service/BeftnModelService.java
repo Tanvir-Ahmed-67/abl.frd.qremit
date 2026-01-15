@@ -371,8 +371,11 @@ public class BeftnModelService {
         List<Map<String, Object>> dataList = new ArrayList<>();
         for(BeftnReturnModel beftnReturnModel: beftnReturnModelList){
             Map<String, Object> data = new HashMap<>();
-            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(beftnReturnModel.getExchangeCode());
-            String exchangeDetails = beftnReturnModel.getExchangeCode() + "<br>" + exchangeHouseModel.getExchangeName();
+            String exchangeDetails = "";
+            if(!beftnReturnModel.getExchangeCode().isEmpty()){
+                ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(beftnReturnModel.getExchangeCode());
+                exchangeDetails = beftnReturnModel.getExchangeCode() + "<br>" + exchangeHouseModel.getExchangeName();
+            }
             Map<String, Object> reasonResp = customQueryRepository.getBeftnReturnReason(beftnReturnModel.getReturnCode());
             List<Map<String, Object>> reasonList = (List<Map<String, Object>>)  reasonResp.get("data");
             String returnReason = (!reasonList.isEmpty())   ?   reasonList.get(0).get("return_name").toString(): "";

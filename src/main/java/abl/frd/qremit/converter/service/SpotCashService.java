@@ -56,7 +56,6 @@ public class SpotCashService {
             List<FileInfoModel> fileInfoModelList = new ArrayList<>();
             Map<String, Object> config = getExchangeConfig(exchangeCode);
             Map<String, Object> spotCashData = new HashMap<>();
-            System.out.println(config);
             int excel = (int) config.get("excel");
 
             Map<String, Object> dataResp = new HashMap<>();

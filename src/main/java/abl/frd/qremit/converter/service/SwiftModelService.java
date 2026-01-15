@@ -158,13 +158,11 @@ public class SwiftModelService {
                 int duplicateCount = (int) modelResp.get("duplicateCount");
 
                 // Save the error data models if any
-                if (!errorDataModelList.isEmpty()) {
-                    Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
-                    if (saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
-                    if (saveError.containsKey("errorMessage")) {
-                        resp.put("errorMessage", saveError.get("errorMessage"));
-                        return resp;
-                    }
+                Map<String, Object> saveError = errorDataModelService.saveErrorModelList(errorDataModelList);
+                if(saveError.containsKey("errorCount")) resp.put("errorCount", saveError.get("errorCount"));
+                if(saveError.containsKey("errorMessage")){
+                    resp.put("errorMessage", saveError.get("errorMessage"));
+                    return resp;
                 }
 
                 // If no valid data and no errors, delete the file info model
@@ -179,8 +177,9 @@ public class SwiftModelService {
                 if (!duplicateMessage.isEmpty()) {
                     resp.put("duplicateMessage", duplicateMessage);
                 }
-                resp.put("duplicateCount", duplicateCount);
-
+                if(!resp.containsKey("errorMessage")){
+                    resp.put("errorMessage", CommonService.setErrorMessage(duplicateMessage, duplicateCount, i));
+                }
             }
 
         }catch (IOException e) {
