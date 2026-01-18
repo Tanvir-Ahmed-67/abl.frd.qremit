@@ -238,11 +238,10 @@ public class ReportController {
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
         int fileInfoModelId = CommonService.convertStringToInt(id);
         FileInfoModel fileInfoModel = fileInfoModelService.findFileInfoModelById(fileInfoModelId);
-        System.out.println(fileInfoModel);
         int isPrefix = 1;
         String tbl = "";
-        if(CommonService.convertStringToInt(fileInfoModel.getSpotCashCount()) >= 1){
-            tbl = "base_data_table_spotcash";
+        if(CommonService.convertStringToInt(fileInfoModel.getSpotCashCount()) > 0){
+            tbl = CommonService.getSpotCashBaseTblName();
         }else{
             tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName(), isPrefix);
         }

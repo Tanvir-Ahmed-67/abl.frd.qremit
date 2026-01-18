@@ -754,7 +754,7 @@ public class ReportService {
                     }
                 }
             }
-            if(("6").equals(type)){
+            if(("6").equals(type) || ("5").equals(type)){
                 downloadDateTime = (LocalDateTime) fdata.get("download_date_time");
             }
             String processedDate = CommonService.convertDateToString(downloadDateTime);
