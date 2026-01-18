@@ -20,4 +20,8 @@ public interface SpotCashRepository extends JpaRepository<SpotCashModel, Integer
     @Modifying
     @Query("UPDATE SpotCashModel n SET n.isVoucherGenerated=:isVoucherGenerated, n.reportDate=:reportDate, n.tempStatus = 1, n.entryActive = 2 WHERE n.id in :ids")
     int updateIsVoucherGeneratedBulk(@Param("ids") List<Integer> ids, @Param("isVoucherGenerated") int isVoucherGenerated, @Param("reportDate") LocalDateTime reportdate);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM SpotCashModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
+    void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
 }

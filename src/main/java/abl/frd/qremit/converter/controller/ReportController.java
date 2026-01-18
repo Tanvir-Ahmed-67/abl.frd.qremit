@@ -236,11 +236,19 @@ public class ReportController {
         if(userData.get("status") == HttpStatus.UNAUTHORIZED)   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         if(userData.containsKey("exchangeMap")) model.addAttribute("exchangeMap", userData.get("exchangeMap"));
         ExchangeHouseModel exchangeHouseModel = exchangeHouseModelService.findByExchangeCode(exchangeCode);
+        int fileInfoModelId = CommonService.convertStringToInt(id);
+        FileInfoModel fileInfoModel = fileInfoModelService.findFileInfoModelById(fileInfoModelId);
         int isPrefix = 1;
-        String tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName(), isPrefix);
+        String tbl = "";
+        if(CommonService.convertStringToInt(fileInfoModel.getSpotCashCount()) > 0){
+            tbl = CommonService.getSpotCashBaseTblName();
+        }else{
+            tbl = CommonService.getBaseTableName(exchangeHouseModel.getBaseTableName(), isPrefix);
+        }
         Map<String,Object> fileInfo = customQueryService.getFileDetails(tbl,id);
         if((Integer) fileInfo.get("err") == 1)  return ResponseEntity.ok(fileInfo);
-        resp = reportService.getFileDetails(CommonService.convertStringToInt(id), fileInfo, columnData);
+        
+        resp = reportService.getFileDetails(fileInfoModelId, fileInfo, columnData);
         return ResponseEntity.ok(resp);
     }
 

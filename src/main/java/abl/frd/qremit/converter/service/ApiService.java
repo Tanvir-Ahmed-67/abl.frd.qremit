@@ -20,7 +20,6 @@ public class ApiService {
         List<String[]> uniqueKeys = new ArrayList<>();
         List<Map<String, Object>> dataList = new ArrayList<>();
         List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.findAllActiveExchangeHouseList();
-        //Map<String, String> nrtaCodeVsExchangeCodeMap = CommonService.getNrtaCodeVsExchangeCodeMap(exchangeHouseModelList);
         Map<String, Object> nrtaCodeVsExchangeDetailsMap = CommonService.getNrtaCodeVsExchangeDetailsMap(exchangeHouseModelList);
         Map<String, Object> routingDetails = new HashMap<>();
         for (CSVRecord csvRecord : csvRecords) {

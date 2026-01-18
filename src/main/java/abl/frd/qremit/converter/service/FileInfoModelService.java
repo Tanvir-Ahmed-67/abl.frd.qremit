@@ -9,6 +9,8 @@ import abl.frd.qremit.converter.repository.CocModelRepository;
 import abl.frd.qremit.converter.repository.ErrorDataModelRepository;
 import abl.frd.qremit.converter.repository.FileInfoModelRepository;
 import abl.frd.qremit.converter.repository.OnlineModelRepository;
+import abl.frd.qremit.converter.repository.SpotCashRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class FileInfoModelService {
     ErrorDataModelRepository errorDataModelRepository;
     @Autowired
     DynamicOperationService dynamicOperationService;
+    @Autowired
+    SpotCashRepository spotCashRepository;
     //@Autowired
     //CustomQueryRepository customQueryRepository;
     public List<FileInfoModel> getUploadedFileDetails(int userId, String date){
@@ -80,14 +84,18 @@ public class FileInfoModelService {
         Map<String, Object> resp = CommonService.getResp(1,"Data not deleted", null);
         try{
             if(fileInfoModelRepository.existsById(id)){
-                
-                Map<String, Object> dynamicResp = dynamicOperationService.deleteFilInfoModelById(exchangeCode, id);
-                if((Integer) dynamicResp.get("err") == 1)  return dynamicResp;
-                onlineModelRepository.deleteByFileInfoModelId(id);
-                accountPayeeModelRepository.deleteByFileInfoModelId(id);
-                beftnModelRepository.deleteByFileInfoModelId(id);
-                cocModelRepository.deleteByFileInfoModelId(id);
-                errorDataModelRepository.deleteByFileInfoModelId(id);
+                if(CommonService.convertStringToInt(fileInfoModel.getSpotCashCount()) > 0){
+                    //for spotcash there is no base table name in db
+                    spotCashRepository.deleteByFileInfoModelId(id);
+                }else{
+                    Map<String, Object> dynamicResp = dynamicOperationService.deleteFilInfoModelById(exchangeCode, id);
+                    if((Integer) dynamicResp.get("err") == 1)  return dynamicResp;
+                    onlineModelRepository.deleteByFileInfoModelId(id);
+                    accountPayeeModelRepository.deleteByFileInfoModelId(id);
+                    beftnModelRepository.deleteByFileInfoModelId(id);
+                    cocModelRepository.deleteByFileInfoModelId(id);
+                    errorDataModelRepository.deleteByFileInfoModelId(id);
+                }
                 
                 //fileInfoModelRepository.deleteById(id);
                 fileInfoModelRepository.deleteFileInfoModelById(id);

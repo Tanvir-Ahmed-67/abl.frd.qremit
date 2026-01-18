@@ -1888,4 +1888,8 @@ public class CommonService {
         month = month.substring(0,1).toUpperCase() + month.substring(1).toLowerCase();
         return parts[0] + "-" + month + "-" + parts[2];
     }
+
+    public static String getSpotCashBaseTblName(){
+        return "base_data_table_spotcash";
+    }
 }
