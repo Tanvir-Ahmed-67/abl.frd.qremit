@@ -189,12 +189,15 @@ $(document).ready(function(){
             $('#download_btn').html(btn);
         }
         if(type == 18){
+            console.log(resp);
+            if(resp.generateBtn === 0){
+                $('#download_btn').html("");
+                return false;
+            }   
             var entryUrl = "http://203.188.255.210/rms-api/update_spotcash_entry_active.php";
             var trandataUrl = "http://203.188.242.211/rms-api/update_trandata_api.php";
             var processReportUrl = "/processSpotCashReport";
 
-            //var entryUrl = "http://localhost/rms-api/update_spotcash_entry_active.php";
-            //var trandataUrl = "http://localhost/rms-api/update_trandata_api.php";
             var btn = '<div class="btn-group">';
             //btn += '<button type="button" class="btn btn-info spotcash" id="' + entryUrl + '">Update From Trandata Manual Entry</button>';
             btn += '<a href="'+ entryUrl + '" class="btn btn-info text-white" target="_blank">Update From Trandata manual Entry</a>';
