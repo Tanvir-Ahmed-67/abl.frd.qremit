@@ -1111,12 +1111,13 @@ public class SpotCashService {
         return resp;
     }
 
-    public Map<String, Object> getExchangeWiseSummary(String date){
+    public Map<String, Object> getExchangeWiseSummary(String date, int generateBtn){
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime startDateTime = CommonService.convertStringToDate(date + " 00:00:00");
         LocalDateTime endDateTime = CommonService.convertStringToDate(date+ " 23:59:59");
         List<Object[]> spotCashModelList = spotCashRepository.getExchangeWiseDailyDataByDate(startDateTime, endDateTime);
         List<Map<String, Object>> dataList = new ArrayList<>();
+        Map<String, Object> btnList = new HashMap<>();
         if(spotCashModelList.size() > 0){
             int i = 1;
             List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.getSpotCashExchangeList();
@@ -1152,6 +1153,7 @@ public class SpotCashService {
             dataList.add(totalData);
         }
         resp.put("data", dataList);
+        resp.put("generateBtn", generateBtn);
         return resp;
     }
 
