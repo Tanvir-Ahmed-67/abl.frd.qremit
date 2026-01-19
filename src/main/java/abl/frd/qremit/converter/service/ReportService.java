@@ -974,7 +974,14 @@ public class ReportService {
                 List<CocModel> cocModels = cocModelService.findCocModelByFileInfoModelIdAndIsDownloaded(id);
                 cnt += cocModels.size();
             }
-            
+        }
+        if(CommonService.convertStringToInt(fileInfoModel.getSpotCashCount()) > 0){
+            List<SpotCashModel> spotCashModels = spotCashService.findSpotCashModelByFileInfoModelIdAndIsVoucherGenerated(id);
+            cnt += spotCashModels.size();
+        }
+        if(CommonService.convertStringToInt(fileInfoModel.getNpsbCount()) > 0){
+            List<NpsbMfsModel> npsbMfsModels = npsbMfsService.findNpsbModelByFileInfoModelIdAndIsVoucherGenerated(id);
+            cnt += npsbMfsModels.size();
         }
         if(fileInfoModel.getErrorCount() >= 1){
             List<ErrorDataModel> errorDataModels = errorDataModelRepository.getErrorSubmittedByFileInfoModelId(id);

@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import abl.frd.qremit.converter.model.SpotCashModel;
@@ -24,4 +23,6 @@ public interface SpotCashRepository extends JpaRepository<SpotCashModel, Integer
     @Modifying
     @Query("DELETE FROM SpotCashModel n WHERE n.fileInfoModel.id = :fileInfoModelId")
     void deleteByFileInfoModelId(@Param("fileInfoModelId") int fileInfoModelId);
+    @Query("SELECT n FROM SpotCashModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isVoucherGenerated= :isVoucherGenerated")
+    List<SpotCashModel> findSpotCashModelByFileInfoModelIdAndIsVoucherGenerated(@Param("fileInfoModelId") int fileInfoModelId,  @Param("isVoucherGenerated") int isVoucherGenerated);
 }

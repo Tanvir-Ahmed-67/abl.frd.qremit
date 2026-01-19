@@ -227,4 +227,8 @@ public class NpsbMfsService {
     public void updateTempStatusBulk(List<Integer> ids, int tempStatus){
         npsbMfsRepository.updateTempStatusBulk(ids, tempStatus);
     }
+
+    public List<NpsbMfsModel> findNpsbModelByFileInfoModelIdAndIsVoucherGenerated(int fileInfoModelId){
+        return npsbMfsRepository.findNpsbModelByFileInfoModelIdAndIsVoucherGenerated(fileInfoModelId, 1);
+    }
 }
