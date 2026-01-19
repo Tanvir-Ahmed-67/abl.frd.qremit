@@ -1163,4 +1163,8 @@ public class SpotCashService {
     public void updateIsVoucherGeneratedBulk(List<Integer> ids, int isVoucherGenerated, LocalDateTime reportDate){
         spotCashRepository.updateIsVoucherGeneratedBulk(ids, isVoucherGenerated, reportDate);
     }
+
+    public List<SpotCashModel> findSpotCashModelByFileInfoModelIdAndIsVoucherGenerated(int fileInfoModelId){
+        return spotCashRepository.findSpotCashModelByFileInfoModelIdAndIsVoucherGenerated(fileInfoModelId, 1);
+    }
 }

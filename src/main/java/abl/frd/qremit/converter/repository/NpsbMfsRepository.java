@@ -29,4 +29,6 @@ public interface NpsbMfsRepository extends JpaRepository<NpsbMfsModel, Integer> 
     @Modifying
     @Query("UPDATE NpsbMfsModel n SET n.tempStatus=:tempStatus WHERE n.id in :ids")
     int updateTempStatusBulk(@Param("ids") List<Integer> ids, @Param("tempStatus") int tempStatus);
+    @Query("SELECT n FROM NpsbMfsModel n WHERE n.fileInfoModel.id = :fileInfoModelId AND n.isVoucherGenerated= :isVoucherGenerated")
+    List<NpsbMfsModel> findNpsbModelByFileInfoModelIdAndIsVoucherGenerated(@Param("fileInfoModelId") int fileInfoModelId,  @Param("isVoucherGenerated") int isVoucherGenerated);
 }
