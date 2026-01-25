@@ -83,6 +83,7 @@ public class SpotCashService {
             if(spotCashData.containsKey("errorMessage")){
                 resp.put("errorMessage", spotCashData.get("errorMessage"));
             }
+            if(spotCashModelList.isEmpty()) return resp;
             int spotCashCount = 0;
             double totalAmount = 0;
             for(SpotCashModel spotCashModel: spotCashModelList){
