@@ -1,0 +1,24 @@
+<section class="section">
+    <div th:if="${message !=null and !message.isEmpty()}">
+        <div class="alert alert-danger text-center">
+            <span th:utext="${message}"></span>
+        </div> 
+    </div>
+    <div>
+        <h4>Uploaded File Statistics</h4>
+        <table class='table table-striped'>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center">File Name</th>
+                    <th scope="col" class="text-center">Total Incentive Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row" class="text-center"><span th:text="${fileInfo?.fileName}"></span></th>
+                    <th scope="row" class="text-center"><span th:text="${fileInfo?.totalCount}"></span></th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>

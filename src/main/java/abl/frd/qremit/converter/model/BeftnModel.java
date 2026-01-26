@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_is_voucher_generated", columnList = "is_voucher_generated"), @Index(name = "idx_upload_date_time", columnList = "upload_date_time"),@Index(name = "idx_download_date_time", columnList = "download_date_time"),
         @Index(name = "idx_is_processed_main", columnList = "is_processed_main"), @Index(name = "idx_is_processed_incentive", columnList = "is_processed_incentive"),
         @Index(name = "idx_temp_status", columnList = "temp_status"), @Index(name = "idx_beneficiary_account", columnList = "beneficiary_account"),
-        @Index(name = "idx_beneficiary_name", columnList = "beneficiary_name"),@Index(name = "idx_govt_incentive", columnList = "govt_incentive"),
-        @Index(name = "idx_agrani_incentive", columnList = "agrani_incentive"),@Index(name = "idx_incentive", columnList = "incentive"), @Index(name = "idx_txn_modified", columnList = "txn_modified")
+        @Index(name = "idx_beneficiary_name", columnList = "beneficiary_name"), @Index(name = "idx_txn_modified", columnList = "txn_modified")
     }
 )
 public class BeftnModel {

@@ -25,7 +25,7 @@ public class ExchangeHouseModel {
     private String countryCode;
     @Column(name ="country_name", nullable=false, length = 128)
     private String countryName;
-    @Column(name ="base_table_name", nullable=false, length = 20)
+    @Column(name ="base_table_name", nullable=false, length = 32)
     private String baseTableName;
     @Column(name = "active_status", columnDefinition = "TINYINT(1) DEFAULT 0")
     private int activeStatus = 0;

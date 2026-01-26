@@ -83,6 +83,7 @@ public class SpotCashService {
             if(spotCashData.containsKey("errorMessage")){
                 resp.put("errorMessage", spotCashData.get("errorMessage"));
             }
+            if(spotCashModelList.isEmpty()) return resp;
             int spotCashCount = 0;
             double totalAmount = 0;
             for(SpotCashModel spotCashModel: spotCashModelList){
@@ -93,7 +94,13 @@ public class SpotCashService {
                     spotCashModel.setDownloadDateTime(currentDateTime);
                     spotCashModel.setDownloadUserId(userId);
                 }
-                totalAmount += spotCashModel.getAmount();
+                double amount = spotCashModel.getAmount();
+                totalAmount += amount;
+                double govtIncentive = CommonService.calculateGovtIncentivePercentage(amount);
+                double agraniIncentive = CommonService.calculateAgraniIncentivePercentage(amount);
+                spotCashModel.setGovtIncentive(govtIncentive);
+                spotCashModel.setAgraniIncentive(agraniIncentive);
+                spotCashModel.setIncentive(govtIncentive + agraniIncentive);
                 spotCashCount += 1;
                 spotCashModel.setFileInfoModel(fileInfoModel);
                 spotCashModel.setUserModel(user);
