@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 14, 2026 at 12:05 PM
+-- Generation Time: Jan 26, 2026 at 10:24 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,7 +36,7 @@ CREATE TABLE `ex_house_list` (
   `exchange_code_sc` varchar(10) DEFAULT NULL,
   `country_code` varchar(10) NOT NULL,
   `country_name` varchar(128) NOT NULL,
-  `base_table_name` varchar(20) NOT NULL,
+  `base_table_name` varchar(32) NOT NULL,
   `class_name` varchar(32) NOT NULL,
   `repository_name` varchar(32) NOT NULL,
   `is_settlement` tinyint(1) DEFAULT 0,
@@ -146,9 +146,10 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (199, '7010310', 'NBL Money Transfer Payment Foundation SA, Greece', '', '7076', 'm10', '300', 'GREECE', '', '', '', 0, 1, 0, ''),
 (200, '7010311', 'Hello Pasia (PTY) Ltd', '', '7097', 'm22', '710', 'SOUTH AFRICA', '', '', '', 0, 1, 0, 'Hello Paisa'),
 (201, '7010312', 'IFIC Money Transfer UK', '', '7116', '', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, ''),
-(202, '777777', 'API Spot Cash', 'api_data', '2000', NULL, '', '', '', '', '', 0, 1, 0, 'API Spot Cash'),
-(203, '888888', 'NBL API Data', 'nbl_api_data', '2000', NULL, '', '', '', '', '', 0, 1, 0, 'NBL API '),
-(204, '7010247', 'IME Malaysia', '', '7042', 'ime', '', '', '', '', '', 0, 0, 0, '');
+(202, '777777', 'API Spot Cash', '', '2000', NULL, '', '', '', '', '', 0, 1, 0, 'API Spot Cash'),
+(203, '888888', 'NBL API Data', '', '2000', NULL, '', '', '', '', '', 0, 1, 0, 'NBL API '),
+(204, '7010247', 'IME Malaysia', '', '7042', 'ime', '', '', '', '', '', 0, 0, 0, ''),
+(205, '999999', 'Q Remit Incentive', 'Q Remit Incentive', '2000', NULL, '', '', 'converted_data_online', '', '', 0, 1, 0, 'NBL API ');
 
 --
 -- Indexes for dumped tables
@@ -172,7 +173,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=205;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=206;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

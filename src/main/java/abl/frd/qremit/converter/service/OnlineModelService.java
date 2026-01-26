@@ -1,21 +1,24 @@
 package abl.frd.qremit.converter.service;
-
 import abl.frd.qremit.converter.helper.OnlineModelServiceHelper;
 import abl.frd.qremit.converter.model.OnlineModel;
 import abl.frd.qremit.converter.repository.OnlineModelRepository;
+import abl.frd.qremit.converter.repository.ReportModelRepository;
+import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.io.ByteArrayInputStream;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import javax.transaction.Transactional;
-
 @Service
 public class OnlineModelService {
     @Autowired
     OnlineModelRepository onlineModelRepository;
     @Autowired
     MyUserDetailsService myUserDetailsService;
+    @Autowired
+    ReportModelRepository reportModelRepository;
 
     public ByteArrayInputStream load(String fileId, String fileType) {
         List<OnlineModel> onlineModes = onlineModelRepository.findAllOnlineModelHavingFileInfoId(CommonService.convertStringToInt(fileId));
@@ -132,5 +135,46 @@ public class OnlineModelService {
     }
     public List<Object[]> getDailyProcessedDataByDate(LocalDateTime startDate, LocalDateTime endDate, int isProcessed){
         return onlineModelRepository.getDailyProcessedDataByDate(startDate, endDate, isProcessed);
+    }
+
+    public Map<String, Object> uploadQremitIncentive(MultipartFile file, int userId, String exchangeCode){
+        Map<String, Object> resp = new HashMap<>();
+        
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+             CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
+            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            //System.out.println(csvRecords);
+            int cnt = 0;
+            for (CSVRecord csvRecord : csvRecords) {
+                String txnStr = csvRecord.get(0).trim();
+                String transactionNo = txnStr.substring(0, txnStr.length() - 7);
+                exchangeCode = txnStr.substring(txnStr.length() - 7);
+                //Double amount = CommonService.convertStringToDouble(csvRecord.get(3).trim());
+                String amountStr = csvRecord.get(3).trim();
+                Double amount = CommonService.convertStringToDouble(amountStr);
+                Double govtIncentive = CommonService.calculateGovtIncentivePercentage(amount);
+                Double agraniIncentive = CommonService.calculateAgraniIncentivePercentage(amount);
+                Double incentive = govtIncentive + agraniIncentive;
+                int affected = updateQremitIncentive(transactionNo, exchangeCode, amount, govtIncentive, agraniIncentive, incentive);
+                cnt += affected;
+            }
+            Map<String, Object> fileInfo = new HashMap<>();
+            fileInfo.put("fileName", file.getOriginalFilename());
+            fileInfo.put("totalCount", cnt);
+            resp = CommonService.getResp(0, "", null);
+            resp.put("fileInfo", fileInfo);
+        }catch(Exception e){
+            String message = "fail to store csv data: " + e.getMessage();
+            resp = CommonService.getResp(1, message, null);
+        }
+        return resp;
+    }
+    @Transactional
+    public int updateQremitIncentive(String transactionNo, String exchangeCode, Double amount, Double govtIncentive, Double agraniIncentive, Double incentive){
+        int affected = onlineModelRepository.updateQremitIncentive(transactionNo, exchangeCode, amount, govtIncentive, agraniIncentive, incentive);
+        if(affected > 0){
+            affected = reportModelRepository.updateQremitIncentive(transactionNo, exchangeCode, amount, govtIncentive, agraniIncentive, incentive);
+        }
+        return affected;
     }
 }

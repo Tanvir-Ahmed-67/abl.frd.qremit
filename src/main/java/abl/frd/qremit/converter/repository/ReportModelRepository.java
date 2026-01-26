@@ -2,6 +2,8 @@ package abl.frd.qremit.converter.repository;
 import java.time.*;
 import java.util.*;
 
+import javax.transaction.Transactional;
+
 import abl.frd.qremit.converter.model.ExchangeReportDTO;
 import abl.frd.qremit.converter.model.ReportModel;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -51,4 +53,9 @@ public interface ReportModelRepository  extends JpaRepository<ReportModel, Integ
     List<ReportModel> getReportModelByExchangeCodeAndReportDate(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
     @Query("SELECT new abl.frd.qremit.converter.model.ExchangeReportDTO(n.exchangeCode, COUNT(n), SUM(n.amount)) " + "FROM ReportModel n WHERE n.reportDate = :reportDate and n.type = '6'" + "GROUP BY n.exchangeCode")
     List<ExchangeReportDTO> getAllGroupedNpsbMfsDataByReportDate(@Param("reportDate") LocalDate reportDate);
+    @Transactional
+    @Modifying
+    @Query("UPDATE ReportModel n set n.govtIncentive=:govtIncentive, n.agraniIncentive=:agraniIncentive, n.incentive=:incentive WHERE n.transactionNo=:transactionNo AND n.exchangeCode=:exchangeCode AND n.amount=:amount")
+    int updateQremitIncentive(@Param("transactionNo") String transactionNo, @Param("exchangeCode") String exchangeCode, @Param("amount") Double amount,  @Param("govtIncentive") Double govtIncentive, @Param("agraniIncentive") Double agraniIncentive, 
+        @Param("incentive") Double incentive);
 }

@@ -59,4 +59,9 @@ public interface OnlineModelRepository extends JpaRepository<OnlineModel, Intege
     List<OnlineModel> findOnlineModelByExchangeCodeAndUploadDateTime(@Param("exchangeCode") String exchangeCode, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     @Query("SELECT sum(amount) as amount, count(n) as cnt FROM OnlineModel n where  n.downloadDateTime BETWEEN :startDate AND :endDate and n.isProcessed=:isProcessed and n.isApi=0")
     List<Object[]> getDailyProcessedDataByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("isProcessed") int isProcessed);
+    @Transactional
+    @Modifying
+    @Query("UPDATE OnlineModel n set n.govtIncentive=:govtIncentive, n.agraniIncentive=:agraniIncentive, n.incentive=:incentive WHERE n.transactionNo=:transactionNo AND n.exchangeCode=:exchangeCode AND n.amount=:amount")
+    int updateQremitIncentive(@Param("transactionNo") String transactionNo, @Param("exchangeCode") String exchangeCode, @Param("amount") Double amount, @Param("govtIncentive") Double govtIncentive, @Param("agraniIncentive") Double agraniIncentive, 
+        @Param("incentive") Double incentive);
 }
