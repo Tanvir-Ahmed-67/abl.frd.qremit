@@ -887,7 +887,6 @@ public class ReportService {
                     int id = (Integer) CommonService.getPropertyValue(model, "getId");
                     String action = "";
                     String typeMethod = CommonService.getTypeMethod(type);
-                    //String typeFlag = (("").equals(type)) ? (String) CommonService.getPropertyValue(model, "getType") : type;
                     String typeFlag = (!typeMethod.isEmpty()) ? (String) CommonService.getPropertyValue(model, typeMethod) : type;
                     if(isEdit == 1){
                         String btn = CommonService.generateTemplateBtn("template-viewBtn.txt","#","btn-info btn-sm edit",String.valueOf(id),"Edit");
@@ -1038,6 +1037,15 @@ public class ReportService {
         }
         if(beftnReturnModelList.isEmpty())  return CommonService.getResp(1, "No data found", null);
         List<Map<String, Object>> dataList = beftnModelService.processBeftnReturnSearchData(beftnReturnModelList);
+        return CommonService.getResp(0, "", dataList);
+    }
+
+    public Map<String, Object> getBeftnIncentiveSearch(String searchType, String searchValue){
+        if(searchType.isEmpty() || searchValue.isEmpty())     return CommonService.getResp(1, "Please Select Search Type or Value", null);
+        if(("2").equals(searchValue))   return CommonService.getResp(1, "Invalid Search Type", null);
+        List<BeftnModel> beftnModelList = beftnModelService.getPendingIncentiveByTransactionNo(searchValue);
+        if(beftnModelList.isEmpty())    return CommonService.getResp(1, "No data found", null);
+        List<Map<String, Object>> dataList = beftnModelService.processBeftnIncentiveSearchData(beftnModelList);
         return CommonService.getResp(0, "", dataList);
     }
 

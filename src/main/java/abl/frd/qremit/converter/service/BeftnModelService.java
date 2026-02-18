@@ -196,8 +196,6 @@ public class BeftnModelService {
         return updateNotProcessingIncentive(idList);
     }
 
-    
-
     @Transactional
     public Map<String,Object> updateNotProcessingIncentive(List<Integer> idList){
         if(!idList.isEmpty()){
@@ -391,6 +389,36 @@ public class BeftnModelService {
             data.put("returnCode", beftnReturnModel.getReturnCode() + "-" + returnReason);
             dataList.add(data);
         }
+        return dataList;
+    }
+
+    public List<BeftnModel> getPendingIncentiveByTransactionNo(String transactionNo){
+        return beftnModelRepository.getPendingIncentiveByTransactionNo(transactionNo);
+    }
+
+    public List<Map<String, Object>> processBeftnIncentiveSearchData(List<BeftnModel> beftnModelList){
+        int i = 1;
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        for(BeftnModel beftnModel: beftnModelList){
+            Map<String, Object> data = new HashMap<>();
+            String exchangeCode = beftnModel.getExchangeCode();
+            ExchangeHouseModel exchangeHouseModel = exchangeHouseModelRepository.findByExchangeCode(exchangeCode);
+            String exchangeDetails = exchangeCode + "<br>" + exchangeHouseModel.getExchangeName();
+            data.put("sl", i++);
+            data.put("transactionNo", beftnModel.getTransactionNo());
+            data.put("exchangeCode", exchangeDetails);
+            data.put("beneficiaryName", beftnModel.getBeneficiaryName());
+            data.put("beneficiaryAccount", beftnModel.getBeneficiaryAccount());
+            data.put("routingNo", beftnModel.getRoutingNo());
+            String downloadDate = CommonService.convertDateToString(beftnModel.getDownloadDateTime());
+            data.put("downloadDateTime", downloadDate);
+            data.put("amount", beftnModel.getAmount());
+            data.put("incentive", beftnModel.getIncentive());
+            data.put("action", "");
+            dataList.add(data);
+        }
+        System.out.println(dataList);
+        System.out.println(beftnModelList);
         return dataList;
     }
 }
