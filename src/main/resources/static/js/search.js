@@ -11,6 +11,13 @@ $(document).ready(function(){
         $('#searchType').val("1");
         $("#page-header").html("Data Correction");
     }
+
+    var url = "/getSearchColumn?type=" + type;
+    get_ajax(url,"", search_ui,fail_func,"get","json");
+
+    function search_ui(resp, params){
+        localStorage.setItem("dataTable", JSON.stringify(resp));
+    }
     
     $('#searchForm').on('submit', function(e){
         e.preventDefault();
@@ -25,14 +32,15 @@ $(document).ready(function(){
             alert(resp.msg);
             return false;
         }
-        var cols = ['sl','transactionNo','exchangeCode','beneficiaryName','beneficiaryAccount','bankDetails','amount','downloadDateTime','reportDate','type'];
-        if(type == '2') cols.push('action');
-        if(type == '3') cols = ['sl','transactionNo','exchangeCode','beneficiaryName','beneficiaryAccount','routingNo','amount','processedDate','returnDate','returnCode'];
-        var columns = DataTableColumns(cols);
+        var dataTable = JSON.parse(localStorage.getItem("dataTable"));
+        //var cols = ['sl','transactionNo','exchangeCode','beneficiaryName','beneficiaryAccount','bankDetails','amount','downloadDateTime','reportDate','type'];
+        //if(type == '2') cols.push('action');
+        //if(type == '3') cols = ['sl','transactionNo','exchangeCode','beneficiaryName','beneficiaryAccount','routingNo','amount','processedDate','returnDate','returnCode'];
+        //var columns = DataTableColumns(cols);
         $(sdiv).hide();
         $(display).show();
         $(sbtn).show();
-        get_simple_dataTable(tbl,columns, resp);
+        get_simple_dataTable(tbl,dataTable.column, resp);
     }
 
     $(document).off('click','#search');

@@ -1017,6 +1017,10 @@ public class ReportController {
             model.addAttribute("errorMessage", "Invalid Attempt. You are not allowed to perform this operation");
             return "fragments/error";
         }
+        if(("4").equals(type) && userId == 0){
+            model.addAttribute("errorMessage", "Invalid Attempt. You are not allowed to perform this operation");
+            return "fragments/error";
+        }
         String pageTitle = "Search";
         if(type.equals("3"))    pageTitle = "BEFTN Return Search";
         model.addAttribute("pageTitle", pageTitle);
@@ -1032,7 +1036,11 @@ public class ReportController {
             resp = reportService.getCorrectionSearch(searchType, searchValue);
         }else if(("3").equals(type)){
             resp = reportService.getBeftnReturnSearch(searchType, searchValue);
-        }else resp = reportService.getSearch(searchType, searchValue);;
+        }
+        else if(("4").equals(type)){
+            resp = reportService.getBeftnIncentiveSearch(searchType, searchValue);
+        }
+        else resp = reportService.getSearch(searchType, searchValue);;
         return ResponseEntity.ok(resp);
     }
 
@@ -1132,5 +1140,34 @@ public class ReportController {
         }
         resp = reportService.getDailyProcessedDataByDate(date);
         return ResponseEntity.ok(resp);
+    }
+    @GetMapping(value="/getSearchColumn", produces = "application/json")
+    @ResponseBody
+    public static Map<String, Object> getSearchColumn(String type){
+        Map<String, Object> resp = new HashMap<>();
+        String[] columnData = null;
+        String[] columnTitles = null;
+        switch(type){
+            case "1":
+            default:
+                columnData = new String[] {"sl","transactionNo","exchangeCode","beneficiaryName","beneficiaryAccount","bankDetails","amount","downloadDateTime","reportDate","type"};
+                columnTitles = new String[] {"SL", "Transaction No", "Exchange Details", "Beneficiary Name", "Account No", "Bank Name<br>Routing No/ Branch Code<br>Branch Name", "Amount", "Processed Date", "Report Date", "Type"};
+                break;
+            case "2":
+                columnData = new String[] {"sl","transactionNo","exchangeCode","beneficiaryName","beneficiaryAccount","bankDetails","amount","downloadDateTime","reportDate","type","action"};
+                columnTitles = new String[] {"SL", "Transaction No", "Exchange Details", "Beneficiary Name", "Account No", "Bank Name<br>Routing No/ Branch Code<br>Branch Name", "Amount", "Processed Date", "Report Date", "Type", "Action"};
+                break;
+            case "3":
+                columnData = new String[] {"sl","transactionNo","exchangeCode","beneficiaryName","beneficiaryAccount","routingNo","amount","processedDate","returnDate","returnCode"};
+                columnTitles = new String[] {"SL", "Transaction No", "Exchange Details", "Beneficiary Name", "Account No", "Routing No", "Amount", "Processed Date", "Return Date", "Return Code"};
+                break;
+            case "4":
+                columnData = new String[] {"sl","transactionNo","exchangeCode","beneficiaryName","beneficiaryAccount","routingNo","amount","incentive","downloadDateTime","action"};
+                columnTitles = new String[] {"SL", "Transaction No", "Exchange Details", "Beneficiary Name", "Account No", "Routing No", "Amount", "Incentive", "Processed Date", "Action"};
+                break;
+        }
+        List<Map<String, String>> column = CommonService.createColumns(columnData, columnTitles);
+        resp.put("column", column);
+        return resp;
     }
 }

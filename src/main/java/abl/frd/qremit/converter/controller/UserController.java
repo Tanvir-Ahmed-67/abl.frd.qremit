@@ -827,7 +827,7 @@ public class UserController {
             }
         }
         if(exchangeHouseModelList.isEmpty())    return ResponseEntity.ok(resp);
-        String[] specialExCodes = {"111111", "222222", "333333", "444444","555555","666666"};
+        String[] specialExCodes = {"111111", "222222", "333333", "444444","555555","666666","777777","888888","999999"};
         for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
             Map<String, Object> data = new HashMap<>();
             if(exchangeHouseModel.getActiveStatus() == 0)   continue;

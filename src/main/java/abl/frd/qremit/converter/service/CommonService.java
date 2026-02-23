@@ -1458,6 +1458,7 @@ public class CommonService {
                 resp.put("2", "Beneficiary Account No");
                 break;
             case "2":
+            case "4":
                 resp.put("1", "Transaction No");
                 break;
             case "3":

@@ -72,5 +72,8 @@ public interface BeftnModelRepository extends JpaRepository<BeftnModel, Integer>
     @Query("SELECT sum(incentive) as amount, count(n) as cnt FROM BeftnModel n where n.downloadDateTime BETWEEN :startDate AND :endDate and n.isProcessedIncentive = :isProcessed")
     List<Object[]> getDailyProcessedIncentiveDataByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("isProcessed") int isProcessed);
     List<BeftnModel> findByTxnModifiedIn(List<String> txnList);
+    @Query("SELECT n FROM BeftnModel n WHERE n.incentive= 0 AND n.transactionNo = :transactionNo AND n.isProcessed= 1 AND n.isVoucherGenerated= 1")
+    List<BeftnModel> getPendingIncentiveByTransactionNo(@Param("transactionNo") String transactionNo);
+
 }
 
