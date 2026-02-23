@@ -152,7 +152,8 @@ public class OnlineModelService {
                 //Double amount = CommonService.convertStringToDouble(csvRecord.get(3).trim());
                 String amountStr = csvRecord.get(3).trim();
                 Double amount = CommonService.convertStringToDouble(amountStr);
-                Double govtIncentive = CommonService.calculateGovtIncentivePercentage(amount);
+                //Double govtIncentive = CommonService.calculateGovtIncentivePercentage(amount);
+                Double govtIncentive = CommonService.convertStringToDouble(csvRecord.get(7).trim());
                 Double agraniIncentive = CommonService.calculateAgraniIncentivePercentage(amount);
                 Double incentive = govtIncentive + agraniIncentive;
                 int affected = updateQremitIncentive(transactionNo, exchangeCode, amount, govtIncentive, agraniIncentive, incentive);
