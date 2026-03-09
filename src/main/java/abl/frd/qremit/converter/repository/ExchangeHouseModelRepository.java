@@ -38,7 +38,7 @@ public interface ExchangeHouseModelRepository extends JpaRepository<ExchangeHous
     ExchangeHouseModel findExchangeHouseByIsSettlement(int isSettlement);
     ExchangeHouseModel findExchangeHouseModelByNrtaCode(String nrtaCode);
     List<ExchangeHouseModel> findByExchangeCodeIn(List<String> exchangeCodes);
-    @Query("SELECT n FROM ExchangeHouseModel n WHERE n.exchangeCodeSc IS NOT NULL AND n.exchangeCodeSc <> '' AND n.activeStatus = 1")
+    @Query("SELECT n FROM ExchangeHouseModel n WHERE n.exchangeCodeSc IS NOT NULL AND n.exchangeCodeSc <> '' AND n.activeStatus = 1 order by n.exchangeCodeSc")
     List<ExchangeHouseModel> getSpotCashExchangeList();
     @Query("SELECT n FROM ExchangeHouseModel n WHERE n.exchangeShortNameSc IS NOT NULL AND n.exchangeShortNameSc <> '' AND n.activeStatus = 1")
     List<ExchangeHouseModel> getSpotCashExchangeListWithShortName();

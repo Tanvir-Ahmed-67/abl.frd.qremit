@@ -8,10 +8,10 @@
         <div class="main-content container-fluid"><!--dynamic content-->
             <div class="page-title">
                 <div class="row">
-                    <div class="col-12 col-md-6 order-md-1 order-last">
+                    <div class="col-md-9 order-md-1 order-last">
                         <h3 class="page-header">Uploaded File Statistics</h3>
                     </div>
-                    <div class="col-12 col-md-6 order-md-2 order-first">
+                    <div class="col-md-3 order-md-2 order-first">
                         <nav aria-label="breadcrumb" class='breadcrumb-header'>
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
@@ -27,6 +27,7 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
+                        <input type="hidden" name="currentDate" id="currentDate" th:value="${currentDate}">
                         <div class="row">
                             <div class="mb-3 col-md-2 form-group" id="row_report_date">
                                 <input class="form-control dpicker report_date" type="text" name="report_date" id="report_date" placeholder="Date" readonly="true">

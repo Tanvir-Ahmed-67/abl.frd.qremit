@@ -728,6 +728,7 @@ public class UserController {
     @GetMapping("/userFileUploadReport")
     public String userFileUploadReport(@AuthenticationPrincipal MyUserDetails userDetails,Model model, @RequestParam(defaultValue = "") String type){
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
+        model.addAttribute("currentDate", CommonService.getCurrentDate("yyyy-MM-dd"));
         //List<Map<String, String>> reportColumn = ReportController.getReportColumn(type);
         return "pages/user/userFileUploadReport";
     }
@@ -742,6 +743,7 @@ public class UserController {
         Map<String, String> exchangeMap = new HashMap<>();
         if(userData.containsKey("exchangeMap")) exchangeMap = (Map<String, String>) userData.get("exchangeMap");
         model.addAttribute("exchangeMap", exchangeMap);
+        model.addAttribute("currentDate", CommonService.getCurrentDate("yyyy-MM-dd"));
         String sidebar = CommonService.getSidebarNameByUserid(userId);
         model.addAttribute("sidebar", sidebar);
         return "pages/admin/adminReport";

@@ -736,11 +736,12 @@ public class SpotCashService {
             String transactionNo = CommonService.getCellValueAsString(row.getCell(5));
             String amount = CommonService.getCellValueAsString(row.getCell(10)).replace(",", "");
             String userId = CommonService.getCellValueAsString(row.getCell(13)).trim();
+            String branchCode = CommonService.removeAllSpecialCharacterFromString(userId).toUpperCase().replace("BD04", "");
             Map<String, Object> branchDetails = customQueryService.getBranchUserDetailsByUserId(branchUserDetails, exchangeCodeSc, userId);
             LocalDate paidDate = CommonService.convertStringToLocalDate(row.getCell(2).toString(), "dd-MMM-yyyy");
             LocalDate enteredDate = CommonService.convertStringToLocalDate(row.getCell(1).toString(),"dd-MMM-yyyy");
             Map<String, Object> data = new HashMap<>();
-            data = commonService.mapAblUserIdToBranchdetails(data, branchDetails, "", routingData);
+            data = commonService.mapAblUserIdToBranchdetails(data, branchDetails, branchCode, routingData);
             data.put("transactionNo", transactionNo);
             data.put("amount", amount);
             data.put("remitterName", CommonService.getCellValueAsString(row.getCell(6)));
@@ -1073,16 +1074,25 @@ public class SpotCashService {
         return resp;
     }
 
-    public Map<String, Object> getExchangeWiseSummary(String date, int generateBtn){
+    public Map<String, Object> getExchangeWiseSummary(String date, int generateBtn, String rtype){
         Map<String, Object> resp = new HashMap<>();
         LocalDateTime startDateTime = CommonService.convertStringToDate(date + " 00:00:00");
         LocalDateTime endDateTime = CommonService.convertStringToDate(date+ " 23:59:59");
         List<Object[]> spotCashModelList = spotCashRepository.getExchangeWiseDailyDataByDate(startDateTime, endDateTime);
         List<Map<String, Object>> dataList = new ArrayList<>();
         Map<String, Object> btnList = new HashMap<>();
+        List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.getSpotCashExchangeList();
+        if(("2").equals(rtype))  dataList = getAllExchangewiseSummary(spotCashModelList, exchangeHouseModelList, dataList);
+        else    dataList = processExchangewiseSummary(spotCashModelList, exchangeHouseModelList, dataList);
+        resp.put("data", dataList);
+        resp.put("generateBtn", generateBtn);
+        return resp;
+    }
+
+    public List<Map<String, Object>> processExchangewiseSummary(List<Object[]> spotCashModelList, List<ExchangeHouseModel> exchangeHouseModelList, 
+        List<Map<String, Object>> dataList){
         if(spotCashModelList.size() > 0){
             int i = 1;
-            List<ExchangeHouseModel> exchangeHouseModelList = exchangeHouseModelRepository.getSpotCashExchangeList();
             int totalCount = 0;
             double totalAmount = 0;
             for(Object[] row: spotCashModelList){
@@ -1106,17 +1116,52 @@ public class SpotCashService {
                 data.put("exchangeName", exchangeName);
                 dataList.add(data);
             }
-            Map<String, Object> totalData = new HashMap<>();
-            totalData.put("sl", "");
-            totalData.put("totalAmount", CommonService.convertNumberFormat(totalAmount, 2));
-            totalData.put("totalCount", totalCount);
-            totalData.put("exchangeCodeSc", "");
-            totalData.put("exchangeName", "Total Uploaded");
-            dataList.add(totalData);
+            dataList.add(calculateTotalSummary(totalCount, totalAmount));
         }
-        resp.put("data", dataList);
-        resp.put("generateBtn", generateBtn);
-        return resp;
+        return dataList;
+    }
+
+    public List<Map<String, Object>> getAllExchangewiseSummary(List<Object[]> spotCashModelList, List<ExchangeHouseModel> exchangeHouseModelList, 
+        List<Map<String, Object>> dataList){
+        Map<String, Object[]> spotCashMap = new HashMap<>();
+        for (Object[] row : spotCashModelList) {
+            spotCashMap.put((String) row[0], row);
+        }
+        int i = 1;
+        int totalCount = 0;
+        double totalAmount = 0;
+        for(ExchangeHouseModel exchangeHouseModel: exchangeHouseModelList){
+            String exchangeCodeSc = exchangeHouseModel.getExchangeCodeSc();
+            String exchangeName = exchangeHouseModel.getExchangeName();
+            double amount = 0.0;
+            long cnt = 0;
+            if(spotCashMap.containsKey(exchangeCodeSc)){
+                Object[] row = spotCashMap.get(exchangeCodeSc);
+                amount = (Double) row[1];
+                cnt = (Long) row[2];
+            }
+            totalAmount += amount;
+            totalCount += (int) cnt;
+            Map<String, Object> data = new HashMap<>();
+            data.put("sl", i++);
+            data.put("totalAmount", CommonService.convertNumberFormat(amount, 2));
+            data.put("totalCount", cnt);
+            data.put("exchangeCodeSc", exchangeCodeSc);
+            data.put("exchangeName", exchangeName);
+            dataList.add(data);
+        }
+        dataList.add(calculateTotalSummary(totalCount, totalAmount));
+        return dataList;
+    }
+
+    public Map<String, Object> calculateTotalSummary(int totalCount, double totalAmount){
+        Map<String, Object> totalData = new HashMap<>();
+        totalData.put("sl", "");
+        totalData.put("totalAmount", CommonService.convertNumberFormat(totalAmount, 2));
+        totalData.put("totalCount", totalCount);
+        totalData.put("exchangeCodeSc", "");
+        totalData.put("exchangeName", "Total Uploaded");
+        return totalData;
     }
 
     public List<SpotCashModel> getProcessedDataByUploadDate(int isProcessed, int isVoucherGenerated, LocalDateTime starDateTime, LocalDateTime enDateTime){

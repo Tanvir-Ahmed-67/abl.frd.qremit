@@ -77,12 +77,13 @@ public class SpotCashController {
 
     @GetMapping(value="/getExchangeWiseSummary", produces = "application/json")
     @ResponseBody
-    public Map<String, Object> getExchangeWiseSummary(@AuthenticationPrincipal MyUserDetails userDetails,@RequestParam(defaultValue = "") String date,Model model){
+    public Map<String, Object> getExchangeWiseSummary(@AuthenticationPrincipal MyUserDetails userDetails,@RequestParam(defaultValue = "") String date,
+        @RequestParam(defaultValue = "") String rtype,Model model){
         String currentDate = CommonService.getCurrentDate("yyyy-MM-dd");
         if(date.isEmpty())  date = currentDate;
         int generateBtn = 0;
-        if(date.equals(currentDate)) generateBtn = 1; 
-        return spotCashService.getExchangeWiseSummary(date, generateBtn);
-
+        if(date.equals(currentDate)) generateBtn = 1;
+        if(("2").equals(rtype)) generateBtn = 0; 
+        return spotCashService.getExchangeWiseSummary(date, generateBtn, rtype);
     }
 }
