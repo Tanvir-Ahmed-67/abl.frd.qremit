@@ -70,7 +70,6 @@ public class OnlineModelController {
             if(!commonService.ifFileExist(file.getOriginalFilename())) {
                 try{
                     Map<String, Object> resp = onlineModelService.uploadQremitIncentive(file, userId, exchangeCode);
-                    //model = CommonService.viewUploadStatus(resp, model);
                     if( (int) resp.get("err") == 0){
                         model.addAttribute("fileInfo", resp.get("fileInfo"));
                     }else{

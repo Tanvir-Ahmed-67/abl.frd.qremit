@@ -33,10 +33,6 @@ $(document).ready(function(){
             return false;
         }
         var dataTable = JSON.parse(localStorage.getItem("dataTable"));
-        //var cols = ['sl','transactionNo','exchangeCode','beneficiaryName','beneficiaryAccount','bankDetails','amount','downloadDateTime','reportDate','type'];
-        //if(type == '2') cols.push('action');
-        //if(type == '3') cols = ['sl','transactionNo','exchangeCode','beneficiaryName','beneficiaryAccount','routingNo','amount','processedDate','returnDate','returnCode'];
-        //var columns = DataTableColumns(cols);
         $(sdiv).hide();
         $(display).show();
         $(sbtn).show();

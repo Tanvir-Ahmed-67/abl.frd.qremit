@@ -7,6 +7,7 @@ $(document).ready(function(){
     var csrf_header = $("meta[name='_csrf_header']").attr("content");
     var pid = getParameterByName("id");
     var date = getParameterByName("date");
+    var currentDate = $('#currentDate').val();
     $('#row_report_date').hide();
     var load_data = 1;
     const hTypes = ["11","12","13","15"];
@@ -111,8 +112,10 @@ $(document).ready(function(){
                 var url = "/viewBeftnReturnFile?id=" + pid;
                 break;
             case '18':
-                var url = "/spotcash/getExchangeWiseSummary?date=" + date;
-                page_header = "Exchange House wise Spot Cash Report";
+                var rtype = getParameterByName("rtype");
+                var url = "/spotcash/getExchangeWiseSummary?date=" + date + "&rtype=" + rtype;
+                if(!date)   date = currentDate;
+                page_header = 'Exchange House wise Spot Cash Report on <span class="rdate">'+ date +'</span>';
                 $('#row_report_date').show();
                 break;
             case '19':
@@ -199,19 +202,24 @@ $(document).ready(function(){
             var processReportUrl = "/processSpotCashReport";
 
             var btn = '<div class="btn-group">';
-            //btn += '<button type="button" class="btn btn-info spotcash" id="' + entryUrl + '">Update From Trandata Manual Entry</button>';
-            btn += '<a href="'+ entryUrl + '" class="btn btn-info text-white" target="_blank">Update From Trandata manual Entry</a>';
+            btn += '<button type="button" class="btn btn-info spotcash" id="' + entryUrl +'">Update From Trandata Manual Entry</button>';
+            btn += '<button type="button" class="btn btn-danger spotcash" id="' + trandataUrl +'">Update Trandata</button>';
+            btn += '<button type="button" class="btn btn-info spotcash" id="' + processReportUrl +'">Generate SpotCash Report</button>';
+            /*
+            btn += '<a href="'+ entryUrl + '" class="btn btn-info text-white" target="_blank">Update From Trandata Manual Entry</a>';
             btn += '<a href="'+ trandataUrl + '" class="btn btn-danger text-white" target="_blank">Update Trandata</a>';
             btn += '<a href="'+ processReportUrl + '" class="btn btn-info text-white" target="_blank">Generate SpotCash Report</a>';
             btn += '</div>';
+            */
             $('#download_btn').html(btn);
         }
     }
 
-    $(document).off('click','.spotcash');
-    $(document).on('click','.spotcash', function(e){
-        var id = $(this).attr(id);
-        console.log(id);
+    $(document).off('click',".spotcash");
+    $(document).on('click',".spotcash",function(e){
+        e.preventDefault();
+        var url = $(this).attr("id");
+        get_ajax(url,"",success_alert,fail_func,"get","json");
     });
 
     $(document).off('click',".view_exchange");

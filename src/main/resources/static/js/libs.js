@@ -40,7 +40,19 @@ function checkDataTable(tbl){
     if(exportTbl){
       oSettings.layout = {
         topStart: {
-          buttons:['copy','csv','excel','print'],
+          //buttons:['copy','csv','excel','print'],
+          buttons:['copy','csv','excel',
+            {
+              extend: 'print',
+              customize: function ( win ){
+                var header = $('.page-title').clone();
+                $(win.document.body).find('table').before(header);
+                $(win.document.body).css('font-size', '12px')
+                $(win.document.body).find('table').addClass('compact').css('font-size', 'inherit');
+                $(win.document.head).append($(document.head).find('link').clone());
+              }
+            }
+          ]
         }
       };
     }
