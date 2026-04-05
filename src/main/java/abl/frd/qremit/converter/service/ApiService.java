@@ -70,7 +70,6 @@ public class ApiService {
             bankName = routingDetails.get("bank_name").toString();
             branchName = routingDetails.get("branch_name").toString();
             branchCode = routingDetails.get("abl_branch_code").toString();
-            beneficiaryAccount = "";
             incentive = "0";
             data.put("exchangeCodeSc", exchangeCodeSc);
         }

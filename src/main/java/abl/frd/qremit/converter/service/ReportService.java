@@ -1254,13 +1254,9 @@ public class ReportService {
         List<ReportModel> reportModelList = reportModelRepository.getReportModelByExchangeCodeAndReportDate(exchangeCode, starDate, enDateTime);
         if(reportModelList.isEmpty())   resp = CommonService.getResp(1, "No data found", dataList);
         resp = CommonService.getResp(0, "", null);
-        if(("1").equals(generateCsv)){
-            resp.put("data", reportModelList);
-        }else{
-            resp = processExchangeWiseData(reportModelList, dataList, "",  0, 0.0);
-            resp.put("data", resp.get("dataList"));
-            resp.remove("dataList");
-        }
+        resp = processExchangeWiseData(reportModelList, dataList, "",  0, 0.0);
+        resp.put("data", resp.get("dataList"));
+        resp.remove("dataList");
         return resp;
     }
 
@@ -1289,19 +1285,21 @@ public class ReportService {
         return resp;
     }
 
-    public byte[] generateCsvForMonthlyData(List<ReportModel> reportModelList){
+    public byte[] generateCsvForMonthlyData(List<Map<String, Object>> reportModelList){
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(out);
         try (CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT
-            .withHeader("Transaction No", "Report Date","Amount","Account No","Beneficiary Name")
+            .withHeader("Transaction No", "Report Date","Amount","Account No","Beneficiary Name","Processed Date","Type")
             .withQuoteMode(QuoteMode.ALL))){
-            for(ReportModel reportModel: reportModelList){
+            for(Map<String, Object> reportModel: reportModelList){
                 printer.printRecord(
-                    reportModel.getTransactionNo(),
-                    CommonService.convertLocalDateToString(reportModel.getReportDate(), "yyyy-MM-dd"),
-                    reportModel.getAmount(),
-                    reportModel.getBeneficiaryAccount(),
-                    reportModel.getBeneficiaryName()
+                    reportModel.get("transactionNo"),
+                    reportModel.get("reportDate"),
+                    reportModel.get("amount"),
+                    reportModel.get("beneficiaryAccountNo"),
+                    reportModel.get("beneficiaryName"),
+                    reportModel.get("processedDate"),
+                    reportModel.get("remType")
                 );
             }
         }catch (IOException e){
