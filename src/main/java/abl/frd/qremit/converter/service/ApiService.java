@@ -66,10 +66,12 @@ public class ApiService {
         Map<String, Object> data = new HashMap<>();
         if("5".equals(type)){
             data.put("paidUserId", branchCode);
-            bankCode = routingDetails.get("bank_code").toString();
-            bankName = routingDetails.get("bank_name").toString();
-            branchName = routingDetails.get("branch_name").toString();
-            branchCode = routingDetails.get("abl_branch_code").toString();
+            if(routingDetails != null && !routingDetails.isEmpty()){
+                bankCode = routingDetails.get("bank_code").toString();
+                bankName = routingDetails.get("bank_name").toString();
+                branchCode = routingDetails.get("abl_branch_code").toString();
+                branchName = routingDetails.get("branch_name").toString();
+            }else branchCode = "";
             incentive = "0";
             data.put("exchangeCodeSc", exchangeCodeSc);
         }
