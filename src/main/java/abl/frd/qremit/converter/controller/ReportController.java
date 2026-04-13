@@ -99,8 +99,8 @@ public class ReportController {
                 columnTitles = new String[] {"Routing No", "Bank Name", "Branch Name", "District",};
                 break;
             case "13":
-                columnData = new String[] {"transactionNo", "reportDate", "amount", "beneficiaryAccountNo", "beneficiaryName"};
-                columnTitles = new String[] {"Transaction No", "Report Date", "Amount", "Account No",  "Beneficiary Name"};
+                columnData = new String[] {"transactionNo", "reportDate", "amount", "beneficiaryAccountNo", "beneficiaryName","processedDate","remType"};
+                columnTitles = new String[] {"Transaction No", "Report Date", "Amount", "Account No",  "Beneficiary Name", "Processed Date", "Type"};
                 break;
             case "14":
                 columnData = new String[] {"sl", "exchangeName", "exchangeCode", "nrtaCode", "totalRemittance", "totalAmount"};
@@ -925,8 +925,8 @@ public class ReportController {
         Map<String, Object> resp = new HashMap<>();
         ResponseEntity<Map<String, Object>> response = getExchangeWiseMonthlyData(userDetails, model, formData);
         resp = response.getBody();
-        List<ReportModel> reportModelList = new ArrayList<>();
-        if(resp != null && resp.get("data") != null)    reportModelList = (List<ReportModel>) resp.get("data");
+        List<Map<String, Object>> reportModelList = new ArrayList<>();
+        if(resp != null && resp.get("data") != null)    reportModelList = (List<Map<String, Object>>) resp.get("data");
         byte[] in = reportService.generateCsvForMonthlyData(reportModelList);
         String fileName = CommonService.generateDynamicFileName("Monthly_data_", ".csv");
         return ResponseEntity.ok()
