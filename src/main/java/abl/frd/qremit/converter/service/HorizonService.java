@@ -137,6 +137,11 @@ public class HorizonService {
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
+
+            if(uniqueKeys.isEmpty()){
+                resp.put("errorMessage", "No data found");
+                return resp;
+            }
             
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
