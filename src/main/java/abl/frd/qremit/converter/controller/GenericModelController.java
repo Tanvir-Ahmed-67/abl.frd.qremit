@@ -18,20 +18,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import abl.frd.qremit.converter.service.GenericModelService;
+import abl.frd.qremit.converter.service.HorizonService;
 
 @Controller
 public class GenericModelController {
-    private final MyUserDetailsService myUserDetailsService;
-    private final CommonService commonService;
+    @Autowired
+    MyUserDetailsService myUserDetailsService;
     @Autowired
     GenericModelService genericModelService;
     @Autowired
-    public GenericModelController(MyUserDetailsService myUserDetailsService, CommonService commonService) {
-        this.myUserDetailsService = myUserDetailsService;
-        this.commonService = commonService;
-    }
+    CommonService commonService;
+    @Autowired
+    HorizonService horizonService;
+
     @PostMapping("/genericUpload")
-    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file,
+    public String uploadFile(@AuthenticationPrincipal MyUserDetails userDetails, @ModelAttribute("file") MultipartFile file, @ModelAttribute("fileType") String fileType,
         @ModelAttribute("exchangeCode") String exchangeCode, @RequestParam("nrtaCode") String nrtaCode, @RequestParam("tbl") String tbl, Model model) {
         model.addAttribute("exchangeMap", myUserDetailsService.getLoggedInUserMenu(userDetails));
         int userId = 000000000;
@@ -43,20 +44,17 @@ public class GenericModelController {
             userId = user.getId();
         }
         String message = "";
-        if (CommonService.hasCSVFormat(file)) {
+        Map<String, Object> resp = new HashMap<>();
+        if (CommonService.hasCSVFormat(file)){
             if(!commonService.ifFileExist(file.getOriginalFilename())){
-                try {
-                    Map<String, Object> resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, GenericModel.class);
+                try{
+                    if(exchangeCode.equals("7010313"))  resp = horizonService.save(file, userId, exchangeCode, fileType, nrtaCode, tbl);
+                    else resp = genericModelService.save(file, userId, exchangeCode, nrtaCode, tbl, GenericModel.class);
                     model = CommonService.viewUploadStatus(resp, model);
                     return CommonService.uploadSuccesPage;
-                } catch (IllegalArgumentException e) {
-                    message = e.getMessage();
-                    model.addAttribute("message", message);
-                    return CommonService.uploadSuccesPage;
-                }
-                catch (Exception e) {
-                    message = "Could Not Upload The File: " + file.getOriginalFilename() +"";
-                    model.addAttribute("message", message);
+                }catch(Exception e){
+                    e.printStackTrace();
+                    model.addAttribute("message", e.getMessage());
                     return CommonService.uploadSuccesPage;
                 }
             }
@@ -64,8 +62,7 @@ public class GenericModelController {
             model.addAttribute("message", message);
             return CommonService.uploadSuccesPage;
         }
-        message = "Please Upload a CSV File!";
-        model.addAttribute("message", message);
+        model.addAttribute("message", "Please Upload a CSV File!");
         return CommonService.uploadSuccesPage;
     }  
 

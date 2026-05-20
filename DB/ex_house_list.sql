@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jan 26, 2026 at 10:24 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost
+-- Generation Time: May 20, 2026 at 09:47 AM
+-- Server version: 8.0.45-0ubuntu0.24.04.1
+-- PHP Version: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,22 +28,22 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `ex_house_list` (
-  `id` int(11) NOT NULL,
-  `exchange_code` varchar(20) NOT NULL,
-  `exchange_name` varchar(255) NOT NULL,
-  `exchange_short_name` varchar(30) NOT NULL,
-  `nrta_code` varchar(10) NOT NULL,
-  `exchange_code_sc` varchar(10) DEFAULT NULL,
-  `country_code` varchar(10) NOT NULL,
-  `country_name` varchar(128) NOT NULL,
-  `base_table_name` varchar(32) NOT NULL,
-  `class_name` varchar(32) NOT NULL,
-  `repository_name` varchar(32) NOT NULL,
-  `is_settlement` tinyint(1) DEFAULT 0,
-  `active_status` tinyint(1) DEFAULT 0,
-  `has_settlement_daily` tinyint(1) DEFAULT 0,
-  `exchange_short_name_sc` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `id` int NOT NULL,
+  `exchange_code` varchar(20) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `exchange_name` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `exchange_short_name` varchar(30) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `nrta_code` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `exchange_code_sc` varchar(10) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `country_code` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `country_name` varchar(128) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `base_table_name` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `class_name` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `repository_name` varchar(32) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `is_settlement` tinyint(1) DEFAULT '0',
+  `active_status` tinyint(1) DEFAULT '0',
+  `has_settlement_daily` tinyint(1) DEFAULT '0',
+  `exchange_short_name_sc` varchar(30) COLLATE utf8mb3_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 --
 -- Dumping data for table `ex_house_list`
@@ -105,11 +105,11 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (155, '7010302', 'Money Match', '', '7109', NULL, '458', 'MALAYSIA', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, ''),
 (156, '7010252', 'Multinet  trust Ex. LLC, UAE ', 'Multinet Trust', '7067', NULL, '784', 'UNITED ARAB EMIRATES (UAE)', 'multinet', 'MultinetModel', 'multinetModelRepository', 0, 1, 0, ''),
 (157, '7010229', 'National Exchange Company, Italy', 'NEC Italy', '7037', 'm05', '380', 'ITALY', 'necitaly', 'NecItalyModel', 'necItalyModelRepository', 0, 1, 0, 'NEC Italy'),
-(158, '7010285', 'NBL Money Transfer USA', 'NBL USA', '7077', NULL, '840', 'USA', 'nblusa', 'NblUsaModel', 'nblUsaModelRepository', 0, 1, 0, ''),
+(158, '7010285', 'NBL Money Transfer USA', 'NBL USA', '7077', NULL, '840', 'USA', 'nblusa', 'NblUsaModel', 'nblUsaModelRepository', 0, 0, 0, ''),
 (159, '7010276', 'NBL Money Transfer, Malaysia', 'NBL Malaysia', '7059', 'nbl', '458', 'MALAYSIA', 'nblmalaysia', 'NblMalaysiaModel', 'nblMalaysiaModelRepository', 0, 1, 0, ''),
 (160, '7010241', 'Saudi National Bank (SNB)', '', '7055', 'm38', '682', 'SAUDI ARABIA', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, ''),
 (161, '7010272', 'NEC Money Transfer, UK', 'NEC UK', '7087', 'm15', '826', 'UNITED KINGDOM (UK)', 'necuk', 'NecUkModel', 'necUkModelRepository', 0, 1, 0, 'NEC UK'),
-(162, '7010208', 'Oman Exchange Co, Kuwait', 'Oman Exchange Kuwait', '7008', NULL, '414', 'KUWAIT', 'omankuwait', 'OmanKuwaitModel', 'omanKuwaitModelRepository', 0, 1, 0, ''),
+(162, '7010208', 'Al Ansari Exchange Co. W.L.L, Kuwait', '', '7008', NULL, '414', 'KUWAIT', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, ''),
 (163, '7010215', 'Oman Intl Exchange Ltd. Oman', 'Oman Exchange Oman', '7021', NULL, '512', 'OMAN', 'oman', 'OmanModel', 'omanModelRepository', 0, 1, 0, ''),
 (164, '7010286', 'Placid NK Corporation', '', '7065', 'm14', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, 'Placid'),
 (165, '7010238', 'Prabhu Group Inc. U S A', 'Prabhu USA', '7051', 'prb', '840', 'UNITED STATES OF AMERICA (USA)', 'prabhu', 'PrabhuModel', 'prabhuModelRepository', 0, 1, 0, 'Prabhu'),
@@ -142,14 +142,16 @@ INSERT INTO `ex_house_list` (`id`, `exchange_code`, `exchange_name`, `exchange_s
 (195, '7010306', 'MASTERCARD TRANSACTION SERVICES', '', '7044', 'tft', '840', 'UNITED STATES OF AMERICA (USA)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, 'Transfast'),
 (196, '7010307', 'Western Union', '', '7063', 'm01', '840', 'UNITED STATES OF AMERICA (USA)', '', '', '', 0, 1, 0, 'Western Union'),
 (197, '7010308', 'MoneyGram Int. Exchange', '', '7041', 'mgm', '840', 'UNITED STATES OF AMERICA (USA)', '', '', '', 0, 1, 0, 'MoneyGram'),
-(198, '7010309', 'XPRESS MONEY SERVICES LIMITED', '', '7112', 'xpm', '784', 'UNITED ARAB EMIRATES (UAE)', '', '', '', 0, 1, 0, ''),
+(198, '7010309', 'WIZZ CROSS BORDER SERVICE LTD.', '', '7112', 'xpm', '784', 'UNITED ARAB EMIRATES (UAE)', '', '', '', 0, 1, 0, 'XPress Money'),
 (199, '7010310', 'NBL Money Transfer Payment Foundation SA, Greece', '', '7076', 'm10', '300', 'GREECE', '', '', '', 0, 1, 0, ''),
 (200, '7010311', 'Hello Pasia (PTY) Ltd', '', '7097', 'm22', '710', 'SOUTH AFRICA', '', '', '', 0, 1, 0, 'Hello Paisa'),
-(201, '7010312', 'IFIC Money Transfer UK', '', '7116', '', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, ''),
+(201, '7010312', 'IFIC Money Transfer (UK) Limited', '', '7116', '', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, ''),
 (202, '777777', 'API Spot Cash', '', '2000', NULL, '', '', '', '', '', 0, 1, 0, 'API Spot Cash'),
 (203, '888888', 'NBL API Data', '', '2000', NULL, '', '', '', '', '', 0, 1, 0, 'NBL API '),
 (204, '7010247', 'IME Malaysia', '', '7042', 'ime', '', '', '', '', '', 0, 0, 0, ''),
-(205, '999999', 'Q Remit Incentive', 'Q Remit Incentive', '2000', NULL, '', '', 'converted_data_online', '', '', 0, 1, 0, 'NBL API ');
+(205, '999999', 'Q Remit Incentive', 'Q Remit Incentive', '2000', NULL, '', '', 'converted_data_online', '', '', 0, 1, 0, ''),
+(206, '7010313', 'Horizon Remittance Limited', 'Horizon', '7119', '', '826', 'UNITED KINGDOM (UK)', 'generic', 'GenericModel', 'genericModelRepository', 1, 1, 0, ''),
+(207, '7010314', 'Simpaisa CA Limited., Canada', '', '7117', '', '124', 'CANADA', 'generic', 'GenericModel', 'genericModelRepository', 0, 1, 0, '');
 
 --
 -- Indexes for dumped tables
@@ -173,7 +175,7 @@ ALTER TABLE `ex_house_list`
 -- AUTO_INCREMENT for table `ex_house_list`
 --
 ALTER TABLE `ex_house_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=206;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=208;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
