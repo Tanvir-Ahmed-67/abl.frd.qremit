@@ -40,7 +40,7 @@ public class DailyMailToTresuryService {
 
     public void sendFormattedEmail(double amount) {
         String[] recipients = {
-                "tanvir.ahmed@agranibank.org",
+                //"tanvir.ahmed@agranibank.org",
                 "agranidealers@gmail.com",
                 "treasury@agranibank.org"
         };
