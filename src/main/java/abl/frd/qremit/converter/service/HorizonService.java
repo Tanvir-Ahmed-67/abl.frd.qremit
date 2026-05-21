@@ -1,6 +1,5 @@
 package abl.frd.qremit.converter.service;
 import java.io.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,12 +136,10 @@ public class HorizonService {
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-
-            if(uniqueKeys.isEmpty()){
-                resp.put("errorMessage", "No data found");
+            if(dataList.isEmpty()){
+                resp.put("errorMessage", "No data found for processing");
                 return resp;
             }
-            
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);

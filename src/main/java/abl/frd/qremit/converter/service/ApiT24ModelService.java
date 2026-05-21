@@ -136,6 +136,10 @@ public class ApiT24ModelService {
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
+            if(dataList.isEmpty()){
+                resp.put("errorMessage", "No data found for processing");
+                return resp;
+            }
             if(isValidFile == 1){
                 Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
                 Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
