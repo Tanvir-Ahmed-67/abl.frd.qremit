@@ -1,5 +1,4 @@
 package abl.frd.qremit.converter.service;
-
 import abl.frd.qremit.converter.controller.ReportController;
 import abl.frd.qremit.converter.model.*;
 import abl.frd.qremit.converter.repository.*;
@@ -22,9 +21,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.InetAddress;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -36,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import org.apache.commons.net.util.SubnetUtils;
-
 @SuppressWarnings("unchecked")
 @Service
 public class CommonService {
