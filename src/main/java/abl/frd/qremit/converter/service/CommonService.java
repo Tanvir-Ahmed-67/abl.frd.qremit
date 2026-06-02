@@ -1747,7 +1747,10 @@ public class CommonService {
     }
 
     public static boolean isScientificNotation(String value) {
-        return value != null && value.toUpperCase().contains("E+");
+        //return value != null && value.toUpperCase().contains("E+");
+        if(value == null)   return false;
+        String scientificRegex = "^[-+]?\\d+(\\.\\d+)?[Ee][-+]?\\d+$";
+        return value.matches(scientificRegex);
     }
 
     public static Map<String, Object> validateIpRange(String clientIP, List<IpRange> ipRangeList){
