@@ -1,3 +1,4 @@
+
 package abl.frd.qremit.converter.service;
 import java.io.*;
 import java.time.*;
@@ -121,7 +122,7 @@ public class CityModelService {
                 if(row == null) continue;
                 if (row.getCell(0) == null || row.getCell(0).getCellType() == CellType.BLANK) continue;
                 int columnCount = getNonEmptyCellCount(row);
-                if(columnCount != 9)    continue;
+                if(columnCount != 11)    continue;
                 i++;
                 Map<String, Object> data = getCityData(row, exchangeCode, enteredDate);
                 String transactionNo = data.get("transactionNo").toString();
@@ -131,7 +132,10 @@ public class CityModelService {
                 dataList.add(data);
                 uniqueKeys = CommonService.setUniqueIndexList(transactionNo, amount, exchangeCode, uniqueKeys);
             }
-            
+            if(dataList.isEmpty()){
+                resp.put("errorMessage", "No data found for processing");
+                return resp;
+            }
             Map<String, Object> uniqueDataList = customQueryService.getUniqueList(uniqueKeys, tbl);
             Map<String, Object> archiveDataList = customQueryService.processArchiveUniqueList(uniqueKeys);
             modelResp = commonService.processDataToModel(dataList, fileInfoModel, user, uniqueDataList, archiveDataList, currentDateTime, duplicateData, CityModel.class, resp, errorDataModelList, fileExchangeCode, 0, 0);
