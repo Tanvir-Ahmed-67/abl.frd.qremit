@@ -15,4 +15,5 @@ type 3 - BEFTN
 type 4 - COC
 type 5 - Spot Cash
 type 6 - NPSB
-type 7 - MFS
+type 7 - BKash
+type 8 - Nagad
