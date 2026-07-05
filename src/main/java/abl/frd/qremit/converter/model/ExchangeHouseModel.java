@@ -36,6 +36,10 @@ public class ExchangeHouseModel {
     @Column(name="exchange_code_sc", length = 10)
     private String exchangeCodeSc;
     @Column(name = "exchange_short_name_sc", nullable=false, length = 30)
+    private String bbExCode;
+    @Column(name = "bb_ex_code", nullable=false, length = 10)
+    private String bbExName;
+    @Column(name = "bb_ex_name", nullable=false, length = 255)
     private String exchangeShortNameSc;
     @Column(name = "class_name", length = 32, nullable = false)
     private String className;
@@ -160,6 +164,22 @@ public class ExchangeHouseModel {
 
     public void setExchangeShortNameSc(String exchangeShortNameSc) {
         this.exchangeShortNameSc = exchangeShortNameSc;
+    }
+
+    public String getBbExCode() {
+        return this.bbExCode;
+    }
+
+    public void setBbExCode(String bbExCode) {
+        this.bbExCode = bbExCode;
+    }
+
+    public String getBbExName() {
+        return this.bbExName;
+    }
+
+    public void setBbExName(String bbExName) {
+        this.bbExName = bbExName;
     }
 
     @Override
