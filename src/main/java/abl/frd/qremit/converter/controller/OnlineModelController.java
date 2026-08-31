@@ -82,6 +82,8 @@ public class OnlineModelController {
                     return "pages/user/qremit_incentive";
                 }
             }
+            model.addAttribute("message", "File With The Name "+ file.getOriginalFilename() +" Already Exists !!");
+            return "pages/user/qremit_incentive";
         }
         return "";
 
